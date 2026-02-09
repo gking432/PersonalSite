@@ -1,0 +1,410 @@
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&family=Lora:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+
+/* 
+PRESTIGE PORTFOLIO DESIGN SYSTEM
+Aesthetic: Old money meets new capability
+Reference: Mad Men offices, hunting lodges, private clubs, 1960s Esquire
+Philosophy: Confidence through refinement, not flash
+*/
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Color Palette - Natural, Rich, Prestige */
+  --forest-green: #1a3a2e;
+  --hunter-green: #2d5016;
+  --tobacco: #6b4423;
+  --cognac: #9b6b47;
+  --navy: #1e3a5f;
+  --navy-light: #2d5278;
+  --charcoal: #2a2a2a;
+  --slate: #4a4a4a;
+  --cream: #f4f1ea;
+  --parchment: #faf8f3;
+  --off-white: #fefefe;
+  --warm-gray: #8b8680;
+  
+  /* Accent - Use sparingly */
+  --brass: #b8860b;
+  --copper: #c87533;
+  
+  /* Typography */
+  --font-serif: 'Crimson Text', 'Lora', Georgia, serif;
+  --font-sans: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: 'Courier New', Courier, monospace;
+  
+  /* Spacing - Generous, considered */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 2rem;
+  --space-lg: 4rem;
+  --space-xl: 6rem;
+  --space-2xl: 10rem;
+  
+  /* Layout */
+  --max-width: 1400px;
+  --max-width-text: 720px;
+  --gutter: 3rem;
+  
+  /* Effects */
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow-soft: 0 2px 8px rgba(42, 42, 42, 0.08);
+  --shadow-medium: 0 4px 16px rgba(42, 42, 42, 0.12);
+}
+
+/* Base Styles */
+html {
+  scroll-behavior: smooth;
+  font-size: 18px;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--charcoal);
+  background-color: var(--parchment);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: 0.01em;
+}
+
+/* Typography Scale - Editorial, Refined */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--charcoal);
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+h2 {
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+h3 {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+h4 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+h5 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Body Text - Refined Sans */
+p {
+  margin-bottom: 1.5rem;
+  color: var(--slate);
+  font-size: 1.05rem;
+  line-height: 1.8;
+  max-width: var(--max-width-text);
+}
+
+/* Links - Understated */
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+a:hover {
+  color: var(--forest-green);
+}
+
+/* Accent Text */
+.accent-text {
+  color: var(--forest-green);
+  font-weight: 500;
+}
+
+.subtitle {
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  margin-bottom: 1rem;
+}
+
+/* Pull Quotes - Editorial */
+.pull-quote {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--charcoal);
+  border-left: 4px solid var(--forest-green);
+  padding-left: 2rem;
+  margin: 3rem 0;
+}
+
+/* Layout Containers */
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.container-text {
+  max-width: var(--max-width-text);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.section {
+  padding: var(--space-xl) 0;
+}
+
+.section-lg {
+  padding: var(--space-2xl) 0;
+}
+
+/* Buttons - Refined, Not Loud */
+.btn {
+  display: inline-block;
+  padding: 1rem 2.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+}
+
+.btn-primary {
+  background-color: var(--forest-green);
+  color: var(--cream);
+  border: 2px solid var(--forest-green);
+}
+
+.btn-primary:hover {
+  background-color: transparent;
+  color: var(--forest-green);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--charcoal);
+  border: 2px solid var(--charcoal);
+}
+
+.btn-secondary:hover {
+  background-color: var(--charcoal);
+  color: var(--cream);
+}
+
+.btn-tertiary {
+  background-color: transparent;
+  color: var(--forest-green);
+  border: 2px solid var(--forest-green);
+  padding: 0.75rem 2rem;
+  font-size: 0.9rem;
+}
+
+.btn-tertiary:hover {
+  background-color: var(--forest-green);
+  color: var(--cream);
+}
+
+/* Text Link - Editorial Style */
+.text-link {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--forest-green);
+  border-bottom: 1px solid var(--forest-green);
+  padding-bottom: 2px;
+  transition: all var(--transition);
+}
+
+.text-link:hover {
+  color: var(--hunter-green);
+  border-bottom-color: var(--hunter-green);
+  padding-bottom: 4px;
+}
+
+/* Dividers */
+.divider {
+  width: 60px;
+  height: 3px;
+  background-color: var(--forest-green);
+  margin: 3rem 0;
+}
+
+.divider-full {
+  width: 100%;
+  height: 1px;
+  background-color: var(--warm-gray);
+  opacity: 0.3;
+  margin: 4rem 0;
+}
+
+/* Cards - Minimal, Elevated */
+.card {
+  background-color: var(--cream);
+  padding: var(--space-lg);
+  transition: all var(--transition);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-2px);
+}
+
+/* Image Treatments */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.img-full-bleed {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+.img-grayscale {
+  filter: grayscale(40%) contrast(1.1);
+  transition: filter var(--transition);
+}
+
+.img-grayscale:hover {
+  filter: grayscale(0%) contrast(1);
+}
+
+/* Textures & Overlays */
+.grain-overlay {
+  position: relative;
+}
+
+.grain-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Meta Information - Small, Refined */
+.meta {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+}
+
+/* Lists */
+ul, ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+li {
+  margin-bottom: 0.75rem;
+  color: var(--slate);
+}
+
+/* Horizontal Rule */
+hr {
+  border: none;
+  border-top: 1px solid var(--warm-gray);
+  opacity: 0.3;
+  margin: 3rem 0;
+}
+
+/* Selection */
+::selection {
+  background-color: var(--forest-green);
+  color: var(--cream);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+  :root {
+    --gutter: 2rem;
+    --space-xl: 4rem;
+    --space-2xl: 6rem;
+  }
+  
+  html {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --gutter: 1.5rem;
+    --space-lg: 3rem;
+    --space-xl: 3.5rem;
+    --space-2xl: 5rem;
+  }
+  
+  html {
+    font-size: 16px;
+  }
+  
+  p {
+    font-size: 1rem;
+  }
+  
+  .pull-quote {
+    font-size: 1.5rem;
+    padding-left: 1.5rem;
+  }
+  
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --gutter: 1.25rem;
+  }
+  
+  .divider {
+    width: 40px;
+  }
+}

@@ -1,0 +1,155 @@
+.contact-hero {
+  text-align: center;
+  padding-top: 4rem;
+}
+
+.contact-subtitle {
+  font-size: 1.25rem;
+  color: var(--secondary);
+  margin-top: 1rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.8;
+}
+
+.contact-content {
+  background-color: var(--bg-subtle);
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.contact-form-section,
+.contact-info-section {
+  background-color: var(--bg);
+  padding: 2rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.contact-form-section h2,
+.contact-info-section h2 {
+  color: var(--primary);
+  margin-bottom: 2rem;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--primary);
+  background-color: var(--bg);
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.contact-info {
+  margin-bottom: 4rem;
+}
+
+.info-item {
+  margin-bottom: 2rem;
+}
+
+.info-item h3 {
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.info-item a {
+  color: var(--secondary);
+  display: block;
+  margin-top: 0.5rem;
+}
+
+.info-item a:hover {
+  color: var(--primary);
+}
+
+.info-item p {
+  color: var(--secondary);
+  margin: 0.5rem 0;
+}
+
+.location-note {
+  font-size: 0.9rem;
+  color: var(--secondary);
+  font-style: italic;
+}
+
+.availability-section {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.availability-content {
+  margin-top: 1rem;
+}
+
+.availability-text {
+  color: var(--secondary);
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
+
+.availability-text strong {
+  color: var(--primary);
+}
+
+.response-expectation {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.response-expectation p {
+  color: var(--secondary);
+  font-style: italic;
+}
+
+@media (max-width: 968px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,581 @@
+/* 
+HOME PAGE - HYBRID NDS + PRESTIGE
+Giant typography + NDS animations + Prestige warmth
+*/
+
+.home {
+  background-color: var(--parchment);
+  padding-top: 80px; /* Account for fixed navbar */
+}
+
+/* ==========================================
+   HERO - NDS Scale
+   ========================================== */
+.hero {
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: var(--space-3xl) 0;
+  background: linear-gradient(to bottom, var(--cream) 0%, var(--parchment) 100%);
+}
+
+.hero-content {
+  max-width: 1000px;
+}
+
+.hero-headline {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 12vw, 10rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  color: var(--charcoal);
+  margin-bottom: var(--space-lg);
+}
+
+.hero-subheadline {
+  font-size: clamp(1.15rem, 2.5vw, 1.35rem);
+  line-height: 1.7;
+  color: var(--slate);
+  max-width: 700px;
+  margin-bottom: var(--space-xl);
+  font-weight: 400;
+}
+
+.hero-cta {
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+/* ==========================================
+   STATS BAR - NDS Giant Numbers
+   ========================================== */
+.stats-bar {
+  background-color: var(--forest-green);
+  padding: var(--space-2xl) 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-xl);
+  text-align: center;
+}
+
+.stat-item {
+  color: var(--cream);
+}
+
+.stat-number {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 12vw, 14rem);
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: var(--space-sm);
+  letter-spacing: -0.03em;
+  color: var(--cream);
+}
+
+.stat-label {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 234, 0.7);
+  margin: 0;
+}
+
+/* ==========================================
+   CAPABILITIES - NDS Card Grid
+   ========================================== */
+.capabilities {
+  background-color: var(--off-white);
+  padding: var(--space-3xl) 0;
+  border-top: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.capabilities-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-lg);
+}
+
+.capability-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-lg);
+  transition: all var(--duration-base) var(--ease-out);
+}
+
+.capability-card:hover {
+  border-color: var(--forest-green);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  transform: translateY(-4px);
+}
+
+.capability-card h4 {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  margin-bottom: var(--space-md);
+  color: var(--forest-green);
+  line-height: 1.2;
+}
+
+.capability-card p {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--slate);
+}
+
+/* ==========================================
+   PHOTO SECTIONS - GIANT TEXT + TALLER
+   ========================================== */
+.photo-section {
+  position: relative;
+  height: 200vh;
+}
+
+.photo-section-wrapper {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.photo-section-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(30%) contrast(1.1);
+  z-index: 0;
+}
+
+.photo-section-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/overlook13.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+
+.photo-section-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-md) * 0.5);
+  height: 100%;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 235px var(--gutter) var(--space-2xl) var(--gutter);
+  margin: 0 auto;
+}
+
+/* GIANT TEXT OVERLAY - NDS Signature */
+.giant-text {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 12vw, 10rem);
+  font-weight: 300;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: var(--cream);
+  margin: 0 0 var(--space-lg) 0;
+  max-width: 1100px;
+  transition: font-weight 0.4s ease-out;
+}
+
+/* Supporting text appears after giant text */
+.photo-section-text-wrapper {
+  position: relative;
+  max-width: 600px;
+  margin-top: calc(var(--space-lg) * 0.5);
+}
+
+.photo-section-text-invisible {
+  font-size: 1.15rem;
+  line-height: 1.8;
+  visibility: hidden;
+  margin: 0;
+  padding: 0;
+  /* This reserves the space */
+}
+
+.photo-section-text {
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: rgba(244, 241, 234, 0.9);
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  /* Overlay on top of invisible text */
+}
+
+/* ==========================================
+   PROJECTS - NDS CARD GRID
+   ========================================== */
+.projects {
+  padding: var(--space-3xl) 0;
+  background-color: var(--parchment);
+}
+
+.section-heading {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  margin-bottom: var(--space-2xl);
+  line-height: 1.0;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.project-card {
+  background: var(--cream);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-lg);
+  transition: all var(--duration-base) var(--ease-out);
+  display: flex;
+  flex-direction: column;
+}
+
+.project-card:hover {
+  border-color: var(--forest-green);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  transform: translateY(-4px);
+}
+
+.project-stat {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--forest-green);
+  margin-bottom: var(--space-sm);
+}
+
+.project-card h3 {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  margin-bottom: var(--space-md);
+  color: var(--charcoal);
+  line-height: 1.2;
+}
+
+.project-card p {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--slate);
+  margin-bottom: var(--space-md);
+  flex-grow: 1;
+}
+
+.project-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: auto;
+}
+
+.project-tech span {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  padding: 6px 12px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--border-radius-sm);
+  transition: all var(--duration-fast);
+}
+
+.project-card:hover .project-tech span {
+  border-color: var(--forest-green);
+  color: var(--forest-green);
+}
+
+.projects-cta {
+  text-align: center;
+  margin-top: var(--space-xl);
+}
+
+/* ==========================================
+   TIMELINE - PRESTIGE SECTION
+   ========================================== */
+.background {
+  padding: var(--space-3xl) 0;
+  background-color: var(--cream);
+  position: relative;
+}
+
+.background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.background .container {
+  position: relative;
+  z-index: 1;
+}
+
+.timeline {
+  max-width: 800px;
+  position: relative;
+  padding-left: 3rem;
+  margin-top: var(--space-2xl);
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--forest-green);
+  opacity: 0.3;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: var(--space-2xl);
+  padding-left: 3rem;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -3rem;
+  top: 0.5rem;
+  width: 12px;
+  height: 12px;
+  background-color: var(--forest-green);
+  border-radius: 50%;
+  border: 3px solid var(--cream);
+  box-shadow: 0 0 0 3px var(--forest-green);
+}
+
+.timeline-year {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  margin-bottom: var(--space-sm);
+  display: block;
+}
+
+.timeline-content h4 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  margin-bottom: var(--space-xs);
+  color: var(--charcoal);
+  line-height: 1.2;
+}
+
+.timeline-role {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--forest-green);
+  margin-bottom: var(--space-sm);
+}
+
+.timeline-content p {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--slate);
+  max-width: 600px;
+}
+
+/* ==========================================
+   FINAL CTA
+   ========================================== */
+.cta {
+  padding: var(--space-3xl) 0;
+  background-color: var(--forest-green);
+  color: var(--cream);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cta-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.cta h2 {
+  color: var(--cream);
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  margin-bottom: var(--space-md);
+  line-height: 1.1;
+}
+
+.cta p {
+  color: rgba(244, 241, 234, 0.85);
+  font-size: 1.15rem;
+  line-height: 1.8;
+  margin-bottom: var(--space-xl);
+  max-width: 100%;
+}
+
+.cta .btn-primary {
+  background-color: var(--cream);
+  color: var(--forest-green);
+  border-color: var(--cream);
+}
+
+.cta .btn-primary:hover {
+  background-color: transparent;
+  color: var(--cream);
+  border-color: var(--cream);
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+@media (max-width: 1024px) {
+  .capabilities-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+  
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .giant-text {
+    font-size: clamp(2.5rem, 10vw, 6rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .home {
+    padding-top: 70px;
+  }
+  
+  .hero {
+    min-height: 75vh;
+    padding: var(--space-2xl) 0;
+  }
+  
+  .hero-cta {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .stats-bar {
+    padding: var(--space-xl) 0;
+  }
+  
+  .stat-number {
+    font-size: clamp(3rem, 10vw, 6rem);
+  }
+  
+  .photo-section {
+    min-height: 100vh;
+  }
+  
+  .photo-section-overlay {
+    background: rgba(26, 58, 46, 0.85);
+  }
+  
+  .giant-text {
+    font-size: clamp(2rem, 9vw, 4rem);
+  }
+  
+  .photo-section-text {
+    font-size: 1rem;
+  }
+  
+  .photo-section-content {
+    gap: var(--space-lg);
+  }
+  
+  .timeline {
+    padding-left: 2rem;
+  }
+  
+  .timeline-item {
+    padding-left: 2rem;
+  }
+  
+  .timeline-item::before {
+    left: -2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .stat-number {
+    font-size: 3rem;
+  }
+  
+  .giant-text {
+    font-size: clamp(1.75rem, 8vw, 3rem);
+  }
+  
+  .project-tech {
+    gap: 8px;
+  }
+  
+  .project-tech span {
+    font-size: 0.7rem;
+    padding: 4px 10px;
+  }
+}

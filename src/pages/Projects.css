@@ -1,0 +1,261 @@
+.projects-hero {
+  text-align: center;
+  padding-top: 4rem;
+}
+
+.projects-subtitle {
+  font-size: 1.25rem;
+  color: var(--secondary);
+  margin-top: 1rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.priority-projects {
+  background-color: var(--bg);
+}
+
+.priority-grid {
+  display: grid;
+  gap: 3rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.project-card-large {
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.project-card-large:hover {
+  border-color: var(--primary);
+}
+
+.project-image-large {
+  width: 100%;
+  height: 300px;
+  background-color: var(--bg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.project-placeholder-large {
+  color: var(--secondary);
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.project-details {
+  padding: 2rem;
+}
+
+.project-details h3 {
+  margin-bottom: 0.5rem;
+  color: var(--primary);
+}
+
+.project-tagline {
+  color: var(--accent);
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.project-description {
+  color: var(--secondary);
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.project-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.tech-badge {
+  background: var(--bg-subtle);
+  color: var(--primary);
+  padding: 0.375rem 0.875rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid var(--border);
+}
+
+.project-links-large {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.project-link-btn {
+  padding: 0.5rem 1.5rem;
+  background-color: var(--primary);
+  color: white;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  font-size: 0.9rem;
+}
+
+.project-link-btn:hover {
+  background-color: var(--accent);
+  color: white;
+}
+
+.secondary-projects {
+  background-color: var(--bg-subtle);
+}
+
+.secondary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.project-card-small {
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.project-card-small:hover {
+  border-color: var(--primary);
+}
+
+.project-image-small {
+  width: 100%;
+  height: 180px;
+  background-color: var(--bg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.project-placeholder-small {
+  color: var(--secondary);
+  font-size: 1rem;
+  text-align: center;
+}
+
+.project-details-small {
+  padding: 1.5rem;
+}
+
+.project-details-small h4 {
+  margin-bottom: 0.5rem;
+  color: var(--primary);
+}
+
+.project-tagline-small {
+  color: var(--accent);
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.project-description-small {
+  color: var(--secondary);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.project-tech-small {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tech-badge-small {
+  background: var(--bg-subtle);
+  color: var(--primary);
+  padding: 0.25rem 0.625rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  border: 1px solid var(--border);
+}
+
+.project-links-small {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.project-link-small {
+  font-size: 0.85rem;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.project-link-small:hover {
+  color: var(--primary);
+}
+
+.marketing-showcase {
+  background-color: var(--bg);
+}
+
+.case-studies {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.case-study {
+  background-color: var(--bg);
+  padding: 2rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: border-color 0.2s;
+}
+
+.case-study:hover {
+  border-color: var(--primary);
+}
+
+.case-study h3 {
+  color: var(--primary);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.case-study p {
+  color: var(--secondary);
+  line-height: 1.7;
+}
+
+.work-in-progress {
+  background-color: var(--bg-subtle);
+  text-align: center;
+}
+
+.wip-text {
+  color: var(--secondary);
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .secondary-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .case-studies {
+    grid-template-columns: 1fr;
+  }
+}

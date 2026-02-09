@@ -1,0 +1,128 @@
+.writing-hero {
+  text-align: center;
+  padding-top: 4rem;
+}
+
+.writing-subtitle {
+  font-size: 1.25rem;
+  color: var(--secondary);
+  margin-top: 1rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.8;
+}
+
+.substack-section {
+  background-color: var(--bg-subtle);
+  text-align: center;
+}
+
+.substack-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.substack-content h2 {
+  margin-bottom: 1rem;
+  color: var(--primary);
+}
+
+.substack-description {
+  color: var(--secondary);
+  margin-bottom: 2rem;
+  line-height: 1.7;
+}
+
+.substack-cta {
+  margin-top: 2rem;
+}
+
+.articles-section {
+  background-color: var(--bg-subtle);
+}
+
+.articles-list {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.article-card {
+  background-color: var(--bg);
+  padding: 2rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-bottom: 2rem;
+  transition: border-color 0.2s;
+}
+
+.article-card:hover {
+  border-color: var(--primary);
+}
+
+.article-meta {
+  margin-bottom: 0.5rem;
+}
+
+.article-date {
+  color: var(--secondary);
+  font-size: 0.9rem;
+}
+
+.article-card h3 {
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.article-excerpt {
+  color: var(--secondary);
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
+
+.article-link {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.categories-section {
+  background-color: var(--bg);
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.category-card {
+  background-color: var(--bg-subtle);
+  padding: 2rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  transition: border-color 0.2s;
+}
+
+.category-card:hover {
+  border-color: var(--primary);
+}
+
+.category-card h3 {
+  color: var(--primary);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.category-card p {
+  color: var(--secondary);
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .categories-grid {
+    grid-template-columns: 1fr;
+  }
+}

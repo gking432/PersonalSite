@@ -1,0 +1,334 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;600;700&family=Crimson+Text:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* 
+HYBRID DESIGN SYSTEM
+National Design Studio scale + animations
+Prestige portfolio warmth + colors
+*/
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Prestige Color Palette */
+  --forest-green: #1a3a2e;
+  --hunter-green: #2d5016;
+  --navy: #1e3a5f;
+  --navy-light: #2d5278;
+  --charcoal: #2a2a2a;
+  --slate: #4a4a4a;
+  --cream: #f4f1ea;
+  --parchment: #faf8f3;
+  --off-white: #fefefe;
+  --warm-gray: #8b8680;
+  --tobacco: #6b4423;
+  
+  /* NDS Monochrome */
+  --black: #0a0a0a;
+  --white: #ffffff;
+  --gray-200: #e5e5e5;
+  --gray-100: #f5f5f5;
+  
+  /* Typography - Hybrid */
+  --font-display: 'Instrument Serif', Georgia, serif;  /* Giant impact text */
+  --font-serif: 'Crimson Text', Georgia, serif;        /* Narrative text */
+  --font-sans: 'Inter', -apple-system, sans-serif;     /* UI elements */
+  
+  /* Layout */
+  --max-width: 1400px;
+  --max-width-text: 720px;
+  --gutter: 3rem;
+  
+  /* NDS Spacing Scale */
+  --space-xs: 8px;
+  --space-sm: 16px;
+  --space-md: 24px;
+  --space-lg: 48px;
+  --space-xl: 80px;
+  --space-2xl: 120px;
+  --space-3xl: 160px;
+  
+  /* Animation - NDS Easing */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 0.15s;
+  --duration-base: 0.3s;
+  --duration-slow: 0.6s;
+  
+  /* Effects */
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 16px;
+}
+
+/* Base */
+html {
+  font-size: 18px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--charcoal);
+  background-color: var(--parchment);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography - NDS Scale with Prestige Fonts */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+  color: var(--charcoal);
+  margin: 0;
+}
+
+/* GIANT display text - Instrument Serif */
+.display-text,
+.giant-text {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+
+h1 {
+  font-size: clamp(4rem, 12vw, 10rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+}
+
+h2 {
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  font-weight: 600;
+  line-height: 1.0;
+  letter-spacing: -0.025em;
+}
+
+h3 {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  line-height: 1.1;
+}
+
+h4 {
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+/* Body Text */
+p {
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--slate);
+  margin: 0;
+  max-width: var(--max-width-text);
+}
+
+.text-large {
+  font-size: 1.25rem;
+  line-height: 1.7;
+  color: var(--charcoal);
+}
+
+/* Labels - NDS Style */
+.label,
+.subtitle {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  display: block;
+}
+
+/* Links */
+a {
+  color: var(--forest-green);
+  text-decoration: none;
+  transition: color var(--duration-fast);
+}
+
+a:hover {
+  color: var(--hunter-green);
+}
+
+/* Layout */
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.container-text {
+  max-width: var(--max-width-text);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.section {
+  padding: var(--space-3xl) 0;
+}
+
+.section-lg {
+  padding: calc(var(--space-3xl) * 1.5) 0;
+}
+
+/* Buttons - NDS Style with Prestige Colors */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 32px;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--duration-base) var(--ease-out);
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background-color: var(--forest-green);
+  color: var(--cream);
+  border: 2px solid var(--forest-green);
+}
+
+.btn-primary:hover {
+  background-color: var(--hunter-green);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(26, 58, 46, 0.2);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--charcoal);
+  border: 2px solid var(--charcoal);
+}
+
+.btn-secondary:hover {
+  background-color: var(--charcoal);
+  color: var(--cream);
+  transform: translateY(-2px);
+}
+
+/* Cards - NDS Style */
+.card {
+  background: var(--cream);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--border-radius-lg);
+  padding: 32px;
+  transition: all var(--duration-base) var(--ease-out);
+}
+
+.card:hover {
+  border-color: var(--forest-green);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  transform: translateY(-4px);
+}
+
+/* Text Link */
+.text-link {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--forest-green);
+  border-bottom: 2px solid var(--forest-green);
+  padding-bottom: 2px;
+  transition: all var(--duration-fast);
+  display: inline-block;
+}
+
+.text-link:hover {
+  color: var(--hunter-green);
+  border-bottom-color: var(--hunter-green);
+  padding-bottom: 4px;
+}
+
+/* Utility Classes */
+.text-center {
+  text-align: center;
+}
+
+.text-accent {
+  color: var(--forest-green);
+}
+
+.mt-sm { margin-top: var(--space-sm); }
+.mt-md { margin-top: var(--space-md); }
+.mt-lg { margin-top: var(--space-lg); }
+.mt-xl { margin-top: var(--space-xl); }
+.mt-2xl { margin-top: var(--space-2xl); }
+
+.mb-sm { margin-bottom: var(--space-sm); }
+.mb-md { margin-bottom: var(--space-md); }
+.mb-lg { margin-bottom: var(--space-lg); }
+.mb-xl { margin-bottom: var(--space-xl); }
+.mb-2xl { margin-bottom: var(--space-2xl); }
+
+/* Selection */
+::selection {
+  background-color: var(--forest-green);
+  color: var(--cream);
+}
+
+/* Focus */
+:focus-visible {
+  outline: 2px solid var(--forest-green);
+  outline-offset: 4px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  :root {
+    --gutter: 2rem;
+    --space-3xl: 120px;
+  }
+  
+  html {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --gutter: 1.5rem;
+    --space-2xl: 80px;
+    --space-3xl: 100px;
+  }
+  
+  html {
+    font-size: 16px;
+  }
+  
+  p {
+    font-size: 1rem;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --gutter: 1.25rem;
+  }
+}

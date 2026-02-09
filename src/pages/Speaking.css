@@ -1,0 +1,225 @@
+.speaking-hero {
+  text-align: center;
+  padding-top: 4rem;
+}
+
+.speaking-subtitle {
+  font-size: 1.25rem;
+  color: var(--secondary);
+  margin-top: 1rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.8;
+}
+
+.lecture-section {
+  background-color: var(--bg);
+}
+
+.lecture-section.alt {
+  background-color: var(--bg-subtle);
+}
+
+.lecture-card {
+  max-width: 900px;
+  margin: 0 auto;
+  background-color: var(--bg);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.lecture-section.alt .lecture-card {
+  background-color: var(--bg-subtle);
+}
+
+.lecture-header {
+  text-align: center;
+  padding: 2rem;
+  background-color: var(--bg-subtle);
+}
+
+.lecture-header h2 {
+  margin-bottom: 2rem;
+  color: var(--primary);
+}
+
+.lecture-thumbnail {
+  width: 100%;
+  max-width: 400px;
+  height: 225px;
+  margin: 0 auto;
+  background-color: var(--bg-subtle);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thumbnail-placeholder {
+  color: var(--secondary);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.lecture-content {
+  padding: 2rem;
+}
+
+.lecture-meta {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.duration {
+  color: var(--secondary);
+  font-weight: 500;
+}
+
+.lecture-section-content {
+  margin-bottom: 2rem;
+}
+
+.lecture-section-content h3 {
+  color: var(--primary);
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+}
+
+.learning-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.learning-list li {
+  padding: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  color: var(--secondary);
+  line-height: 1.7;
+}
+
+.learning-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+  font-weight: bold;
+}
+
+.lecture-section-content p {
+  color: var(--secondary);
+  line-height: 1.7;
+}
+
+.pricing-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.pricing-section h3 {
+  color: var(--primary);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.pricing-tiers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+}
+
+.pricing-tier {
+  background-color: var(--bg-subtle);
+  padding: 2rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  text-align: center;
+  transition: border-color 0.2s;
+}
+
+.pricing-tier:hover {
+  border-color: var(--primary);
+}
+
+.tier-name {
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.tier-price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.tier-note {
+  font-size: 0.9rem;
+  color: var(--secondary);
+}
+
+.booking-section {
+  background-color: var(--primary);
+  color: white;
+  text-align: center;
+}
+
+.booking-content h2 {
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.booking-content p {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.booking-content .btn-primary {
+  background-color: white;
+  color: var(--primary);
+}
+
+.booking-content .btn-primary:hover {
+  background-color: var(--bg-subtle);
+}
+
+.faq-section {
+  background-color: var(--bg-subtle);
+}
+
+.faq-list {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.faq-item {
+  background-color: var(--bg);
+  padding: 2rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+
+.faq-item h3 {
+  color: var(--primary);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.faq-item p {
+  color: var(--secondary);
+  line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+  .pricing-tiers {
+    grid-template-columns: 1fr;
+  }
+}

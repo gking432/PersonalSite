@@ -1,0 +1,465 @@
+/* 
+HOME PAGE STYLES
+Editorial layout with integrated photography
+Sections flow like chapters in a magazine
+*/
+
+.home {
+  background-color: var(--parchment);
+}
+
+/* ==========================================
+   HERO SECTION - Bold Statement
+   ========================================== */
+.hero {
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: var(--space-2xl) 0;
+  background: linear-gradient(to bottom, var(--cream) 0%, var(--parchment) 100%);
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--warm-gray), transparent);
+  opacity: 0.3;
+}
+
+.hero-content {
+  max-width: 900px;
+}
+
+.hero-headline {
+  font-size: clamp(3.5rem, 10vw, 7rem);
+  font-weight: 700;
+  line-height: 0.95;
+  margin-bottom: 2rem;
+  letter-spacing: -0.04em;
+  color: var(--charcoal);
+}
+
+.hero-subheadline {
+  font-size: clamp(1.15rem, 2vw, 1.35rem);
+  line-height: 1.7;
+  color: var(--slate);
+  max-width: 700px;
+  margin-bottom: 3rem;
+  font-weight: 300;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* ==========================================
+   CAPABILITIES - Three Column Layout
+   ========================================== */
+.capabilities {
+  background-color: var(--off-white);
+  padding: var(--space-2xl) 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.capabilities-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4rem;
+}
+
+.capability-item h4 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  margin-bottom: 1.25rem;
+  color: var(--forest-green);
+  font-weight: 600;
+}
+
+.capability-item p {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--slate);
+}
+
+/* ==========================================
+   SELECTED PROJECTS - List Format
+   ========================================== */
+.selected-projects {
+  padding: var(--space-2xl) 0;
+  background-color: var(--parchment);
+}
+
+.selected-projects h2 {
+  margin-bottom: 4rem;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+}
+
+.projects-list {
+  max-width: 900px;
+}
+
+.project-item {
+  padding: 3rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  transition: all var(--transition);
+}
+
+.project-item:last-child {
+  border-bottom: none;
+}
+
+.project-item:hover {
+  padding-left: 2rem;
+}
+
+.project-item h3 {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--charcoal);
+  font-weight: 600;
+}
+
+.project-item p {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--slate);
+  margin-bottom: 1.5rem;
+}
+
+.project-meta {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-top: 1.25rem;
+}
+
+.project-meta span {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--warm-gray);
+  border-radius: 2px;
+  transition: all var(--transition);
+}
+
+.project-item:hover .project-meta span {
+  border-color: var(--forest-green);
+  color: var(--forest-green);
+}
+
+.selected-projects .text-link {
+  margin-top: 3rem;
+  display: inline-block;
+}
+
+/* ==========================================
+   BACKGROUND TIMELINE - Storytelling
+   ========================================== */
+.background {
+  padding: var(--space-2xl) 0;
+  background-color: var(--cream);
+  position: relative;
+}
+
+.background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.background .container {
+  position: relative;
+  z-index: 1;
+}
+
+.background h2 {
+  margin-bottom: 4rem;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+}
+
+.timeline {
+  max-width: 800px;
+  position: relative;
+  padding-left: 3rem;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--forest-green);
+  opacity: 0.3;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 4rem;
+  padding-left: 3rem;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -3rem;
+  top: 0.5rem;
+  width: 12px;
+  height: 12px;
+  background-color: var(--forest-green);
+  border-radius: 50%;
+  border: 3px solid var(--cream);
+  box-shadow: 0 0 0 3px var(--forest-green);
+}
+
+.timeline-item:last-child::after {
+  content: '';
+  position: absolute;
+  left: -3rem;
+  top: 1.5rem;
+  bottom: -4rem;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--forest-green), transparent);
+  opacity: 0.3;
+}
+
+.timeline-year {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.timeline-content h4 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: var(--charcoal);
+}
+
+.timeline-content p {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--slate);
+  max-width: 600px;
+}
+
+.timeline-content p:first-of-type {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--forest-green);
+  margin-bottom: 0.5rem;
+}
+
+/* ==========================================
+   PHOTO SECTIONS - Integrated
+   ========================================== */
+.photo-section {
+  position: relative;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.photo-section-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(30%) contrast(1.1);
+  z-index: 0;
+}
+
+.photo-section-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(26, 58, 46, 0.85) 0%, rgba(26, 58, 46, 0.3) 100%);
+  z-index: 1;
+}
+
+.photo-section-content {
+  position: relative;
+  z-index: 2;
+  color: var(--cream);
+  max-width: 600px;
+}
+
+.photo-section-content h2 {
+  color: var(--cream);
+  margin-bottom: 1.5rem;
+}
+
+.photo-section-content p {
+  color: rgba(244, 241, 234, 0.9);
+  font-size: 1.15rem;
+  line-height: 1.8;
+}
+
+/* ==========================================
+   FINAL CTA - Direct, Honest
+   ========================================== */
+.cta {
+  padding: var(--space-2xl) 0;
+  background-color: var(--forest-green);
+  color: var(--cream);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cta-content {
+  position: relative;
+  z-index: 1;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.cta h2 {
+  color: var(--cream);
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin-bottom: 1.5rem;
+}
+
+.cta p {
+  color: rgba(244, 241, 234, 0.85);
+  font-size: 1.15rem;
+  line-height: 1.8;
+  margin-bottom: 2.5rem;
+  max-width: 100%;
+}
+
+.cta .btn-primary {
+  background-color: var(--cream);
+  color: var(--forest-green);
+  border-color: var(--cream);
+}
+
+.cta .btn-primary:hover {
+  background-color: transparent;
+  color: var(--cream);
+  border-color: var(--cream);
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
+@media (max-width: 1024px) {
+  .capabilities-grid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  
+  .timeline {
+    padding-left: 2rem;
+  }
+  
+  .timeline-item {
+    padding-left: 2rem;
+  }
+  
+  .timeline-item::before {
+    left: -2rem;
+  }
+  
+  .timeline-item:last-child::after {
+    left: -2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    min-height: 70vh;
+    padding: var(--space-xl) 0;
+  }
+  
+  .hero-cta {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .hero-cta .btn {
+    width: 100%;
+  }
+  
+  .project-item:hover {
+    padding-left: 0;
+  }
+  
+  .timeline {
+    padding-left: 1.5rem;
+  }
+  
+  .timeline-item {
+    padding-left: 1.5rem;
+  }
+  
+  .timeline-item::before {
+    left: -1.5rem;
+  }
+  
+  .timeline-item:last-child::after {
+    left: -1.5rem;
+  }
+  
+  .photo-section {
+    min-height: 50vh;
+  }
+  
+  .photo-section-overlay {
+    background: rgba(26, 58, 46, 0.8);
+  }
+}
+
+@media (max-width: 480px) {
+  .project-meta {
+    gap: 0.75rem;
+  }
+  
+  .project-meta span {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.75rem;
+  }
+}

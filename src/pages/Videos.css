@@ -1,0 +1,131 @@
+.videos-hero {
+  text-align: center;
+  padding-top: 4rem;
+}
+
+.videos-subtitle {
+  font-size: 1.25rem;
+  color: var(--secondary);
+  margin-top: 1rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.8;
+}
+
+.youtube-section {
+  background-color: var(--bg-subtle);
+  text-align: center;
+}
+
+.youtube-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.youtube-content h2 {
+  margin-bottom: 1rem;
+  color: var(--primary);
+}
+
+.youtube-description {
+  color: var(--secondary);
+  margin-bottom: 2rem;
+  line-height: 1.7;
+}
+
+.youtube-cta {
+  margin-top: 2rem;
+}
+
+.featured-video-section {
+  background-color: var(--bg-subtle);
+}
+
+.featured-video-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.video-placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: var(--bg-subtle);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-placeholder-content {
+  text-align: center;
+  color: var(--secondary);
+}
+
+.video-placeholder-content p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.videos-grid-section {
+  background-color: var(--bg);
+}
+
+.videos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.video-card {
+  background-color: var(--bg-subtle);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: border-color 0.2s;
+}
+
+.video-card:hover {
+  border-color: var(--primary);
+}
+
+.video-thumbnail {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thumbnail-content {
+  color: var(--secondary);
+  font-size: 1rem;
+}
+
+.video-info {
+  padding: 1rem;
+}
+
+.video-info h3 {
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.video-meta {
+  color: var(--secondary);
+  font-size: 0.85rem;
+}
+
+.view-channel-cta {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+  .videos-grid {
+    grid-template-columns: 1fr;
+  }
+}
