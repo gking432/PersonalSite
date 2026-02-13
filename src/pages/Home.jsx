@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform, useInView } from 'framer-motion'
 import { useRef, useEffect, useState } from 'react'
+import PokerTable from '../../PokerTable'
 import './Home.css'
 
 // Number counter - NDS signature animation
@@ -79,7 +80,7 @@ function TypingText({ text, scrollYProgress, startProgress = 0.2, endProgress = 
   const totalChars = text.length
   
   useEffect(() => {
-    const unsubscribe = scrollYProgress.onChange((latest) => {
+    const unsubscribe = scrollYProgress.on("change", (latest) => {
       if (latest < startProgress) {
         setVisibleChars(0)
       } else if (latest >= endProgress) {
@@ -334,92 +335,7 @@ function Home() {
         paragraph="I don't wait for permission to learn something new. When I wanted to understand blockchain, I built a token launcher. When I saw AI transforming how people work, I created a lecture series. The last three years weren't a gap—they were deliberate exploration."
       />
 
-      {/* Projects - NDS Card Grid */}
-      <section className="projects">
-        <div className="container">
-          <motion.p 
-            className="label"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            Work
-          </motion.p>
-          
-          <motion.h2
-            className="section-heading"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            Selected Projects
-          </motion.h2>
-          
-          <motion.div 
-            className="projects-grid"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-          >
-            <motion.div className="project-card" variants={itemVariants}>
-              <div className="project-stat">Built 2024</div>
-              <h3>Aptos Token Launcher</h3>
-              <p>
-                Web application for creating and deploying tokens on Aptos blockchain. 
-                Simplified complex smart contracts into a clean interface.
-              </p>
-              <div className="project-tech">
-                <span>React</span>
-                <span>Aptos SDK</span>
-                <span>Web3</span>
-              </div>
-            </motion.div>
-
-            <motion.div className="project-card" variants={itemVariants}>
-              <div className="project-stat">Active Users: 50+</div>
-              <h3>PrepMe - AI Interview Simulator</h3>
-              <p>
-                Interview practice platform using Claude AI. Conducts realistic mock interviews 
-                with real-time feedback and performance analysis.
-              </p>
-              <div className="project-tech">
-                <span>React</span>
-                <span>Anthropic API</span>
-                <span>Voice Integration</span>
-              </div>
-            </motion.div>
-
-            <motion.div className="project-card" variants={itemVariants}>
-              <div className="project-stat">100+ Attendees</div>
-              <h3>AI Basics Lecture Series</h3>
-              <p>
-                90-minute educational program teaching everyday users what AI is, what it can't do, 
-                and how to use it responsibly. Designed for non-technical audiences.
-              </p>
-              <div className="project-tech">
-                <span>Education</span>
-                <span>Public Speaking</span>
-                <span>AI Literacy</span>
-              </div>
-            </motion.div>
-          </motion.div>
-          
-          <motion.div
-            className="projects-cta"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <Link to="/projects" className="text-link">
-              View all projects →
-            </Link>
-          </motion.div>
-        </div>
-      </section>
+      <PokerTable slideFrom="right" />
 
       {/* Photo Section 2 - Giant Text + Supporting */}
       <PhotoSection

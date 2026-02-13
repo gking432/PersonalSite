@@ -1,0 +1,668 @@
+/*
+POKER TABLE - USING YOUR EXACT DESIGN
+Built with your SVG files from the PDF
+*/
+
+.poker-table-section {
+  position: relative;
+  height: 400vh; /* 4x viewport height to ensure sticky works for all animations */
+  background-color: var(--parchment);
+  /* No overflow property - allows sticky positioning to work */
+}
+
+/* Shadow Overlay - inside wrapper so it sticks with content */
+.poker-table-shadow-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; /* 100% of wrapper (100vh) */
+  z-index: 1;
+  pointer-events: none;
+}
+
+.poker-table-shadow-overlay img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.poker-table-wrapper {
+  position: sticky;
+  top: 101px; /* Offset for fixed navbar height */
+  width: 100%;
+  height: calc(100vh - 101px); /* Full viewport minus navbar height */
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start; /* Changed from center to allow top padding to work */
+  overflow: hidden; /* Prevent horizontal scroll */
+}
+
+/* Left Column - Text Content */
+.poker-content-column {
+  flex: 0 0 45%;
+  max-width: 45%;
+  height: calc(100vh - 101px); /* Match wrapper height (viewport minus navbar) */
+  padding: calc(var(--space-3xl) / 2) 0 0 0; /* Half the original distance (80px instead of 160px) */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Align to top */
+  z-index: 2;
+}
+
+.poker-content-column .container {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  /* Calculate position to match centered container: 
+     (100vw - 1400px) / 2 + 48px = left edge of content in centered container
+     But since we're in a 45% column starting at 0, we just need that calculated value */
+  padding-left: calc((100vw - var(--max-width)) / 2 + var(--gutter));
+  width: 100%;
+  flex: 1; /* Fill available space in the column */
+  display: flex;
+  flex-direction: column; /* Stack label, heading, and prompt */
+}
+
+/* Right Column - Poker Table */
+.poker-table-column {
+  flex: 0 0 55%;
+  max-width: none; /* Remove max-width constraint */
+  position: relative;
+  height: calc(100vh - 101px); /* Match wrapper height (viewport minus navbar) */
+  overflow: visible; /* Allow table to extend off-screen */
+}
+
+.poker-content-column .label {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin-bottom: var(--space-sm);
+}
+
+.poker-content-column .section-heading {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--charcoal);
+  margin-bottom: var(--space-lg);
+}
+
+.poker-intro {
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: var(--slate);
+  margin-bottom: var(--space-xl);
+  max-width: 600px;
+}
+
+.poker-prompt {
+  margin-top: auto; /* Push to bottom of container */
+  margin-bottom: var(--space-3xl); /* Add some bottom spacing */
+}
+
+.poker-prompt p {
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--charcoal);
+  text-transform: uppercase;
+}
+
+/* ==========================================
+   POKER TABLE CONTAINER
+   ========================================== */
+.poker-table-container {
+  position: absolute;
+  top: 0;
+  right: -200px; /* Push further right, extending beyond container */
+  width: auto; /* Let it size naturally */
+  min-width: 100%; /* At least fill the column */
+  height: calc(100vh - 101px); /* Full viewport height minus navbar */
+  pointer-events: none;
+}
+
+/* Poker Table Image */
+.poker-table-image {
+  position: absolute;
+  top: 0;
+  right: 0; /* Align to right edge */
+  width: auto;
+  height: 100%;
+  pointer-events: none;
+}
+
+.poker-table-image img {
+  width: auto;
+  height: 100%;
+  max-width: none; /* Don't constrain width */
+  object-fit: contain;
+  object-position: right center; /* Align to right edge */
+}
+
+/* ==========================================
+   CARDS AREA
+   ========================================== */
+.cards-area {
+  position: absolute;
+  top: 50%; /* Center vertically */
+  left: 40%; /* Split the difference between 30% and 50% */
+  transform: translate(-50%, -50%) rotate(-45deg); /* Center and rotate 45 degrees to the left */
+  width: 400px;
+  height: 300px;
+  pointer-events: all;
+  /* No overflow - allow cards to come in from off-screen */
+}
+
+.card-container {
+  position: absolute;
+  width: 280px; /* Increased from 220px (about 27% bigger) */
+  height: 427px; /* Increased proportionally (280 * 1649/1080 = 427px) */
+  cursor: pointer;
+  /* Transform will be handled by Framer Motion for deal animation */
+  /* Initial position - cards start at center (dealer position) */
+  left: 0;
+  top: 0;
+  z-index: 1;
+}
+
+.card-container:nth-child(1) {
+  z-index: 1;
+}
+
+.card-container:nth-child(2) {
+  z-index: 2;
+}
+
+.card-container:nth-child(3) {
+  z-index: 3;
+}
+
+/* Card Shadow */
+.card-shadow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Card Back */
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  object-fit: cover;
+  object-position: center;
+  outline: none;
+}
+
+/* ==========================================
+   SHUFFLE BUTTON
+   ========================================== */
+.shuffle-btn {
+  position: absolute;
+  bottom: 40px;
+  right: 60px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: rgba(244, 241, 234, 0.95);
+  border: 2px solid var(--charcoal);
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--charcoal);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.shuffle-btn:hover {
+  background: var(--charcoal);
+  color: var(--cream);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.shuffle-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ==========================================
+   INSPECTION MODE
+   ========================================== */
+
+/* Dark Overlay */
+.inspection-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  cursor: pointer;
+}
+
+/* Inspected Card (enlarged, flipped, centered-right) */
+.inspected-card {
+  position: fixed;
+  width: 400px;
+  height: 550px;
+  top: 50%;
+  left: 50%; /* Start from center, x/y transforms will position it */
+  transform-origin: center center;
+  transform: translate(-50%, -50%); /* Center the card initially */
+  transform-style: preserve-3d;
+  z-index: 1001;
+  background: var(--cream);
+  border-radius: 16px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Close Button */
+.close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  background: var(--charcoal);
+  color: var(--cream);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.close-btn:hover {
+  background: var(--forest-green);
+  transform: scale(1.1);
+}
+
+.close-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Project Info */
+.project-info {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.project-stat {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--forest-green);
+  margin-bottom: 16px;
+}
+
+.project-info h3 {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  line-height: 1.2;
+  color: var(--charcoal);
+  margin-bottom: 16px;
+}
+
+.project-info p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: var(--slate);
+  margin-bottom: 24px;
+  flex-grow: 1;
+}
+
+.project-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.project-tech span {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  padding: 6px 12px;
+  border: 1px solid var(--gray-200);
+  border-radius: 6px;
+}
+
+.project-link {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--forest-green);
+  text-decoration: none;
+  padding: 12px 24px;
+  border: 2px solid var(--forest-green);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: inline-block;
+  text-align: center;
+}
+
+.project-link:hover {
+  background-color: var(--forest-green);
+  color: var(--cream);
+}
+
+/* ==========================================
+   RESPONSIVE - POKER TABLE
+   ========================================== */
+@media (max-width: 1440px) {
+  .poker-table-container {
+    right: -150px; /* Less offset on medium screens */
+  }
+}
+
+@media (max-width: 1024px) {
+  .poker-table-container {
+    right: -100px; /* Less offset on tablets */
+  }
+  
+  .poker-table-image img {
+    max-width: 100vw; /* Constrain to viewport on smaller screens */
+  }
+}
+
+@media (max-width: 768px) {
+  .poker-table-wrapper {
+    flex-direction: column;
+  }
+  
+  .poker-content-column {
+    flex: 0 0 auto;
+    max-width: 100%;
+    padding: var(--space-2xl) var(--gutter);
+  }
+  
+  .poker-table-column {
+    flex: 0 0 auto;
+    max-width: 100%;
+    height: 60vh;
+    min-height: 500px;
+    overflow: hidden; /* Clip if needed */
+  }
+  
+  .poker-table-container {
+    right: 0; /* No offset on mobile */
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .poker-table-image {
+    width: 100%;
+  }
+  
+  .poker-table-image img {
+    width: 100%;
+    max-width: 100vw;
+    object-fit: contain;
+    object-position: right center; /* Clip from left if needed */
+  }
+  
+  .cards-area {
+    left: 25%;
+  }
+  
+  .card-container {
+    width: 140px;
+    height: 200px;
+  }
+  
+  .card-container:nth-child(2) {
+    left: 90px;
+  }
+  
+  .card-container:nth-child(3) {
+    left: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .poker-table-column {
+    height: 50vh;
+    min-height: 400px;
+  }
+  
+  .poker-table-image img {
+    object-fit: contain; /* Shrink to fit, maintain aspect ratio */
+    object-position: right center; /* Align to right, clip from left if absolutely necessary */
+  }
+  
+  .cards-area {
+    left: 20%;
+    width: 400px;
+  }
+  
+  .card-container {
+    width: 120px;
+    height: 170px;
+  }
+  
+  .card-container:nth-child(2) {
+    left: 80px;
+  }
+  
+  .card-container:nth-child(3) {
+    left: 160px;
+  }
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+@media (max-width: 1440px) {
+  .poker-table-container {
+    right: -150px; /* Less offset on medium screens */
+  }
+}
+
+@media (max-width: 1024px) {
+  .poker-table-container {
+    right: -100px; /* Less offset on tablets */
+  }
+  
+  .poker-table-image img {
+    max-width: 100vw; /* Constrain to viewport */
+  }
+}
+
+@media (max-width: 768px) {
+  .poker-table-wrapper {
+    flex-direction: column;
+  }
+  
+  .poker-content-column {
+    flex: 0 0 auto;
+    max-width: 100%;
+    padding: var(--space-2xl) var(--gutter);
+  }
+  
+  .poker-table-column {
+    flex: 0 0 auto;
+    max-width: 100%;
+    height: 60vh;
+    min-height: 500px;
+    overflow: hidden; /* Clip if needed */
+  }
+  
+  .poker-table-container {
+    right: 0; /* No offset on mobile */
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .poker-table-image {
+    width: 100%;
+  }
+  
+  .poker-table-image img {
+    width: 100%;
+    max-width: 100vw;
+    object-fit: contain; /* Shrink to fit, maintain aspect ratio */
+    object-position: right center; /* Align to right, clip from left if needed */
+  }
+  
+  .cards-area {
+    left: 25%;
+  }
+  
+  .card-container {
+    width: 140px;
+    height: 200px;
+  }
+  
+  .card-container:nth-child(2) {
+    left: 90px;
+  }
+  
+  .card-container:nth-child(3) {
+    left: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .poker-table-section {
+    height: auto;
+    min-height: 100vh;
+  }
+  
+  .poker-table-wrapper {
+    position: relative;
+    height: auto;
+    min-height: 100vh;
+  }
+  
+  .poker-content-column {
+    padding: var(--space-xl) var(--gutter);
+  }
+  
+  .poker-table-column {
+    height: 50vh;
+    min-height: 400px;
+  }
+  
+  .poker-table-container {
+    min-width: 500px;
+  }
+  
+  .cards-area {
+    left: 20%;
+    width: 400px;
+  }
+  
+  .card-container {
+    width: 120px;
+    height: 170px;
+  }
+  
+  .card-container:nth-child(2) {
+    left: 80px;
+  }
+  
+  .card-container:nth-child(3) {
+    left: 160px;
+  }
+  
+  .shuffle-btn {
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    font-size: 0.7rem;
+  }
+  
+  .inspected-card {
+    width: 90%;
+    max-width: 400px;
+    height: auto;
+    max-height: 80vh;
+    padding: 30px;
+  }
+  
+  .project-info h3 {
+    font-size: 1.5rem;
+  }
+  
+  .project-info p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .poker-table-column {
+    height: 50vh;
+    min-height: 400px;
+  }
+  
+  .poker-table-image img {
+    object-fit: contain; /* Keep shrinking, maintain aspect ratio */
+    object-position: right center; /* Clip from left if absolutely necessary */
+  }
+  
+  .poker-prompt p {
+    font-size: 1rem;
+  }
+  
+  .card-container {
+    width: 100px;
+    height: 140px;
+  }
+  
+  .card-container:nth-child(2) {
+    left: 70px;
+  }
+  
+  .card-container:nth-child(3) {
+    left: 140px;
+  }
+  
+  .inspected-card {
+    padding: 24px;
+  }
+  
+  .close-btn {
+    width: 32px;
+    height: 32px;
+    top: 12px;
+    right: 12px;
+  }
+}
