@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import PageTransition from '../components/PageTransition'
 import './Speaking.css'
 
 // NDS animation variants
@@ -20,6 +21,7 @@ const staggerItem = {
 
 function Speaking() {
   return (
+    <PageTransition>
     <div className="speaking">
       <section className="speaking-hero section">
         <div className="container">
@@ -251,6 +253,7 @@ function Speaking() {
         </div>
       </section>
     </div>
+    </PageTransition>
   )
 }
 

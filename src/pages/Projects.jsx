@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import PageTransition from '../components/PageTransition'
 import './Projects.css'
 
 // NDS animation variants
@@ -57,6 +58,7 @@ function Projects() {
   ]
 
   return (
+    <PageTransition>
     <div className="projects">
       <section className="projects-hero section">
         <div className="container">
@@ -228,6 +230,7 @@ function Projects() {
         </div>
       </motion.section>
     </div>
+    </PageTransition>
   )
 }
 

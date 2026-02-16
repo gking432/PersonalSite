@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform, useInView } from 'framer-motion'
 import { useRef, useEffect, useState } from 'react'
 import PokerTable from '../../PokerTable'
+import PageTransition from '../components/PageTransition'
 import './Home.css'
 
 // Number counter - NDS signature animation
@@ -209,6 +210,7 @@ function Home() {
   const heroScale = useTransform(scrollYProgress, [0, 0.15], [1, 0.97])
 
   return (
+    <PageTransition>
     <div className="home">
       {/* Hero Section */}
       <motion.section 
@@ -473,6 +475,7 @@ function Home() {
         </div>
       </motion.section>
     </div>
+    </PageTransition>
   )
 }
 

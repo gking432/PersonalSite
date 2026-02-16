@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
+import PageTransition from '../components/PageTransition'
 import './Contact.css'
 
 // NDS animation variants
@@ -25,6 +26,7 @@ function Contact() {
     subject: '',
     message: ''
   })
+  const [submitted, setSubmitted] = useState(false)
 
   const handleChange = (e) => {
     setFormData({
@@ -37,7 +39,7 @@ function Contact() {
     e.preventDefault()
     // TODO: Implement form submission (EmailJS, Formspree, etc.)
     console.log('Form submitted:', formData)
-    alert('Thank you for your message! I\'ll get back to you within 24 hours.')
+    setSubmitted(true)
     setFormData({
       name: '',
       email: '',
@@ -47,6 +49,7 @@ function Contact() {
   }
 
   return (
+    <PageTransition>
     <div className="contact">
       <section className="contact-hero section">
         <div className="container">
@@ -80,64 +83,93 @@ function Contact() {
             {/* Contact Form */}
             <motion.div className="contact-form-section" variants={fadeUp}>
               <h2>Send a Message</h2>
-              <form onSubmit={handleSubmit} className="contact-form">
-                <motion.div className="form-group" variants={staggerItem}>
-                  <label htmlFor="name">Name</label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                  />
-                </motion.div>
-                <motion.div className="form-group" variants={staggerItem}>
-                  <label htmlFor="email">Email</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                  />
-                </motion.div>
-                <motion.div className="form-group" variants={staggerItem}>
-                  <label htmlFor="subject">Subject</label>
-                  <select
-                    id="subject"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    required
+              <AnimatePresence mode="wait">
+                {submitted ? (
+                  <motion.div
+                    key="success"
+                    className="form-success"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    <option value="">Select a subject</option>
-                    <option value="general">General Inquiry</option>
-                    <option value="speaking">Speaking Engagement</option>
-                    <option value="consulting">Consulting/Freelance Opportunity</option>
-                    <option value="fulltime">Full-Time Opportunity</option>
-                    <option value="partnership">Partnership</option>
-                    <option value="other">Other</option>
-                  </select>
-                </motion.div>
-                <motion.div className="form-group" variants={staggerItem}>
-                  <label htmlFor="message">Message</label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows="6"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                  ></textarea>
-                </motion.div>
-                <motion.div variants={staggerItem}>
-                  <button type="submit" className="btn btn-primary">
-                    Send Message
-                  </button>
-                </motion.div>
-              </form>
+                    <div className="success-icon">&#10003;</div>
+                    <h3>Message Sent</h3>
+                    <p>Thank you for reaching out. I'll get back to you within 24 hours.</p>
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => setSubmitted(false)}
+                    >
+                      Send Another Message
+                    </button>
+                  </motion.div>
+                ) : (
+                  <motion.form
+                    key="form"
+                    onSubmit={handleSubmit}
+                    className="contact-form"
+                    initial={{ opacity: 1 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <motion.div className="form-group" variants={staggerItem}>
+                      <label htmlFor="name">Name</label>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                      />
+                    </motion.div>
+                    <motion.div className="form-group" variants={staggerItem}>
+                      <label htmlFor="email">Email</label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                      />
+                    </motion.div>
+                    <motion.div className="form-group" variants={staggerItem}>
+                      <label htmlFor="subject">Subject</label>
+                      <select
+                        id="subject"
+                        name="subject"
+                        value={formData.subject}
+                        onChange={handleChange}
+                        required
+                      >
+                        <option value="">Select a subject</option>
+                        <option value="general">General Inquiry</option>
+                        <option value="speaking">Speaking Engagement</option>
+                        <option value="consulting">Consulting/Freelance Opportunity</option>
+                        <option value="fulltime">Full-Time Opportunity</option>
+                        <option value="partnership">Partnership</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </motion.div>
+                    <motion.div className="form-group" variants={staggerItem}>
+                      <label htmlFor="message">Message</label>
+                      <textarea
+                        id="message"
+                        name="message"
+                        rows="6"
+                        value={formData.message}
+                        onChange={handleChange}
+                        required
+                      ></textarea>
+                    </motion.div>
+                    <motion.div variants={staggerItem}>
+                      <button type="submit" className="btn btn-primary">
+                        Send Message
+                      </button>
+                    </motion.div>
+                  </motion.form>
+                )}
+              </AnimatePresence>
             </motion.div>
 
             {/* Contact Info */}
@@ -181,6 +213,7 @@ function Contact() {
         </div>
       </section>
     </div>
+    </PageTransition>
   )
 }
 

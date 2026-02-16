@@ -355,6 +355,80 @@ a:hover {
   color: var(--forest-green);
 }
 
+/* Hamburger Button */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1100;
+}
+
+.hamburger-line {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background-color: var(--charcoal);
+  transition: all 0.3s var(--ease-out);
+  transform-origin: center;
+}
+
+.hamburger.is-active .hamburger-line:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.hamburger.is-active .hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.is-active .hamburger-line:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Mobile Menu Overlay */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  background-color: var(--parchment);
+  padding-top: 100px;
+}
+
+.mobile-nav-links {
+  list-style: none;
+  padding: 0 var(--gutter);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.mobile-nav-links a {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--charcoal);
+  text-decoration: none;
+  display: block;
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--gray-200);
+  transition: color var(--duration-fast);
+}
+
+.mobile-nav-links a:hover,
+.mobile-nav-links a.active {
+  color: var(--forest-green);
+}
+
 /* Main Content */
 .main-content {
   min-height: calc(100vh - 200px);
@@ -424,27 +498,32 @@ a:hover {
     --space-2xl: 80px;
     --space-3xl: 100px;
   }
-  
+
   html {
     font-size: 16px;
   }
-  
+
   p {
     font-size: 1rem;
   }
-  
+
   .btn {
     width: 100%;
   }
-  
+
   .nav-links {
-    gap: 1rem;
+    display: none;
   }
-  
-  .nav-links a {
-    font-size: 0.8rem;
+
+  .hamburger {
+    display: flex;
   }
-  
+
+  .mobile-menu {
+    display: flex;
+    flex-direction: column;
+  }
+
   .footer-content {
     flex-direction: column;
     gap: 1.5rem;

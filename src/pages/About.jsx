@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import PageTransition from '../components/PageTransition'
 import './About.css'
 
 // NDS animation variants
@@ -19,6 +20,7 @@ const staggerItem = {
 
 function About() {
   return (
+    <PageTransition>
     <div className="about">
       <section className="about-hero section">
         <div className="container">
@@ -262,6 +264,7 @@ function About() {
         </div>
       </section>
     </div>
+    </PageTransition>
   )
 }
 
