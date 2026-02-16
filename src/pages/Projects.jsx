@@ -1,4 +1,21 @@
+import { motion } from 'framer-motion'
 import './Projects.css'
+
+// NDS animation variants
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } }
+}
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
+}
+
+const staggerItem = {
+  hidden: { opacity: 0, y: 30, scale: 0.98 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } }
+}
 
 function Projects() {
   const priorityProjects = [
@@ -43,20 +60,45 @@ function Projects() {
     <div className="projects">
       <section className="projects-hero section">
         <div className="container">
-          <h1>I Build What I Imagine</h1>
-          <p className="projects-subtitle">
+          <motion.h1
+            initial={{ opacity: 0, y: 60 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          >
+            I Build What I Imagine
+          </motion.h1>
+          <motion.p
+            className="projects-subtitle"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          >
             From blockchain applications to AI-powered tools, here's what happens when curiosity meets execution.
-          </p>
+          </motion.p>
         </div>
       </section>
 
       {/* Priority Projects */}
       <section className="priority-projects section">
         <div className="container">
-          <h2 className="section-title">Featured Projects</h2>
-          <div className="priority-grid">
+          <motion.h2
+            className="section-title"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
+            Featured Projects
+          </motion.h2>
+          <motion.div
+            className="priority-grid"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+          >
             {priorityProjects.map(project => (
-              <div key={project.id} className="project-card-large">
+              <motion.div key={project.id} className="project-card-large" variants={staggerItem}>
                 <div className="project-image-large">
                   <div className="project-placeholder-large">{project.name}</div>
                 </div>
@@ -81,19 +123,33 @@ function Projects() {
                     )}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Secondary Projects */}
-      <section className="secondary-projects section alt">
+      <section className="secondary-projects section">
         <div className="container">
-          <h2 className="section-title">Other Projects</h2>
-          <div className="secondary-grid">
+          <motion.h2
+            className="section-title"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
+            Other Projects
+          </motion.h2>
+          <motion.div
+            className="secondary-grid"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+          >
             {secondaryProjects.map(project => (
-              <div key={project.id} className="project-card-small">
+              <motion.div key={project.id} className="project-card-small" variants={staggerItem}>
                 <div className="project-image-small">
                   <div className="project-placeholder-small">{project.name}</div>
                 </div>
@@ -115,42 +171,62 @@ function Projects() {
                     )}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Marketing Work Showcase */}
       <section className="marketing-showcase section">
         <div className="container">
-          <h2 className="section-title">Client Campaign Results</h2>
-          <div className="case-studies">
-            <div className="case-study">
+          <motion.h2
+            className="section-title"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
+            Client Campaign Results
+          </motion.h2>
+          <motion.div
+            className="case-studies"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+          >
+            <motion.div className="case-study" variants={staggerItem}>
               <h3>Challenge</h3>
               <p>Drive customer acquisition across multiple channels for diverse client portfolio.</p>
-            </div>
-            <div className="case-study">
+            </motion.div>
+            <motion.div className="case-study" variants={staggerItem}>
               <h3>Strategy</h3>
               <p>Integrated digital, audio, and direct mail campaigns with data-driven optimization.</p>
-            </div>
-            <div className="case-study">
+            </motion.div>
+            <motion.div className="case-study" variants={staggerItem}>
               <h3>Results</h3>
               <p>Generated high-quality leads and improved conversion rates across all channels.</p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
       {/* Work in Progress */}
-      <section className="work-in-progress section alt">
+      <motion.section
+        className="work-in-progress section"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+      >
         <div className="container">
           <h2 className="section-title">What I'm Building Next</h2>
           <p className="wip-text">
             Always shipping. Check back soon for new projects and updates.
           </p>
         </div>
-      </section>
+      </motion.section>
     </div>
   )
 }

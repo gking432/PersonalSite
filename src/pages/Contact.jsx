@@ -1,5 +1,22 @@
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import './Contact.css'
+
+// NDS animation variants
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } }
+}
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+}
+
+const staggerItem = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } }
+}
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -33,21 +50,38 @@ function Contact() {
     <div className="contact">
       <section className="contact-hero section">
         <div className="container">
-          <h1>Get In Touch</h1>
-          <p className="contact-subtitle">
+          <motion.h1
+            initial={{ opacity: 0, y: 60 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          >
+            Get In Touch
+          </motion.h1>
+          <motion.p
+            className="contact-subtitle"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          >
             Have a question, opportunity, or just want to connect? I'd love to hear from you.
-          </p>
+          </motion.p>
         </div>
       </section>
 
       <section className="contact-content section">
         <div className="container">
-          <div className="contact-grid">
+          <motion.div
+            className="contact-grid"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+          >
             {/* Contact Form */}
-            <div className="contact-form-section">
+            <motion.div className="contact-form-section" variants={fadeUp}>
               <h2>Send a Message</h2>
               <form onSubmit={handleSubmit} className="contact-form">
-                <div className="form-group">
+                <motion.div className="form-group" variants={staggerItem}>
                   <label htmlFor="name">Name</label>
                   <input
                     type="text"
@@ -57,8 +91,8 @@ function Contact() {
                     onChange={handleChange}
                     required
                   />
-                </div>
-                <div className="form-group">
+                </motion.div>
+                <motion.div className="form-group" variants={staggerItem}>
                   <label htmlFor="email">Email</label>
                   <input
                     type="email"
@@ -68,8 +102,8 @@ function Contact() {
                     onChange={handleChange}
                     required
                   />
-                </div>
-                <div className="form-group">
+                </motion.div>
+                <motion.div className="form-group" variants={staggerItem}>
                   <label htmlFor="subject">Subject</label>
                   <select
                     id="subject"
@@ -86,8 +120,8 @@ function Contact() {
                     <option value="partnership">Partnership</option>
                     <option value="other">Other</option>
                   </select>
-                </div>
-                <div className="form-group">
+                </motion.div>
+                <motion.div className="form-group" variants={staggerItem}>
                   <label htmlFor="message">Message</label>
                   <textarea
                     id="message"
@@ -97,15 +131,17 @@ function Contact() {
                     onChange={handleChange}
                     required
                   ></textarea>
-                </div>
-                <button type="submit" className="btn btn-primary">
-                  Send Message
-                </button>
+                </motion.div>
+                <motion.div variants={staggerItem}>
+                  <button type="submit" className="btn btn-primary">
+                    Send Message
+                  </button>
+                </motion.div>
               </form>
-            </div>
+            </motion.div>
 
             {/* Contact Info */}
-            <div className="contact-info-section">
+            <motion.div className="contact-info-section" variants={fadeUp}>
               <h2>Other Ways to Reach Me</h2>
               <div className="contact-info">
                 <div className="info-item">
@@ -140,8 +176,8 @@ function Contact() {
               <div className="response-expectation">
                 <p>I typically respond within 24 hours</p>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
     </div>

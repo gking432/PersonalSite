@@ -1,22 +1,56 @@
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import './Speaking.css'
+
+// NDS animation variants
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } }
+}
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+}
+
+const staggerItem = {
+  hidden: { opacity: 0, y: 30, scale: 0.98 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } }
+}
 
 function Speaking() {
   return (
     <div className="speaking">
       <section className="speaking-hero section">
         <div className="container">
-          <h1>AI for Everyday Users</h1>
-          <p className="speaking-subtitle">
+          <motion.h1
+            initial={{ opacity: 0, y: 60 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          >
+            AI for Everyday Users
+          </motion.h1>
+          <motion.p
+            className="speaking-subtitle"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          >
             I'm not a computer scientist—I'm an observer, user, and translator. I help normal people understand what AI means for their lives and businesses.
-          </p>
+          </motion.p>
         </div>
       </section>
 
       {/* Lecture 1 */}
       <section className="lecture-section section">
         <div className="container">
-          <div className="lecture-card">
+          <motion.div
+            className="lecture-card"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
             <div className="lecture-header">
               <h2>Lecture 1: AI Basics for Everyday Users</h2>
               <div className="lecture-thumbnail">
@@ -43,33 +77,45 @@ function Speaking() {
               </div>
               <div className="pricing-section">
                 <h3>Pricing</h3>
-                <div className="pricing-tiers">
-                  <div className="pricing-tier">
+                <motion.div
+                  className="pricing-tiers"
+                  variants={staggerContainer}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: "-50px" }}
+                >
+                  <motion.div className="pricing-tier" variants={staggerItem}>
                     <div className="tier-name">Virtual Live Event</div>
                     <div className="tier-price">$7.49</div>
                     <div className="tier-note">Includes Q&A session</div>
-                  </div>
-                  <div className="pricing-tier">
+                  </motion.div>
+                  <motion.div className="pricing-tier" variants={staggerItem}>
                     <div className="tier-name">Download Only</div>
                     <div className="tier-price">$2.99</div>
                     <div className="tier-note">Video + slide deck</div>
-                  </div>
-                  <div className="pricing-tier">
+                  </motion.div>
+                  <motion.div className="pricing-tier" variants={staggerItem}>
                     <div className="tier-name">In-Person</div>
                     <div className="tier-price">$24.99</div>
                     <div className="tier-note">When available</div>
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Lecture 2 */}
       <section className="lecture-section section alt">
         <div className="container">
-          <div className="lecture-card">
+          <motion.div
+            className="lecture-card"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
             <div className="lecture-header">
               <h2>Lecture 2: AI for Business - Building Tools That Scale</h2>
               <div className="lecture-thumbnail">
@@ -97,64 +143,111 @@ function Speaking() {
               </div>
               <div className="pricing-section">
                 <h3>Pricing</h3>
-                <div className="pricing-tiers">
-                  <div className="pricing-tier">
+                <motion.div
+                  className="pricing-tiers"
+                  variants={staggerContainer}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: "-50px" }}
+                >
+                  <motion.div className="pricing-tier" variants={staggerItem}>
                     <div className="tier-name">Virtual Live Workshop</div>
                     <div className="tier-price">$49.99</div>
                     <div className="tier-note">Includes Q&A + follow-up support</div>
-                  </div>
-                  <div className="pricing-tier">
+                  </motion.div>
+                  <motion.div className="pricing-tier" variants={staggerItem}>
                     <div className="tier-name">Download Only</div>
                     <div className="tier-price">$149.99</div>
                     <div className="tier-note">Full video + all code/templates/resources</div>
-                  </div>
-                  <div className="pricing-tier">
+                  </motion.div>
+                  <motion.div className="pricing-tier" variants={staggerItem}>
                     <div className="tier-name">In-Person Workshop</div>
                     <div className="tier-price">$299.99</div>
                     <div className="tier-note">Limited availability</div>
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Booking Section */}
-      <section className="booking-section section">
+      <motion.section
+        className="booking-section section"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1 }}
+      >
         <div className="container">
           <div className="booking-content">
-            <h2>Interested in bringing these talks to your organization?</h2>
-            <p>Corporate/group rates available. Custom workshops tailored to your team.</p>
-            <Link to="/contact" className="btn btn-primary">
-              Request Booking
-            </Link>
+            <motion.h2
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              Interested in bringing these talks to your organization?
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              Corporate/group rates available. Custom workshops tailored to your team.
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              <Link to="/contact" className="btn btn-primary">
+                Request Booking
+              </Link>
+            </motion.div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* FAQ Section */}
-      <section className="faq-section section alt">
+      <section className="faq-section section">
         <div className="container">
-          <h2 className="section-title">Frequently Asked Questions</h2>
-          <div className="faq-list">
-            <div className="faq-item">
+          <motion.h2
+            className="section-title"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
+            Frequently Asked Questions
+          </motion.h2>
+          <motion.div
+            className="faq-list"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+          >
+            <motion.div className="faq-item" variants={staggerItem}>
               <h3>Do I need technical knowledge?</h3>
               <p>No. These lectures are designed for everyday users and business professionals, not computer scientists.</p>
-            </div>
-            <div className="faq-item">
+            </motion.div>
+            <motion.div className="faq-item" variants={staggerItem}>
               <h3>Will I get the slides/materials?</h3>
               <p>Yes. All materials, slides, and resources are included with your purchase.</p>
-            </div>
-            <div className="faq-item">
+            </motion.div>
+            <motion.div className="faq-item" variants={staggerItem}>
               <h3>Can I get a refund?</h3>
               <p>Refund policy details will be provided at checkout. We want you to be satisfied with your purchase.</p>
-            </div>
-            <div className="faq-item">
+            </motion.div>
+            <motion.div className="faq-item" variants={staggerItem}>
               <h3>Do you do custom workshops?</h3>
               <p>Yes! Contact me to discuss custom workshops tailored to your organization's needs.</p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
     </div>
