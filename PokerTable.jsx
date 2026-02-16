@@ -1,4 +1,4 @@
-import { motion, AnimatePresence, useScroll, useTransform, useAnimationControls } from 'framer-motion'
+import { motion, AnimatePresence, useScroll, useTransform, useAnimationControls, useInView } from 'framer-motion'
 import { useState, useRef, useEffect } from 'react'
 import './PokerTable.css'
 
@@ -15,33 +15,21 @@ function PokerTable() {
   const sectionRef = useRef(null)
   const containerRef = useRef(null)
   const cardRefs = [useRef(null), useRef(null), useRef(null)] // Refs for each card to get their positions
+  const cardPositionRef = useRef(null) // Captured at click time for modal alignment
   
-  // Function to get card position - called when needed
+  // Returns position of table card; dimensions always 280x427 (matches .card-container)
   const getCardPosition = (index) => {
     const cardElement = cardRefs[index]?.current
-    if (!cardElement) return { x: 0, y: 0, rotate: 0 }
-    
+    if (!cardElement) return null
     const rect = cardElement.getBoundingClientRect()
-    // Get the card's center position
-    const cardCenterX = rect.left + rect.width / 2
-    const cardCenterY = rect.top + rect.height / 2
-    
-    // The inspected-card is positioned with left: 50% (center), so we need to calculate
-    // position relative to that center point
-    const viewportCenterX = window.innerWidth / 2
-    const viewportCenterY = window.innerHeight / 2
-    
-    // Get the card's current rotation - cards-area is rotated -45deg, and each card has its own rotation
-    // Card 1: -15deg, Card 2: -3deg, Card 3: 9deg (these are relative to the cards-area)
-    // So total rotation = cards-area rotation (-45deg) + card's own rotation
-    const cardRotation = cardPositions[index].rotate // This is the card's rotation relative to cards-area
-    const cardsAreaRotation = -45 // Cards-area is rotated -45deg
-    const totalRotation = cardsAreaRotation + cardRotation // Total: Card1=-60, Card2=-48, Card3=-36
-    
+    const cardRotation = cardPositions[index].rotate
+    const totalRotation = -45 + cardRotation
     return {
-      x: cardCenterX - viewportCenterX, // Position relative to viewport center (where left: 50% is)
-      y: cardCenterY - viewportCenterY, // Position relative to viewport center (where top: 50% is)
-      rotate: totalRotation // Total rotation including cards-area rotation
+      left: rect.left,
+      top: rect.top,
+      width: 280,
+      height: 427,
+      rotate: totalRotation
     }
   }
   
@@ -81,46 +69,45 @@ function PokerTable() {
     [0, 1] // Fade in from transparent to fully visible
   )
   
-  // Trigger card dealing animations after table animation completes
+  // Trigger deal when section is in view (reliable) OR scroll progress reaches 0.4 (fallback)
+  const isSectionInView = useInView(sectionRef, { amount: 0.15, once: true })
+  
   useEffect(() => {
-    const unsubscribe = scrollYProgress.on("change", (latest) => {
-      if (latest >= 0.4 && !cardsDealt) {
-        setCardsDealt(true)
-        // Start dealing cards with delays
-        // Final positions match the original CSS layout
-        card1Controls.start({
-          x: 0,
-          y: 0,
-          rotate: -15,
+    const triggerDeal = () => {
+      if (cardsDealt) return
+      setCardsDealt(true)
+      card1Controls.start({
+        x: 0,
+        y: 0,
+        rotate: -15,
+        transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
+      })
+      setTimeout(() => {
+        card2Controls.start({
+          x: 120,
+          y: -18,
+          rotate: -3,
           transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
         })
-        
-        setTimeout(() => {
-          card2Controls.start({
-            x: 120, // 120px from left (matches original)
-            y: -18, // -18px from top (matches original)
-            rotate: -3,
-            transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
-          })
-        }, 500) // 0.5 second delay
-        
-        setTimeout(() => {
-          card3Controls.start({
-            x: 240, // 240px from left - final position for rightmost card
-            y: -5, // -5px from top - slight vertical offset
-            rotate: 9, // 9 degrees rotation - final angle
-            transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
-          })
-          // Show prompt 1.5 seconds after card 3 animation completes (0.8s animation + 1.5s delay = 2.3s total)
-          setTimeout(() => {
-            setShowPrompt(true)
-          }, 2300) // 0.8s (card 3 animation) + 1.5s delay = 2.3s after card 3 starts
-        }, 1000) // 1 second delay (0.5s after card 2)
-      }
+      }, 500)
+      setTimeout(() => {
+        card3Controls.start({
+          x: 240,
+          y: -5,
+          rotate: 9,
+          transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
+        })
+        setTimeout(() => setShowPrompt(true), 2300)
+      }, 1000)
+    }
+
+    if (isSectionInView) triggerDeal()
+
+    const unsubscribe = scrollYProgress.on("change", (latest) => {
+      if (latest >= 0.4) triggerDeal()
     })
-    
     return () => unsubscribe()
-  }, [scrollYProgress, cardsDealt, card1Controls, card2Controls, card3Controls])
+  }, [isSectionInView, scrollYProgress, cardsDealt, card1Controls, card2Controls, card3Controls])
   
   // All projects data
   const projects = [
@@ -155,8 +142,9 @@ function PokerTable() {
     { x: 240, y: -5, rotate: 9 }     // Card 3 (right): matches final animation position
   ]
   
-  // Handle card click
+  // Handle card click - capture position before modal opens so it aligns with table card
   const handleCardClick = (index) => {
+    cardPositionRef.current = getCardPosition(index)
     setInspectingCard(index)
   }
   
@@ -278,35 +266,51 @@ function PokerTable() {
             
             {/* Inspected Card */}
             <motion.div
-              key={inspectingCard} // Force re-initialization when card changes
+              key={inspectingCard}
               className="inspected-card"
               initial={(() => {
-                // Calculate position dynamically when component mounts
-                const pos = getCardPosition(inspectingCard)
+                const pos = cardPositionRef.current ?? getCardPosition(inspectingCard)
+                if (!pos) return { left: '50%', top: '50%', x: '-50%', y: '-50%', rotateY: 180, scale: 1 }
                 return {
-                  x: pos.x,
-                  y: pos.y,
+                  left: pos.left,
+                  top: pos.top,
+                  width: 280,
+                  height: 427,
+                  x: 0,
+                  y: 0,
                   rotate: pos.rotate,
-                  rotateY: 180, // Start mirrored (showing back of card)
+                  rotateY: 180,
                   scale: 1
                 }
               })()}
-              animate={{
-                x: 'calc(50vw - 200px - 10%)', // Position on right side, over poker table (50vw - half card width - 10% offset)
-                y: 0, // Already centered by CSS translate(-50%, -50%)
-                rotate: 0,     // Straighten
-                rotateY: 0,    // Flip to front (flip over on long edge)
-                scale: 1.2,    // Scale up
-                transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
-              }}
-              exit={(() => {
-                // Calculate position dynamically when component unmounts
-                const pos = getCardPosition(inspectingCard)
+              animate={(() => {
+                const pos = cardPositionRef.current ?? getCardPosition(inspectingCard)
+                if (!pos) return { left: '50%', top: '50%', x: '-50%', y: '-50%', rotate: 0, rotateY: 0, scale: 1 }
                 return {
-                  x: pos.x,
-                  y: pos.y,
+                  left: pos.left,
+                  top: pos.top,
+                  width: 280,
+                  height: 427,
+                  x: 0,
+                  y: 0,
+                  rotate: 0,
+                  rotateY: 0,
+                  scale: 1.15,
+                  transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+                }
+              })()}
+              exit={(() => {
+                const pos = cardPositionRef.current ?? getCardPosition(inspectingCard)
+                if (!pos) return { left: '50%', top: '50%', x: '-50%', y: '-50%', rotateY: 180, scale: 1 }
+                return {
+                  left: pos.left,
+                  top: pos.top,
+                  width: 280,
+                  height: 427,
+                  x: 0,
+                  y: 0,
                   rotate: pos.rotate,
-                  rotateY: 180, // Flip back to mirrored when closing
+                  rotateY: 180,
                   scale: 1,
                   transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
                 }

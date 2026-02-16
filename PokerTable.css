@@ -41,8 +41,8 @@ Built with your SVG files from the PDF
 
 /* Left Column - Text Content */
 .poker-content-column {
-  flex: 0 0 45%;
-  max-width: 45%;
+  flex: 0 0 40%;
+  max-width: 40%;
   height: calc(100vh - 101px); /* Match wrapper height (viewport minus navbar) */
   padding: calc(var(--space-3xl) / 2) 0 0 0; /* Half the original distance (80px instead of 160px) */
   display: flex;
@@ -67,11 +67,12 @@ Built with your SVG files from the PDF
 
 /* Right Column - Poker Table */
 .poker-table-column {
-  flex: 0 0 55%;
+  flex: 0 0 60%;
   max-width: none; /* Remove max-width constraint */
   position: relative;
   height: calc(100vh - 101px); /* Match wrapper height (viewport minus navbar) */
-  overflow: visible; /* Allow table to extend off-screen */
+  overflow: visible;
+  z-index: 2; /* Above shadow overlay (z-index: 1) so cards are visible */
 }
 
 .poker-content-column .label {
@@ -91,6 +92,7 @@ Built with your SVG files from the PDF
   line-height: 1.1;
   color: var(--charcoal);
   margin-bottom: var(--space-lg);
+  white-space: nowrap;
 }
 
 .poker-intro {
@@ -121,7 +123,7 @@ Built with your SVG files from the PDF
 .poker-table-container {
   position: absolute;
   top: 0;
-  right: -200px; /* Push further right, extending beyond container */
+  right: -80px; /* Slight offset; column is wider so less extension needed */
   width: auto; /* Let it size naturally */
   min-width: 100%; /* At least fill the column */
   height: calc(100vh - 101px); /* Full viewport height minus navbar */
@@ -153,7 +155,8 @@ Built with your SVG files from the PDF
   position: absolute;
   top: 50%; /* Center vertically */
   left: 40%; /* Split the difference between 30% and 50% */
-  transform: translate(-50%, -50%) rotate(-45deg); /* Center and rotate 45 degrees to the left */
+  transform: translate(-50%, -50%) rotate(-45deg) scale(0.82); /* Center, rotate, scale to fit column */
+  transform-origin: center center;
   width: 400px;
   height: 300px;
   pointer-events: all;
@@ -162,8 +165,8 @@ Built with your SVG files from the PDF
 
 .card-container {
   position: absolute;
-  width: 280px; /* Increased from 220px (about 27% bigger) */
-  height: 427px; /* Increased proportionally (280 * 1649/1080 = 427px) */
+  width: 280px;
+  height: 427px; /* Aspect ratio 280 * 1649/1080 */
   cursor: pointer;
   /* Transform will be handled by Framer Motion for deal animation */
   /* Initial position - cards start at center (dealer position) */
@@ -387,15 +390,22 @@ Built with your SVG files from the PDF
 /* ==========================================
    RESPONSIVE - POKER TABLE
    ========================================== */
+/* Larger screens (over laptop): shift cards right */
+@media (min-width: 1441px) {
+  .cards-area {
+    left: 56%;
+  }
+}
+
 @media (max-width: 1440px) {
   .poker-table-container {
-    right: -150px; /* Less offset on medium screens */
+    right: -100px; /* Less offset on medium screens */
   }
 }
 
 @media (max-width: 1024px) {
   .poker-table-container {
-    right: -100px; /* Less offset on tablets */
+    right: -50px; /* Less offset on tablets */
   }
   
   .poker-table-image img {
@@ -492,13 +502,13 @@ Built with your SVG files from the PDF
    ========================================== */
 @media (max-width: 1440px) {
   .poker-table-container {
-    right: -150px; /* Less offset on medium screens */
+    right: -100px; /* Less offset on medium screens */
   }
 }
 
 @media (max-width: 1024px) {
   .poker-table-container {
-    right: -100px; /* Less offset on tablets */
+    right: -50px; /* Less offset on tablets */
   }
   
   .poker-table-image img {
