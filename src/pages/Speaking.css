@@ -220,6 +220,13 @@ Pricing with presence, lectures with weight
   letter-spacing: -0.02em;
 }
 
+.tier-cents {
+  font-size: 0.5em;
+  vertical-align: super;
+  color: var(--warm-gray);
+  font-weight: 400;
+}
+
 .tier-note {
   font-size: 0.9rem;
   color: var(--slate);
@@ -314,17 +321,52 @@ Pricing with presence, lectures with weight
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
-.faq-item h3 {
+.faq-item {
+  cursor: pointer;
+  user-select: none;
+}
+
+.faq-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.faq-question h3 {
   font-family: var(--font-serif);
   font-size: 1.25rem;
   color: var(--charcoal);
-  margin-bottom: var(--space-sm);
+  margin-bottom: 0;
   line-height: 1.3;
 }
 
-.faq-item p {
+.faq-toggle {
+  font-family: var(--font-sans);
+  font-size: 1.5rem;
+  color: var(--forest-green);
+  font-weight: 300;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+.faq-item.is-open .faq-toggle {
+  transform: rotate(180deg);
+}
+
+.faq-answer {
+  overflow: hidden;
+}
+
+.faq-answer p {
   color: var(--slate);
   line-height: 1.75;
+  padding-top: var(--space-md);
 }
 
 /* Responsive */

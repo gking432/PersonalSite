@@ -17,10 +17,14 @@ function AnimatedNumber({ target, duration = 2, suffix = "" }) {
     let startTime
     let animationFrame
 
+    // NDS easeOut curve — fast start, smooth deceleration
+    const easeOut = (t) => 1 - Math.pow(1 - t, 3)
+
     const animate = (currentTime) => {
       if (!startTime) startTime = currentTime
-      const progress = Math.min((currentTime - startTime) / (duration * 1000), 1)
-      
+      const linear = Math.min((currentTime - startTime) / (duration * 1000), 1)
+      const progress = easeOut(linear)
+
       setCount(Math.floor(progress * target))
 
       if (progress < 1) {

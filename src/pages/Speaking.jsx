@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
 import './Speaking.css'
 
@@ -19,7 +20,44 @@ const staggerItem = {
   visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } }
 }
 
+function FAQItem({ question, answer }) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <motion.div
+      className={`faq-item ${isOpen ? 'is-open' : ''}`}
+      variants={staggerItem}
+      onClick={() => setIsOpen(!isOpen)}
+    >
+      <div className="faq-question">
+        <h3>{question}</h3>
+        <span className="faq-toggle">{isOpen ? '\u2212' : '+'}</span>
+      </div>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="faq-answer"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <p>{answer}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  )
+}
+
 function Speaking() {
+  const faqs = [
+    { q: "Do I need technical knowledge?", a: "No. These lectures are designed for everyday users and business professionals, not computer scientists." },
+    { q: "Will I get the slides/materials?", a: "Yes. All materials, slides, and resources are included with your purchase." },
+    { q: "Can I get a refund?", a: "Refund policy details will be provided at checkout. We want you to be satisfied with your purchase." },
+    { q: "Do you do custom workshops?", a: "Yes! Contact me to discuss custom workshops tailored to your organization's needs." },
+  ]
+
   return (
     <PageTransition>
     <div className="speaking">
@@ -88,17 +126,17 @@ function Speaking() {
                 >
                   <motion.div className="pricing-tier" variants={staggerItem}>
                     <div className="tier-name">Virtual Live Event</div>
-                    <div className="tier-price">$7.49</div>
+                    <div className="tier-price">$7<span className="tier-cents">.49</span></div>
                     <div className="tier-note">Includes Q&A session</div>
                   </motion.div>
                   <motion.div className="pricing-tier" variants={staggerItem}>
                     <div className="tier-name">Download Only</div>
-                    <div className="tier-price">$2.99</div>
+                    <div className="tier-price">$2<span className="tier-cents">.99</span></div>
                     <div className="tier-note">Video + slide deck</div>
                   </motion.div>
                   <motion.div className="pricing-tier" variants={staggerItem}>
                     <div className="tier-name">In-Person</div>
-                    <div className="tier-price">$24.99</div>
+                    <div className="tier-price">$24<span className="tier-cents">.99</span></div>
                     <div className="tier-note">When available</div>
                   </motion.div>
                 </motion.div>
@@ -154,17 +192,17 @@ function Speaking() {
                 >
                   <motion.div className="pricing-tier" variants={staggerItem}>
                     <div className="tier-name">Virtual Live Workshop</div>
-                    <div className="tier-price">$49.99</div>
+                    <div className="tier-price">$49<span className="tier-cents">.99</span></div>
                     <div className="tier-note">Includes Q&A + follow-up support</div>
                   </motion.div>
                   <motion.div className="pricing-tier" variants={staggerItem}>
                     <div className="tier-name">Download Only</div>
-                    <div className="tier-price">$149.99</div>
+                    <div className="tier-price">$149<span className="tier-cents">.99</span></div>
                     <div className="tier-note">Full video + all code/templates/resources</div>
                   </motion.div>
                   <motion.div className="pricing-tier" variants={staggerItem}>
                     <div className="tier-name">In-Person Workshop</div>
-                    <div className="tier-price">$299.99</div>
+                    <div className="tier-price">$299<span className="tier-cents">.99</span></div>
                     <div className="tier-note">Limited availability</div>
                   </motion.div>
                 </motion.div>
@@ -214,7 +252,7 @@ function Speaking() {
         </div>
       </motion.section>
 
-      {/* FAQ Section */}
+      {/* FAQ Section — Accordion */}
       <section className="faq-section section">
         <div className="container">
           <motion.h2
@@ -233,22 +271,9 @@ function Speaking() {
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
           >
-            <motion.div className="faq-item" variants={staggerItem}>
-              <h3>Do I need technical knowledge?</h3>
-              <p>No. These lectures are designed for everyday users and business professionals, not computer scientists.</p>
-            </motion.div>
-            <motion.div className="faq-item" variants={staggerItem}>
-              <h3>Will I get the slides/materials?</h3>
-              <p>Yes. All materials, slides, and resources are included with your purchase.</p>
-            </motion.div>
-            <motion.div className="faq-item" variants={staggerItem}>
-              <h3>Can I get a refund?</h3>
-              <p>Refund policy details will be provided at checkout. We want you to be satisfied with your purchase.</p>
-            </motion.div>
-            <motion.div className="faq-item" variants={staggerItem}>
-              <h3>Do you do custom workshops?</h3>
-              <p>Yes! Contact me to discuss custom workshops tailored to your organization's needs.</p>
-            </motion.div>
+            {faqs.map((faq, i) => (
+              <FAQItem key={i} question={faq.q} answer={faq.a} />
+            ))}
           </motion.div>
         </div>
       </section>

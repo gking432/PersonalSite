@@ -312,10 +312,18 @@ a:hover {
   position: fixed;
   top: 0;
   width: 100%;
-  background-color: var(--cream);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background-color: transparent;
+  border-bottom: 1px solid transparent;
   padding: 1.5rem 0;
   z-index: 1000;
+  transition: background-color 0.4s var(--ease-out),
+              border-color 0.4s var(--ease-out),
+              box-shadow 0.4s var(--ease-out);
+}
+
+.navbar-scrolled {
+  background-color: var(--cream);
+  border-bottom-color: rgba(0, 0, 0, 0.08);
   box-shadow: 0 2px 8px rgba(42, 42, 42, 0.08);
 }
 

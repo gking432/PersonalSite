@@ -5,12 +5,20 @@ import { motion, AnimatePresence } from 'framer-motion'
 function Layout({ children }) {
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
 
-  // Close menu on route change
+  // Close menu on route change + scroll to top
   useEffect(() => {
     setMenuOpen(false)
     window.scrollTo(0, 0)
   }, [location.pathname])
+
+  // Navbar solid on scroll
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 50)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   // Prevent body scroll when menu is open
   useEffect(() => {
@@ -30,7 +38,7 @@ function Layout({ children }) {
 
   return (
     <div className="layout">
-      <nav className="navbar">
+      <nav className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}>
         <div className="container">
           <Link to="/" className="logo">
             Gunnar Neuman

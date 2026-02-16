@@ -1,6 +1,32 @@
-import { motion } from 'framer-motion'
+import { useRef, useEffect, useState } from 'react'
+import { motion, useInView } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
 import './Projects.css'
+
+// NDS number counter with easeOut
+function AnimatedNumber({ target, duration = 2, suffix = "" }) {
+  const [count, setCount] = useState(0)
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: "-100px" })
+
+  useEffect(() => {
+    if (!isInView) return
+    let startTime
+    let animationFrame
+    const easeOut = (t) => 1 - Math.pow(1 - t, 3)
+    const animate = (currentTime) => {
+      if (!startTime) startTime = currentTime
+      const linear = Math.min((currentTime - startTime) / (duration * 1000), 1)
+      const progress = easeOut(linear)
+      setCount(Math.floor(progress * target))
+      if (linear < 1) animationFrame = requestAnimationFrame(animate)
+    }
+    animationFrame = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(animationFrame)
+  }, [isInView, target, duration])
+
+  return <span ref={ref}>{count}{suffix}</span>
+}
 
 // NDS animation variants
 const fadeUp = {
@@ -26,6 +52,7 @@ function Projects() {
       tagline: 'Blockchain-based token creation platform',
       description: 'Built a user-friendly interface for creating and deploying tokens on the Aptos blockchain. Simplified a complex technical process into an accessible web application.',
       tech: ['Aptos blockchain', 'React', 'TypeScript'],
+      stat: { number: 1, suffix: '', label: 'Blockchain Shipped' },
       links: {
         github: '#',
         documentation: '#'
@@ -37,6 +64,7 @@ function Projects() {
       tagline: 'AI-powered interview practice platform',
       description: 'Developed an application that conducts realistic job interviews using Claude AI, provides real-time feedback, and helps users improve their interview skills.',
       tech: ['React', 'Anthropic API', 'JavaScript'],
+      stat: { number: 50, suffix: '+', label: 'Interviews Simulated' },
       links: {
         demo: '#',
         github: '#'
@@ -105,6 +133,14 @@ function Projects() {
                   <div className="project-placeholder-large">{project.name}</div>
                 </div>
                 <div className="project-details">
+                  {project.stat && (
+                    <div className="project-stat-counter">
+                      <span className="project-stat-number">
+                        <AnimatedNumber target={project.stat.number} suffix={project.stat.suffix} />
+                      </span>
+                      <span className="project-stat-label">{project.stat.label}</span>
+                    </div>
+                  )}
                   <h3>{project.name}</h3>
                   <p className="project-tagline">{project.tagline}</p>
                   <p className="project-description">{project.description}</p>
