@@ -7,7 +7,7 @@ Horizontal scroll, tilt cards, parallax, clip-path reveals
 .home {
   background-color: var(--parchment);
   padding-top: 80px;
-  overflow-x: hidden;
+  overflow-x: clip; /* clip instead of hidden — doesn't break position: sticky */
 }
 
 /* ═══════════════════════════════════════════

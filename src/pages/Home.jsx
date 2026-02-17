@@ -493,8 +493,8 @@ function Home() {
           backgroundImage: 'linear-gradient(135deg, #1a3a2e 0%, #2d5016 100%)'
         }}
         label="Philosophy"
-        giantText="Built, not borrowed"
-        paragraph="Every skill on this site was earned through work. When blockchain interested me, I shipped a token launcher. When AI changed the game, I taught others how to play. The last three years weren't a gap — they were deliberate construction."
+        giantText="Curiosity plus execution equals capability"
+        paragraph="I don't wait for permission to learn something new. When I wanted to understand blockchain, I built a token launcher. When I saw AI transforming how people work, I created a lecture series. The last three years weren't a gap—they were deliberate exploration."
       />
 
       <PokerTable slideFrom="right" />
@@ -507,8 +507,8 @@ function Home() {
           backgroundImage: 'linear-gradient(135deg, #1e3a5f 0%, #2d5278 100%)'
         }}
         label="Approach"
-        giantText="See systems. Ship solutions."
-        paragraph="Complex problems don't scare me — they organize me. I break what's overwhelming into what's next, then I build it. Think big picture. Compartmentalize. Execute."
+        giantText="Think big picture. Compartmentalize. Execute."
+        paragraph="I see systems, not just tasks. Whether it's a product launch, a marketing campaign, or a new application—I break complex goals into clear deliverables and ship them."
       />
 
       {/* ═══════ EXPERIENCE TIMELINE ═══════ */}
