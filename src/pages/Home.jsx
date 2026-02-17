@@ -19,16 +19,18 @@ function ScrollProgress() {
 }
 
 // ─── SQUEEZE SECTION — NDS SIGNATURE ───
-// Sections start full-width, then squeeze INWARD with rounded corners as you scroll past.
+// Squeeze starts as soon as the top ~15% of the section is visible on screen.
 function SqueezeSection({ children, className, as: Tag = 'section' }) {
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start 0.8", "end start"]
+    offset: ["start 0.85", "start 0.15"]
   })
 
-  const rawScale = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [1, 1, 0.92, 0.88])
-  const rawRadius = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 0, 16, 24])
+  // Squeeze begins immediately (0) and is fully squeezed by the time the
+  // top of the section reaches ~15% from the top of the viewport.
+  const rawScale = useTransform(scrollYProgress, [0, 1], [1, 0.88])
+  const rawRadius = useTransform(scrollYProgress, [0, 1], [0, 24])
 
   const scale = useSpring(rawScale, { stiffness: 120, damping: 30 })
   const borderRadius = useSpring(rawRadius, { stiffness: 120, damping: 30 })
@@ -217,15 +219,15 @@ function PhotoSection({ sectionNumber, imageStyle, label, giantText, paragraph }
     offset: ["start start", "end start"]
   })
 
-  // Squeeze: section squeezes inward as you scroll through it
+  // Squeeze: starts as soon as section top is ~15% visible
   const squeezeRef = useRef(null)
   const { scrollYProgress: squeezeProgress } = useScroll({
     target: squeezeRef,
-    offset: ["start start", "end start"]
+    offset: ["start 0.85", "start 0.15"]
   })
 
-  const rawSqueezeScale = useTransform(squeezeProgress, [0, 0.4, 0.8, 1], [1, 1, 0.92, 0.88])
-  const rawSqueezeRadius = useTransform(squeezeProgress, [0, 0.4, 0.8, 1], [0, 0, 16, 24])
+  const rawSqueezeScale = useTransform(squeezeProgress, [0, 1], [1, 0.88])
+  const rawSqueezeRadius = useTransform(squeezeProgress, [0, 1], [0, 24])
   const squeezeScale = useSpring(rawSqueezeScale, { stiffness: 120, damping: 30 })
   const squeezeBorderRadius = useSpring(rawSqueezeRadius, { stiffness: 120, damping: 30 })
 
@@ -364,9 +366,9 @@ function Home() {
   const horizontalX = useTransform(horizontalProgress, [0, 0.85], ["2%", "-62%"])
   const horizontalOpacity = useTransform(horizontalProgress, [0, 0.08, 0.9, 1], [0.5, 1, 1, 0.5])
 
-  // Capabilities squeeze — squeezes inward as you scroll past
-  const rawCapScale = useTransform(horizontalProgress, [0, 0.6, 0.85, 1], [1, 1, 0.92, 0.88])
-  const rawCapRadius = useTransform(horizontalProgress, [0, 0.6, 0.85, 1], [0, 0, 16, 24])
+  // Capabilities squeeze — starts immediately, fully squeezed by ~20% through
+  const rawCapScale = useTransform(horizontalProgress, [0, 0.2], [1, 0.88])
+  const rawCapRadius = useTransform(horizontalProgress, [0, 0.2], [0, 24])
   const capSqueezeScale = useSpring(rawCapScale, { stiffness: 120, damping: 30 })
   const capSqueezeRadius = useSpring(rawCapRadius, { stiffness: 120, damping: 30 })
 
