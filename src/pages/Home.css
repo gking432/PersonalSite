@@ -1,13 +1,13 @@
 /*
 HOME PAGE — NDS + PRESTIGE + FAUX-3D
-Horizontal scroll, tilt cards, parallax, clip-path reveals
-"Earned money. Midwest excellence."
+Squeeze sections, horizontal scroll, tilt cards, parallax
+One cohesive piece. Generous whitespace. Parchment base.
 */
 
 .home {
   background-color: var(--parchment);
   padding-top: 80px;
-  overflow-x: clip; /* clip instead of hidden — doesn't break position: sticky */
+  overflow-x: clip;
 }
 
 /* ═══════════════════════════════════════════
@@ -25,6 +25,22 @@ Horizontal scroll, tilt cards, parallax, clip-path reveals
 }
 
 /* ═══════════════════════════════════════════
+   SQUEEZE SECTION — NDS SIGNATURE ANIMATION
+   Colored sections emerge from the parchment base.
+   Start at 88% scale + rounded corners, expand to full.
+   ═══════════════════════════════════════════ */
+.squeeze-wrapper {
+  /* Provides scroll target + breathing room so parchment shows around the squeezed section */
+  padding: 20px 0;
+}
+
+.squeeze-inner {
+  overflow: hidden;
+  will-change: transform;
+  transform-origin: center;
+}
+
+/* ═══════════════════════════════════════════
    HERO — 3D PERSPECTIVE + LETTER ANIMATION
    ═══════════════════════════════════════════ */
 .hero {
@@ -36,6 +52,7 @@ Horizontal scroll, tilt cards, parallax, clip-path reveals
   background: var(--parchment);
   overflow: hidden;
   perspective: 1200px;
+  margin-bottom: 60px;
 }
 
 /* Subtle grid background */
@@ -145,13 +162,12 @@ Horizontal scroll, tilt cards, parallax, clip-path reveals
 }
 
 /* ═══════════════════════════════════════════
-   STATS BAR — GIANT NUMBERS + DEPTH
+   STATS BAR — SQUEEZE + GIANT NUMBERS
    ═══════════════════════════════════════════ */
 .stats-bar {
   background-color: var(--forest-green);
   padding: var(--space-2xl) 0;
   position: relative;
-  overflow: hidden;
 }
 
 /* Subtle noise texture */
@@ -205,11 +221,12 @@ Horizontal scroll, tilt cards, parallax, clip-path reveals
 }
 
 /* ═══════════════════════════════════════════
-   CAPABILITIES — HORIZONTAL SCROLL + 3D TILT
+   CAPABILITIES — SQUEEZE + HORIZONTAL SCROLL + 3D TILT
    ═══════════════════════════════════════════ */
 .capabilities-scroll-container {
-  height: 300vh; /* scroll runway */
+  height: 300vh;
   position: relative;
+  margin-top: 60px; /* breathing room from stats */
 }
 
 .capabilities-sticky {
@@ -220,6 +237,8 @@ Horizontal scroll, tilt cards, parallax, clip-path reveals
   align-items: center;
   overflow: hidden;
   background-color: var(--charcoal);
+  will-change: transform;
+  transform-origin: center;
 }
 
 .capabilities-track {
@@ -352,11 +371,16 @@ Horizontal scroll, tilt cards, parallax, clip-path reveals
 }
 
 /* ═══════════════════════════════════════════
-   PHOTO SECTIONS — PARALLAX + GIANT TEXT
+   PHOTO SECTIONS — SQUEEZE + PARALLAX + GIANT TEXT
    ═══════════════════════════════════════════ */
 .photo-section {
   position: relative;
+  margin-top: 80px; /* generous parchment breathing room */
+}
+
+.photo-section-scroll-runway {
   height: 200vh;
+  position: relative;
 }
 
 .photo-section-wrapper {
@@ -368,6 +392,8 @@ Horizontal scroll, tilt cards, parallax, clip-path reveals
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  will-change: transform;
+  transform-origin: center;
 }
 
 .photo-section-image {
@@ -445,21 +471,13 @@ Horizontal scroll, tilt cards, parallax, clip-path reveals
 }
 
 /* ═══════════════════════════════════════════
-   TIMELINE — 3D SLIDE-IN FROM SIDES
+   TIMELINE — FLOWS NATURALLY ON PARCHMENT/CREAM
    ═══════════════════════════════════════════ */
 .background {
-  padding: var(--space-3xl) 0;
-  background-color: var(--cream);
+  padding: 200px 0; /* very generous top/bottom — one cohesive piece */
+  background-color: var(--parchment);
   position: relative;
   perspective: 1000px;
-}
-
-.background::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
-  pointer-events: none;
 }
 
 .background .container {
@@ -505,7 +523,7 @@ Horizontal scroll, tilt cards, parallax, clip-path reveals
   height: 12px;
   background-color: var(--forest-green);
   border-radius: 50%;
-  border: 3px solid var(--cream);
+  border: 3px solid var(--parchment);
   box-shadow: 0 0 0 3px var(--forest-green);
   z-index: 1;
 }
@@ -546,7 +564,7 @@ Horizontal scroll, tilt cards, parallax, clip-path reveals
 }
 
 /* ═══════════════════════════════════════════
-   FINAL CTA — SCALE-IN + DEPTH
+   FINAL CTA — SQUEEZE + SCALE-IN
    ═══════════════════════════════════════════ */
 .cta {
   padding: var(--space-3xl) 0;
@@ -554,7 +572,6 @@ Horizontal scroll, tilt cards, parallax, clip-path reveals
   color: var(--cream);
   text-align: center;
   position: relative;
-  overflow: hidden;
 }
 
 .cta::before {
@@ -635,7 +652,6 @@ Horizontal scroll, tilt cards, parallax, clip-path reveals
     font-size: clamp(2.5rem, 10vw, 6rem);
   }
 
-  /* Horizontal scroll — reduce card sizes */
   .capability-header-card {
     min-width: 300px;
     max-width: 300px;
@@ -644,6 +660,10 @@ Horizontal scroll, tilt cards, parallax, clip-path reveals
   .capability-card-3d {
     min-width: 340px;
     max-width: 340px;
+  }
+
+  .background {
+    padding: 140px 0;
   }
 }
 
@@ -655,6 +675,7 @@ Horizontal scroll, tilt cards, parallax, clip-path reveals
   .hero {
     min-height: 85vh;
     padding: var(--space-2xl) 0;
+    margin-bottom: 30px;
   }
 
   .hero-cta {
@@ -677,6 +698,7 @@ Horizontal scroll, tilt cards, parallax, clip-path reveals
   /* Horizontal scroll — stack on mobile */
   .capabilities-scroll-container {
     height: auto;
+    margin-top: 30px;
   }
 
   .capabilities-sticky {
@@ -684,6 +706,9 @@ Horizontal scroll, tilt cards, parallax, clip-path reveals
     height: auto;
     flex-direction: column;
     padding: var(--space-2xl) 0;
+    /* Disable squeeze on mobile — just show full */
+    transform: none !important;
+    border-radius: 0 !important;
   }
 
   .capabilities-track {
@@ -706,7 +731,7 @@ Horizontal scroll, tilt cards, parallax, clip-path reveals
   }
 
   .photo-section {
-    min-height: 100vh;
+    margin-top: 40px;
   }
 
   .photo-section-overlay {
@@ -725,6 +750,10 @@ Horizontal scroll, tilt cards, parallax, clip-path reveals
     gap: var(--space-lg);
   }
 
+  .background {
+    padding: 100px 0;
+  }
+
   .timeline {
     padding-left: 2rem;
   }
@@ -739,6 +768,10 @@ Horizontal scroll, tilt cards, parallax, clip-path reveals
 
   .cta h2 {
     font-size: clamp(2rem, 8vw, 3.5rem);
+  }
+
+  .squeeze-wrapper {
+    padding: 10px 0;
   }
 }
 

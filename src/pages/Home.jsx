@@ -18,6 +18,34 @@ function ScrollProgress() {
   )
 }
 
+// ─── SQUEEZE SECTION — NDS SIGNATURE ───
+// Colored sections scale from 0.88 + border-radius → full width as they scroll in.
+// This is the TrumpRx/NDS "squeeze" effect.
+function SqueezeSection({ children, className, as: Tag = 'section' }) {
+  const ref = useRef(null)
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "start 0.2"]
+  })
+
+  const rawScale = useTransform(scrollYProgress, [0, 1], [0.88, 1])
+  const rawRadius = useTransform(scrollYProgress, [0, 1], [24, 0])
+
+  const scale = useSpring(rawScale, { stiffness: 120, damping: 30 })
+  const borderRadius = useSpring(rawRadius, { stiffness: 120, damping: 30 })
+
+  return (
+    <div ref={ref} className="squeeze-wrapper">
+      <motion.div
+        className={`squeeze-inner ${className || ''}`}
+        style={{ scale, borderRadius }}
+      >
+        {children}
+      </motion.div>
+    </div>
+  )
+}
+
 // ─── 3D TILT CARD ───
 function TiltCard({ children, className, style }) {
   const ref = useRef(null)
@@ -30,7 +58,6 @@ function TiltCard({ children, className, style }) {
   const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], [12, -12])
   const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], [-12, 12])
 
-  // Glare position
   const glareX = useTransform(mouseXSpring, [-0.5, 0.5], [0, 100])
   const glareY = useTransform(mouseYSpring, [-0.5, 0.5], [0, 100])
   const glareOpacity = useMotionValue(0)
@@ -80,7 +107,7 @@ function TiltCard({ children, className, style }) {
   )
 }
 
-// ─── ANIMATED NUMBER (ODOMETER) ───
+// ─── ANIMATED NUMBER ───
 function AnimatedNumber({ target, duration = 2, suffix = "" }) {
   const [count, setCount] = useState(0)
   const ref = useRef(null)
@@ -183,7 +210,7 @@ function TypingText({ text, scrollYProgress, startProgress = 0.2, endProgress = 
   )
 }
 
-// ─── PHOTO SECTION (parallax + scroll text) ───
+// ─── PHOTO SECTION (squeeze + parallax + scroll text) ───
 function PhotoSection({ sectionNumber, imageStyle, label, giantText, paragraph }) {
   const sectionRef = useRef(null)
   const { scrollYProgress } = useScroll({
@@ -191,35 +218,52 @@ function PhotoSection({ sectionNumber, imageStyle, label, giantText, paragraph }
     offset: ["start start", "end start"]
   })
 
+  // Squeeze: happens as section enters viewport
+  const squeezeRef = useRef(null)
+  const { scrollYProgress: squeezeProgress } = useScroll({
+    target: squeezeRef,
+    offset: ["start end", "start 0.15"]
+  })
+
+  const rawSqueezeScale = useTransform(squeezeProgress, [0, 1], [0.88, 1])
+  const rawSqueezeRadius = useTransform(squeezeProgress, [0, 1], [24, 0])
+  const squeezeScale = useSpring(rawSqueezeScale, { stiffness: 120, damping: 30 })
+  const squeezeBorderRadius = useSpring(rawSqueezeRadius, { stiffness: 120, damping: 30 })
+
   // Parallax: background moves slower
   const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '25%'])
   const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.15])
 
   return (
     <section
-      ref={sectionRef}
+      ref={squeezeRef}
       className={`photo-section photo-section-${sectionNumber}`}
     >
-      <div className="photo-section-wrapper">
+      <div ref={sectionRef} className="photo-section-scroll-runway">
         <motion.div
-          className="photo-section-image"
-          style={{ ...imageStyle, y: bgY, scale: bgScale }}
-        />
-        <div className="photo-section-overlay" />
-        <div className="container">
-          <div className="photo-section-content">
-            <p className="subtitle" style={{ color: 'rgba(244, 241, 234, 0.7)' }}>
-              {label}
-            </p>
-            <GiantText scrollYProgress={scrollYProgress}>{giantText}</GiantText>
-            <TypingText
-              text={paragraph}
-              scrollYProgress={scrollYProgress}
-              startProgress={0.15}
-              endProgress={0.65}
-            />
+          className="photo-section-wrapper"
+          style={{ scale: squeezeScale, borderRadius: squeezeBorderRadius }}
+        >
+          <motion.div
+            className="photo-section-image"
+            style={{ ...imageStyle, y: bgY, scale: bgScale }}
+          />
+          <div className="photo-section-overlay" />
+          <div className="container">
+            <div className="photo-section-content">
+              <p className="subtitle" style={{ color: 'rgba(244, 241, 234, 0.7)' }}>
+                {label}
+              </p>
+              <GiantText scrollYProgress={scrollYProgress}>{giantText}</GiantText>
+              <TypingText
+                text={paragraph}
+                scrollYProgress={scrollYProgress}
+                startProgress={0.15}
+                endProgress={0.65}
+              />
+            </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   )
@@ -318,8 +362,14 @@ function Home() {
     target: horizontalRef,
     offset: ["start start", "end end"]
   })
-  const horizontalX = useTransform(horizontalProgress, [0, 1], ["2%", "-62%"])
-  const horizontalOpacity = useTransform(horizontalProgress, [0, 0.05, 0.9, 1], [0.5, 1, 1, 0.5])
+  const horizontalX = useTransform(horizontalProgress, [0.1, 1], ["2%", "-62%"])
+  const horizontalOpacity = useTransform(horizontalProgress, [0, 0.08, 0.9, 1], [0.5, 1, 1, 0.5])
+
+  // Capabilities squeeze (uses same scroll progress, just the first ~10%)
+  const rawCapScale = useTransform(horizontalProgress, [0, 0.08], [0.88, 1])
+  const rawCapRadius = useTransform(horizontalProgress, [0, 0.08], [24, 0])
+  const capSqueezeScale = useSpring(rawCapScale, { stiffness: 120, damping: 30 })
+  const capSqueezeRadius = useSpring(rawCapRadius, { stiffness: 120, damping: 30 })
 
   return (
     <PageTransition>
@@ -331,7 +381,6 @@ function Home() {
         className="hero"
         style={{ y: heroY, opacity: heroOpacity }}
       >
-        {/* Subtle grid background */}
         <div className="hero-grid-bg" />
 
         <div className="container">
@@ -377,7 +426,6 @@ function Home() {
               </Link>
             </motion.div>
 
-            {/* Scroll indicator */}
             <motion.div
               className="scroll-indicator"
               initial={{ opacity: 0 }}
@@ -395,8 +443,8 @@ function Home() {
         </div>
       </motion.section>
 
-      {/* ═══════ STATS BAR ═══════ */}
-      <section className="stats-bar">
+      {/* ═══════ STATS — SQUEEZE ═══════ */}
+      <SqueezeSection className="stats-bar">
         <div className="container">
           <motion.div
             className="stats-grid"
@@ -420,14 +468,16 @@ function Home() {
             ))}
           </motion.div>
         </div>
-      </section>
+      </SqueezeSection>
 
-      {/* ═══════ CAPABILITIES — HORIZONTAL SCROLL ═══════ */}
+      {/* ═══════ CAPABILITIES — SQUEEZE + HORIZONTAL SCROLL ═══════ */}
       <section ref={horizontalRef} className="capabilities-scroll-container">
-        <div className="capabilities-sticky">
+        <motion.div
+          className="capabilities-sticky"
+          style={{ scale: capSqueezeScale, borderRadius: capSqueezeRadius }}
+        >
           <motion.div className="capabilities-track" style={{ x: horizontalX, opacity: horizontalOpacity }}>
 
-            {/* Header card */}
             <div className="capability-header-card">
               <p className="label">What I Do</p>
               <h2 className="section-heading">Capabilities</h2>
@@ -436,7 +486,6 @@ function Home() {
               </p>
             </div>
 
-            {/* Card 1 */}
             <TiltCard className="capability-card-3d">
               <div className="capability-card-number">01</div>
               <h3>Growth Engine</h3>
@@ -451,7 +500,6 @@ function Home() {
               </div>
             </TiltCard>
 
-            {/* Card 2 */}
             <TiltCard className="capability-card-3d">
               <div className="capability-card-number">02</div>
               <h3>Builder</h3>
@@ -466,7 +514,6 @@ function Home() {
               </div>
             </TiltCard>
 
-            {/* Card 3 */}
             <TiltCard className="capability-card-3d">
               <div className="capability-card-number">03</div>
               <h3>AI Practitioner</h3>
@@ -482,10 +529,10 @@ function Home() {
             </TiltCard>
 
           </motion.div>
-        </div>
+        </motion.div>
       </section>
 
-      {/* ═══════ PHOTO SECTION 1 — PARALLAX ═══════ */}
+      {/* ═══════ PHOTO SECTION 1 — SQUEEZE + PARALLAX ═══════ */}
       <PhotoSection
         sectionNumber={1}
         imageStyle={{
@@ -499,7 +546,7 @@ function Home() {
 
       <PokerTable slideFrom="right" />
 
-      {/* ═══════ PHOTO SECTION 2 — PARALLAX ═══════ */}
+      {/* ═══════ PHOTO SECTION 2 — SQUEEZE + PARALLAX ═══════ */}
       <PhotoSection
         sectionNumber={2}
         imageStyle={{
@@ -563,8 +610,8 @@ function Home() {
         </div>
       </section>
 
-      {/* ═══════ FINAL CTA ═══════ */}
-      <section className="cta">
+      {/* ═══════ FINAL CTA — SQUEEZE ═══════ */}
+      <SqueezeSection className="cta">
         <div className="container">
           <div className="cta-content">
             <motion.h2
@@ -599,7 +646,7 @@ function Home() {
             </motion.div>
           </div>
         </div>
-      </section>
+      </SqueezeSection>
     </div>
     </PageTransition>
   )
