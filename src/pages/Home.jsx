@@ -1,11 +1,86 @@
 import { Link } from 'react-router-dom'
-import { motion, useScroll, useTransform, useInView } from 'framer-motion'
-import { useRef, useEffect, useState } from 'react'
+import { motion, useScroll, useTransform, useInView, useMotionValue, useSpring } from 'framer-motion'
+import { useRef, useEffect, useState, useCallback } from 'react'
 import PokerTable from '../../PokerTable'
 import PageTransition from '../components/PageTransition'
 import './Home.css'
 
-// Number counter - NDS signature animation
+// ─── NDS EASING ───
+const ndsEase = [0.22, 1, 0.36, 1]
+
+// ─── SCROLL PROGRESS INDICATOR ───
+function ScrollProgress() {
+  const { scrollYProgress } = useScroll()
+  const scaleY = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 })
+
+  return (
+    <motion.div className="scroll-progress" style={{ scaleY }} />
+  )
+}
+
+// ─── 3D TILT CARD ───
+function TiltCard({ children, className, style }) {
+  const ref = useRef(null)
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
+
+  const mouseXSpring = useSpring(x, { stiffness: 300, damping: 30 })
+  const mouseYSpring = useSpring(y, { stiffness: 300, damping: 30 })
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], [12, -12])
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], [-12, 12])
+
+  // Glare position
+  const glareX = useTransform(mouseXSpring, [-0.5, 0.5], [0, 100])
+  const glareY = useTransform(mouseYSpring, [-0.5, 0.5], [0, 100])
+  const glareOpacity = useMotionValue(0)
+
+  const handleMouse = useCallback((e) => {
+    const rect = ref.current.getBoundingClientRect()
+    const centerX = (e.clientX - rect.left) / rect.width - 0.5
+    const centerY = (e.clientY - rect.top) / rect.height - 0.5
+    x.set(centerX)
+    y.set(centerY)
+    glareOpacity.set(0.15)
+  }, [x, y, glareOpacity])
+
+  const handleLeave = useCallback(() => {
+    x.set(0)
+    y.set(0)
+    glareOpacity.set(0)
+  }, [x, y, glareOpacity])
+
+  return (
+    <motion.div
+      ref={ref}
+      className={`tilt-card ${className || ''}`}
+      onMouseMove={handleMouse}
+      onMouseLeave={handleLeave}
+      style={{
+        rotateX,
+        rotateY,
+        transformStyle: 'preserve-3d',
+        ...style,
+      }}
+    >
+      <div className="tilt-card-inner" style={{ transformStyle: 'preserve-3d' }}>
+        {children}
+      </div>
+      <motion.div
+        className="tilt-card-glare"
+        style={{
+          background: useTransform(
+            [glareX, glareY],
+            ([gx, gy]) => `radial-gradient(circle at ${gx}% ${gy}%, rgba(255,255,255,0.25), transparent 60%)`
+          ),
+          opacity: glareOpacity,
+        }}
+      />
+    </motion.div>
+  )
+}
+
+// ─── ANIMATED NUMBER (ODOMETER) ───
 function AnimatedNumber({ target, duration = 2, suffix = "" }) {
   const [count, setCount] = useState(0)
   const ref = useRef(null)
@@ -13,25 +88,16 @@ function AnimatedNumber({ target, duration = 2, suffix = "" }) {
 
   useEffect(() => {
     if (!isInView) return
-
     let startTime
     let animationFrame
-
-    // NDS easeOut curve — fast start, smooth deceleration
     const easeOut = (t) => 1 - Math.pow(1 - t, 3)
-
     const animate = (currentTime) => {
       if (!startTime) startTime = currentTime
       const linear = Math.min((currentTime - startTime) / (duration * 1000), 1)
       const progress = easeOut(linear)
-
       setCount(Math.floor(progress * target))
-
-      if (progress < 1) {
-        animationFrame = requestAnimationFrame(animate)
-      }
+      if (progress < 1) animationFrame = requestAnimationFrame(animate)
     }
-
     animationFrame = requestAnimationFrame(animate)
     return () => cancelAnimationFrame(animationFrame)
   }, [isInView, target, duration])
@@ -39,32 +105,23 @@ function AnimatedNumber({ target, duration = 2, suffix = "" }) {
   return <span ref={ref}>{count}{suffix}</span>
 }
 
-// Giant text with progressive color word by word - always visible, just changes color
+// ─── GIANT TEXT (word-by-word color reveal on scroll) ───
 function GiantText({ children, scrollYProgress }) {
-  // Always visible (opacity stays at 1)
-  const opacity = useTransform(scrollYProgress, [0, 1], [1, 1])
-  
-  // Split text into words
   const words = typeof children === 'string' ? children.split(' ') : [children]
   const totalWords = words.length
-  
-  // Create color transforms for each word (dark grey to white)
-  // Spread words across 0% to 50% scroll progress
+
   const wordColors = words.map((_, index) => {
-    const wordStart = 0 + (index / totalWords) * 0.45
+    const wordStart = (index / totalWords) * 0.45
     const wordEnd = 0.05 + (index / totalWords) * 0.45
     return useTransform(
-      scrollYProgress, 
-      [wordStart, wordEnd], 
-      ['rgba(244, 241, 234, 0.4)', 'rgba(244, 241, 234, 1)']
+      scrollYProgress,
+      [wordStart, wordEnd],
+      ['rgba(244, 241, 234, 0.3)', 'rgba(244, 241, 234, 1)']
     )
   })
-  
+
   return (
-    <motion.h2 
-      className="giant-text"
-      style={{ opacity }}
-    >
+    <h2 className="giant-text">
       {words.map((word, index) => (
         <motion.span
           key={index}
@@ -75,15 +132,15 @@ function GiantText({ children, scrollYProgress }) {
           {index < words.length - 1 && ' '}
         </motion.span>
       ))}
-    </motion.h2>
+    </h2>
   )
 }
 
-// Typing animation component - scroll-based, reveals text character by character
+// ─── TYPING TEXT (scroll-driven) ───
 function TypingText({ text, scrollYProgress, startProgress = 0.2, endProgress = 0.8 }) {
   const [visibleChars, setVisibleChars] = useState(0)
   const totalChars = text.length
-  
+
   useEffect(() => {
     const unsubscribe = scrollYProgress.on("change", (latest) => {
       if (latest < startProgress) {
@@ -91,33 +148,25 @@ function TypingText({ text, scrollYProgress, startProgress = 0.2, endProgress = 
       } else if (latest >= endProgress) {
         setVisibleChars(totalChars)
       } else {
-        // Map scroll progress to character count
         const progress = (latest - startProgress) / (endProgress - startProgress)
-        const chars = Math.min(Math.floor(progress * totalChars), totalChars)
-        setVisibleChars(chars)
+        setVisibleChars(Math.min(Math.floor(progress * totalChars), totalChars))
       }
     })
-    
-    // Set initial state
+
     const current = scrollYProgress.get()
-    if (current < startProgress) {
-      setVisibleChars(0)
-    } else if (current >= endProgress) {
-      setVisibleChars(totalChars)
-    } else {
+    if (current < startProgress) setVisibleChars(0)
+    else if (current >= endProgress) setVisibleChars(totalChars)
+    else {
       const progress = (current - startProgress) / (endProgress - startProgress)
-      const chars = Math.min(Math.floor(progress * totalChars), totalChars)
-      setVisibleChars(chars)
+      setVisibleChars(Math.min(Math.floor(progress * totalChars), totalChars))
     }
-    
+
     return () => unsubscribe()
   }, [scrollYProgress, startProgress, endProgress, totalChars])
-  
+
   return (
     <div className="photo-section-text-wrapper">
-      <p className="photo-section-text-invisible" aria-hidden="true">
-        {text}
-      </p>
+      <p className="photo-section-text-invisible" aria-hidden="true">{text}</p>
       <p className="photo-section-text">
         {text.slice(0, visibleChars)}
         {visibleChars < totalChars && (
@@ -134,53 +183,40 @@ function TypingText({ text, scrollYProgress, startProgress = 0.2, endProgress = 
   )
 }
 
-// Photo Section Component with coordinated animations
+// ─── PHOTO SECTION (parallax + scroll text) ───
 function PhotoSection({ sectionNumber, imageStyle, label, giantText, paragraph }) {
   const sectionRef = useRef(null)
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"]
   })
-  
-  // Label is always visible - no animation needed
-  
-  // Both animations happen at the same time
-  // Giant text: 0.05 to 0.5 (5% to 50%)
-  // Typing text: 0.15 to 0.65 (15% to 65%)
-  const paragraphStart = 0.15
-  const paragraphEnd = 0.65
-  
+
+  // Parallax: background moves slower
+  const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '25%'])
+  const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.15])
+
   return (
-    <section 
+    <section
       ref={sectionRef}
       className={`photo-section photo-section-${sectionNumber}`}
     >
       <div className="photo-section-wrapper">
-        <div 
-          className="photo-section-image" 
-          style={imageStyle}
+        <motion.div
+          className="photo-section-image"
+          style={{ ...imageStyle, y: bgY, scale: bgScale }}
         />
         <div className="photo-section-overlay" />
         <div className="container">
           <div className="photo-section-content">
-            <p 
-              className="subtitle"
-              style={{ 
-                color: 'rgba(244, 241, 234, 0.7)'
-              }}
-            >
+            <p className="subtitle" style={{ color: 'rgba(244, 241, 234, 0.7)' }}>
               {label}
             </p>
-            
-            <GiantText scrollYProgress={scrollYProgress}>
-              {giantText}
-            </GiantText>
-            
-            <TypingText 
+            <GiantText scrollYProgress={scrollYProgress}>{giantText}</GiantText>
+            <TypingText
               text={paragraph}
               scrollYProgress={scrollYProgress}
-              startProgress={paragraphStart}
-              endProgress={paragraphEnd}
+              startProgress={0.15}
+              endProgress={0.65}
             />
           </div>
         </div>
@@ -189,147 +225,267 @@ function PhotoSection({ sectionNumber, imageStyle, label, giantText, paragraph }
   )
 }
 
-// Stagger animation variants
+// ─── REVEAL SECTION (clip-path wipe) ───
+function RevealSection({ children, className, direction = 'bottom' }) {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: "-15%" })
+
+  const clipPaths = {
+    bottom: { hidden: 'inset(100% 0 0 0)', visible: 'inset(0 0 0 0)' },
+    top: { hidden: 'inset(0 0 100% 0)', visible: 'inset(0 0 0 0)' },
+    left: { hidden: 'inset(0 100% 0 0)', visible: 'inset(0 0 0 0)' },
+    right: { hidden: 'inset(0 0 0 100%)', visible: 'inset(0 0 0 0)' },
+  }
+
+  return (
+    <motion.div
+      ref={ref}
+      className={className}
+      initial={{ clipPath: clipPaths[direction].hidden, opacity: 0 }}
+      animate={isInView ? { clipPath: clipPaths[direction].visible, opacity: 1 } : {}}
+      transition={{ duration: 1.2, ease: ndsEase }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+// ─── STAGGER VARIANTS ───
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 }
+    transition: { staggerChildren: 0.15, delayChildren: 0.1 }
   }
 }
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 40, scale: 0.98 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] }
+  hidden: { opacity: 0, y: 60, scale: 0.92 },
+  visible: {
+    opacity: 1, y: 0, scale: 1,
+    transition: { duration: 0.8, ease: ndsEase }
   }
 }
 
+// ─── HERO LETTER ANIMATION ───
+function AnimatedTitle({ text }) {
+  const letters = text.split('')
+
+  return (
+    <motion.h1
+      className="hero-headline"
+      initial="hidden"
+      animate="visible"
+      variants={{
+        hidden: {},
+        visible: { transition: { staggerChildren: 0.04, delayChildren: 0.2 } }
+      }}
+    >
+      {letters.map((letter, i) => (
+        <motion.span
+          key={i}
+          className="hero-letter"
+          variants={{
+            hidden: { opacity: 0, y: 80, rotateX: -90, scale: 0.5 },
+            visible: {
+              opacity: 1, y: 0, rotateX: 0, scale: 1,
+              transition: { duration: 0.8, ease: ndsEase }
+            }
+          }}
+          style={{ display: letter === ' ' ? 'inline' : 'inline-block' }}
+        >
+          {letter === ' ' ? '\u00A0' : letter}
+        </motion.span>
+      ))}
+    </motion.h1>
+  )
+}
+
+// ═══════════════════════════════════════════
+// HOME COMPONENT
+// ═══════════════════════════════════════════
 function Home() {
   const { scrollYProgress } = useScroll()
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0])
-  const heroScale = useTransform(scrollYProgress, [0, 0.15], [1, 0.97])
+
+  // Hero parallax
+  const heroY = useTransform(scrollYProgress, [0, 0.3], [0, -150])
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0])
+  const heroPerspective = useTransform(scrollYProgress, [0, 0.15], [0, 8])
+
+  // Horizontal scroll for capabilities
+  const horizontalRef = useRef(null)
+  const { scrollYProgress: horizontalProgress } = useScroll({
+    target: horizontalRef,
+    offset: ["start start", "end end"]
+  })
+  const horizontalX = useTransform(horizontalProgress, [0, 1], ["2%", "-62%"])
+  const horizontalOpacity = useTransform(horizontalProgress, [0, 0.05, 0.9, 1], [0.5, 1, 1, 0.5])
 
   return (
     <PageTransition>
     <div className="home">
-      {/* Hero Section */}
-      <motion.section 
+      <ScrollProgress />
+
+      {/* ═══════ HERO ═══════ */}
+      <motion.section
         className="hero"
-        style={{ opacity: heroOpacity, scale: heroScale }}
+        style={{ y: heroY, opacity: heroOpacity }}
       >
+        {/* Subtle grid background */}
+        <div className="hero-grid-bg" />
+
         <div className="container">
           <div className="hero-content">
-            <motion.h1 
-              className="hero-headline"
-              initial={{ opacity: 0, y: 60 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            <motion.p
+              className="hero-label"
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, ease: ndsEase }}
             >
-              Gunnar Neuman
-            </motion.h1>
-            
-            <motion.p 
-              className="hero-subheadline"
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            >
-              Marketing strategist who builds. I've driven campaigns for luxury brands, 
-              launched blockchain apps, and taught AI literacy. Looking for the right 
-              marketing leadership role.
+              Marketing Leader &middot; Builder &middot; AI Practitioner
             </motion.p>
-            
-            <motion.div 
+
+            <motion.div
+              className="hero-title-wrapper"
+              style={{ rotateX: heroPerspective, transformPerspective: 1200 }}
+            >
+              <AnimatedTitle text="Gunnar Neuman" />
+            </motion.div>
+
+            <motion.p
+              className="hero-subheadline"
+              initial={{ opacity: 0, y: 40, filter: 'blur(10px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 1, delay: 0.8, ease: ndsEase }}
+            >
+              I don't pitch ideas — I ship them. Three years building at the intersection
+              of marketing, technology, and AI. Midwest work ethic. Real results.
+            </motion.p>
+
+            <motion.div
               className="hero-cta"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.8, delay: 1.1, ease: ndsEase }}
             >
-              <Link to="/projects" className="btn btn-primary">
+              <Link to="/projects" className="btn btn-primary btn-magnetic">
                 See What I've Built
+                <span className="btn-arrow">&rarr;</span>
               </Link>
               <Link to="/contact" className="btn btn-secondary">
                 Get in Touch
               </Link>
             </motion.div>
+
+            {/* Scroll indicator */}
+            <motion.div
+              className="scroll-indicator"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 2, duration: 1 }}
+            >
+              <motion.div
+                className="scroll-indicator-line"
+                animate={{ scaleY: [0, 1, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              />
+              <span>Scroll</span>
+            </motion.div>
           </div>
         </div>
       </motion.section>
 
-      {/* Stats Bar - NDS Number Counters */}
-      <motion.section 
-        className="stats-bar"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.8 }}
-      >
+      {/* ═══════ STATS BAR ═══════ */}
+      <section className="stats-bar">
         <div className="container">
-          <div className="stats-grid">
-            <div className="stat-item">
-              <div className="stat-number">
-                <AnimatedNumber target={3} suffix="+" />
-              </div>
-              <p className="stat-label">Years Building</p>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number">
-                <AnimatedNumber target={5} suffix="+" />
-              </div>
-              <p className="stat-label">Applications Shipped</p>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number">
-                <AnimatedNumber target={100} suffix="+" />
-              </div>
-              <p className="stat-label">Users Educated</p>
-            </div>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* Capabilities - Card Grid */}
-      <section className="capabilities">
-        <div className="container">
-          <motion.div 
-            className="capabilities-grid"
+          <motion.div
+            className="stats-grid"
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
           >
-            <motion.div className="capability-card" variants={itemVariants}>
-              <h4>Marketing & Growth</h4>
-              <p>
-                Multi-channel campaigns driving customer acquisition. National product launches 
-                at Sub-Zero. eCommerce sites that convert.
-              </p>
-            </motion.div>
-            
-            <motion.div className="capability-card" variants={itemVariants}>
-              <h4>Building & Shipping</h4>
-              <p>
-                Blockchain token launcher. AI interview simulator. Productivity tools. 
-                Comfortable with React, Python, APIs. I don't just strategize—I ship.
-              </p>
-            </motion.div>
-            
-            <motion.div className="capability-card" variants={itemVariants}>
-              <h4>AI Applications</h4>
-              <p>
-                Daily AI user since ChatGPT launch. Created educational programs teaching 
-                practical use. Not an expert—an observer who understands how people work.
-              </p>
-            </motion.div>
+            {[
+              { target: 3, suffix: '+', label: 'Years Building' },
+              { target: 5, suffix: '+', label: 'Products Shipped' },
+              { target: 100, suffix: '+', label: 'People Educated' },
+            ].map((stat, i) => (
+              <motion.div className="stat-item" key={i} variants={itemVariants}>
+                <div className="stat-number">
+                  <AnimatedNumber target={stat.target} suffix={stat.suffix} />
+                </div>
+                <div className="stat-label-line" />
+                <p className="stat-label">{stat.label}</p>
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </section>
 
-      {/* Photo Section 1 - Giant Text Overlay + Supporting Text */}
+      {/* ═══════ CAPABILITIES — HORIZONTAL SCROLL ═══════ */}
+      <section ref={horizontalRef} className="capabilities-scroll-container">
+        <div className="capabilities-sticky">
+          <motion.div className="capabilities-track" style={{ x: horizontalX, opacity: horizontalOpacity }}>
+
+            {/* Header card */}
+            <div className="capability-header-card">
+              <p className="label">What I Do</p>
+              <h2 className="section-heading">Capabilities</h2>
+              <p className="capability-header-desc">
+                Not a specialist. A full-stack marketing leader who builds.
+              </p>
+            </div>
+
+            {/* Card 1 */}
+            <TiltCard className="capability-card-3d">
+              <div className="capability-card-number">01</div>
+              <h3>Growth Engine</h3>
+              <p>
+                National campaigns for Sub-Zero. Acquisition strategies that convert.
+                I've seen what moves the needle at scale — and I've done it myself.
+              </p>
+              <div className="capability-card-tags">
+                <span>Campaigns</span>
+                <span>eCommerce</span>
+                <span>Analytics</span>
+              </div>
+            </TiltCard>
+
+            {/* Card 2 */}
+            <TiltCard className="capability-card-3d">
+              <div className="capability-card-number">02</div>
+              <h3>Builder</h3>
+              <p>
+                Blockchain token launcher. AI interview platform. Productivity tools.
+                I don't wait for engineering — I am engineering.
+              </p>
+              <div className="capability-card-tags">
+                <span>React</span>
+                <span>Python</span>
+                <span>APIs</span>
+              </div>
+            </TiltCard>
+
+            {/* Card 3 */}
+            <TiltCard className="capability-card-3d">
+              <div className="capability-card-number">03</div>
+              <h3>AI Practitioner</h3>
+              <p>
+                Daily user since day one. Created education programs teaching real
+                workflows to real people. Not hype — utility.
+              </p>
+              <div className="capability-card-tags">
+                <span>AI Tools</span>
+                <span>Education</span>
+                <span>Workflow</span>
+              </div>
+            </TiltCard>
+
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ═══════ PHOTO SECTION 1 — PARALLAX ═══════ */}
       <PhotoSection
         sectionNumber={1}
         imageStyle={{
@@ -337,13 +493,13 @@ function Home() {
           backgroundImage: 'linear-gradient(135deg, #1a3a2e 0%, #2d5016 100%)'
         }}
         label="Philosophy"
-        giantText="Curiosity plus execution equals capability"
-        paragraph="I don't wait for permission to learn something new. When I wanted to understand blockchain, I built a token launcher. When I saw AI transforming how people work, I created a lecture series. The last three years weren't a gap—they were deliberate exploration."
+        giantText="Built, not borrowed"
+        paragraph="Every skill on this site was earned through work. When blockchain interested me, I shipped a token launcher. When AI changed the game, I taught others how to play. The last three years weren't a gap — they were deliberate construction."
       />
 
       <PokerTable slideFrom="right" />
 
-      {/* Photo Section 2 - Giant Text + Supporting */}
+      {/* ═══════ PHOTO SECTION 2 — PARALLAX ═══════ */}
       <PhotoSection
         sectionNumber={2}
         imageStyle={{
@@ -351,133 +507,99 @@ function Home() {
           backgroundImage: 'linear-gradient(135deg, #1e3a5f 0%, #2d5278 100%)'
         }}
         label="Approach"
-        giantText="Think big picture. Compartmentalize. Execute."
-        paragraph="I see systems, not just tasks. Whether it's a product launch, a marketing campaign, or a new application—I break complex goals into clear deliverables and ship them."
+        giantText="See systems. Ship solutions."
+        paragraph="Complex problems don't scare me — they organize me. I break what's overwhelming into what's next, then I build it. Think big picture. Compartmentalize. Execute."
       />
 
-      {/* Timeline - Prestige Section */}
+      {/* ═══════ EXPERIENCE TIMELINE ═══════ */}
       <section className="background">
         <div className="container">
-          <motion.p 
-            className="label"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            Experience
-          </motion.p>
-          
-          <motion.h2
-            className="section-heading"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            Background
-          </motion.h2>
-          
+          <RevealSection className="timeline-header" direction="left">
+            <p className="label">Experience</p>
+            <h2 className="section-heading">Background</h2>
+          </RevealSection>
+
           <div className="timeline">
-            <motion.div 
-              className="timeline-item"
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
-              <span className="timeline-year">2020-2023</span>
-              <div className="timeline-content">
-                <h4>Sub-Zero Group, Inc.</h4>
-                <p className="timeline-role">Sales Rotational Program</p>
-                <p>
-                  Inaugural candidate in 2.5-year program rotating through sales operations, 
-                  product marketing, and dealer sales for luxury kitchen appliances.
-                </p>
-              </div>
-            </motion.div>
-
-            <motion.div 
-              className="timeline-item"
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <span className="timeline-year">2023-2025</span>
-              <div className="timeline-content">
-                <h4>Independent Work</h4>
-                <p className="timeline-role">Client Marketing Manager</p>
-                <p>
-                  Drove acquisition campaigns for multiple clients. Designed and executed digital 
-                  strategies. Built applications. Explored AI tools daily.
-                </p>
-              </div>
-            </motion.div>
-
-            <motion.div 
-              className="timeline-item"
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
-              <span className="timeline-year">2026</span>
-              <div className="timeline-content">
-                <h4>Looking for the right full-time role</h4>
-                <p className="timeline-role">Next Chapter</p>
-                <p>
-                  Targeting marketing leadership positions (Director, CMO) with ambitious companies 
-                  where I can build, strategize, and execute.
-                </p>
-              </div>
-            </motion.div>
+            {[
+              {
+                year: '2020–2023',
+                title: 'Sub-Zero Group, Inc.',
+                role: 'Sales Rotational Program',
+                desc: 'Inaugural candidate in 2.5-year program. Rotated through sales operations, product marketing, and dealer sales for luxury kitchen appliances. Trained teams on Power BI. Managed national product launches.',
+                side: 'left'
+              },
+              {
+                year: '2023–2025',
+                title: 'Independent Work',
+                role: 'Builder & Client Marketing Manager',
+                desc: 'Drove acquisition campaigns for multiple clients. Built blockchain and AI applications. Designed digital strategies. Taught AI literacy. Moved from doing the work → outsourcing → strategic management.',
+                side: 'right'
+              },
+              {
+                year: '2026',
+                title: 'Next Chapter',
+                role: 'Marketing Leadership',
+                desc: 'Targeting Director or CMO roles with ambitious companies where I can combine strategic thinking with hands-on execution. Ready to build something that matters.',
+                side: 'left'
+              }
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                className={`timeline-item timeline-${item.side}`}
+                initial={{ opacity: 0, x: item.side === 'left' ? -80 : 80, rotateY: item.side === 'left' ? -15 : 15 }}
+                whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.9, ease: ndsEase, delay: i * 0.15 }}
+              >
+                <span className="timeline-year">{item.year}</span>
+                <div className="timeline-content">
+                  <h4>{item.title}</h4>
+                  <p className="timeline-role">{item.role}</p>
+                  <p>{item.desc}</p>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Final CTA */}
-      <motion.section 
-        className="cta"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1 }}
-      >
+      {/* ═══════ FINAL CTA ═══════ */}
+      <section className="cta">
         <div className="container">
           <div className="cta-content">
             <motion.h2
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
+              initial={{ opacity: 0, scale: 0.85, y: 60 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true, margin: "-10%" }}
+              transition={{ duration: 1, ease: ndsEase }}
             >
-              I'm looking for a marketing leadership role
+              Let's build something.
             </motion.h2>
-            
+
             <motion.p
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              transition={{ duration: 0.8, delay: 0.3, ease: ndsEase }}
             >
-              I want to join a growing company where I can combine strategic thinking with 
-              hands-on execution. If you're building something ambitious—let's talk.
+              I'm looking for a marketing leadership role at a company that values
+              craft, speed, and substance. If that's you — let's talk.
             </motion.p>
-            
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+              transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
             >
-              <Link to="/contact" className="btn btn-primary">
+              <Link to="/contact" className="btn btn-primary cta-btn">
                 Get in Touch
+                <span className="btn-arrow">&rarr;</span>
               </Link>
             </motion.div>
           </div>
         </div>
-      </motion.section>
+      </section>
     </div>
     </PageTransition>
   )

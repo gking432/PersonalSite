@@ -1,44 +1,99 @@
-/* 
-HOME PAGE - HYBRID NDS + PRESTIGE
-Giant typography + NDS animations + Prestige warmth
+/*
+HOME PAGE — NDS + PRESTIGE + FAUX-3D
+Horizontal scroll, tilt cards, parallax, clip-path reveals
+"Earned money. Midwest excellence."
 */
 
 .home {
   background-color: var(--parchment);
-  padding-top: 80px; /* Account for fixed navbar */
+  padding-top: 80px;
+  overflow-x: hidden;
 }
 
-/* ==========================================
-   HERO - NDS Scale
-   ========================================== */
+/* ═══════════════════════════════════════════
+   SCROLL PROGRESS INDICATOR
+   ═══════════════════════════════════════════ */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100vh;
+  background: var(--forest-green);
+  transform-origin: top;
+  z-index: 9999;
+}
+
+/* ═══════════════════════════════════════════
+   HERO — 3D PERSPECTIVE + LETTER ANIMATION
+   ═══════════════════════════════════════════ */
 .hero {
-  min-height: 90vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   position: relative;
   padding: var(--space-3xl) 0;
-  background: linear-gradient(to bottom, var(--cream) 0%, var(--parchment) 100%);
+  background: var(--parchment);
+  overflow: hidden;
+  perspective: 1200px;
+}
+
+/* Subtle grid background */
+.hero-grid-bg {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(26, 58, 46, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26, 58, 46, 0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black, transparent);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black, transparent);
+  pointer-events: none;
 }
 
 .hero-content {
-  max-width: 1000px;
+  max-width: 1100px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-label {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--forest-green);
+  margin-bottom: var(--space-md);
+  display: block;
+}
+
+.hero-title-wrapper {
+  transform-style: preserve-3d;
+  margin-bottom: var(--space-lg);
 }
 
 .hero-headline {
   font-family: var(--font-display);
-  font-size: clamp(4rem, 12vw, 10rem);
+  font-size: clamp(4rem, 12vw, 11rem);
   font-weight: 700;
-  line-height: 0.95;
+  line-height: 0.92;
   letter-spacing: -0.04em;
   color: var(--charcoal);
-  margin-bottom: var(--space-lg);
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.hero-letter {
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
 }
 
 .hero-subheadline {
-  font-size: clamp(1.15rem, 2.5vw, 1.35rem);
+  font-size: clamp(1.15rem, 2.5vw, 1.4rem);
   line-height: 1.7;
   color: var(--slate);
-  max-width: 700px;
+  max-width: 680px;
   margin-bottom: var(--space-xl);
   font-weight: 400;
 }
@@ -47,16 +102,65 @@ Giant typography + NDS animations + Prestige warmth
   display: flex;
   gap: var(--space-md);
   flex-wrap: wrap;
+  align-items: center;
 }
 
-/* ==========================================
-   STATS BAR - NDS Giant Numbers
-   ========================================== */
+/* Arrow in buttons */
+.btn-arrow {
+  display: inline-block;
+  transition: transform 0.3s var(--ease-out);
+  margin-left: 8px;
+}
+
+.btn:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.scroll-indicator-line {
+  width: 1px;
+  height: 48px;
+  background: var(--forest-green);
+  transform-origin: top;
+}
+
+.scroll-indicator span {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+}
+
+/* ═══════════════════════════════════════════
+   STATS BAR — GIANT NUMBERS + DEPTH
+   ═══════════════════════════════════════════ */
 .stats-bar {
   background-color: var(--forest-green);
   padding: var(--space-2xl) 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle noise texture */
+.stats-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
 }
 
 .stats-grid {
@@ -64,10 +168,13 @@ Giant typography + NDS animations + Prestige warmth
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-xl);
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 .stat-item {
   color: var(--cream);
+  perspective: 800px;
 }
 
 .stat-number {
@@ -80,63 +187,173 @@ Giant typography + NDS animations + Prestige warmth
   color: var(--cream);
 }
 
+.stat-label-line {
+  width: 40px;
+  height: 2px;
+  background: rgba(244, 241, 234, 0.3);
+  margin: var(--space-sm) auto;
+}
+
 .stat-label {
   font-family: var(--font-sans);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(244, 241, 234, 0.7);
+  color: rgba(244, 241, 234, 0.6);
   margin: 0;
 }
 
-/* ==========================================
-   CAPABILITIES - NDS Card Grid
-   ========================================== */
-.capabilities {
-  background-color: var(--off-white);
-  padding: var(--space-3xl) 0;
-  border-top: 1px solid var(--gray-200);
-  border-bottom: 1px solid var(--gray-200);
+/* ═══════════════════════════════════════════
+   CAPABILITIES — HORIZONTAL SCROLL + 3D TILT
+   ═══════════════════════════════════════════ */
+.capabilities-scroll-container {
+  height: 300vh; /* scroll runway */
+  position: relative;
 }
 
-.capabilities-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.capabilities-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background-color: var(--charcoal);
+}
+
+.capabilities-track {
+  display: flex;
   gap: var(--space-lg);
+  padding: 0 var(--space-xl);
+  will-change: transform;
+  align-items: center;
 }
 
-.capability-card {
-  background: var(--white);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--border-radius-lg);
-  padding: var(--space-lg);
-  transition: all var(--duration-base) var(--ease-out);
+/* Header card (first item in track) */
+.capability-header-card {
+  min-width: 400px;
+  max-width: 400px;
+  flex-shrink: 0;
+  padding: var(--space-xl) var(--space-lg);
 }
 
-.capability-card:hover {
-  border-color: var(--forest-green);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-  transform: translateY(-4px);
-}
-
-.capability-card h4 {
-  font-family: var(--font-serif);
-  font-size: 1.75rem;
+.capability-header-card .label {
+  color: rgba(244, 241, 234, 0.5);
   margin-bottom: var(--space-md);
-  color: var(--forest-green);
-  line-height: 1.2;
 }
 
-.capability-card p {
+.capability-header-card .section-heading {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 5rem);
+  color: var(--cream);
+  margin-bottom: var(--space-md);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+
+.capability-header-desc {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: rgba(244, 241, 234, 0.7) !important;
+  max-width: 100% !important;
+}
+
+/* 3D TILT CARD */
+.tilt-card {
+  position: relative;
+  perspective: 800px;
+  cursor: default;
+}
+
+.tilt-card-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.tilt-card-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Capability cards (inside tilt) */
+.capability-card-3d {
+  min-width: 420px;
+  max-width: 420px;
+  flex-shrink: 0;
+  background: rgba(244, 241, 234, 0.06);
+  border: 1px solid rgba(244, 241, 234, 0.12);
+  border-radius: 20px;
+  padding: var(--space-lg) var(--space-lg) var(--space-md);
+  transition: background 0.4s var(--ease-out), border-color 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out);
+  overflow: hidden;
+}
+
+.capability-card-3d:hover {
+  background: rgba(244, 241, 234, 0.1);
+  border-color: rgba(244, 241, 234, 0.25);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(244, 241, 234, 0.1);
+}
+
+.capability-card-number {
+  font-family: var(--font-display);
+  font-size: 4rem;
+  font-weight: 700;
+  color: rgba(244, 241, 234, 0.08);
+  line-height: 1;
+  margin-bottom: var(--space-md);
+  letter-spacing: -0.02em;
+}
+
+.capability-card-3d h3 {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  color: var(--cream);
+  margin-bottom: var(--space-md);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.capability-card-3d p {
   font-size: 1rem;
   line-height: 1.75;
-  color: var(--slate);
+  color: rgba(244, 241, 234, 0.7);
+  margin-bottom: var(--space-lg);
+  max-width: 100%;
 }
 
-/* ==========================================
-   PHOTO SECTIONS - GIANT TEXT + TALLER
-   ========================================== */
+.capability-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.capability-card-tags span {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 234, 0.4);
+  padding: 6px 14px;
+  border: 1px solid rgba(244, 241, 234, 0.15);
+  border-radius: 100px;
+  transition: all 0.3s var(--ease-out);
+}
+
+.capability-card-3d:hover .capability-card-tags span {
+  color: rgba(244, 241, 234, 0.7);
+  border-color: rgba(244, 241, 234, 0.3);
+}
+
+/* ═══════════════════════════════════════════
+   PHOTO SECTIONS — PARALLAX + GIANT TEXT
+   ═══════════════════════════════════════════ */
 .photo-section {
   position: relative;
   height: 200vh;
@@ -155,21 +372,19 @@ Giant typography + NDS animations + Prestige warmth
 
 .photo-section-image {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: -10%;
+  left: -5%;
+  width: 110%;
+  height: 120%;
   object-fit: cover;
   filter: grayscale(30%) contrast(1.1);
   z-index: 0;
+  will-change: transform;
 }
 
 .photo-section-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background-image: url('/overlook13.svg');
   background-size: cover;
   background-position: center;
@@ -192,7 +407,6 @@ Giant typography + NDS animations + Prestige warmth
   margin: 0 auto;
 }
 
-/* GIANT TEXT OVERLAY - NDS Signature */
 .giant-text {
   font-family: var(--font-display);
   font-size: clamp(3rem, 12vw, 10rem);
@@ -202,10 +416,8 @@ Giant typography + NDS animations + Prestige warmth
   color: var(--cream);
   margin: 0 0 var(--space-lg) 0;
   max-width: 1100px;
-  transition: font-weight 0.4s ease-out;
 }
 
-/* Supporting text appears after giant text */
 .photo-section-text-wrapper {
   position: relative;
   max-width: 600px;
@@ -218,7 +430,6 @@ Giant typography + NDS animations + Prestige warmth
   visibility: hidden;
   margin: 0;
   padding: 0;
-  /* This reserves the space */
 }
 
 .photo-section-text {
@@ -231,118 +442,22 @@ Giant typography + NDS animations + Prestige warmth
   top: 0;
   left: 0;
   width: 100%;
-  /* Overlay on top of invisible text */
 }
 
-/* ==========================================
-   PROJECTS - NDS CARD GRID
-   ========================================== */
-.projects {
-  padding: var(--space-3xl) 0;
-  background-color: var(--parchment);
-}
-
-.section-heading {
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
-  margin-bottom: var(--space-2xl);
-  line-height: 1.0;
-}
-
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: var(--space-lg);
-  margin-bottom: var(--space-xl);
-}
-
-.project-card {
-  background: var(--cream);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--border-radius-lg);
-  padding: var(--space-lg);
-  transition: all var(--duration-base) var(--ease-out);
-  display: flex;
-  flex-direction: column;
-}
-
-.project-card:hover {
-  border-color: var(--forest-green);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-  transform: translateY(-4px);
-}
-
-.project-stat {
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--forest-green);
-  margin-bottom: var(--space-sm);
-}
-
-.project-card h3 {
-  font-family: var(--font-serif);
-  font-size: 1.75rem;
-  margin-bottom: var(--space-md);
-  color: var(--charcoal);
-  line-height: 1.2;
-}
-
-.project-card p {
-  font-size: 1rem;
-  line-height: 1.75;
-  color: var(--slate);
-  margin-bottom: var(--space-md);
-  flex-grow: 1;
-}
-
-.project-tech {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-  margin-top: auto;
-}
-
-.project-tech span {
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--warm-gray);
-  padding: 6px 12px;
-  border: 1px solid var(--gray-200);
-  border-radius: var(--border-radius-sm);
-  transition: all var(--duration-fast);
-}
-
-.project-card:hover .project-tech span {
-  border-color: var(--forest-green);
-  color: var(--forest-green);
-}
-
-.projects-cta {
-  text-align: center;
-  margin-top: var(--space-xl);
-}
-
-/* ==========================================
-   TIMELINE - PRESTIGE SECTION
-   ========================================== */
+/* ═══════════════════════════════════════════
+   TIMELINE — 3D SLIDE-IN FROM SIDES
+   ═══════════════════════════════════════════ */
 .background {
   padding: var(--space-3xl) 0;
   background-color: var(--cream);
   position: relative;
+  perspective: 1000px;
 }
 
 .background::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
   pointer-events: none;
 }
@@ -352,11 +467,15 @@ Giant typography + NDS animations + Prestige warmth
   z-index: 1;
 }
 
+.timeline-header {
+  margin-bottom: var(--space-2xl);
+}
+
 .timeline {
-  max-width: 800px;
+  max-width: 900px;
+  margin: 0 auto;
   position: relative;
   padding-left: 3rem;
-  margin-top: var(--space-2xl);
 }
 
 .timeline::before {
@@ -366,7 +485,7 @@ Giant typography + NDS animations + Prestige warmth
   top: 0;
   bottom: 0;
   width: 2px;
-  background-color: var(--forest-green);
+  background: linear-gradient(to bottom, transparent, var(--forest-green), transparent);
   opacity: 0.3;
 }
 
@@ -374,6 +493,7 @@ Giant typography + NDS animations + Prestige warmth
   position: relative;
   margin-bottom: var(--space-2xl);
   padding-left: 3rem;
+  transform-style: preserve-3d;
 }
 
 .timeline-item::before {
@@ -387,6 +507,7 @@ Giant typography + NDS animations + Prestige warmth
   border-radius: 50%;
   border: 3px solid var(--cream);
   box-shadow: 0 0 0 3px var(--forest-green);
+  z-index: 1;
 }
 
 .timeline-year {
@@ -402,7 +523,7 @@ Giant typography + NDS animations + Prestige warmth
 
 .timeline-content h4 {
   font-family: var(--font-serif);
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   margin-bottom: var(--space-xs);
   color: var(--charcoal);
   line-height: 1.2;
@@ -424,9 +545,9 @@ Giant typography + NDS animations + Prestige warmth
   max-width: 600px;
 }
 
-/* ==========================================
-   FINAL CTA
-   ========================================== */
+/* ═══════════════════════════════════════════
+   FINAL CTA — SCALE-IN + DEPTH
+   ═══════════════════════════════════════════ */
 .cta {
   padding: var(--space-3xl) 0;
   background-color: var(--forest-green);
@@ -439,11 +560,22 @@ Giant typography + NDS animations + Prestige warmth
 .cta::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Radial glow behind CTA */
+.cta::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(244, 241, 234, 0.06), transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -456,18 +588,25 @@ Giant typography + NDS animations + Prestige warmth
 }
 
 .cta h2 {
+  font-family: var(--font-display);
   color: var(--cream);
-  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-size: clamp(2.5rem, 8vw, 5rem);
   margin-bottom: var(--space-md);
-  line-height: 1.1;
+  line-height: 1.0;
+  letter-spacing: -0.03em;
 }
 
 .cta p {
-  color: rgba(244, 241, 234, 0.85);
-  font-size: 1.15rem;
+  color: rgba(244, 241, 234, 0.8);
+  font-size: 1.2rem;
   line-height: 1.8;
   margin-bottom: var(--space-xl);
   max-width: 100%;
+}
+
+.cta-btn {
+  font-size: 1.1rem;
+  padding: 20px 48px;
 }
 
 .cta .btn-primary {
@@ -480,28 +619,31 @@ Giant typography + NDS animations + Prestige warmth
   background-color: transparent;
   color: var(--cream);
   border-color: var(--cream);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
-/* ==========================================
+/* ═══════════════════════════════════════════
    RESPONSIVE
-   ========================================== */
+   ═══════════════════════════════════════════ */
 @media (max-width: 1024px) {
-  .capabilities-grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-md);
-  }
-  
   .stats-grid {
     grid-template-columns: 1fr;
     gap: var(--space-lg);
   }
-  
-  .projects-grid {
-    grid-template-columns: 1fr;
-  }
-  
+
   .giant-text {
     font-size: clamp(2.5rem, 10vw, 6rem);
+  }
+
+  /* Horizontal scroll — reduce card sizes */
+  .capability-header-card {
+    min-width: 300px;
+    max-width: 300px;
+  }
+
+  .capability-card-3d {
+    min-width: 340px;
+    max-width: 340px;
   }
 }
 
@@ -509,55 +651,94 @@ Giant typography + NDS animations + Prestige warmth
   .home {
     padding-top: 70px;
   }
-  
+
   .hero {
-    min-height: 75vh;
+    min-height: 85vh;
     padding: var(--space-2xl) 0;
   }
-  
+
   .hero-cta {
     flex-direction: column;
     width: 100%;
   }
-  
+
+  .scroll-indicator {
+    display: none;
+  }
+
   .stats-bar {
     padding: var(--space-xl) 0;
   }
-  
+
   .stat-number {
     font-size: clamp(3rem, 10vw, 6rem);
   }
-  
+
+  /* Horizontal scroll — stack on mobile */
+  .capabilities-scroll-container {
+    height: auto;
+  }
+
+  .capabilities-sticky {
+    position: relative;
+    height: auto;
+    flex-direction: column;
+    padding: var(--space-2xl) 0;
+  }
+
+  .capabilities-track {
+    flex-direction: column;
+    padding: 0 var(--gutter);
+    gap: var(--space-md);
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  .capability-header-card {
+    min-width: auto;
+    max-width: 100%;
+    padding: var(--space-lg) 0;
+  }
+
+  .capability-card-3d {
+    min-width: auto;
+    max-width: 100%;
+  }
+
   .photo-section {
     min-height: 100vh;
   }
-  
+
   .photo-section-overlay {
     background: rgba(26, 58, 46, 0.85);
   }
-  
+
   .giant-text {
     font-size: clamp(2rem, 9vw, 4rem);
   }
-  
+
   .photo-section-text {
     font-size: 1rem;
   }
-  
+
   .photo-section-content {
     gap: var(--space-lg);
   }
-  
+
   .timeline {
     padding-left: 2rem;
   }
-  
+
   .timeline-item {
     padding-left: 2rem;
   }
-  
+
   .timeline-item::before {
     left: -2rem;
+  }
+
+  .cta h2 {
+    font-size: clamp(2rem, 8vw, 3.5rem);
   }
 }
 
@@ -565,17 +746,12 @@ Giant typography + NDS animations + Prestige warmth
   .stat-number {
     font-size: 3rem;
   }
-  
+
   .giant-text {
     font-size: clamp(1.75rem, 8vw, 3rem);
   }
-  
-  .project-tech {
-    gap: 8px;
-  }
-  
-  .project-tech span {
-    font-size: 0.7rem;
-    padding: 4px 10px;
+
+  .hero-headline {
+    font-size: clamp(3rem, 14vw, 6rem);
   }
 }
