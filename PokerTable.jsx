@@ -38,8 +38,11 @@ function PokerTable() {
   // Table slides in from right
   const tableX = useTransform(scrollYProgress, [0, 0.4], [1800, 0])
 
-  // Shadow fades in with table
-  const shadowOpacity = useTransform(scrollYProgress, [0.1, 0.4], [0, 1])
+  // Shadow fades in with table, fades out before next section
+  const shadowOpacity = useTransform(scrollYProgress, [0.1, 0.4, 0.75, 0.88], [0, 1, 1, 0])
+
+  // Entire wrapper fades out so nothing bleeds into the next section
+  const wrapperOpacity = useTransform(scrollYProgress, [0.75, 0.88], [1, 0])
 
   // Deal cards ONLY after table is fully in (scrollYProgress >= 0.4)
   useEffect(() => {
@@ -116,7 +119,7 @@ function PokerTable() {
 
   return (
     <section className="poker-table-section" ref={sectionRef}>
-      <div className="poker-table-wrapper">
+      <motion.div className="poker-table-wrapper" style={{ opacity: wrapperOpacity }}>
         {/* Shadow Overlay */}
         <motion.div
           className="poker-table-shadow-overlay"
@@ -197,7 +200,7 @@ function PokerTable() {
             </button>
           </motion.div>
         </div>
-      </div>
+      </motion.div>
 
       {/* ═══════ INSPECTION MODAL — TRUE 3D CARD FLIP ═══════ */}
       <AnimatePresence>
@@ -209,7 +212,7 @@ function PokerTable() {
               className="inspection-overlay"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0, transition: { duration: 0.4, delay: 0.1 } }}
+              exit={{ opacity: 0, transition: { duration: 0.5, delay: 0.15 } }}
               onClick={handleDismiss}
             />
 
@@ -241,15 +244,15 @@ function PokerTable() {
                 y: '-50%',
                 width: cardPositionRef.current.width,
                 height: cardPositionRef.current.height,
-                transition: { duration: 0.5, ease: ndsEase }
+                transition: { duration: 0.45, delay: 0.2, ease: ndsEase }
               }}
             >
-              {/* Inner container handles the 3D flip rotation */}
+              {/* Inner container — flip back FIRST, then outer slides card to deck */}
               <motion.div
                 className="inspected-card-inner"
                 initial={{ rotateY: 0 }}
                 animate={{ rotateY: 180, transition: { duration: 0.6, ease: ndsEase } }}
-                exit={{ rotateY: 0, transition: { duration: 0.5, ease: ndsEase } }}
+                exit={{ rotateY: 0, transition: { duration: 0.3, ease: ndsEase } }}
               >
                 {/* BACK FACE — card back image (visible at rotateY: 0) */}
                 <div className="inspected-face inspected-face-back">
