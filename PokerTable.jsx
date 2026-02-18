@@ -35,14 +35,14 @@ function PokerTable() {
     offset: ["start end", "end start"]
   })
 
-  // Table slides in from right
-  const tableX = useTransform(scrollYProgress, [0, 0.4], [1800, 0])
+  // Table slides in from right, then slides back out on continued scroll
+  const tableX = useTransform(scrollYProgress, [0, 0.4, 0.7, 0.88], [1800, 0, 0, 1800])
 
-  // Shadow fades in with table, fades out before next section
-  const shadowOpacity = useTransform(scrollYProgress, [0.1, 0.4, 0.75, 0.88], [0, 1, 1, 0])
+  // Shadow fades in with table, fades out BEFORE table starts sliding out
+  const shadowOpacity = useTransform(scrollYProgress, [0.1, 0.4, 0.58, 0.7], [0, 1, 1, 0])
 
-  // Entire wrapper fades out so nothing bleeds into the next section
-  const wrapperOpacity = useTransform(scrollYProgress, [0.75, 0.88], [1, 0])
+  // Text column fades out alongside the shadow
+  const contentOpacity = useTransform(scrollYProgress, [0.58, 0.7], [1, 0])
 
   // Deal cards ONLY after table is fully in (scrollYProgress >= 0.4)
   useEffect(() => {
@@ -119,7 +119,7 @@ function PokerTable() {
 
   return (
     <section className="poker-table-section" ref={sectionRef}>
-      <motion.div className="poker-table-wrapper" style={{ opacity: wrapperOpacity }}>
+      <div className="poker-table-wrapper">
         {/* Shadow Overlay */}
         <motion.div
           className="poker-table-shadow-overlay"
@@ -129,7 +129,7 @@ function PokerTable() {
         </motion.div>
 
         {/* Left Column - Text Content */}
-        <div className="poker-content-column">
+        <motion.div className="poker-content-column" style={{ opacity: contentOpacity }}>
           <div className="container">
             <motion.p
               className="label"
@@ -158,7 +158,7 @@ function PokerTable() {
               <p>GO AHEAD, PICK ONE</p>
             </motion.div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Right Column - Poker Table */}
         <div className="poker-table-column">
@@ -200,7 +200,7 @@ function PokerTable() {
             </button>
           </motion.div>
         </div>
-      </motion.div>
+      </div>
 
       {/* ═══════ INSPECTION MODAL — TRUE 3D CARD FLIP ═══════ */}
       <AnimatePresence>
@@ -212,7 +212,7 @@ function PokerTable() {
               className="inspection-overlay"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0, transition: { duration: 0.5, delay: 0.15 } }}
+              exit={{ opacity: 0, transition: { duration: 0.4, delay: 0.25 } }}
               onClick={handleDismiss}
             />
 
@@ -244,15 +244,21 @@ function PokerTable() {
                 y: '-50%',
                 width: cardPositionRef.current.width,
                 height: cardPositionRef.current.height,
-                transition: { duration: 0.45, delay: 0.2, ease: ndsEase }
+                opacity: 0,
+                transition: {
+                  duration: 0.6,
+                  delay: 0.35,
+                  ease: ndsEase,
+                  opacity: { duration: 0.15, delay: 0.8 }
+                }
               }}
             >
-              {/* Inner container — flip back FIRST, then outer slides card to deck */}
+              {/* Inner — flip back FIRST (0.35s), then outer slides card to deck */}
               <motion.div
                 className="inspected-card-inner"
                 initial={{ rotateY: 0 }}
                 animate={{ rotateY: 180, transition: { duration: 0.6, ease: ndsEase } }}
-                exit={{ rotateY: 0, transition: { duration: 0.3, ease: ndsEase } }}
+                exit={{ rotateY: 0, transition: { duration: 0.35, ease: ndsEase } }}
               >
                 {/* BACK FACE — card back image (visible at rotateY: 0) */}
                 <div className="inspected-face inspected-face-back">
