@@ -1,115 +1,77 @@
-import { motion, AnimatePresence, useScroll, useTransform, useAnimationControls, useInView } from 'framer-motion'
+import { motion, AnimatePresence, useScroll, useTransform, useAnimationControls } from 'framer-motion'
 import { useState, useRef, useEffect } from 'react'
 import './PokerTable.css'
 
-// Import your SVG files
-// Place Pokertable.svg, Cardback.svg, and Shadow.svg in /public/images/
 const POKER_TABLE_SVG = '/images/Pokertable.svg'
 const CARD_BACK_SVG = '/images/Cardback.svg'
 const SHADOW_SVG = '/images/Shadow.svg'
 
+const ndsEase = [0.22, 1, 0.36, 1]
+
 function PokerTable() {
-  const [inspectingCard, setInspectingCard] = useState(null) // null or card index (0, 1, 2)
-  const [cardsDealt, setCardsDealt] = useState(false) // Track if cards should start dealing
-  const [showPrompt, setShowPrompt] = useState(false) // Track if prompt should be visible
+  const [inspectingCard, setInspectingCard] = useState(null)
+  const [showPrompt, setShowPrompt] = useState(false)
   const sectionRef = useRef(null)
-  const containerRef = useRef(null)
-  const cardRefs = [useRef(null), useRef(null), useRef(null)] // Refs for each card to get their positions
-  const cardPositionRef = useRef(null) // Captured at click time for modal alignment
-  
-  // Returns position of table card; dimensions always 280x427 (matches .card-container)
-  const getCardPosition = (index) => {
-    const cardElement = cardRefs[index]?.current
-    if (!cardElement) return null
-    const rect = cardElement.getBoundingClientRect()
-    const cardRotation = cardPositions[index].rotate
-    const totalRotation = -45 + cardRotation
-    return {
-      left: rect.left,
-      top: rect.top,
-      width: 280,
-      height: 427,
-      rotate: totalRotation
-    }
-  }
-  
-  // Animation controls for each card - set initial state to off-screen
+  const cardRefs = [useRef(null), useRef(null), useRef(null)]
+  const cardPositionRef = useRef(null)
+  const cardsDealtRef = useRef(false)
+
+  // Animation controls for each card
   const card1Controls = useAnimationControls()
   const card2Controls = useAnimationControls()
   const card3Controls = useAnimationControls()
-  
-  // Initialize cards to off-screen position
+  const cardControls = [card1Controls, card2Controls, card3Controls]
+
+  // Initialize cards off-screen
   useEffect(() => {
     card1Controls.set({ x: 3000, y: 0, rotate: 99, opacity: 1 })
     card2Controls.set({ x: 3000, y: 0, rotate: 99, opacity: 1 })
     card3Controls.set({ x: 3000, y: 0, rotate: 99, opacity: 1 })
   }, [card1Controls, card2Controls, card3Controls])
-  // Scroll animation for poker table - slides in from right
-  // Uses same sticky scroll pattern as PhotoSection - section "sticks" for 200vh of scroll
-  // Start tracking much earlier - when section is still below viewport
+
+  // Scroll tracking
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ["start end", "end start"] // Track from when section start reaches viewport bottom to when section end reaches viewport top
+    offset: ["start end", "end start"]
   })
-  
-  // Map scroll progress (0-1) to x position
-  // Animation starts much earlier - when section is approaching viewport
-  // Table starts completely off-screen to the right and slides into position
-  // The container already has right: -200px, so we add transform to move it further right initially
-  const tableX = useTransform(
-    scrollYProgress,
-    [0, 0.4], // Animation happens in first 40% of scroll (starts when section is approaching)
-    [1800, 0] // X position: start 1800px to the right (completely off-screen), end at 0 (final position)
-  )
-  
-  // Shadow fade-in animation - matches table slide-in exactly
-  const shadowOpacity = useTransform(
-    scrollYProgress,
-    [0, 0.4], // Same range as table animation - starts much earlier
-    [0, 1] // Fade in from transparent to fully visible
-  )
-  
-  // Trigger deal when section is in view (reliable) OR scroll progress reaches 0.4 (fallback)
-  const isSectionInView = useInView(sectionRef, { amount: 0.15, once: true })
-  
+
+  // Table slides in from right
+  const tableX = useTransform(scrollYProgress, [0, 0.4], [1800, 0])
+
+  // Shadow fades in with table
+  const shadowOpacity = useTransform(scrollYProgress, [0.1, 0.4], [0, 1])
+
+  // Deal cards ONLY after table is fully in (scrollYProgress >= 0.4)
   useEffect(() => {
-    const triggerDeal = () => {
-      if (cardsDealt) return
-      setCardsDealt(true)
-      card1Controls.start({
-        x: 0,
-        y: 0,
-        rotate: -15,
-        transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
-      })
-      setTimeout(() => {
-        card2Controls.start({
-          x: 120,
-          y: -18,
-          rotate: -3,
-          transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
-        })
-      }, 500)
-      setTimeout(() => {
-        card3Controls.start({
-          x: 240,
-          y: -5,
-          rotate: 9,
-          transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
-        })
-        setTimeout(() => setShowPrompt(true), 2300)
-      }, 1000)
-    }
-
-    if (isSectionInView) triggerDeal()
-
     const unsubscribe = scrollYProgress.on("change", (latest) => {
-      if (latest >= 0.4) triggerDeal()
+      if (latest >= 0.4 && !cardsDealtRef.current) {
+        cardsDealtRef.current = true
+
+        card1Controls.start({
+          x: 0, y: 0, rotate: -15,
+          transition: { duration: 0.8, ease: ndsEase }
+        })
+
+        setTimeout(() => {
+          card2Controls.start({
+            x: 120, y: -18, rotate: -3,
+            transition: { duration: 0.8, ease: ndsEase }
+          })
+        }, 500)
+
+        setTimeout(() => {
+          card3Controls.start({
+            x: 240, y: -5, rotate: 9,
+            transition: { duration: 0.8, ease: ndsEase }
+          })
+          setTimeout(() => setShowPrompt(true), 2300)
+        }, 1000)
+      }
     })
     return () => unsubscribe()
-  }, [isSectionInView, scrollYProgress, cardsDealt, card1Controls, card2Controls, card3Controls])
-  
-  // All projects data
+  }, [scrollYProgress, card1Controls, card2Controls, card3Controls])
+
+  // Projects data
   const projects = [
     {
       name: "Aptos Token Launcher",
@@ -133,40 +95,40 @@ function PokerTable() {
       link: "/projects/lectures"
     }
   ]
-  
-  // Card positions for inspection modal - match actual table positions
-  // These positions are relative to the cards-area container
-  const cardPositions = [
-    { x: 0, y: 0, rotate: -15 },    // Card 1 (left): matches final animation position
-    { x: 120, y: -18, rotate: -3 },  // Card 2 (middle): matches final animation position
-    { x: 240, y: -5, rotate: 9 }     // Card 3 (right): matches final animation position
-  ]
-  
-  // Handle card click - capture position before modal opens so it aligns with table card
+
+  // Handle card click — capture the card's visual center + size
   const handleCardClick = (index) => {
-    cardPositionRef.current = getCardPosition(index)
+    const cardEl = cardRefs[index]?.current
+    if (!cardEl) return
+    const rect = cardEl.getBoundingClientRect()
+    cardPositionRef.current = {
+      centerX: rect.left + rect.width / 2,
+      centerY: rect.top + rect.height / 2,
+      width: rect.width,
+      height: rect.height,
+    }
     setInspectingCard(index)
   }
-  
-  // Handle dismiss
+
   const handleDismiss = () => {
     setInspectingCard(null)
   }
-  
+
   return (
     <section className="poker-table-section" ref={sectionRef}>
       <div className="poker-table-wrapper">
-        {/* Shadow Overlay - inside wrapper so it sticks with content, fades in with table */}
-        <motion.div 
+        {/* Shadow Overlay */}
+        <motion.div
           className="poker-table-shadow-overlay"
           style={{ opacity: shadowOpacity }}
         >
           <img src={SHADOW_SVG} alt="" />
         </motion.div>
+
         {/* Left Column - Text Content */}
         <div className="poker-content-column">
           <div className="container">
-            <motion.p 
+            <motion.p
               className="label"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -184,63 +146,49 @@ function PokerTable() {
             >
               Selected Projects
             </motion.h2>
-            <motion.div 
+            <motion.div
               className="poker-prompt"
               initial={{ opacity: 0 }}
               animate={{ opacity: showPrompt ? 1 : 0 }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.6, ease: ndsEase }}
             >
               <p>GO AHEAD, PICK ONE</p>
             </motion.div>
           </div>
         </div>
-        
+
         {/* Right Column - Poker Table */}
         <div className="poker-table-column">
-          <motion.div 
+          <motion.div
             className="poker-table-container"
             style={{ x: tableX }}
           >
-            {/* Poker Table SVG */}
             <div className="poker-table-image">
               <img src={POKER_TABLE_SVG} alt="Poker Table" />
             </div>
-            
-            {/* Cards - dealt one by one after table animation */}
+
+            {/* Cards */}
             <div className="cards-area">
-              {projects.map((project, i) => {
-                // Get the appropriate animation controls for each card
-                const cardControls = i === 0 ? card1Controls : i === 1 ? card2Controls : card3Controls
-                
-                return (
-                  <motion.div
-                    key={i}
-                    ref={cardRefs[i]}
-                    className="card-container"
-                    animate={cardControls}
-                    initial={{
-                      x: 3000, // Start off-screen to the right
-                      y: 0,
-                      rotate: 99, // Start at 99 degrees
-                      opacity: 1 // Fully visible, just off-screen
-                    }}
-                    whileHover={{
-                      scale: 1.05, // Slightly larger on hover
-                      transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] }
-                    }}
-                    onClick={() => handleCardClick(i)}
-                  >
-                    {/* Shadow */}
-                    <img src={SHADOW_SVG} className="card-shadow" alt="" />
-                    
-                    {/* Card Back */}
-                    <img src={CARD_BACK_SVG} className="card-back" alt="Card back" />
-                  </motion.div>
-                )
-              })}
+              {projects.map((project, i) => (
+                <motion.div
+                  key={i}
+                  ref={cardRefs[i]}
+                  className={`card-container ${inspectingCard === i ? 'card-hidden' : ''}`}
+                  animate={cardControls[i]}
+                  initial={{ x: 3000, y: 0, rotate: 99, opacity: 1 }}
+                  whileHover={{
+                    scale: 1.08,
+                    y: -10,
+                    transition: { duration: 0.2, ease: ndsEase }
+                  }}
+                  onClick={() => handleCardClick(i)}
+                >
+                  <img src={SHADOW_SVG} className="card-shadow" alt="" />
+                  <img src={CARD_BACK_SVG} className="card-back" alt="Card back" />
+                </motion.div>
+              ))}
             </div>
-            
-            {/* Shuffle Button */}
+
             <button className="shuffle-btn">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
@@ -250,93 +198,86 @@ function PokerTable() {
           </motion.div>
         </div>
       </div>
-      
-      {/* Inspection Modal */}
+
+      {/* ═══════ INSPECTION MODAL — TRUE 3D CARD FLIP ═══════ */}
       <AnimatePresence>
-        {inspectingCard !== null && (
+        {inspectingCard !== null && cardPositionRef.current && (
           <>
-            {/* Dark Overlay */}
+            {/* Dark overlay */}
             <motion.div
+              key="overlay"
               className="inspection-overlay"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              exit={{ opacity: 0, transition: { duration: 0.4, delay: 0.1 } }}
               onClick={handleDismiss}
             />
-            
-            {/* Inspected Card */}
+
+            {/* The card — starts at table card position, flies to center, flips */}
             <motion.div
-              key={inspectingCard}
+              key={`inspect-${inspectingCard}`}
               className="inspected-card"
-              initial={(() => {
-                const pos = cardPositionRef.current ?? getCardPosition(inspectingCard)
-                if (!pos) return { left: '50%', top: '50%', x: '-50%', y: '-50%', rotateY: 180, scale: 1 }
-                return {
-                  left: pos.left,
-                  top: pos.top,
-                  width: 280,
-                  height: 427,
-                  x: 0,
-                  y: 0,
-                  rotate: pos.rotate,
-                  rotateY: 180,
-                  scale: 1
-                }
-              })()}
-              animate={(() => {
-                const pos = cardPositionRef.current ?? getCardPosition(inspectingCard)
-                if (!pos) return { left: '50%', top: '50%', x: '-50%', y: '-50%', rotate: 0, rotateY: 0, scale: 1 }
-                return {
-                  left: pos.left,
-                  top: pos.top,
-                  width: 280,
-                  height: 427,
-                  x: 0,
-                  y: 0,
-                  rotate: 0,
-                  rotateY: 0,
-                  scale: 1.15,
-                  transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
-                }
-              })()}
-              exit={(() => {
-                const pos = cardPositionRef.current ?? getCardPosition(inspectingCard)
-                if (!pos) return { left: '50%', top: '50%', x: '-50%', y: '-50%', rotateY: 180, scale: 1 }
-                return {
-                  left: pos.left,
-                  top: pos.top,
-                  width: 280,
-                  height: 427,
-                  x: 0,
-                  y: 0,
-                  rotate: pos.rotate,
-                  rotateY: 180,
-                  scale: 1,
-                  transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
-                }
-              })()}
+              initial={{
+                left: cardPositionRef.current.centerX,
+                top: cardPositionRef.current.centerY,
+                x: '-50%',
+                y: '-50%',
+                width: cardPositionRef.current.width,
+                height: cardPositionRef.current.height,
+              }}
+              animate={{
+                left: typeof window !== 'undefined' ? window.innerWidth / 2 : 500,
+                top: typeof window !== 'undefined' ? window.innerHeight / 2 : 400,
+                x: '-50%',
+                y: '-50%',
+                width: 380,
+                height: 520,
+                transition: { duration: 0.6, ease: ndsEase }
+              }}
+              exit={{
+                left: cardPositionRef.current.centerX,
+                top: cardPositionRef.current.centerY,
+                x: '-50%',
+                y: '-50%',
+                width: cardPositionRef.current.width,
+                height: cardPositionRef.current.height,
+                transition: { duration: 0.5, ease: ndsEase }
+              }}
             >
-              {/* X Button */}
-              <button className="close-btn" onClick={handleDismiss}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M18 6L6 18M6 6l12 12"/>
-                </svg>
-              </button>
-              
-              {/* Project Info */}
-              <div className="project-info">
-                <div className="project-stat">{projects[inspectingCard].stat}</div>
-                <h3>{projects[inspectingCard].name}</h3>
-                <p>{projects[inspectingCard].description}</p>
-                <div className="project-tech">
-                  {projects[inspectingCard].tech.map((tech, idx) => (
-                    <span key={idx}>{tech}</span>
-                  ))}
+              {/* Inner container handles the 3D flip rotation */}
+              <motion.div
+                className="inspected-card-inner"
+                initial={{ rotateY: 0 }}
+                animate={{ rotateY: 180, transition: { duration: 0.6, ease: ndsEase } }}
+                exit={{ rotateY: 0, transition: { duration: 0.5, ease: ndsEase } }}
+              >
+                {/* BACK FACE — card back image (visible at rotateY: 0) */}
+                <div className="inspected-face inspected-face-back">
+                  <img src={CARD_BACK_SVG} alt="Card back" />
                 </div>
-                <a href={projects[inspectingCard].link} className="project-link">
-                  View Project →
-                </a>
-              </div>
+
+                {/* FRONT FACE — project info (visible at rotateY: 180) */}
+                <div className="inspected-face inspected-face-front">
+                  <button className="close-btn" onClick={(e) => { e.stopPropagation(); handleDismiss() }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                  </button>
+                  <div className="project-info">
+                    <div className="project-stat">{projects[inspectingCard].stat}</div>
+                    <h3>{projects[inspectingCard].name}</h3>
+                    <p>{projects[inspectingCard].description}</p>
+                    <div className="project-tech">
+                      {projects[inspectingCard].tech.map((tech, idx) => (
+                        <span key={idx}>{tech}</span>
+                      ))}
+                    </div>
+                    <a href={projects[inspectingCard].link} className="project-link">
+                      View Project →
+                    </a>
+                  </div>
+                </div>
+              </motion.div>
             </motion.div>
           </>
         )}
