@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
+import SqueezeSection from '../components/SqueezeSection'
 import './Contact.css'
 
-// NDS animation variants
+const ndsEase = [0.22, 1, 0.36, 1]
+
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } }
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: ndsEase } }
 }
 
 const staggerContainer = {
@@ -16,7 +18,7 @@ const staggerContainer = {
 
 const staggerItem = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } }
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: ndsEase } }
 }
 
 function Contact() {
@@ -37,7 +39,6 @@ function Contact() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // TODO: Implement form submission (EmailJS, Formspree, etc.)
     console.log('Form submitted:', formData)
     setSubmitted(true)
     setFormData({
@@ -53,25 +54,40 @@ function Contact() {
     <div className="contact">
       <section className="contact-hero section">
         <div className="container">
-          <motion.h1
-            initial={{ opacity: 0, y: 60 }}
+          <motion.p
+            className="label"
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.5, ease: ndsEase }}
           >
-            Get In Touch
-          </motion.h1>
+            Contact
+          </motion.p>
+          <h1>
+            {'Get In Touch'.split(' ').map((word, i) => (
+              <motion.span
+                key={i}
+                style={{ display: 'inline-block', marginRight: '0.25em' }}
+                initial={{ opacity: 0, y: 60 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.1 + i * 0.08, ease: ndsEase }}
+              >
+                {word}
+              </motion.span>
+            ))}
+          </h1>
           <motion.p
             className="contact-subtitle"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
           >
             Have a question, opportunity, or just want to connect? I'd love to hear from you.
           </motion.p>
         </div>
       </section>
 
-      <section className="contact-content section">
+      {/* Contact Content — Squeezed */}
+      <SqueezeSection className="contact-content section">
         <div className="container">
           <motion.div
             className="contact-grid"
@@ -90,7 +106,7 @@ function Contact() {
                     className="form-success"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ duration: 0.5, ease: ndsEase }}
                   >
                     <div className="success-icon">&#10003;</div>
                     <h3>Message Sent</h3>
@@ -211,7 +227,7 @@ function Contact() {
             </motion.div>
           </motion.div>
         </div>
-      </section>
+      </SqueezeSection>
     </div>
     </PageTransition>
   )

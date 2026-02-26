@@ -1,6 +1,6 @@
 /*
-PROJECTS PAGE — Trophy Room + NDS Patterns
-Each project displayed like an achievement on the wall
+PROJECTS PAGE — Editorial Showcase + NDS Patterns
+Each project presented with editorial weight and presence
 */
 
 .projects {
@@ -14,6 +14,16 @@ Each project displayed like an achievement on the wall
   display: flex;
   align-items: center;
   padding: var(--space-3xl) 0 var(--space-2xl);
+}
+
+.projects-hero .label {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin-bottom: var(--space-sm);
 }
 
 .projects-hero h1 {
@@ -42,106 +52,90 @@ Each project displayed like an achievement on the wall
   line-height: 1.1;
 }
 
-/* Priority Projects */
-.priority-projects {
-  background-color: var(--parchment);
-  padding: var(--space-2xl) 0;
+/* ==========================================
+   FEATURED PROJECT — EDITORIAL LAYOUT
+   ========================================== */
+.project-feature {
+  padding: var(--space-3xl) 0;
 }
 
-.priority-grid {
-  display: grid;
-  gap: var(--space-xl);
-  max-width: 1000px;
-}
-
-.project-card-large {
+.project-feature-alt {
   background-color: var(--cream);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--border-radius-lg);
-  overflow: hidden;
-  transition: all var(--duration-base) var(--ease-out);
+  padding: var(--space-3xl) 0;
 }
 
-.project-card-large:hover {
-  border-color: var(--forest-green);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-  transform: translateY(-4px);
-}
-
-.project-image-large {
-  width: 100%;
-  height: 300px;
-  background-color: var(--parchment);
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-bottom: 1px solid var(--gray-200);
-}
-
-.project-placeholder-large {
+/* Header */
+.project-feature-number {
   font-family: var(--font-display);
-  color: var(--warm-gray);
-  font-size: clamp(1.5rem, 3vw, 2.5rem);
-  font-weight: 400;
-  text-align: center;
+  font-size: clamp(5rem, 14vw, 12rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--gray-200);
+  display: block;
+  margin-bottom: var(--space-sm);
+}
+
+.project-feature-name {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 700;
+  line-height: 1.05;
   letter-spacing: -0.02em;
+  color: var(--charcoal);
+  margin-bottom: var(--space-sm);
 }
 
-/* Project Stat Counter — NDS Giant Number */
-.project-stat-counter {
+.project-feature-tagline {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+}
+
+/* Body — stat on left, details on right */
+.project-feature-body {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--space-xl);
+  margin-top: var(--space-xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--gray-200);
+}
+
+/* Giant stat */
+.project-feature-stat {
   display: flex;
-  align-items: baseline;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-md);
-  padding-bottom: var(--space-md);
-  border-bottom: 1px solid var(--gray-200);
+  flex-direction: column;
 }
 
-.project-stat-number {
+.project-feature-stat .stat-number {
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-size: clamp(4rem, 10vw, 8rem);
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.03em;
   color: var(--forest-green);
 }
 
-.project-stat-label {
+.project-feature-stat .stat-label {
   font-family: var(--font-sans);
   font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--warm-gray);
+  margin-top: var(--space-sm);
 }
 
-.project-details {
-  padding: var(--space-lg);
-}
-
-.project-details h3 {
-  font-family: var(--font-serif);
-  font-size: 1.75rem;
-  margin-bottom: var(--space-xs);
-  color: var(--charcoal);
-  line-height: 1.2;
-}
-
-.project-tagline {
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--forest-green);
-  margin-bottom: var(--space-md);
-}
-
-.project-description {
+/* Details */
+.project-feature-details p {
   color: var(--slate);
-  line-height: 1.75;
+  line-height: 1.8;
   margin-bottom: var(--space-lg);
+  font-size: 1.1rem;
 }
 
 .project-tech {
@@ -165,12 +159,12 @@ Each project displayed like an achievement on the wall
   transition: all var(--duration-fast);
 }
 
-.project-card-large:hover .tech-badge {
+.tech-badge:hover {
   border-color: var(--forest-green);
   color: var(--forest-green);
 }
 
-.project-links-large {
+.project-links {
   display: flex;
   gap: var(--space-sm);
   flex-wrap: wrap;
@@ -198,105 +192,50 @@ Each project displayed like an achievement on the wall
   box-shadow: 0 10px 25px rgba(26, 58, 46, 0.2);
 }
 
-/* Secondary Projects */
-.secondary-projects {
+/* ==========================================
+   MORE PROJECTS
+   ========================================== */
+.more-projects-section {
   background-color: var(--cream);
   padding: var(--space-2xl) 0;
 }
 
-.secondary-grid {
+.more-projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: var(--space-lg);
-  max-width: 1200px;
+  max-width: 1000px;
 }
 
-.project-card-small {
+.more-project-card {
   background-color: var(--parchment);
+  padding: var(--space-lg);
   border: 1px solid var(--gray-200);
   border-radius: var(--border-radius-lg);
-  overflow: hidden;
   transition: all var(--duration-base) var(--ease-out);
 }
 
-.project-card-small:hover {
+.more-project-card:hover {
   border-color: var(--forest-green);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
   transform: translateY(-4px);
 }
 
-.project-image-small {
-  width: 100%;
-  height: 180px;
-  background-color: var(--cream);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-bottom: 1px solid var(--gray-200);
-}
-
-.project-placeholder-small {
+.more-project-card h3 {
   font-family: var(--font-serif);
-  color: var(--warm-gray);
-  font-size: 1.1rem;
-  text-align: center;
-}
-
-.project-details-small {
-  padding: var(--space-md);
-}
-
-.project-details-small h4 {
-  font-family: var(--font-serif);
-  font-size: 1.35rem;
-  margin-bottom: var(--space-xs);
+  font-size: 1.5rem;
   color: var(--charcoal);
+  margin-bottom: var(--space-sm);
   line-height: 1.2;
 }
 
-.project-tagline-small {
-  font-family: var(--font-sans);
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--forest-green);
-  margin-bottom: var(--space-sm);
-}
-
-.project-description-small {
+.more-project-card p {
   color: var(--slate);
-  font-size: 0.95rem;
-  line-height: 1.7;
+  line-height: 1.75;
   margin-bottom: var(--space-md);
 }
 
-.project-tech-small {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: var(--space-md);
-}
-
-.tech-badge-small {
-  font-family: var(--font-sans);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--warm-gray);
-  padding: 4px 10px;
-  border: 1px solid var(--gray-200);
-  border-radius: var(--border-radius-sm);
-  background: transparent;
-}
-
-.project-links-small {
-  display: flex;
-  gap: var(--space-sm);
-}
-
-.project-link-small {
+.project-link-text {
   font-family: var(--font-sans);
   font-size: 0.85rem;
   font-weight: 600;
@@ -306,13 +245,14 @@ Each project displayed like an achievement on the wall
   transition: color var(--duration-fast);
 }
 
-.project-link-small:hover {
+.project-link-text:hover {
   color: var(--hunter-green);
 }
 
-/* Case Studies */
-.marketing-showcase {
-  background-color: var(--parchment);
+/* ==========================================
+   CASE STUDIES
+   ========================================== */
+.case-studies-section {
   padding: var(--space-2xl) 0;
 }
 
@@ -352,21 +292,57 @@ Each project displayed like an achievement on the wall
   line-height: 1.75;
 }
 
-/* Work in Progress */
-.work-in-progress {
-  background-color: var(--cream);
+/* ==========================================
+   WHAT'S NEXT CTA
+   ========================================== */
+.whats-next-section {
+  background-color: var(--forest-green);
   text-align: center;
-  padding: var(--space-2xl) 0;
+  padding: var(--space-3xl) 0;
+  position: relative;
+  overflow: hidden;
 }
 
-.wip-text {
-  color: var(--slate);
-  font-size: 1.1rem;
-  line-height: 1.7;
+.whats-next-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
 }
 
-/* Responsive */
+.whats-next-section h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  color: var(--cream);
+  margin-bottom: var(--space-md);
+  line-height: 1.2;
+  position: relative;
+  z-index: 1;
+}
+
+.whats-next-section p {
+  color: rgba(244, 241, 234, 0.85);
+  font-size: 1.15rem;
+  line-height: 1.8;
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
 @media (max-width: 1024px) {
+  .project-feature-body {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+
   .case-studies {
     grid-template-columns: 1fr;
   }
@@ -382,7 +358,19 @@ Each project displayed like an achievement on the wall
     padding: var(--space-2xl) 0 var(--space-xl);
   }
 
-  .secondary-grid {
+  .project-feature {
+    padding: var(--space-2xl) 0;
+  }
+
+  .project-feature-alt {
+    padding: var(--space-2xl) 0;
+  }
+
+  .project-feature-number {
+    font-size: clamp(4rem, 20vw, 8rem);
+  }
+
+  .more-projects-grid {
     grid-template-columns: 1fr;
   }
 }

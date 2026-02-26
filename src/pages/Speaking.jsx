@@ -2,12 +2,14 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
+import SqueezeSection from '../components/SqueezeSection'
 import './Speaking.css'
 
-// NDS animation variants
+const ndsEase = [0.22, 1, 0.36, 1]
+
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } }
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: ndsEase } }
 }
 
 const staggerContainer = {
@@ -17,7 +19,7 @@ const staggerContainer = {
 
 const staggerItem = {
   hidden: { opacity: 0, y: 30, scale: 0.98 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } }
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: ndsEase } }
 }
 
 function FAQItem({ question, answer }) {
@@ -40,7 +42,7 @@ function FAQItem({ question, answer }) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.35, ease: ndsEase }}
           >
             <p>{answer}</p>
           </motion.div>
@@ -63,18 +65,32 @@ function Speaking() {
     <div className="speaking">
       <section className="speaking-hero section">
         <div className="container">
-          <motion.h1
-            initial={{ opacity: 0, y: 60 }}
+          <motion.p
+            className="label"
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.5, ease: ndsEase }}
           >
-            AI for Everyday Users
-          </motion.h1>
+            Speaking
+          </motion.p>
+          <h1>
+            {'AI for Everyday Users'.split(' ').map((word, i) => (
+              <motion.span
+                key={i}
+                style={{ display: 'inline-block', marginRight: '0.25em' }}
+                initial={{ opacity: 0, y: 60 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.1 + i * 0.08, ease: ndsEase }}
+              >
+                {word}
+              </motion.span>
+            ))}
+          </h1>
           <motion.p
             className="speaking-subtitle"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
           >
             I'm not a computer scientist—I'm an observer, user, and translator. I help normal people understand what AI means for their lives and businesses.
           </motion.p>
@@ -89,7 +105,7 @@ function Speaking() {
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.6, ease: ndsEase }}
           >
             <div className="lecture-header">
               <h2>Lecture 1: AI Basics for Everyday Users</h2>
@@ -146,15 +162,15 @@ function Speaking() {
         </div>
       </section>
 
-      {/* Lecture 2 */}
-      <section className="lecture-section section alt">
+      {/* Lecture 2 — Squeezed (alt bg) */}
+      <SqueezeSection className="lecture-section section alt">
         <div className="container">
           <motion.div
             className="lecture-card"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.6, ease: ndsEase }}
           >
             <div className="lecture-header">
               <h2>Lecture 2: AI for Business - Building Tools That Scale</h2>
@@ -210,23 +226,17 @@ function Speaking() {
             </div>
           </motion.div>
         </div>
-      </section>
+      </SqueezeSection>
 
-      {/* Booking Section */}
-      <motion.section
-        className="booking-section section"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1 }}
-      >
+      {/* Booking Section — Squeezed (green bg) */}
+      <SqueezeSection className="booking-section section">
         <div className="container">
           <div className="booking-content">
             <motion.h2
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.8, ease: ndsEase }}
             >
               Interested in bringing these talks to your organization?
             </motion.h2>
@@ -234,7 +244,7 @@ function Speaking() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: ndsEase }}
             >
               Corporate/group rates available. Custom workshops tailored to your team.
             </motion.p>
@@ -242,7 +252,7 @@ function Speaking() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+              transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
             >
               <Link to="/contact" className="btn btn-primary">
                 Request Booking
@@ -250,17 +260,17 @@ function Speaking() {
             </motion.div>
           </div>
         </div>
-      </motion.section>
+      </SqueezeSection>
 
-      {/* FAQ Section — Accordion */}
-      <section className="faq-section section">
+      {/* FAQ Section — Squeezed */}
+      <SqueezeSection className="faq-section section">
         <div className="container">
           <motion.h2
             className="section-title"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.6, ease: ndsEase }}
           >
             Frequently Asked Questions
           </motion.h2>
@@ -276,7 +286,7 @@ function Speaking() {
             ))}
           </motion.div>
         </div>
-      </section>
+      </SqueezeSection>
     </div>
     </PageTransition>
   )

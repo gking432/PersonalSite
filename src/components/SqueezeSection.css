@@ -1,0 +1,9 @@
+.squeeze-wrapper {
+  padding: 20px 0;
+}
+
+.squeeze-inner {
+  overflow: hidden;
+  will-change: transform;
+  transform-origin: center;
+}

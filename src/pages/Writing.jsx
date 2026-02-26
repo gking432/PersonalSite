@@ -1,10 +1,13 @@
 import { motion } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
+import SqueezeSection from '../components/SqueezeSection'
 import './Writing.css'
+
+const ndsEase = [0.22, 1, 0.36, 1]
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } }
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: ndsEase } }
 }
 
 const staggerContainer = {
@@ -14,7 +17,7 @@ const staggerContainer = {
 
 const staggerItem = {
   hidden: { opacity: 0, y: 30, scale: 0.98 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } }
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: ndsEase } }
 }
 
 function Writing() {
@@ -23,34 +26,48 @@ function Writing() {
     <div className="writing">
       <section className="writing-hero section">
         <div className="container">
-          <motion.h1
-            initial={{ opacity: 0, y: 60 }}
+          <motion.p
+            className="label"
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.5, ease: ndsEase }}
           >
-            Thoughts on Marketing, AI, and Building
-          </motion.h1>
+            Writing
+          </motion.p>
+          <h1>
+            {'Thoughts on Marketing, AI, and Building'.split(' ').map((word, i) => (
+              <motion.span
+                key={i}
+                style={{ display: 'inline-block', marginRight: '0.25em' }}
+                initial={{ opacity: 0, y: 60 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.1 + i * 0.06, ease: ndsEase }}
+              >
+                {word}
+              </motion.span>
+            ))}
+          </h1>
           <motion.p
             className="writing-subtitle"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.8, delay: 0.6, ease: ndsEase }}
           >
             I write about whatever I'm curious about—usually at the intersection of technology and human behavior.
           </motion.p>
         </div>
       </section>
 
-      {/* Substack Integration */}
-      <motion.section
-        className="substack-section section"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        variants={staggerContainer}
-      >
+      {/* Substack Integration — Squeezed */}
+      <SqueezeSection className="substack-section section">
         <div className="container">
-          <div className="substack-content">
+          <motion.div
+            className="substack-content"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+          >
             <motion.h2 variants={fadeUp}>Read on Substack</motion.h2>
             <motion.p className="substack-description" variants={fadeUp}>
               All my writing is published on Substack. Subscribe to get new articles delivered to your inbox.
@@ -65,19 +82,19 @@ function Writing() {
                 Subscribe on Substack
               </a>
             </motion.div>
-          </div>
+          </motion.div>
         </div>
-      </motion.section>
+      </SqueezeSection>
 
-      {/* Recent Articles Placeholder */}
-      <section className="articles-section section alt">
+      {/* Recent Articles */}
+      <section className="articles-section section">
         <div className="container">
           <motion.h2
             className="section-title"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.6, ease: ndsEase }}
           >
             Recent Articles
           </motion.h2>
@@ -86,7 +103,7 @@ function Writing() {
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.6, ease: ndsEase }}
           >
             <div className="article-card">
               <div className="article-meta">
@@ -104,15 +121,15 @@ function Writing() {
         </div>
       </section>
 
-      {/* Categories */}
-      <section className="categories-section section">
+      {/* Categories — Squeezed */}
+      <SqueezeSection className="categories-section section">
         <div className="container">
           <motion.h2
             className="section-title"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.6, ease: ndsEase }}
           >
             Topics I Write About
           </motion.h2>
@@ -141,7 +158,7 @@ function Writing() {
             </motion.div>
           </motion.div>
         </div>
-      </section>
+      </SqueezeSection>
     </div>
     </PageTransition>
   )

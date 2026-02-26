@@ -15,6 +15,16 @@ VIDEOS PAGE — Content Showcase + NDS Patterns
   padding: var(--space-3xl) 0 var(--space-2xl);
 }
 
+.videos-hero .label {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin-bottom: var(--space-sm);
+}
+
 .videos-hero h1 {
   font-family: var(--font-display);
   font-size: clamp(3rem, 10vw, 8rem);
@@ -106,7 +116,7 @@ VIDEOS PAGE — Content Showcase + NDS Patterns
 
 /* Video Grid */
 .videos-grid-section {
-  background-color: var(--parchment);
+  background-color: var(--cream);
   padding: var(--space-2xl) 0;
 }
 

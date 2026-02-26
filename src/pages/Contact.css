@@ -16,6 +16,16 @@ Not a customer service form. An invitation to connect.
   padding: var(--space-3xl) 0 var(--space-2xl);
 }
 
+.contact-hero .label {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin-bottom: var(--space-sm);
+}
+
 .contact-hero h1 {
   font-family: var(--font-display);
   font-size: clamp(4rem, 12vw, 10rem);

@@ -1,11 +1,13 @@
 import { motion } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
+import SqueezeSection from '../components/SqueezeSection'
 import './About.css'
 
-// NDS animation variants
+const ndsEase = [0.22, 1, 0.36, 1]
+
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } }
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: ndsEase } }
 }
 
 const staggerContainer = {
@@ -15,7 +17,7 @@ const staggerContainer = {
 
 const staggerItem = {
   hidden: { opacity: 0, y: 30, scale: 0.98 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } }
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: ndsEase } }
 }
 
 function About() {
@@ -24,18 +26,32 @@ function About() {
     <div className="about">
       <section className="about-hero section">
         <div className="container">
-          <motion.h1
-            initial={{ opacity: 0, y: 60 }}
+          <motion.p
+            className="label"
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.5, ease: ndsEase }}
           >
             About
-          </motion.h1>
+          </motion.p>
+          <h1>
+            {'About'.split('').map((char, i) => (
+              <motion.span
+                key={i}
+                style={{ display: 'inline-block' }}
+                initial={{ opacity: 0, y: 60 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.1 + i * 0.05, ease: ndsEase }}
+              >
+                {char}
+              </motion.span>
+            ))}
+          </h1>
           <motion.p
             className="about-intro"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
           >
             I'm wired to see the big picture and break it into executable pieces.
           </motion.p>
@@ -61,8 +77,8 @@ function About() {
         </div>
       </section>
 
-      {/* Learning the Craft */}
-      <section className="about-section section alt">
+      {/* Learning the Craft — Squeezed */}
+      <SqueezeSection className="about-section section alt">
         <div className="container">
           <motion.div
             className="about-content"
@@ -83,7 +99,7 @@ function About() {
             </motion.ul>
           </motion.div>
         </div>
-      </section>
+      </SqueezeSection>
 
       {/* The Explorer Years */}
       <section className="about-section section">
@@ -131,8 +147,8 @@ function About() {
         </div>
       </section>
 
-      {/* What I Bring Now */}
-      <section className="about-section section alt">
+      {/* What I Bring Now — Squeezed */}
+      <SqueezeSection className="about-section section alt">
         <div className="container">
           <motion.div
             className="about-content"
@@ -151,7 +167,7 @@ function About() {
             </motion.p>
           </motion.div>
         </div>
-      </section>
+      </SqueezeSection>
 
       {/* Personal Philosophy */}
       <section className="about-section section">
@@ -176,15 +192,15 @@ function About() {
         </div>
       </section>
 
-      {/* Skills Grid */}
-      <section className="skills-section section">
+      {/* Skills Grid — Squeezed */}
+      <SqueezeSection className="skills-section section">
         <div className="container">
           <motion.h2
             className="section-title"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.6, ease: ndsEase }}
           >
             Skills
           </motion.h2>
@@ -205,7 +221,7 @@ function About() {
             <motion.div className="skill-item" variants={staggerItem}>Code (Python, JavaScript)</motion.div>
           </motion.div>
         </div>
-      </section>
+      </SqueezeSection>
 
       {/* Timeline */}
       <section className="timeline-section section">
@@ -215,51 +231,29 @@ function About() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.6, ease: ndsEase }}
           >
             Timeline
           </motion.h2>
           <div className="timeline">
-            <motion.div
-              className="timeline-item"
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <div className="timeline-year">2015-2020</div>
-              <div className="timeline-content">Education</div>
-            </motion.div>
-            <motion.div
-              className="timeline-item"
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <div className="timeline-year">2020-2023</div>
-              <div className="timeline-content">Sub-Zero rotations</div>
-            </motion.div>
-            <motion.div
-              className="timeline-item"
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <div className="timeline-year">2023-2025</div>
-              <div className="timeline-content">Independent exploration & building</div>
-            </motion.div>
-            <motion.div
-              className="timeline-item"
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <div className="timeline-year">2026</div>
-              <div className="timeline-content">Ready for the right challenge</div>
-            </motion.div>
+            {[
+              { year: '2015-2020', content: 'Education' },
+              { year: '2020-2023', content: 'Sub-Zero rotations' },
+              { year: '2023-2025', content: 'Independent exploration & building' },
+              { year: '2026', content: 'Ready for the right challenge' },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                className="timeline-item"
+                initial={{ opacity: 0, x: -40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1 + i * 0.1, ease: ndsEase }}
+              >
+                <div className="timeline-year">{item.year}</div>
+                <div className="timeline-content">{item.content}</div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
