@@ -31,6 +31,7 @@ function Layout({ children }) {
   const navLinks = [
     { path: '/', label: 'Home' },
     { path: '/projects', label: 'Projects' },
+    { path: '/client-work', label: 'Client Work' },
     { path: '/about', label: 'About' },
     { path: '/speaking', label: 'Speaking' },
     { path: '/contact', label: 'Contact' },
