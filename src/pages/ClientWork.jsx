@@ -414,9 +414,9 @@ function ClientWork() {
                   </div>
                   {project.featured && (
                     <div className="featured-preview">
-                      {project.gallery.slice(0, 4).map((item, i) => (
+                      {project.modules.slice(0, 4).map((mod, i) => (
                         <div key={i} className="featured-preview-slot">
-                          {item.label}
+                          {mod.label}
                         </div>
                       ))}
                     </div>
