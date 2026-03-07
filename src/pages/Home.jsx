@@ -385,86 +385,60 @@ function Home() {
         <div className="hero-grid-bg" />
 
         <div className="container">
-          <div className="hero-split">
-            <div className="hero-content">
-              <motion.p
-                className="hero-label"
-                initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, ease: ndsEase }}
-              >
-                Marketing Leader &middot; Builder &middot; AI Practitioner
-              </motion.p>
-
-              <motion.div
-                className="hero-title-wrapper"
-                style={{ rotateX: heroPerspective, transformPerspective: 1200 }}
-              >
-                <AnimatedTitle text="Gunnar Neuman" />
-              </motion.div>
-
-              <motion.p
-                className="hero-subheadline"
-                initial={{ opacity: 0, y: 40, filter: 'blur(10px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                transition={{ duration: 1, delay: 0.8, ease: ndsEase }}
-              >
-                I don't pitch ideas — I ship them. Three years building at the intersection
-                of marketing, technology, and AI. Midwest work ethic. Real results.
-              </motion.p>
-
-              <motion.div
-                className="hero-cta"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 1.1, ease: ndsEase }}
-              >
-                <Link to="/projects" className="btn btn-primary btn-magnetic">
-                  See What I've Built
-                  <span className="btn-arrow">&rarr;</span>
-                </Link>
-                <Link to="/contact" className="btn btn-secondary">
-                  Get in Touch
-                </Link>
-              </motion.div>
-
-              <motion.div
-                className="scroll-indicator"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 2, duration: 1 }}
-              >
-                <motion.div
-                  className="scroll-indicator-line"
-                  animate={{ scaleY: [0, 1, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                />
-                <span>Scroll</span>
-              </motion.div>
-            </div>
+          <div className="hero-content">
+            <motion.p
+              className="hero-label"
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, ease: ndsEase }}
+            >
+              Marketing Leader &middot; Builder &middot; AI Practitioner
+            </motion.p>
 
             <motion.div
-              className="hero-meta"
+              className="hero-title-wrapper"
+              style={{ rotateX: heroPerspective, transformPerspective: 1200 }}
+            >
+              <AnimatedTitle text="Gunnar Neuman" />
+            </motion.div>
+
+            <motion.p
+              className="hero-subheadline"
+              initial={{ opacity: 0, y: 40, filter: 'blur(10px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 1, delay: 0.8, ease: ndsEase }}
+            >
+              I don't pitch ideas — I ship them. Three years building at the intersection
+              of marketing, technology, and AI. Midwest work ethic. Real results.
+            </motion.p>
+
+            <motion.div
+              className="hero-cta"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.3, ease: ndsEase }}
+              transition={{ duration: 0.8, delay: 1.1, ease: ndsEase }}
             >
-              <div className="hero-meta-item">
-                <span className="hero-meta-label">Based in</span>
-                <span className="hero-meta-value">Madison, WI</span>
-              </div>
-              <div className="hero-meta-item">
-                <span className="hero-meta-label">Experience</span>
-                <span className="hero-meta-value">3+ years building</span>
-              </div>
-              <div className="hero-meta-item">
-                <span className="hero-meta-label">Focus</span>
-                <span className="hero-meta-value">Marketing, AI, Product</span>
-              </div>
-              <div className="hero-meta-item">
-                <span className="hero-meta-label">Status</span>
-                <span className="hero-meta-value hero-meta-status">Open to opportunities</span>
-              </div>
+              <Link to="/projects" className="btn btn-primary btn-magnetic">
+                See What I've Built
+                <span className="btn-arrow">&rarr;</span>
+              </Link>
+              <Link to="/contact" className="btn btn-secondary">
+                Get in Touch
+              </Link>
+            </motion.div>
+
+            <motion.div
+              className="scroll-indicator"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 2, duration: 1 }}
+            >
+              <motion.div
+                className="scroll-indicator-line"
+                animate={{ scaleY: [0, 1, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              />
+              <span>Scroll</span>
             </motion.div>
           </div>
         </div>
