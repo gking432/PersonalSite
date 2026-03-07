@@ -54,35 +54,62 @@ function Contact() {
     <div className="contact">
       <section className="contact-hero section">
         <div className="container">
-          <motion.p
-            className="label"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: ndsEase }}
-          >
-            Contact
-          </motion.p>
-          <h1>
-            {'Get In Touch'.split(' ').map((word, i) => (
-              <motion.span
-                key={i}
-                style={{ display: 'inline-block', marginRight: '0.25em' }}
-                initial={{ opacity: 0, y: 60 }}
+          <div className="hero-split">
+            <div className="hero-split-left">
+              <motion.p
+                className="label"
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.1 + i * 0.08, ease: ndsEase }}
+                transition={{ duration: 0.5, ease: ndsEase }}
               >
-                {word}
-              </motion.span>
-            ))}
-          </h1>
-          <motion.p
-            className="contact-subtitle"
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
-          >
-            Have a question, opportunity, or just want to connect? I'd love to hear from you.
-          </motion.p>
+                Contact
+              </motion.p>
+              <h1>
+                {'Get In Touch'.split(' ').map((word, i) => (
+                  <motion.span
+                    key={i}
+                    style={{ display: 'inline-block', marginRight: '0.25em' }}
+                    initial={{ opacity: 0, y: 60 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, delay: 0.1 + i * 0.08, ease: ndsEase }}
+                  >
+                    {word}
+                  </motion.span>
+                ))}
+              </h1>
+              <motion.p
+                className="contact-subtitle"
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
+              >
+                Have a question, opportunity, or just want to connect? I'd love to hear from you.
+              </motion.p>
+            </div>
+            <motion.div
+              className="hero-meta"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
+            >
+              <div className="hero-meta-item">
+                <span className="hero-meta-label">Email</span>
+                <span className="hero-meta-value">gunnarneuman14@gmail.com</span>
+              </div>
+              <div className="hero-meta-item">
+                <span className="hero-meta-label">Based in</span>
+                <span className="hero-meta-value">Madison, WI</span>
+              </div>
+              <div className="hero-meta-item">
+                <span className="hero-meta-label">Response</span>
+                <span className="hero-meta-value">Within 24 hours</span>
+              </div>
+              <div className="hero-meta-item">
+                <span className="hero-meta-label">Open to</span>
+                <span className="hero-meta-value hero-meta-status">Relocation & remote</span>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 

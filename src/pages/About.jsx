@@ -26,35 +26,62 @@ function About() {
     <div className="about">
       <section className="about-hero section">
         <div className="container">
-          <motion.p
-            className="label"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: ndsEase }}
-          >
-            About
-          </motion.p>
-          <h1>
-            {'About'.split('').map((char, i) => (
-              <motion.span
-                key={i}
-                style={{ display: 'inline-block' }}
-                initial={{ opacity: 0, y: 60 }}
+          <div className="hero-split">
+            <div className="hero-split-left">
+              <motion.p
+                className="label"
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.1 + i * 0.05, ease: ndsEase }}
+                transition={{ duration: 0.5, ease: ndsEase }}
               >
-                {char}
-              </motion.span>
-            ))}
-          </h1>
-          <motion.p
-            className="about-intro"
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
-          >
-            I'm wired to see the big picture and break it into executable pieces.
-          </motion.p>
+                About
+              </motion.p>
+              <h1>
+                {'About'.split('').map((char, i) => (
+                  <motion.span
+                    key={i}
+                    style={{ display: 'inline-block' }}
+                    initial={{ opacity: 0, y: 60 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, delay: 0.1 + i * 0.05, ease: ndsEase }}
+                  >
+                    {char}
+                  </motion.span>
+                ))}
+              </h1>
+              <motion.p
+                className="about-intro"
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
+              >
+                I'm wired to see the big picture and break it into executable pieces.
+              </motion.p>
+            </div>
+            <motion.div
+              className="hero-meta"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
+            >
+              <div className="hero-meta-item">
+                <span className="hero-meta-label">Location</span>
+                <span className="hero-meta-value">Madison, WI</span>
+              </div>
+              <div className="hero-meta-item">
+                <span className="hero-meta-label">Education</span>
+                <span className="hero-meta-value">BBA, UW-Milwaukee</span>
+              </div>
+              <div className="hero-meta-item">
+                <span className="hero-meta-label">Focus</span>
+                <span className="hero-meta-value">Marketing + Technology</span>
+              </div>
+              <div className="hero-meta-item">
+                <span className="hero-meta-label">Status</span>
+                <span className="hero-meta-value hero-meta-status">Open to opportunities</span>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 

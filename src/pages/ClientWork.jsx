@@ -353,36 +353,63 @@ function ClientWork() {
         {/* Hero */}
         <section className="client-work-hero">
           <div className="container">
-            <motion.p
-              className="label"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: ndsEase }}
-            >
-              Client Work
-            </motion.p>
-            <h1>
-              {'Marketing That Ships'.split(' ').map((word, i) => (
-                <motion.span
-                  key={i}
-                  style={{ display: 'inline-block', marginRight: '0.3em' }}
-                  initial={{ opacity: 0, y: 60 }}
+            <div className="hero-split">
+              <div className="hero-split-left">
+                <motion.p
+                  className="label"
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 0.1 + i * 0.08, ease: ndsEase }}
+                  transition={{ duration: 0.5, ease: ndsEase }}
                 >
-                  {word}
-                </motion.span>
-              ))}
-            </h1>
-            <motion.p
-              className="hero-desc"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
-            >
-              Brand design, website builds, ad creative, and full marketing strategy
-              for clients across industries. Click any project to explore the work.
-            </motion.p>
+                  Client Work
+                </motion.p>
+                <h1>
+                  {'Marketing That Ships'.split(' ').map((word, i) => (
+                    <motion.span
+                      key={i}
+                      style={{ display: 'inline-block', marginRight: '0.3em' }}
+                      initial={{ opacity: 0, y: 60 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.7, delay: 0.1 + i * 0.08, ease: ndsEase }}
+                    >
+                      {word}
+                    </motion.span>
+                  ))}
+                </h1>
+                <motion.p
+                  className="hero-desc"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
+                >
+                  Brand design, website builds, ad creative, and full marketing strategy
+                  for clients across industries. Click any project to explore the work.
+                </motion.p>
+              </div>
+              <motion.div
+                className="hero-meta"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
+              >
+                <div className="hero-meta-item">
+                  <span className="hero-meta-label">Clients</span>
+                  <span className="hero-meta-value">6 Projects</span>
+                </div>
+                <div className="hero-meta-item">
+                  <span className="hero-meta-label">Industries</span>
+                  <span className="hero-meta-value">eCommerce, SaaS, Food, Nonprofit</span>
+                </div>
+                <div className="hero-meta-item">
+                  <span className="hero-meta-label">Services</span>
+                  <span className="hero-meta-value">Brand, Web, Ads, Strategy</span>
+                </div>
+                <div className="hero-meta-item">
+                  <span className="hero-meta-label">Approach</span>
+                  <span className="hero-meta-value hero-meta-status">End-to-end delivery</span>
+                </div>
+              </motion.div>
+            </div>
           </div>
         </section>
 

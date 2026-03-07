@@ -65,35 +65,62 @@ function Speaking() {
     <div className="speaking">
       <section className="speaking-hero section">
         <div className="container">
-          <motion.p
-            className="label"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: ndsEase }}
-          >
-            Speaking
-          </motion.p>
-          <h1>
-            {'AI for Everyday Users'.split(' ').map((word, i) => (
-              <motion.span
-                key={i}
-                style={{ display: 'inline-block', marginRight: '0.25em' }}
-                initial={{ opacity: 0, y: 60 }}
+          <div className="hero-split">
+            <div className="hero-split-left">
+              <motion.p
+                className="label"
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.1 + i * 0.08, ease: ndsEase }}
+                transition={{ duration: 0.5, ease: ndsEase }}
               >
-                {word}
-              </motion.span>
-            ))}
-          </h1>
-          <motion.p
-            className="speaking-subtitle"
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
-          >
-            I'm not a computer scientist—I'm an observer, user, and translator. I help normal people understand what AI means for their lives and businesses.
-          </motion.p>
+                Speaking
+              </motion.p>
+              <h1>
+                {'AI for Everyday Users'.split(' ').map((word, i) => (
+                  <motion.span
+                    key={i}
+                    style={{ display: 'inline-block', marginRight: '0.25em' }}
+                    initial={{ opacity: 0, y: 60 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, delay: 0.1 + i * 0.08, ease: ndsEase }}
+                  >
+                    {word}
+                  </motion.span>
+                ))}
+              </h1>
+              <motion.p
+                className="speaking-subtitle"
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
+              >
+                I'm not a computer scientist—I'm an observer, user, and translator. I help normal people understand what AI means for their lives and businesses.
+              </motion.p>
+            </div>
+            <motion.div
+              className="hero-meta"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6, ease: ndsEase }}
+            >
+              <div className="hero-meta-item">
+                <span className="hero-meta-label">Lectures</span>
+                <span className="hero-meta-value">2 Available</span>
+              </div>
+              <div className="hero-meta-item">
+                <span className="hero-meta-label">Format</span>
+                <span className="hero-meta-value">Virtual, In-Person, Download</span>
+              </div>
+              <div className="hero-meta-item">
+                <span className="hero-meta-label">Audience</span>
+                <span className="hero-meta-value">Everyday users & businesses</span>
+              </div>
+              <div className="hero-meta-item">
+                <span className="hero-meta-label">Custom</span>
+                <span className="hero-meta-value hero-meta-status">Workshops available</span>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 

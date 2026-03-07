@@ -73,35 +73,62 @@ function Projects() {
       {/* Hero */}
       <section className="projects-hero section">
         <div className="container">
-          <motion.p
-            className="label"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: ndsEase }}
-          >
-            Projects
-          </motion.p>
-          <h1>
-            {'I Build What I Imagine'.split(' ').map((word, i) => (
-              <motion.span
-                key={i}
-                style={{ display: 'inline-block', marginRight: '0.25em' }}
-                initial={{ opacity: 0, y: 60 }}
+          <div className="hero-split">
+            <div className="hero-split-left">
+              <motion.p
+                className="label"
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.1 + i * 0.08, ease: ndsEase }}
+                transition={{ duration: 0.5, ease: ndsEase }}
               >
-                {word}
-              </motion.span>
-            ))}
-          </h1>
-          <motion.p
-            className="projects-subtitle"
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
-          >
-            From blockchain applications to AI-powered tools, here's what happens when curiosity meets execution.
-          </motion.p>
+                Projects
+              </motion.p>
+              <h1>
+                {'I Build What I Imagine'.split(' ').map((word, i) => (
+                  <motion.span
+                    key={i}
+                    style={{ display: 'inline-block', marginRight: '0.25em' }}
+                    initial={{ opacity: 0, y: 60 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, delay: 0.1 + i * 0.08, ease: ndsEase }}
+                  >
+                    {word}
+                  </motion.span>
+                ))}
+              </h1>
+              <motion.p
+                className="projects-subtitle"
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
+              >
+                From blockchain applications to AI-powered tools, here's what happens when curiosity meets execution.
+              </motion.p>
+            </div>
+            <motion.div
+              className="hero-meta"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6, ease: ndsEase }}
+            >
+              <div className="hero-meta-item">
+                <span className="hero-meta-label">Featured</span>
+                <span className="hero-meta-value">2 Projects</span>
+              </div>
+              <div className="hero-meta-item">
+                <span className="hero-meta-label">Domains</span>
+                <span className="hero-meta-value">Blockchain, AI, Web</span>
+              </div>
+              <div className="hero-meta-item">
+                <span className="hero-meta-label">Stack</span>
+                <span className="hero-meta-value">React, Python, APIs</span>
+              </div>
+              <div className="hero-meta-item">
+                <span className="hero-meta-label">Status</span>
+                <span className="hero-meta-value hero-meta-status">Always building</span>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
