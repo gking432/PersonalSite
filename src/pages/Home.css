@@ -69,9 +69,9 @@ One cohesive piece. Generous whitespace. Parchment base.
 }
 
 .hero-content {
-  max-width: 1100px;
   position: relative;
   z-index: 1;
+  min-width: 0;
 }
 
 .hero-label {
