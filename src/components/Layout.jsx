@@ -27,13 +27,29 @@ function Layout({ children }) {
   }, [menuOpen])
 
   const isActive = (path) => location.pathname === path
+  const isWorkActive = location.pathname === '/projects' || location.pathname === '/client-work'
 
   const navLinks = [
-    { path: '/', label: 'Home' },
-    { path: '/projects', label: 'Projects' },
-    { path: '/client-work', label: 'Client Work' },
     { path: '/about', label: 'About' },
+    {
+      label: 'Work',
+      dropdown: [
+        { path: '/projects', label: 'Dev Projects' },
+        { path: '/client-work', label: 'Client Work' },
+      ]
+    },
     { path: '/speaking', label: 'Speaking' },
+    { path: '/writing', label: 'Writing' },
+    { path: '/contact', label: 'Contact' },
+  ]
+
+  // Flat list for mobile menu
+  const mobileLinks = [
+    { path: '/about', label: 'About' },
+    { path: '/projects', label: 'Dev Projects' },
+    { path: '/client-work', label: 'Client Work' },
+    { path: '/speaking', label: 'Speaking' },
+    { path: '/writing', label: 'Writing' },
     { path: '/contact', label: 'Contact' },
   ]
 
@@ -46,11 +62,26 @@ function Layout({ children }) {
           </Link>
           <ul className="nav-links">
             {navLinks.map(link => (
-              <li key={link.path}>
-                <Link to={link.path} className={isActive(link.path) ? 'active' : ''}>
-                  {link.label}
-                </Link>
-              </li>
+              link.dropdown ? (
+                <li key={link.label} className={`nav-dropdown ${isWorkActive ? 'active' : ''}`}>
+                  <span className="nav-dropdown-trigger">{link.label}</span>
+                  <ul className="nav-dropdown-menu">
+                    {link.dropdown.map(sub => (
+                      <li key={sub.path}>
+                        <Link to={sub.path} className={isActive(sub.path) ? 'active' : ''}>
+                          {sub.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              ) : (
+                <li key={link.path}>
+                  <Link to={link.path} className={isActive(link.path) ? 'active' : ''}>
+                    {link.label}
+                  </Link>
+                </li>
+              )
             ))}
           </ul>
           <button
@@ -85,7 +116,7 @@ function Layout({ children }) {
                 visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.1 } }
               }}
             >
-              {navLinks.map(link => (
+              {mobileLinks.map(link => (
                 <motion.li
                   key={link.path}
                   variants={{
