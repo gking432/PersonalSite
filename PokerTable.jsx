@@ -212,7 +212,7 @@ function PokerTable() {
               className="inspection-overlay"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0, transition: { duration: 0.4 } }}
+              exit={{ opacity: 0, transition: { duration: 0.2 } }}
               onClick={handleDismiss}
             />
 
@@ -244,7 +244,7 @@ function PokerTable() {
                 y: '-50%',
                 width: cardPositionRef.current.width,
                 height: cardPositionRef.current.height,
-                transition: { duration: 0.6, ease: ndsEase }
+                transition: { duration: 0.25, ease: ndsEase }
               }}
             >
               {/* Inner — flips to reveal project, reverses on close */}
@@ -252,7 +252,7 @@ function PokerTable() {
                 className="inspected-card-inner"
                 initial={{ rotateY: 0 }}
                 animate={{ rotateY: 180, transition: { duration: 0.6, ease: ndsEase } }}
-                exit={{ rotateY: 0, transition: { duration: 0.6, ease: ndsEase } }}
+                exit={{ rotateY: 0, transition: { duration: 0.25, ease: ndsEase } }}
               >
                 {/* BACK FACE — card back image (visible at rotateY: 0) */}
                 <div className="inspected-face inspected-face-back">
