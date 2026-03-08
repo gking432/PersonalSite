@@ -212,7 +212,7 @@ function PokerTable() {
               className="inspection-overlay"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0, transition: { duration: 0.4, delay: 0.25 } }}
+              exit={{ opacity: 0, transition: { duration: 0.4 } }}
               onClick={handleDismiss}
             />
 
@@ -244,21 +244,15 @@ function PokerTable() {
                 y: '-50%',
                 width: cardPositionRef.current.width,
                 height: cardPositionRef.current.height,
-                opacity: 0,
-                transition: {
-                  duration: 0.6,
-                  delay: 0.35,
-                  ease: ndsEase,
-                  opacity: { duration: 0.15, delay: 0.8 }
-                }
+                transition: { duration: 0.6, ease: ndsEase }
               }}
             >
-              {/* Inner — flip back FIRST (0.35s), then outer slides card to deck */}
+              {/* Inner — flips to reveal project, reverses on close */}
               <motion.div
                 className="inspected-card-inner"
                 initial={{ rotateY: 0 }}
                 animate={{ rotateY: 180, transition: { duration: 0.6, ease: ndsEase } }}
-                exit={{ rotateY: 0, transition: { duration: 0.35, ease: ndsEase } }}
+                exit={{ rotateY: 0, transition: { duration: 0.6, ease: ndsEase } }}
               >
                 {/* BACK FACE — card back image (visible at rotateY: 0) */}
                 <div className="inspected-face inspected-face-back">
