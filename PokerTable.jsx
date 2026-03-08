@@ -238,13 +238,8 @@ function PokerTable() {
                 transition: { duration: 0.6, ease: ndsEase }
               }}
               exit={{
-                left: cardPositionRef.current.centerX,
-                top: cardPositionRef.current.centerY,
-                x: '-50%',
-                y: '-50%',
-                width: cardPositionRef.current.width,
-                height: cardPositionRef.current.height,
-                transition: { duration: 0.25, ease: ndsEase }
+                opacity: 0,
+                transition: { duration: 0.15, ease: ndsEase }
               }}
             >
               {/* Inner — flips to reveal project, reverses on close */}
