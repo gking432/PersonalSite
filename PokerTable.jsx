@@ -6,11 +6,14 @@ const POKER_TABLE_SVG = '/images/Pokertable.svg'
 const CARD_BACK_SVG = '/images/Cardback.svg'
 const SHADOW_SVG = '/images/Shadow.svg'
 
+const IMAGE_SRCS = [POKER_TABLE_SVG, CARD_BACK_SVG, SHADOW_SVG]
+
 const ndsEase = [0.22, 1, 0.36, 1]
 
 function PokerTable() {
   const [inspectingCard, setInspectingCard] = useState(null)
   const [showPrompt, setShowPrompt] = useState(false)
+  const [imagesLoaded, setImagesLoaded] = useState(false)
   const sectionRef = useRef(null)
   const cardRefs = [useRef(null), useRef(null), useRef(null)]
   const cardPositionRef = useRef(null)
@@ -21,6 +24,22 @@ function PokerTable() {
   const card2Controls = useAnimationControls()
   const card3Controls = useAnimationControls()
   const cardControls = [card1Controls, card2Controls, card3Controls]
+
+  // Preload all images
+  useEffect(() => {
+    let cancelled = false
+    Promise.all(
+      IMAGE_SRCS.map(src => new Promise((resolve) => {
+        const img = new Image()
+        img.onload = resolve
+        img.onerror = resolve // don't block on failure
+        img.src = src
+      }))
+    ).then(() => {
+      if (!cancelled) setImagesLoaded(true)
+    })
+    return () => { cancelled = true }
+  }, [])
 
   // Initialize cards off-screen
   useEffect(() => {
@@ -44,35 +63,59 @@ function PokerTable() {
   // Text column fades out alongside the shadow
   const contentOpacity = useTransform(scrollYProgress, [0.58, 0.7], [1, 0])
 
-  // Deal cards ONLY after table is fully in (scrollYProgress >= 0.4)
+  // Track whether scroll has reached the deal threshold
+  const scrollReadyRef = useRef(false)
+
   useEffect(() => {
     const unsubscribe = scrollYProgress.on("change", (latest) => {
+      if (latest >= 0.4) scrollReadyRef.current = true
+    })
+    return () => unsubscribe()
+  }, [scrollYProgress])
+
+  // Deal cards once BOTH images are loaded AND scroll has reached threshold
+  useEffect(() => {
+    if (!imagesLoaded || cardsDealtRef.current) return
+
+    // If scroll already past threshold, deal immediately
+    if (scrollReadyRef.current) {
+      dealCards()
+      return
+    }
+
+    // Otherwise wait for scroll to reach threshold
+    const unsubscribe = scrollYProgress.on("change", (latest) => {
       if (latest >= 0.4 && !cardsDealtRef.current) {
-        cardsDealtRef.current = true
-
-        card1Controls.start({
-          x: 0, y: 0, rotate: -15,
-          transition: { duration: 0.8, ease: ndsEase }
-        })
-
-        setTimeout(() => {
-          card2Controls.start({
-            x: 120, y: -18, rotate: -3,
-            transition: { duration: 0.8, ease: ndsEase }
-          })
-        }, 500)
-
-        setTimeout(() => {
-          card3Controls.start({
-            x: 240, y: -5, rotate: 9,
-            transition: { duration: 0.8, ease: ndsEase }
-          })
-          setTimeout(() => setShowPrompt(true), 2300)
-        }, 1000)
+        dealCards()
+        unsubscribe()
       }
     })
     return () => unsubscribe()
-  }, [scrollYProgress, card1Controls, card2Controls, card3Controls])
+
+    function dealCards() {
+      cardsDealtRef.current = true
+
+      card1Controls.start({
+        x: 0, y: 0, rotate: -15,
+        transition: { duration: 0.8, ease: ndsEase }
+      })
+
+      setTimeout(() => {
+        card2Controls.start({
+          x: 120, y: -18, rotate: -3,
+          transition: { duration: 0.8, ease: ndsEase }
+        })
+      }, 500)
+
+      setTimeout(() => {
+        card3Controls.start({
+          x: 240, y: -5, rotate: 9,
+          transition: { duration: 0.8, ease: ndsEase }
+        })
+        setTimeout(() => setShowPrompt(true), 2300)
+      }, 1000)
+    }
+  }, [imagesLoaded, scrollYProgress, card1Controls, card2Controls, card3Controls])
 
   // Projects data
   const projects = [
