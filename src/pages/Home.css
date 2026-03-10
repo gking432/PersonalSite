@@ -120,6 +120,7 @@ One cohesive piece. Generous whitespace. Parchment base.
   gap: var(--space-md);
   flex-wrap: wrap;
   align-items: center;
+  margin-bottom: var(--space-lg);
 }
 
 /* Arrow in buttons */
@@ -133,16 +134,14 @@ One cohesive piece. Generous whitespace. Parchment base.
   transform: translateX(4px);
 }
 
-/* Scroll indicator */
+/* Scroll indicator — directly under buttons, centered */
 .scroll-indicator {
-  position: absolute;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
+  width: 100%;
+  margin-top: 0;
 }
 
 .scroll-indicator-line {
@@ -231,8 +230,8 @@ One cohesive piece. Generous whitespace. Parchment base.
 
 .capabilities-sticky {
   position: sticky;
-  top: 0;
-  height: 100vh;
+  top: var(--header-height);
+  height: calc(100vh - var(--header-height));
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -385,9 +384,9 @@ One cohesive piece. Generous whitespace. Parchment base.
 
 .photo-section-wrapper {
   position: sticky;
-  top: 0;
+  top: var(--header-height);
   width: 100%;
-  height: 100vh;
+  height: calc(100vh - var(--header-height));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -425,29 +424,33 @@ One cohesive piece. Generous whitespace. Parchment base.
   max-width: 1200px;
   display: flex;
   flex-direction: column;
-  gap: calc(var(--space-md) * 0.5);
+  gap: clamp(4px, 1vh, 12px);
   height: 100%;
   justify-content: flex-start;
   align-items: flex-start;
-  padding: 235px var(--gutter) var(--space-2xl) var(--gutter);
+  /* Viewport-based padding: more room for text on all screen sizes */
+  padding: clamp(60px, 9vh, 140px) var(--gutter) clamp(48px, 5.5vh, 90px) var(--gutter);
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .giant-text {
   font-family: var(--font-display);
-  font-size: clamp(3rem, 12vw, 10rem);
+  font-size: clamp(2.5rem, 10vw, 10rem);
   font-weight: 300;
   line-height: 0.95;
   letter-spacing: -0.03em;
   color: var(--cream);
-  margin: 0 0 var(--space-lg) 0;
+  margin: 0 0 clamp(0.5rem, 2vh, var(--space-lg)) 0;
   max-width: 1100px;
 }
 
 .photo-section-text-wrapper {
   position: relative;
   max-width: 600px;
-  margin-top: calc(var(--space-lg) * 0.5);
+  margin-top: clamp(4px, 1vh, 12px);
+  /* Reserve space so last line is never clipped during squeeze */
+  padding-bottom: 0.75em;
 }
 
 .photo-section-text-invisible {
@@ -747,7 +750,8 @@ One cohesive piece. Generous whitespace. Parchment base.
   }
 
   .photo-section-content {
-    gap: var(--space-lg);
+    gap: clamp(8px, 1.5vh, 24px);
+    padding: clamp(60px, 9vh, 120px) var(--gutter) clamp(40px, 5vh, 80px) var(--gutter);
   }
 
   .background {

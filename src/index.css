@@ -41,6 +41,7 @@ Prestige portfolio warmth + colors
   --max-width: 1400px;
   --max-width-text: 720px;
   --gutter: 3rem;
+  --header-height: 80px;
   
   /* NDS Spacing Scale */
   --space-xs: 8px;
