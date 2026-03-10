@@ -78,6 +78,12 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Lock main scroll when modal/overlay is open */
+html.modal-open,
+html.modal-open body {
+  overflow: hidden !important;
+}
+
 body {
   font-family: var(--font-sans);
   font-weight: 400;

@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
+import petunisTeams from '../data/petunis-teams.json'
+import petunisAds from '../data/petunis-ads.json'
+import petunisDesignFiles from '../data/petunis-designfiles.json'
 import './ClientWork.css'
 
 const ndsEase = [0.22, 1, 0.36, 1]
@@ -18,10 +22,12 @@ const clientProjects = [
     strategy: 'Developed cohesive brand guidelines, designed team-specific product mockups, built the storefront, and created marketing assets for social media campaigns targeting pet owners who are sports fans.',
     scope: '32 unique team designs, complete brand guidelines, full eCommerce site, social ad campaigns, and print-on-demand integration.',
     screenshotLabel: 'PetUnis Storefront',
+    screenshotImage: '/images/petunis-storefront.png',
     modules: [
       {
         id: 'ads',
         label: 'Advertisements',
+        adsImagesFolder: 'petunis-ads',
         items: [
           'Facebook carousel ads for each NFL division',
           'Instagram story ads targeting pet owners',
@@ -34,6 +40,7 @@ const clientProjects = [
       {
         id: 'website',
         label: 'Website Content',
+        websiteUrl: 'https://gunnarneuman7.wixsite.com/my-site-18',
         items: [
           'Full eCommerce storefront on Shopify',
           'Product pages for all 32 team designs',
@@ -46,6 +53,9 @@ const clientProjects = [
       {
         id: 'merchandising',
         label: 'Merchandising',
+        heroImage: '/images/petunis-merchandising-hero.png',
+        teamsImagesFolder: 'petunis-teams',
+        designFilesFolder: 'petunis-designfiles',
         items: [
           'Product mockups for all 32 teams',
           'Lifestyle photography concepts',
@@ -326,19 +336,22 @@ const staggerItem = {
 function ClientWork() {
   const [activeProject, setActiveProject] = useState(null)
   const [activeModule, setActiveModule] = useState(null)
+  const [showTeamsImages, setShowTeamsImages] = useState(false)
+  const [showDesignFiles, setShowDesignFiles] = useState(false)
+  const [websitePreviewUrl, setWebsitePreviewUrl] = useState(null)
 
   useEffect(() => {
-    if (activeProject) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
-    return () => { document.body.style.overflow = '' }
-  }, [activeProject])
+    const locked = activeProject || showTeamsImages || showDesignFiles || websitePreviewUrl
+    document.documentElement.classList.toggle('modal-open', locked)
+    return () => document.documentElement.classList.remove('modal-open')
+  }, [activeProject, showTeamsImages, showDesignFiles, websitePreviewUrl])
 
   const handleClose = () => {
     setActiveProject(null)
     setActiveModule(null)
+    setShowTeamsImages(false)
+    setShowDesignFiles(false)
+    setWebsitePreviewUrl(null)
   }
 
   const handleBackdropClick = (e) => {
@@ -350,6 +363,94 @@ function ClientWork() {
   return (
     <PageTransition>
       <div className="client-work">
+        {showTeamsImages && activeModule?.teamsImagesFolder && createPortal(
+          <div
+            className="teams-images-overlay"
+            onClick={() => setShowTeamsImages(false)}
+          >
+            <button className="teams-images-close" onClick={(e) => { e.stopPropagation(); setShowTeamsImages(false); }} aria-label="Close">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+            </button>
+            <div className="teams-images-header">
+              <h2 className="teams-images-title">PetUnis — All 32 Teams</h2>
+              <p className="teams-images-subtitle">Product mockups for every NFL franchise</p>
+            </div>
+            <div className="teams-images-scroll" onClick={(e) => e.stopPropagation()}>
+              {petunisTeams.map((filename) => (
+                <img
+                  key={filename}
+                  src={`/pdfs/${activeModule.teamsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
+                  alt=""
+                />
+              ))}
+            </div>
+          </div>,
+          document.body
+        )}
+        {showDesignFiles && activeModule?.designFilesFolder && createPortal(
+          <div
+            className="teams-images-overlay"
+            onClick={() => setShowDesignFiles(false)}
+          >
+            <button className="teams-images-close" onClick={(e) => { e.stopPropagation(); setShowDesignFiles(false); }} aria-label="Close">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+            </button>
+            <div className="teams-images-header">
+              <h2 className="teams-images-title">PetUnis — Design Files</h2>
+              <p className="teams-images-subtitle">Design assets for all 32 NFL teams</p>
+            </div>
+            <div className="design-files-scroll" onClick={(e) => e.stopPropagation()}>
+              {(() => {
+                const byTeam = petunisDesignFiles.reduce((acc, path) => {
+                  const team = path.split('/')[0]
+                  if (!acc[team]) acc[team] = []
+                  acc[team].push(path)
+                  return acc
+                }, {})
+                return Object.entries(byTeam)
+                  .sort((a, b) => a[0].localeCompare(b[0]))
+                  .map(([team, files]) => (
+                  <div key={team} className="design-files-team-section">
+                    <h3 className="design-files-team-label">{team}</h3>
+                    <div className="design-files-masonry">
+                      {files.map((filename) => (
+                        <div key={filename} className="design-files-masonry-item">
+                          <img
+                            src={`/pdfs/${activeModule.designFilesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
+                            alt=""
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))
+              })()}
+            </div>
+          </div>,
+          document.body
+        )}
+        {websitePreviewUrl && createPortal(
+          <div
+            className="teams-images-overlay website-preview-overlay"
+            onClick={() => setWebsitePreviewUrl(null)}
+          >
+            <button className="teams-images-close" onClick={(e) => { e.stopPropagation(); setWebsitePreviewUrl(null); }} aria-label="Close">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+            </button>
+            <div className="website-preview-header">
+              <h2 className="teams-images-title">PetUnis — Website</h2>
+              <p className="teams-images-subtitle">Live storefront preview</p>
+            </div>
+            <div className="website-preview-iframe-wrap" onClick={(e) => e.stopPropagation()}>
+              <iframe
+                src={websitePreviewUrl}
+                title="PetUnis website preview"
+                className="website-preview-iframe"
+              />
+            </div>
+          </div>,
+          document.body
+        )}
         {/* Hero */}
         <section className="client-work-hero">
           <div className="container">
@@ -364,7 +465,7 @@ function ClientWork() {
                   Client Work
                 </motion.p>
                 <h1>
-                  {'Marketing That Ships'.split(' ').map((word, i) => (
+                  {'Marketing That Converts'.split(' ').map((word, i) => (
                     <motion.span
                       key={i}
                       style={{ display: 'inline-block', marginRight: '0.3em' }}
@@ -441,11 +542,35 @@ function ClientWork() {
                   </div>
                   {project.featured && (
                     <div className="featured-preview">
-                      {project.modules.slice(0, 4).map((mod, i) => (
-                        <div key={i} className="featured-preview-slot">
-                          {mod.label}
-                        </div>
-                      ))}
+                      {project.modules.slice(0, 4).map((mod, i) => {
+                        const images = mod.adsImagesFolder
+                          ? petunisAds.slice(0, 4)
+                          : mod.teamsImagesFolder
+                            ? petunisTeams.slice(0, 4)
+                            : project.screenshotImage
+                              ? [project.screenshotImage]
+                              : []
+                        return (
+                          <div key={i} className="featured-preview-slot">
+                            {images.length ? (
+                              <div className="featured-preview-masonry">
+                                {images.map((src, j) => (
+                                  <div key={j} className="featured-preview-masonry-item">
+                                    <img
+                                      src={src.startsWith('/')
+                                        ? src
+                                        : `/pdfs/${mod.adsImagesFolder || mod.teamsImagesFolder}/${src.split('/').map(encodeURIComponent).join('/')}`}
+                                      alt=""
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              mod.label
+                            )}
+                          </div>
+                        )
+                      })}
                     </div>
                   )}
                 </motion.div>
@@ -501,26 +626,100 @@ function ClientWork() {
                         <p className="drilldown-subtitle">{activeProject.name} — {activeProject.type}</p>
                       </motion.div>
 
-                      {/* Items grid */}
-                      <motion.div
-                        className="drilldown-items-grid"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.3, delay: 0.1 }}
-                      >
-                        {activeModule.items.map((item, i) => (
-                          <motion.div
-                            key={i}
-                            className="modal-card drilldown-item"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.3, delay: 0.05 * i, ease: ndsEase }}
-                          >
-                            <div className="drilldown-item-number">{String(i + 1).padStart(2, '0')}</div>
-                            <p>{item}</p>
-                          </motion.div>
-                        ))}
-                      </motion.div>
+                      {/* Hero section with banner */}
+                      {activeModule.heroImage && (
+                        <motion.div
+                          className="drilldown-hero"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: 0.05, ease: ndsEase }}
+                        >
+                          <img src={activeModule.heroImage} alt={activeModule.label} />
+                        </motion.div>
+                      )}
+
+                      {/* Ads masonry collage OR 3 category cards */}
+                      {activeModule.adsImagesFolder ? (
+                        <motion.div
+                          className="drilldown-ads-masonry"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, ease: ndsEase }}
+                        >
+                          {petunisAds.map((filename) => (
+                            <div key={filename} className="drilldown-ads-masonry-item">
+                              <img
+                                src={`/pdfs/${activeModule.adsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
+                                alt=""
+                              />
+                            </div>
+                          ))}
+                        </motion.div>
+                      ) : (
+                        <div className="drilldown-categories-grid">
+                          {(() => {
+                            const items = activeModule.items
+                            const chunkSize = Math.ceil(items.length / 3)
+                            const chunks = [0, 1, 2].map(i => items.slice(i * chunkSize, (i + 1) * chunkSize))
+                            return chunks.map((chunk, chunkIdx) => {
+                              const isTeamsCard = activeModule.teamsImagesFolder && chunkIdx === 0
+                              const isDesignFilesCard = activeModule.designFilesFolder && chunkIdx === 2
+                              const heroBgUrl = isTeamsCard
+                                ? `/pdfs/${activeModule.teamsImagesFolder}/${petunisTeams[0].split('/').map(encodeURIComponent).join('/')}`
+                                : isDesignFilesCard
+                                  ? (() => {
+                                      const first49ers = petunisDesignFiles.find((p) => p.startsWith('49ers/'))
+                                      return first49ers
+                                        ? `/pdfs/${activeModule.designFilesFolder}/${first49ers.split('/').map(encodeURIComponent).join('/')}`
+                                        : null
+                                    })()
+                                  : null
+                              const isHeroCard = isTeamsCard || isDesignFilesCard
+                              return (
+                                <motion.div
+                                  key={chunkIdx}
+                                  className={`modal-card drilldown-category-card ${isHeroCard ? 'clickable teams-hero-card' : ''}`}
+                                  initial={{ opacity: 0, y: 20 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ duration: 0.3, delay: 0.1 + chunkIdx * 0.05, ease: ndsEase }}
+                                  onClick={isTeamsCard ? () => setShowTeamsImages(true) : isDesignFilesCard ? () => setShowDesignFiles(true) : undefined}
+                                >
+                                  {isTeamsCard ? (
+                                    <>
+                                      <img
+                                        src={heroBgUrl}
+                                        alt=""
+                                        className="teams-hero-card-bg"
+                                      />
+                                      <div className="teams-hero-card-overlay">
+                                        <span className="teams-hero-card-text">PetUnis</span>
+                                      </div>
+                                    </>
+                                  ) : isDesignFilesCard ? (
+                                    <>
+                                      <img
+                                        src={heroBgUrl}
+                                        alt=""
+                                        className="teams-hero-card-bg"
+                                      />
+                                      <div className="teams-hero-card-overlay">
+                                        <span className="teams-hero-card-text">Design Files</span>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    chunk.map((item, i) => (
+                                      <div key={i} className="drilldown-category-item">
+                                        <span className="drilldown-item-number">{String(chunkIdx * chunkSize + i + 1).padStart(2, '0')}</span>
+                                        <p>{item}</p>
+                                      </div>
+                                    ))
+                                  )}
+                                </motion.div>
+                              )
+                            })
+                          })()}
+                        </div>
+                      )}
                     </motion.div>
                   ) : (
                     /* ===== MAIN PROJECT VIEW ===== */
@@ -544,8 +743,8 @@ function ClientWork() {
                         <p className="modal-desc">{activeProject.description}</p>
                       </motion.div>
 
-                      {/* Middle Row: Screenshot + Brief/Strategy/Scope */}
-                      <div className="modal-middle-row">
+                      {/* Content Grid: Screenshot (rect) + Brief (spans full height) + Modules (under screenshot) */}
+                      <div className="modal-content-grid">
                         <motion.div
                           className="modal-card modal-screenshot-card"
                           initial={{ opacity: 0, y: 30 }}
@@ -553,7 +752,11 @@ function ClientWork() {
                           transition={{ duration: 0.4, delay: 0.08, ease: ndsEase }}
                         >
                           <div className="screenshot-placeholder">
-                            {activeProject.screenshotLabel}
+                            {activeProject.screenshotImage ? (
+                              <img src={activeProject.screenshotImage} alt={activeProject.screenshotLabel} />
+                            ) : (
+                              activeProject.screenshotLabel
+                            )}
                           </div>
                         </motion.div>
 
@@ -576,35 +779,26 @@ function ClientWork() {
                             <p>{activeProject.scope}</p>
                           </div>
                         </motion.div>
-                      </div>
 
-                      {/* Bottom Row: What I Built — Drill-Down Modules */}
-                      <div className="modal-modules-row">
-                        <motion.span
-                          className="modules-row-label"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ duration: 0.4, delay: 0.2 }}
-                        >
-                          What I Built
-                        </motion.span>
-                        <div className="modal-modules-grid">
-                          {activeProject.modules.map((mod, i) => (
-                            <motion.div
-                              key={mod.id}
-                              className="modal-card modal-module-card"
-                              initial={{ opacity: 0, y: 30 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ duration: 0.4, delay: 0.2 + i * 0.06, ease: ndsEase }}
-                              onClick={() => setActiveModule(mod)}
-                            >
-                              <span className="module-label">{mod.label}</span>
-                              <span className="module-count">{mod.items.length} items</span>
-                              <svg className="module-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                              </svg>
-                            </motion.div>
-                          ))}
+                        <div className="modal-modules-row">
+                          <div className="modal-modules-grid">
+                            {activeProject.modules.map((mod, i) => (
+                              <motion.div
+                                key={mod.id}
+                                className="modal-card modal-module-card"
+                                initial={{ opacity: 0, y: 30 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.4, delay: 0.2 + i * 0.06, ease: ndsEase }}
+                                onClick={() => mod.websiteUrl ? setWebsitePreviewUrl(mod.websiteUrl) : setActiveModule(mod)}
+                              >
+                                <span className="module-label">{mod.label}</span>
+                                <span className="module-count">{mod.items.length} items</span>
+                                <svg className="module-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                  <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                              </motion.div>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </motion.div>
