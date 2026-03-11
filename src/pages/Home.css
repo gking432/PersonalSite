@@ -417,6 +417,11 @@ One cohesive piece. Generous whitespace. Parchment base.
   z-index: 1;
 }
 
+/* Use Photo Sections/4.png as the background for the second photo section */
+.photo-section-2 .photo-section-overlay {
+  background-image: url("/Photo%20Sections/4.png");
+}
+
 .photo-section-content {
   position: relative;
   z-index: 2;
