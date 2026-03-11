@@ -360,6 +360,9 @@ function ClientWork() {
     }
   }
 
+  const websiteModuleForActiveProject =
+    activeProject?.modules?.find((mod) => mod.websiteUrl)
+
   return (
     <PageTransition>
       <div className="client-work">
@@ -442,6 +445,7 @@ function ClientWork() {
               <p className="teams-images-subtitle">Live storefront preview</p>
             </div>
             <div className="website-preview-iframe-wrap" onClick={(e) => e.stopPropagation()}>
+              <div className="website-preview-white-bar"></div>
               <iframe
                 src={websitePreviewUrl}
                 title="PetUnis website preview"
@@ -751,7 +755,14 @@ function ClientWork() {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.4, delay: 0.08, ease: ndsEase }}
                         >
-                          <div className="screenshot-placeholder">
+                          <div
+                            className={`screenshot-placeholder ${websiteModuleForActiveProject ? 'clickable' : ''}`}
+                            onClick={
+                              websiteModuleForActiveProject
+                                ? () => setWebsitePreviewUrl(websiteModuleForActiveProject.websiteUrl)
+                                : undefined
+                            }
+                          >
                             {activeProject.screenshotImage ? (
                               <img src={activeProject.screenshotImage} alt={activeProject.screenshotLabel} />
                             ) : (

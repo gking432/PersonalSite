@@ -337,6 +337,11 @@ Showcase freelance/client projects with modal deep-dives
   text-transform: uppercase;
   color: var(--warm-gray);
   overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.screenshot-placeholder.clickable {
+  cursor: pointer;
 }
 
 .screenshot-placeholder img {
@@ -345,6 +350,16 @@ Showcase freelance/client projects with modal deep-dives
   object-fit: cover;
   object-position: top;
   transform: scale(1.03);
+  transition: transform var(--transition);
+}
+
+.screenshot-placeholder.clickable:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.screenshot-placeholder.clickable:hover img {
+  transform: scale(1.05);
 }
 
 .modal-brief-card {
@@ -681,11 +696,12 @@ Showcase freelance/client projects with modal deep-dives
   border: 1px solid rgba(0,0,0,0.1);
   border-radius: 50%;
   background: white;
+  color: var(--charcoal);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2;
+  z-index: 10;
 }
 
 .teams-images-scroll {
@@ -705,7 +721,7 @@ Showcase freelance/client projects with modal deep-dives
 /* Website preview — iframe embed */
 .website-preview-overlay .website-preview-header {
   flex-shrink: 0;
-  padding: 2rem 2.5rem 1.5rem;
+  padding: 1.5rem 2.5rem 0.25rem;
 }
 
 .website-preview-iframe-wrap {
@@ -713,6 +729,19 @@ Showcase freelance/client projects with modal deep-dives
   min-height: 0;
   padding: 0 2.5rem 2rem;
   display: flex;
+  position: relative;
+}
+
+.website-preview-white-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 50px;
+  background: white;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .website-preview-iframe {
