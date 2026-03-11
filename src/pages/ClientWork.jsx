@@ -3,8 +3,11 @@ import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
 import petunisTeams from '../data/petunis-teams.json'
+import petunisForPeople from '../data/petunis-for-people.json'
 import petunisAds from '../data/petunis-ads.json'
 import petunisDesignFiles from '../data/petunis-designfiles.json'
+import weatherfixersAds from '../data/weatherfixers-ads.json'
+import weatherfixersPostcards from '../data/weatherfixers-postcards.json'
 import './ClientWork.css'
 
 const ndsEase = [0.22, 1, 0.36, 1]
@@ -12,7 +15,7 @@ const ndsEase = [0.22, 1, 0.36, 1]
 const clientProjects = [
   {
     id: 'petunis',
-    number: '01',
+    year: '2023',
     name: 'PetUnis',
     type: 'Brand Design & eCommerce',
     shortDesc: 'NFL-inspired dog uniforms. Full brand identity, product design, and eCommerce buildout across all 32 teams.',
@@ -70,19 +73,22 @@ const clientProjects = [
   },
   {
     id: 'weatherfixers',
-    number: '02',
+    year: '2024',
     name: 'WeatherFixers.com',
-    type: 'Web App & Content Strategy',
-    shortDesc: 'Storm damage weather aggregator connecting homeowners with local contractors after severe weather events.',
-    description: 'Build a weather aggregation platform that identifies storm damage events and connects affected homeowners with vetted local contractors for repairs.',
-    brief: 'Create a platform that pulls real-time weather data, detects storm damage events, and serves localized content to connect homeowners with contractors.',
-    strategy: 'Designed the platform to pull weather data, identify damage-prone events, and serve localized content. Created the content strategy and marketing funnel to drive organic traffic from storm-affected areas.',
-    scope: 'Full-stack web platform, weather API integration, content marketing system, local SEO strategy, and lead generation pipeline.',
-    screenshotLabel: 'WeatherFixers Platform',
+    type: 'Lead Aggregation Website',
+    shortDesc: 'Lead aggregation website for storm damage professionals. Website design, digital ads, and direct mail postcards.',
+    description: 'Designed a lead aggregation website that connects storm damage contractors with homeowners in affected areas. Created the website, digital advertisements, and direct door mailing postcards.',
+    brief: 'Build a lead aggregation website for storm damage pros. Design the site, run digital ad campaigns, and create direct mail postcards for door-to-door outreach.',
+    strategy: 'Designed the website to capture and qualify leads for storm damage contractors. Created targeted digital ad campaigns and direct mail postcards for geographic areas hit by severe weather.',
+    scope: 'Website design, digital advertisements, direct door mailing postcards, and lead capture system.',
+    screenshotLabel: 'WeatherFixers Website',
+    screenshotImage: '/WeatherFixers/Storefront.png',
     modules: [
       {
         id: 'ads',
-        label: 'Advertisements',
+        label: 'Digital Advertisements',
+        adsImagesFolder: 'WeatherFixers/Ads',
+        adsBasePath: '',
         items: [
           'Google Ads campaigns for storm-related keywords',
           'Facebook geo-targeted ads post-storm',
@@ -93,34 +99,33 @@ const clientProjects = [
       },
       {
         id: 'website',
-        label: 'Website Content',
+        label: 'Website',
+        websiteUrl: 'https://gunnarneuman7.wixstudio.com/my-site-21',
         items: [
-          'Homepage with live weather feed',
-          'Storm tracker dashboard',
-          'Contractor directory pages',
-          'Localized landing pages by city',
-          'Blog content for SEO',
-          'Lead capture forms'
+          'Website design and build',
+          'Lead capture forms',
+          'Contractor-focused landing pages',
+          'Homeowner-facing content',
+          'Mobile-responsive layout'
         ]
       },
       {
-        id: 'content',
-        label: 'Content Strategy',
+        id: 'directmail',
+        label: 'Direct Mail',
+        postcardsImagesFolder: 'WeatherFixers/Ads',
+        postcardsBasePath: '',
         items: [
-          'SEO keyword research & mapping',
-          'Localized content templates',
-          'Storm damage resource guides',
-          'Email nurture sequences',
-          'Social media content calendar',
-          'Contractor onboarding materials'
+          'Direct door mailing postcard design',
+          'Geo-targeted mail campaigns',
+          'Post-storm outreach creative'
         ]
       }
     ],
-    tech: ['Web Development', 'SEO', 'Content Strategy', 'API Integration']
+    tech: ['Web Design', 'Digital Ads', 'Direct Mail', 'Lead Gen']
   },
   {
     id: 'elevate-apparel',
-    number: '03',
+    year: '2024',
     name: 'Elevate Apparel',
     type: 'Brand & Ad Creative',
     shortDesc: 'Print-on-demand gymwear brand. Brand identity design with targeted ad creative for fitness enthusiasts.',
@@ -170,7 +175,7 @@ const clientProjects = [
   },
   {
     id: 'hospice-nonprofit',
-    number: '04',
+    year: '2023',
     name: 'Hospice Nonprofit',
     type: 'Website Redesign',
     shortDesc: 'Complete homepage redesign for a hospice care nonprofit. Modernized their web presence with compassionate, clear design.',
@@ -220,7 +225,7 @@ const clientProjects = [
   },
   {
     id: 'blue-lizard',
-    number: '05',
+    year: '2023',
     name: 'Blue Lizard Bar & Grill',
     type: 'Website Redesign',
     shortDesc: 'Modern website redesign for a bar and grill. Clean, appetizing design that drives reservations and foot traffic.',
@@ -269,7 +274,7 @@ const clientProjects = [
   },
   {
     id: 'mc-seafood',
-    number: '06',
+    year: '2023',
     name: 'M&C Seafood',
     type: 'Website Redesign',
     shortDesc: 'Website redesign for a seafood restaurant. Fresh, ocean-inspired design highlighting the menu and coastal brand.',
@@ -337,19 +342,21 @@ function ClientWork() {
   const [activeProject, setActiveProject] = useState(null)
   const [activeModule, setActiveModule] = useState(null)
   const [showTeamsImages, setShowTeamsImages] = useState(false)
+  const [showForPeopleImages, setShowForPeopleImages] = useState(false)
   const [showDesignFiles, setShowDesignFiles] = useState(false)
   const [websitePreviewUrl, setWebsitePreviewUrl] = useState(null)
 
   useEffect(() => {
-    const locked = activeProject || showTeamsImages || showDesignFiles || websitePreviewUrl
+    const locked = activeProject || showTeamsImages || showForPeopleImages || showDesignFiles || websitePreviewUrl
     document.documentElement.classList.toggle('modal-open', locked)
     return () => document.documentElement.classList.remove('modal-open')
-  }, [activeProject, showTeamsImages, showDesignFiles, websitePreviewUrl])
+  }, [activeProject, showTeamsImages, showForPeopleImages, showDesignFiles, websitePreviewUrl])
 
   const handleClose = () => {
     setActiveProject(null)
     setActiveModule(null)
     setShowTeamsImages(false)
+    setShowForPeopleImages(false)
     setShowDesignFiles(false)
     setWebsitePreviewUrl(null)
   }
@@ -390,6 +397,30 @@ function ClientWork() {
           </div>,
           document.body
         )}
+        {showForPeopleImages && activeModule?.teamsImagesFolder && createPortal(
+          <div
+            className="teams-images-overlay"
+            onClick={() => setShowForPeopleImages(false)}
+          >
+            <button className="teams-images-close" onClick={(e) => { e.stopPropagation(); setShowForPeopleImages(false); }} aria-label="Close">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+            </button>
+            <div className="teams-images-header">
+              <h2 className="teams-images-title">PetUnis — For People</h2>
+              <p className="teams-images-subtitle">Product mockups for people apparel</p>
+            </div>
+            <div className="teams-images-scroll" onClick={(e) => e.stopPropagation()}>
+              {petunisForPeople.map((filename) => (
+                <img
+                  key={filename}
+                  src={`/pdfs/${activeModule.teamsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
+                  alt=""
+                />
+              ))}
+            </div>
+          </div>,
+          document.body
+        )}
         {showDesignFiles && activeModule?.designFilesFolder && createPortal(
           <div
             className="teams-images-overlay"
@@ -410,11 +441,12 @@ function ClientWork() {
                   acc[team].push(path)
                   return acc
                 }, {})
+                const teamDisplayName = (name) => name === 'Ravens' ? 'Bengals' : name
                 return Object.entries(byTeam)
                   .sort((a, b) => a[0].localeCompare(b[0]))
                   .map(([team, files]) => (
                   <div key={team} className="design-files-team-section">
-                    <h3 className="design-files-team-label">{team}</h3>
+                    <h3 className="design-files-team-label">{teamDisplayName(team)}</h3>
                     <div className="design-files-masonry">
                       {files.map((filename) => (
                         <div key={filename} className="design-files-masonry-item">
@@ -441,14 +473,14 @@ function ClientWork() {
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
             </button>
             <div className="website-preview-header">
-              <h2 className="teams-images-title">PetUnis — Website</h2>
-              <p className="teams-images-subtitle">Live storefront preview</p>
+              <h2 className="teams-images-title">{activeProject?.name || 'Website'} — Website</h2>
+              <p className="teams-images-subtitle">Live preview</p>
             </div>
             <div className="website-preview-iframe-wrap" onClick={(e) => e.stopPropagation()}>
               <div className="website-preview-white-bar"></div>
               <iframe
                 src={websitePreviewUrl}
-                title="PetUnis website preview"
+                title={`${activeProject?.name || 'Website'} website preview`}
                 className="website-preview-iframe"
               />
             </div>
@@ -503,7 +535,7 @@ function ClientWork() {
                 </div>
                 <div className="hero-meta-item">
                   <span className="hero-meta-label">Industries</span>
-                  <span className="hero-meta-value">eCommerce, SaaS, Food, Nonprofit</span>
+                  <span className="hero-meta-value">eCommerce, Lead Gen, Food, Nonprofit</span>
                 </div>
                 <div className="hero-meta-item">
                   <span className="hero-meta-label">Services</span>
@@ -536,7 +568,7 @@ function ClientWork() {
                   onClick={() => setActiveProject(project)}
                 >
                   <div>
-                    <span className="client-card-number">{project.number}</span>
+                    <span className="client-card-number">{project.year}</span>
                     {project.featured && (
                       <span className="featured-badge">Featured</span>
                     )}
@@ -546,35 +578,15 @@ function ClientWork() {
                   </div>
                   {project.featured && (
                     <div className="featured-preview">
-                      {project.modules.slice(0, 4).map((mod, i) => {
-                        const images = mod.adsImagesFolder
-                          ? petunisAds.slice(0, 4)
-                          : mod.teamsImagesFolder
-                            ? petunisTeams.slice(0, 4)
-                            : project.screenshotImage
-                              ? [project.screenshotImage]
-                              : []
-                        return (
-                          <div key={i} className="featured-preview-slot">
-                            {images.length ? (
-                              <div className="featured-preview-masonry">
-                                {images.map((src, j) => (
-                                  <div key={j} className="featured-preview-masonry-item">
-                                    <img
-                                      src={src.startsWith('/')
-                                        ? src
-                                        : `/pdfs/${mod.adsImagesFolder || mod.teamsImagesFolder}/${src.split('/').map(encodeURIComponent).join('/')}`}
-                                      alt=""
-                                    />
-                                  </div>
-                                ))}
-                              </div>
-                            ) : (
-                              mod.label
-                            )}
-                          </div>
-                        )
-                      })}
+                      <div className="featured-preview-slot">
+                        <img src="/pdfs/Test%20PetUnis%20Ads.png" alt="" />
+                      </div>
+                      <div className="featured-preview-slot">
+                        <img src={project.screenshotImage} alt="" />
+                      </div>
+                      <div className="featured-preview-slot">
+                        <img src="/pdfs/For%20People%20Background.png" alt="" />
+                      </div>
                     </div>
                   )}
                 </motion.div>
@@ -595,12 +607,21 @@ function ClientWork() {
               onClick={handleBackdropClick}
             >
               <div className="modal-layout" onClick={(e) => e.stopPropagation()}>
-                {/* Close Button */}
-                <button className="modal-close-btn" onClick={handleClose}>
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                  </svg>
-                </button>
+                {/* Header buttons: back (when drilldown) + close */}
+                <div className="modal-header-btns">
+                  {activeModule && (
+                    <button className="modal-back-btn-header" onClick={() => setActiveModule(null)} aria-label="Back">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M12 16l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                  )}
+                  <button className="modal-close-btn" onClick={handleClose} aria-label="Close">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                  </button>
+                </div>
 
                 <AnimatePresence mode="wait">
                   {activeModule ? (
@@ -642,7 +663,7 @@ function ClientWork() {
                         </motion.div>
                       )}
 
-                      {/* Ads masonry collage OR 3 category cards */}
+                      {/* Ads masonry, postcards masonry, OR 3 category cards */}
                       {activeModule.adsImagesFolder ? (
                         <motion.div
                           className="drilldown-ads-masonry"
@@ -650,14 +671,34 @@ function ClientWork() {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.3, ease: ndsEase }}
                         >
-                          {petunisAds.map((filename) => (
-                            <div key={filename} className="drilldown-ads-masonry-item">
-                              <img
-                                src={`/pdfs/${activeModule.adsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
-                                alt=""
-                              />
-                            </div>
-                          ))}
+                          {(activeProject?.id === 'weatherfixers' ? weatherfixersAds : petunisAds).map((filename) => {
+                            const base = activeModule.adsBasePath === '' ? '' : (activeModule.adsBasePath || 'pdfs')
+                            const encoded = filename.split('/').map(encodeURIComponent).join('/')
+                            const src = base ? `/${base}/${activeModule.adsImagesFolder}/${encoded}` : `/${activeModule.adsImagesFolder}/${encoded}`
+                            return (
+                              <div key={filename} className="drilldown-ads-masonry-item">
+                                <img src={src} alt="" />
+                              </div>
+                            )
+                          })}
+                        </motion.div>
+                      ) : activeModule.postcardsImagesFolder ? (
+                        <motion.div
+                          className="drilldown-ads-masonry drilldown-postcards-masonry"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, ease: ndsEase }}
+                        >
+                          {weatherfixersPostcards.map((filename) => {
+                            const base = activeModule.postcardsBasePath === '' ? '' : (activeModule.postcardsBasePath || 'pdfs')
+                            const encoded = filename.split('/').map(encodeURIComponent).join('/')
+                            const src = base ? `/${base}/${activeModule.postcardsImagesFolder}/${encoded}` : `/${activeModule.postcardsImagesFolder}/${encoded}`
+                            return (
+                              <div key={filename} className="drilldown-ads-masonry-item">
+                                <img src={src} alt="" />
+                              </div>
+                            )
+                          })}
                         </motion.div>
                       ) : (
                         <div className="drilldown-categories-grid">
@@ -667,26 +708,29 @@ function ClientWork() {
                             const chunks = [0, 1, 2].map(i => items.slice(i * chunkSize, (i + 1) * chunkSize))
                             return chunks.map((chunk, chunkIdx) => {
                               const isTeamsCard = activeModule.teamsImagesFolder && chunkIdx === 0
+                              const isForPeopleCard = activeModule.teamsImagesFolder && chunkIdx === 1
                               const isDesignFilesCard = activeModule.designFilesFolder && chunkIdx === 2
                               const heroBgUrl = isTeamsCard
-                                ? `/pdfs/${activeModule.teamsImagesFolder}/${petunisTeams[0].split('/').map(encodeURIComponent).join('/')}`
-                                : isDesignFilesCard
-                                  ? (() => {
-                                      const first49ers = petunisDesignFiles.find((p) => p.startsWith('49ers/'))
-                                      return first49ers
-                                        ? `/pdfs/${activeModule.designFilesFolder}/${first49ers.split('/').map(encodeURIComponent).join('/')}`
-                                        : null
-                                    })()
-                                  : null
-                              const isHeroCard = isTeamsCard || isDesignFilesCard
+                                ? `/pdfs/${encodeURIComponent('Test PetUnis Ads.png')}`
+                                : isForPeopleCard
+                                  ? `/pdfs/${encodeURIComponent('For People Background.png')}`
+                                  : isDesignFilesCard
+                                    ? (() => {
+                                        const firstRavens = petunisDesignFiles.find((p) => p.startsWith('Ravens/'))
+                                        return firstRavens
+                                          ? `/pdfs/${activeModule.designFilesFolder}/${firstRavens.split('/').map(encodeURIComponent).join('/')}`
+                                          : null
+                                      })()
+                                    : null
+                              const isHeroCard = isTeamsCard || isForPeopleCard || isDesignFilesCard
                               return (
                                 <motion.div
                                   key={chunkIdx}
-                                  className={`modal-card drilldown-category-card ${isHeroCard ? 'clickable teams-hero-card' : ''}`}
+                                  className={`modal-card drilldown-category-card ${isHeroCard ? 'clickable teams-hero-card' : ''} ${isForPeopleCard ? 'for-people-hero-card' : ''}`}
                                   initial={{ opacity: 0, y: 20 }}
                                   animate={{ opacity: 1, y: 0 }}
                                   transition={{ duration: 0.3, delay: 0.1 + chunkIdx * 0.05, ease: ndsEase }}
-                                  onClick={isTeamsCard ? () => setShowTeamsImages(true) : isDesignFilesCard ? () => setShowDesignFiles(true) : undefined}
+                                  onClick={isTeamsCard ? () => setShowTeamsImages(true) : isForPeopleCard ? () => setShowForPeopleImages(true) : isDesignFilesCard ? () => setShowDesignFiles(true) : undefined}
                                 >
                                   {isTeamsCard ? (
                                     <>
@@ -696,7 +740,18 @@ function ClientWork() {
                                         className="teams-hero-card-bg"
                                       />
                                       <div className="teams-hero-card-overlay">
-                                        <span className="teams-hero-card-text">PetUnis</span>
+                                        <span className="teams-hero-card-text">For Pets</span>
+                                      </div>
+                                    </>
+                                  ) : isForPeopleCard ? (
+                                    <>
+                                      <img
+                                        src={heroBgUrl}
+                                        alt=""
+                                        className="teams-hero-card-bg"
+                                      />
+                                      <div className="teams-hero-card-overlay">
+                                        <span className="teams-hero-card-text">For People</span>
                                       </div>
                                     </>
                                   ) : isDesignFilesCard ? (
@@ -768,6 +823,14 @@ function ClientWork() {
                             ) : (
                               activeProject.screenshotLabel
                             )}
+                            {websiteModuleForActiveProject && (
+                              <span className="screenshot-placeholder-hover">
+                                {activeProject?.id === 'petunis' ? 'View Storefront' : 'View Website'}
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                  <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                              </span>
+                            )}
                           </div>
                         </motion.div>
 
@@ -792,11 +855,13 @@ function ClientWork() {
                         </motion.div>
 
                         <div className="modal-modules-row">
-                          <div className="modal-modules-grid">
-                            {activeProject.modules.map((mod, i) => (
+                          <div className={`modal-modules-grid ${websiteModuleForActiveProject ? 'filtered' : ''}`}>
+                            {activeProject.modules
+                              .filter((mod) => !websiteModuleForActiveProject || !mod.websiteUrl)
+                              .map((mod, i) => (
                               <motion.div
                                 key={mod.id}
-                                className="modal-card modal-module-card"
+                                className={`modal-card modal-module-card ${activeProject.id === 'petunis' && mod.id === 'ads' ? 'module-card-ads-bg' : ''} ${activeProject.id === 'petunis' && mod.id === 'merchandising' ? 'module-card-merchandising-bg' : ''} ${activeProject.id === 'weatherfixers' && mod.id === 'ads' ? 'module-card-weatherfixers-ads-bg' : ''} ${activeProject.id === 'weatherfixers' && mod.id === 'directmail' ? 'module-card-weatherfixers-directmail-bg' : ''}`}
                                 initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.4, delay: 0.2 + i * 0.06, ease: ndsEase }}

@@ -190,7 +190,7 @@ function PokerTable() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
             >
-              Selected Projects
+              Project Highlights
             </motion.h2>
             <motion.div
               className="poker-prompt"
@@ -222,25 +222,22 @@ function PokerTable() {
                   className={`card-container ${inspectingCard === i ? 'card-hidden' : ''}`}
                   animate={cardControls[i]}
                   initial={{ x: 3000, y: 0, rotate: 99, opacity: 1 }}
-                  whileHover={{
-                    scale: 1.08,
-                    y: -10,
-                    transition: { duration: 0.2, ease: ndsEase }
-                  }}
                   onClick={() => handleCardClick(i)}
                 >
-                  <img src={SHADOW_SVG} className="card-shadow" alt="" />
-                  <img src={CARD_BACK_SVG} className="card-back" alt="Card back" />
+                  <motion.div
+                    className="card-hover-layer"
+                    whileHover={{
+                      scale: 1.08,
+                      y: -10,
+                      transition: { duration: 0.2, ease: ndsEase }
+                    }}
+                  >
+                    <img src={SHADOW_SVG} className="card-shadow" alt="" />
+                    <img src={CARD_BACK_SVG} className="card-back" alt="Card back" />
+                  </motion.div>
                 </motion.div>
               ))}
             </div>
-
-            <button className="shuffle-btn">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-              </svg>
-              <span>SHUFFLE</span>
-            </button>
           </motion.div>
         </div>
       </div>
@@ -277,7 +274,7 @@ function PokerTable() {
                 x: '-50%',
                 y: '-50%',
                 width: 380,
-                height: 520,
+                height: 560,
                 transition: { duration: 0.6, ease: ndsEase }
               }}
               exit={{
