@@ -10,10 +10,10 @@ Showcase freelance/client projects with modal deep-dives
 
 /* Hero */
 .client-work-hero {
-  min-height: 50vh;
+  min-height: 60vh;
   display: flex;
   align-items: center;
-  padding: var(--space-2xl) 0 var(--space-xl);
+  padding: var(--space-3xl) 0 var(--space-2xl);
 }
 
 .client-work-hero .label {
@@ -27,8 +27,8 @@ Showcase freelance/client projects with modal deep-dives
 }
 
 .client-work-hero h1 {
-  font-family: var(--font-serif);
-  font-size: clamp(3rem, 10vw, 7rem);
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 12vw, 10rem);
   font-weight: 700;
   line-height: 0.95;
   letter-spacing: -0.04em;
@@ -44,132 +44,74 @@ Showcase freelance/client projects with modal deep-dives
 }
 
 /* ==========================================
-   PROJECT GRID — Card Layout
+   FEATURED PROJECTS — Editorial Layout
    ========================================== */
-.client-projects-section {
-  padding: var(--space-xl) 0 var(--space-2xl);
+.client-feature {
+  padding: var(--space-3xl) 0;
 }
 
-.client-projects-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2.5rem;
-  max-width: 1100px;
-}
-
-.client-project-card {
+.client-feature-alt {
   background-color: var(--cream);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  padding: 2.5rem;
-  cursor: pointer;
-  transition: all var(--transition);
-  position: relative;
-  overflow: hidden;
+  padding: var(--space-3xl) 0;
 }
 
-.client-project-card::after {
-  content: 'View Project';
-  position: absolute;
-  bottom: 2rem;
-  right: 2rem;
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--forest-green);
-  opacity: 0;
-  transform: translateY(8px);
-  transition: all var(--transition);
-}
-
-.client-project-card:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  transform: translateY(-3px);
-  border-color: var(--forest-green);
-}
-
-.client-project-card:hover::after {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.client-card-number {
-  font-family: var(--font-sans);
-  font-size: 0.7rem;
+/* Header */
+.client-feature-number {
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 14vw, 12rem);
   font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--warm-gray);
-  margin-bottom: 1.5rem;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--gray-200);
   display: block;
+  margin-bottom: var(--space-sm);
 }
 
-.client-card-name {
+.client-feature-name {
   font-family: var(--font-serif);
-  font-size: 1.75rem;
-  font-weight: 600;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
   color: var(--charcoal);
-  margin-bottom: 0.75rem;
-  line-height: 1.2;
+  margin-bottom: var(--space-sm);
 }
 
-.client-card-type {
+.client-feature-tagline {
   font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--forest-green);
-  margin-bottom: 1rem;
+  color: var(--warm-gray);
 }
 
-.client-card-desc {
-  font-size: 0.95rem;
-  line-height: 1.7;
-  color: var(--slate);
-  margin-bottom: 0;
-}
-
-/* Featured card (PetUnis) takes full width */
-.client-project-card.featured {
-  grid-column: 1 / -1;
+/* Body — preview/scope on left, details on right */
+.client-feature-body {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: center;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--space-xl);
+  margin-top: var(--space-xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--gray-200);
 }
 
-.featured-badge {
-  font-family: var(--font-sans);
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--cream);
-  background-color: var(--forest-green);
-  padding: 4px 12px;
-  display: inline-block;
-  margin-bottom: 1rem;
-}
-
-.featured-preview {
-  background-color: var(--parchment);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  padding: 1.5rem;
+/* Left column — preview images or scope */
+.client-feature-preview {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-.featured-preview-slot {
+.client-feature-preview-slot {
   position: relative;
   aspect-ratio: 4/3;
   background: linear-gradient(135deg, rgba(26, 58, 46, 0.08), rgba(26, 58, 46, 0.03));
   overflow: hidden;
 }
 
-.featured-preview-slot img {
+.client-feature-preview-slot img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -177,14 +119,107 @@ Showcase freelance/client projects with modal deep-dives
   display: block;
 }
 
-.featured-preview-slot:nth-child(3) img {
+.client-feature-preview-slot:nth-child(3) img {
   object-position: center center;
   transform: scale(1.08);
 }
 
+.client-feature-screenshot {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.client-feature-screenshot img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.client-feature-scope {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.client-feature-scope-label {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+}
+
+.client-feature-scope-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.client-feature-scope-item {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: var(--charcoal);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+/* Right column — description, tech, CTA */
+.client-feature-desc {
+  color: var(--slate);
+  line-height: 1.8;
+  margin-bottom: var(--space-lg);
+  font-size: 1.1rem;
+}
+
+.client-feature-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.client-feature .tech-badge {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  padding: 6px 12px;
+  border: 1px solid var(--gray-200);
+  background: transparent;
+  transition: all var(--duration-fast);
+}
+
+.client-feature .tech-badge:hover {
+  border-color: var(--forest-green);
+  color: var(--forest-green);
+}
+
+.client-feature-cta {
+  display: inline-block;
+  padding: 14px 36px;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background-color: var(--forest-green);
+  color: var(--cream);
+  border: 2px solid var(--forest-green);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.client-feature-cta:hover {
+  background-color: transparent;
+  color: var(--forest-green);
+}
+
 
 /* ==========================================
-   FLOATING CARD MODAL
+   FLOATING CARD MODAL — NDS Editorial
    ========================================== */
 .modal-backdrop {
   position: fixed;
@@ -192,9 +227,9 @@ Showcase freelance/client projects with modal deep-dives
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(120, 120, 120, 0.6);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(42, 42, 42, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   z-index: 1000;
   display: flex;
   align-items: flex-start;
@@ -210,7 +245,7 @@ Showcase freelance/client projects with modal deep-dives
   padding: 2rem 0;
 }
 
-/* Header buttons — floating top-right, above heading: back + close */
+/* Header buttons — floating top-right */
 .modal-header-btns {
   position: absolute;
   top: -0.75rem;
@@ -224,30 +259,27 @@ Showcase freelance/client projects with modal deep-dives
 .modal-back-btn-header,
 .modal-close-btn {
   background: transparent;
-  border: none;
-  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   width: 40px;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: white;
-  box-shadow: none;
+  color: rgba(255, 255, 255, 0.7);
   transition: all var(--transition);
 }
 
 .modal-back-btn-header:hover,
 .modal-close-btn:hover {
-  color: rgba(255, 255, 255, 0.85);
-  transform: scale(1.1);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
-/* Shared floating card style */
+/* Shared card style — editorial, not app-like */
 .modal-card {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+  background: var(--parchment);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 /* ===== MAIN OVERVIEW ===== */
@@ -307,18 +339,19 @@ Showcase freelance/client projects with modal deep-dives
 .screenshot-placeholder {
   width: 100%;
   aspect-ratio: 16 / 9;
-  background: linear-gradient(135deg, rgba(26, 58, 46, 0.06), rgba(26, 58, 46, 0.02));
+  background: var(--cream);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-sans);
   font-size: 0.8rem;
-  letter-spacing: 0.08em;
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--warm-gray);
   overflow: hidden;
   position: relative;
-  transition: transform var(--transition), box-shadow var(--transition);
+  transition: all var(--transition);
 }
 
 .screenshot-placeholder:has(img) {
@@ -433,9 +466,9 @@ Showcase freelance/client projects with modal deep-dives
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  align-items: flex-start;
+  justify-content: flex-end;
+  text-align: left;
   min-height: 120px;
   overflow: hidden;
 }
@@ -537,34 +570,42 @@ Showcase freelance/client projects with modal deep-dives
 }
 
 .modal-module-card:hover {
+  border-color: var(--forest-green);
   transform: translateY(-3px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
 }
 
 .module-label {
-  font-family: var(--font-sans);
-  font-size: 0.95rem;
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
   font-weight: 600;
   color: var(--charcoal);
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.25rem;
   display: block;
+  position: relative;
+  z-index: 1;
 }
 
 .module-count {
   font-family: var(--font-sans);
   font-size: 0.7rem;
-  letter-spacing: 0.05em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--warm-gray);
+  position: relative;
+  z-index: 1;
 }
 
 .module-arrow {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  color: var(--warm-gray);
+  color: var(--forest-green);
   opacity: 0;
   transform: translateX(-4px);
   transition: all var(--transition);
+  z-index: 1;
 }
 
 .modal-module-card:hover .module-arrow {
@@ -590,7 +631,8 @@ Showcase freelance/client projects with modal deep-dives
   font-family: var(--font-sans);
   font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--forest-green);
   padding: 0;
   margin-bottom: 1rem;
@@ -626,14 +668,12 @@ Showcase freelance/client projects with modal deep-dives
 .drilldown-hero {
   padding: 0;
   overflow: hidden;
-  border-radius: 12px;
 }
 
 .drilldown-hero img {
   width: 100%;
   height: auto;
   display: block;
-  /* Image is 940×460px — display at natural aspect ratio, no cropping */
 }
 
 /* 3 category cards */
@@ -648,9 +688,8 @@ Showcase freelance/client projects with modal deep-dives
   page-break-inside: avoid;
   -webkit-column-break-inside: avoid;
   margin-bottom: 1rem;
-  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 .drilldown-ads-masonry-item img {
@@ -789,7 +828,7 @@ Showcase freelance/client projects with modal deep-dives
 .teams-images-overlay {
   position: fixed;
   inset: 0;
-  background: white;
+  background: var(--parchment);
   z-index: 10001;
   display: flex;
   flex-direction: column;
@@ -826,15 +865,20 @@ Showcase freelance/client projects with modal deep-dives
   right: 1rem;
   width: 40px;
   height: 40px;
-  border: 1px solid rgba(0,0,0,0.1);
-  border-radius: 50%;
-  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: var(--parchment);
   color: var(--charcoal);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
+  transition: all var(--transition);
+}
+
+.teams-images-close:hover {
+  border-color: var(--forest-green);
+  color: var(--forest-green);
 }
 
 .teams-images-scroll {
@@ -872,7 +916,7 @@ Showcase freelance/client projects with modal deep-dives
   right: 0;
   width: 100%;
   height: 50px;
-  background: white;
+  background: var(--parchment);
   z-index: 1;
   pointer-events: none;
 }
@@ -880,8 +924,7 @@ Showcase freelance/client projects with modal deep-dives
 .website-preview-iframe {
   width: 100%;
   flex: 1;
-  border: none;
-  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   background: white;
 }
 
@@ -918,9 +961,8 @@ Showcase freelance/client projects with modal deep-dives
   page-break-inside: avoid;
   -webkit-column-break-inside: avoid;
   margin-bottom: 0.5rem;
-  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
   aspect-ratio: 1;
 }
 
@@ -953,12 +995,9 @@ Showcase freelance/client projects with modal deep-dives
    RESPONSIVE
    ========================================== */
 @media (max-width: 1024px) {
-  .client-projects-grid {
+  .client-feature-body {
     grid-template-columns: 1fr;
-  }
-
-  .client-project-card.featured {
-    grid-template-columns: 1fr;
+    gap: var(--space-lg);
   }
 
   .modal-content-grid {
@@ -992,8 +1031,20 @@ Showcase freelance/client projects with modal deep-dives
     padding: var(--space-xl) 0;
   }
 
-  .client-project-card {
-    padding: 2rem;
+  .client-feature {
+    padding: var(--space-2xl) 0;
+  }
+
+  .client-feature-alt {
+    padding: var(--space-2xl) 0;
+  }
+
+  .client-feature-number {
+    font-size: clamp(4rem, 20vw, 8rem);
+  }
+
+  .client-feature-preview {
+    grid-template-columns: 1fr;
   }
 
   .modal-backdrop {

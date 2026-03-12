@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { useState, useRef } from 'react'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
 import SqueezeSection from '../components/SqueezeSection'
 import './About.css'
@@ -13,16 +13,93 @@ const fadeUp = {
 
 const staggerContainer = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
 }
 
 const staggerItem = {
-  hidden: { opacity: 0, y: 30, scale: 0.98 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: ndsEase } }
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: ndsEase } }
+}
+
+const toolkitRow1 = [
+  'React', 'JavaScript', 'Python', 'Figma', 'Claude AI', 'Power BI',
+  'Google Analytics', 'Shopify', 'WordPress', 'Git', 'Node.js', 'Framer Motion',
+]
+
+const toolkitRow2 = [
+  'Photoshop', 'Illustrator', 'Meta Ads', 'Google Ads', 'Mailchimp',
+  'HubSpot', 'Aptos SDK', 'Vite', 'CSS/SASS', 'SEO', 'Midjourney', 'Canva',
+]
+
+const processSteps = [
+  { number: '01', title: 'Understand', desc: 'Sit across the table. Learn the business, the audience, the constraints. Strategy without context is just guessing.' },
+  { number: '02', title: 'Build', desc: 'Design it, code it, launch it. No handoffs to wonder about — I go from concept to working product.' },
+  { number: '03', title: 'Ship', desc: 'Get it live, measure what happens, iterate fast. The work isn\'t done until it\'s performing.' },
+]
+
+const STEP_HEIGHT = 120 // px per stacked step
+
+function ProcessStep({ step, scrollYProgress, index, total }) {
+  const segment = 1 / total
+  const start = index * segment
+  const arrive = start + segment * 0.5
+  const landedY = index * STEP_HEIGHT
+
+  // Roll in from below, land at stacked position, stay
+  const rotateX = useTransform(
+    scrollYProgress,
+    [start, arrive],
+    [70, 0]
+  )
+
+  const opacity = useTransform(
+    scrollYProgress,
+    [start, start + segment * 0.25],
+    [0, 1]
+  )
+
+  // Slide up from below into stacked position, then hold
+  const y = useTransform(
+    scrollYProgress,
+    [start, arrive],
+    [landedY + 100, landedY]
+  )
+
+  const scale = useTransform(
+    scrollYProgress,
+    [start, arrive],
+    [0.9, 1]
+  )
+
+  return (
+    <motion.div
+      className="process-step"
+      style={{ rotateX, opacity, y, scale, transformOrigin: 'center center' }}
+    >
+      <span className="process-number">{step.number}</span>
+      <div className="process-content">
+        <h3>{step.title}</h3>
+        <p>{step.desc}</p>
+      </div>
+    </motion.div>
+  )
 }
 
 function About() {
   const [showFullStory, setShowFullStory] = useState(false)
+  const processRef = useRef(null)
+  const statementRef = useRef(null)
+
+  const { scrollYProgress: processScroll } = useScroll({
+    target: processRef,
+    offset: ["start start", "end end"]
+  })
+
+  const { scrollYProgress: statementScroll } = useScroll({
+    target: statementRef,
+    offset: ["start end", "end start"]
+  })
+  const statementY = useTransform(statementScroll, [0, 1], [60, -60])
 
   return (
     <PageTransition>
@@ -160,203 +237,107 @@ function About() {
         </div>
       </section>
 
-      {/* Foundation */}
-      <section className="about-section section">
-        <div className="container">
-          <motion.div
-            className="about-content"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-          >
-            <motion.h2 variants={fadeUp}>Foundation</motion.h2>
-            <motion.p variants={fadeUp}>
-              BBA in Marketing + Supply Chain Management from UW-Milwaukee. I graduated with a 3.54 GPA and served as an International Business Rep.
-              This foundation taught me to think systematically and execute strategically.
-            </motion.p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Learning the Craft — Squeezed */}
-      <SqueezeSection className="about-section section alt">
-        <div className="container">
-          <motion.div
-            className="about-content"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-          >
-            <motion.h2 variants={fadeUp}>Learning the Craft (Sub-Zero Group, Inc.)</motion.h2>
-            <motion.p variants={fadeUp}>
-              As an inaugural candidate in a 2.5-year rotational program, I learned to navigate complexity and execute across functions.
-              This is where I learned to translate strategy into results.
-            </motion.p>
-            <motion.ul className="achievement-list" variants={fadeUp}>
-              <li>Trained sales teams on custom Power BI reports</li>
-              <li>Managed national product launches</li>
-              <li>Sold luxury kitchen packages to high-end clientele</li>
-            </motion.ul>
-          </motion.div>
-        </div>
-      </SqueezeSection>
-
-      {/* The Explorer Years */}
-      <section className="about-section section">
-        <div className="container">
-          <motion.div
-            className="about-content"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-          >
-            <motion.h2 variants={fadeUp}>The Explorer Years (2023-2025)</motion.h2>
-            <motion.p className="highlight-text" variants={fadeUp}>
-              I chose the harder path. Instead of climbing a ladder, I built my own playground.
-            </motion.p>
-            <motion.p variants={fadeUp}>
-              As an independent contractor at Touchpoint Marketing Solutions, I didn't just do the work—I built capability.
-              I moved from doing the work → outsourcing → strategic management.
-            </motion.p>
-            <motion.div
-              className="explorer-themes"
-              variants={staggerContainer}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
-            >
-              <motion.div className="theme-card" variants={staggerItem}>
-                <h4>Multi-disciplinary Mastery</h4>
-                <p>Marketing, eCommerce, SEO, paid ads, branding, web development</p>
-              </motion.div>
-              <motion.div className="theme-card" variants={staggerItem}>
-                <h4>Client Diversity</h4>
-                <p>Multiple industries, different challenges, varied solutions</p>
-              </motion.div>
-              <motion.div className="theme-card" variants={staggerItem}>
-                <h4>Self-directed Learning</h4>
-                <p>Taught myself to code, build apps, understand blockchain</p>
-              </motion.div>
-              <motion.div className="theme-card" variants={staggerItem}>
-                <h4>AI Immersion</h4>
-                <p>Daily user, observer, educator of emerging technology</p>
-              </motion.div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* What I Bring Now — Squeezed */}
-      <SqueezeSection className="about-section section alt">
-        <div className="container">
-          <motion.div
-            className="about-content"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-          >
-            <motion.h2 variants={fadeUp}>What I Bring Now</motion.h2>
-            <motion.p className="highlight-text" variants={fadeUp}>
-              I'm not just pitching ideas. I'm shipping them.
-            </motion.p>
-            <motion.p variants={fadeUp}>
-              A marketing leader who can conceptualize campaigns, build the tools to execute them, train teams on emerging technology,
-              and move fast and iterate.
-            </motion.p>
-          </motion.div>
-        </div>
-      </SqueezeSection>
-
-      {/* Personal Philosophy */}
-      <section className="about-section section">
-        <div className="container">
-          <motion.div
-            className="about-content"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-          >
-            <motion.h2 variants={fadeUp}>Personal Philosophy</motion.h2>
-            <motion.div className="philosophy-quotes" variants={fadeUp}>
-              <p className="quote">"Curiosity + execution = capability"</p>
-              <p className="quote">"I don't wait for permission to learn something new"</p>
-            </motion.div>
-            <motion.p variants={fadeUp}>
-              I'm not an AI expert—I'm an observer and user. That gives me something valuable: I understand how normal people
-              interact with this technology.
-            </motion.p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Skills Grid — Squeezed */}
-      <SqueezeSection className="skills-section section">
-        <div className="container">
-          <motion.h2
-            className="section-title"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: ndsEase }}
-          >
-            Skills
-          </motion.h2>
-          <motion.div
-            className="skills-grid"
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-          >
-            <motion.div className="skill-item" variants={staggerItem}>Marketing Strategy & Execution</motion.div>
-            <motion.div className="skill-item" variants={staggerItem}>Digital Marketing (SEO, SEM, Social)</motion.div>
-            <motion.div className="skill-item" variants={staggerItem}>Web Development & eCommerce</motion.div>
-            <motion.div className="skill-item" variants={staggerItem}>Data Analysis & Reporting (Google Analytics, Power BI)</motion.div>
-            <motion.div className="skill-item" variants={staggerItem}>AI Tools & Applications</motion.div>
-            <motion.div className="skill-item" variants={staggerItem}>Product Launch & Go-to-Market</motion.div>
-            <motion.div className="skill-item" variants={staggerItem}>Content Creation & Branding</motion.div>
-            <motion.div className="skill-item" variants={staggerItem}>Code (Python, JavaScript)</motion.div>
-          </motion.div>
-        </div>
-      </SqueezeSection>
-
-      {/* Timeline */}
-      <section className="timeline-section section">
-        <div className="container">
-          <motion.h2
-            className="section-title"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: ndsEase }}
-          >
-            Timeline
-          </motion.h2>
-          <div className="timeline">
-            {[
-              { year: '2015-2020', content: 'Education' },
-              { year: '2020-2023', content: 'Sub-Zero rotations' },
-              { year: '2023-2025', content: 'Independent exploration & building' },
-              { year: '2026', content: 'Ready for the right challenge' },
-            ].map((item, i) => (
-              <motion.div
+      {/* ═══════ HOW I WORK — Scroll-driven cylinder picker ═══════ */}
+      <section className="how-i-work-scroll" ref={processRef}>
+        <div className="process-sticky">
+          <div className="container">
+            <p className="label">Process</p>
+            <h2 className="section-heading">How I Work</h2>
+          </div>
+          <div className="process-cylinder">
+            {processSteps.map((step, i) => (
+              <ProcessStep
                 key={i}
-                className="timeline-item"
-                initial={{ opacity: 0, x: -40 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.1 + i * 0.1, ease: ndsEase }}
-              >
-                <div className="timeline-year">{item.year}</div>
-                <div className="timeline-content">{item.content}</div>
-              </motion.div>
+                step={step}
+                scrollYProgress={processScroll}
+                index={i}
+                total={processSteps.length}
+              />
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ═══════ STATEMENT MOMENT ═══════ */}
+      <div ref={statementRef}>
+        <SqueezeSection className="statement-section section">
+          <motion.div
+            className="statement-inner"
+            style={{ y: statementY }}
+          >
+            <motion.p
+              className="statement-text"
+              initial={{ opacity: 0, y: 60 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8, ease: ndsEase }}
+            >
+              I don't pitch ideas.<br />I ship them.
+            </motion.p>
+          </motion.div>
+        </SqueezeSection>
+      </div>
+
+      {/* ═══════ TOOLKIT MARQUEE ═══════ */}
+      <section className="toolkit-section section">
+        <div className="container">
+          <motion.p
+            className="label"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, ease: ndsEase }}
+          >
+            Toolkit
+          </motion.p>
+          <motion.h2
+            className="section-heading"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1, ease: ndsEase }}
+          >
+            What I Use
+          </motion.h2>
+        </div>
+        <div className="marquee-wrap">
+          <div className="marquee-track marquee-forward">
+            {[...toolkitRow1, ...toolkitRow1].map((tool, i) => (
+              <span className="marquee-item" key={i}>{tool}</span>
+            ))}
+          </div>
+          <div className="marquee-track marquee-reverse">
+            {[...toolkitRow2, ...toolkitRow2].map((tool, i) => (
+              <span className="marquee-item" key={i}>{tool}</span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════ LET'S WORK TOGETHER CTA ═══════ */}
+      <section className="cta-section section">
+        <div className="container">
+          <motion.div
+            className="cta-content"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={staggerContainer}
+          >
+            <motion.h2 className="cta-heading" variants={fadeUp}>
+              Let's Work Together
+            </motion.h2>
+            <motion.p className="cta-sub" variants={fadeUp}>
+              Looking for someone who can think strategically and build what they envision? Let's talk.
+            </motion.p>
+            <motion.a
+              href="mailto:gking432@gmail.com"
+              className="cta-button"
+              variants={fadeUp}
+            >
+              Get In Touch
+            </motion.a>
+          </motion.div>
         </div>
       </section>
     </div>

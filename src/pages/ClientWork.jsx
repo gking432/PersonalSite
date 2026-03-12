@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
+import SqueezeSection from '../components/SqueezeSection'
 import petunisTeams from '../data/petunis-teams.json'
 import petunisForPeople from '../data/petunis-for-people.json'
 import petunisAds from '../data/petunis-ads.json'
@@ -637,50 +638,105 @@ function ClientWork() {
           </div>
         </section>
 
-        {/* Project Grid */}
-        <section className="client-projects-section">
-          <div className="container">
-            <motion.div
-              className="client-projects-grid"
-              variants={staggerContainer}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
-            >
-              {clientProjects.map((project) => (
+        {/* Featured Projects — Editorial Layout */}
+        {clientProjects.map((project, index) => {
+          const isAlt = index % 2 !== 0
+          const number = String(index + 1).padStart(2, '0')
+
+          const projectContent = (
+            <div className="container">
+              <motion.div
+                className="client-feature-header"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-100px" }}
+                variants={staggerContainer}
+              >
+                <motion.span className="client-feature-number" variants={fadeUp}>
+                  {number}
+                </motion.span>
+                <motion.h2 className="client-feature-name" variants={fadeUp}>
+                  {project.name}
+                </motion.h2>
+                <motion.p className="client-feature-tagline" variants={fadeUp}>
+                  {project.type} · {project.year}
+                </motion.p>
+              </motion.div>
+
+              <div className="client-feature-body">
                 <motion.div
-                  key={project.id}
-                  className={`client-project-card ${project.featured ? 'featured' : ''}`}
-                  variants={staggerItem}
-                  onClick={() => setActiveProject(project)}
+                  className="client-feature-left"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.6, ease: ndsEase }}
                 >
-                  <div>
-                    <span className="client-card-number">{project.year}</span>
-                    {project.featured && (
-                      <span className="featured-badge">Featured</span>
-                    )}
-                    <h3 className="client-card-name">{project.name}</h3>
-                    <p className="client-card-type">{project.type}</p>
-                    <p className="client-card-desc">{project.shortDesc}</p>
-                  </div>
-                  {project.featured && (
-                    <div className="featured-preview">
-                      <div className="featured-preview-slot">
+                  {project.featured && project.screenshotImage ? (
+                    <div className="client-feature-preview">
+                      <div className="client-feature-preview-slot">
                         <img src="/pdfs/Test%20PetUnis%20Ads.png" alt="" />
                       </div>
-                      <div className="featured-preview-slot">
+                      <div className="client-feature-preview-slot">
                         <img src={project.screenshotImage} alt="" />
                       </div>
-                      <div className="featured-preview-slot">
+                      <div className="client-feature-preview-slot">
                         <img src="/pdfs/For%20People%20Background.png" alt="" />
+                      </div>
+                    </div>
+                  ) : project.screenshotImage ? (
+                    <div className="client-feature-screenshot">
+                      <img src={project.screenshotImage} alt={project.screenshotLabel} />
+                    </div>
+                  ) : (
+                    <div className="client-feature-scope">
+                      <span className="client-feature-scope-label">Scope</span>
+                      <div className="client-feature-scope-list">
+                        {project.modules.map((mod) => (
+                          <span key={mod.id} className="client-feature-scope-item">{mod.label}</span>
+                        ))}
                       </div>
                     </div>
                   )}
                 </motion.div>
-              ))}
-            </motion.div>
-          </div>
-        </section>
+                <motion.div
+                  className="client-feature-details"
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: "-50px" }}
+                  variants={staggerContainer}
+                >
+                  <motion.p className="client-feature-desc" variants={fadeUp}>{project.shortDesc}</motion.p>
+                  <motion.div className="client-feature-tech" variants={fadeUp}>
+                    {project.tech.map((tech) => (
+                      <span key={tech} className="tech-badge">{tech}</span>
+                    ))}
+                  </motion.div>
+                  <motion.button
+                    className="client-feature-cta"
+                    variants={fadeUp}
+                    onClick={() => setActiveProject(project)}
+                  >
+                    View Project
+                  </motion.button>
+                </motion.div>
+              </div>
+            </div>
+          )
+
+          if (isAlt) {
+            return (
+              <SqueezeSection key={project.id} className="client-feature client-feature-alt">
+                {projectContent}
+              </SqueezeSection>
+            )
+          }
+
+          return (
+            <section key={project.id} className="client-feature">
+              {projectContent}
+            </section>
+          )
+        })}
 
         {/* Project Modal */}
         <AnimatePresence>

@@ -8,22 +8,20 @@ Reads like a biography in a private club's member directory
   padding-top: 80px;
 }
 
-/* Hero */
+/* ═══════ HERO / MY STORY ═══════ */
 .about-hero {
   min-height: 60vh;
   display: flex;
-  align-items: flex-start; /* Pin hero content to the top so it doesn't recenter when story expands */
+  align-items: flex-start;
   padding: var(--space-3xl) 0 var(--space-2xl);
 }
 
-/* On About, align the meta column to the top of the story column */
 .about-hero .hero-split {
   align-items: flex-start;
 }
 
 .about-hero .hero-meta {
   align-self: flex-start;
-  /* Nudge down so its top aligns roughly with the intro paragraph, not the heading */
   margin-top: var(--space-xl);
 }
 
@@ -48,59 +46,20 @@ Reads like a biography in a private club's member directory
 }
 
 .about-intro {
-  font-size: 1rem; /* Match regular body text size */
+  font-size: 1rem;
   line-height: 1.8;
   color: var(--slate);
   max-width: 100%;
 }
 
-/* Hero story paragraphs (intro + full story) */
 .about-hero .hero-split-left p:not(.label) {
   font-size: 1rem;
   line-height: 1.8;
   color: var(--slate);
   max-width: 100%;
-  margin-bottom: var(--space-md); /* Extra spacing between paragraphs */
-}
-
-/* Sections */
-.about-section {
-  padding: var(--space-2xl) 0;
-}
-
-.about-section.alt {
-  background-color: var(--cream);
-}
-
-.about-content {
-  max-width: 800px;
-}
-
-.about-content h2 {
-  font-family: var(--font-serif);
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  color: var(--charcoal);
-  margin-bottom: var(--space-lg);
-  line-height: 1.1;
-}
-
-.about-content p {
-  color: var(--slate);
-  line-height: 1.8;
   margin-bottom: var(--space-md);
 }
 
-.highlight-text {
-  font-family: var(--font-serif);
-  font-size: clamp(1.25rem, 3vw, 1.5rem);
-  font-weight: 600;
-  font-style: italic;
-  color: var(--charcoal);
-  margin: var(--space-lg) 0;
-  line-height: 1.5;
-}
-
-/* My Story */
 .my-story-cut {
   font-weight: 600;
   font-style: italic;
@@ -127,211 +86,244 @@ Reads like a biography in a private club's member directory
   border-bottom-color: var(--hunter-green);
 }
 
-/* Achievement List */
-.achievement-list {
-  list-style: none;
-  padding-left: 0;
-  margin-top: var(--space-md);
-}
-
-.achievement-list li {
-  padding: 12px 0;
-  padding-left: 2rem;
+/* ═══════ HOW I WORK — Scroll-driven cylinder ═══════ */
+.how-i-work-scroll {
+  height: 300vh; /* Scroll runway for 3 steps */
   position: relative;
+}
+
+.process-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 var(--space-lg);
+  overflow: hidden;
+}
+
+.how-i-work-scroll .label {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--slate);
-  font-size: 1.05rem;
-  line-height: 1.7;
-  border-bottom: 1px solid var(--gray-200);
-}
-
-.achievement-list li:last-child {
-  border-bottom: none;
-}
-
-.achievement-list li::before {
-  content: '\2192';
-  position: absolute;
-  left: 0;
-  color: var(--forest-green);
-  font-weight: 700;
-}
-
-/* Explorer Theme Cards */
-.explorer-themes {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-md);
-  margin-top: var(--space-lg);
-}
-
-.theme-card {
-  background-color: var(--cream);
-  padding: var(--space-lg);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--border-radius-lg);
-  transition: all var(--duration-base) var(--ease-out);
-}
-
-.theme-card:hover {
-  border-color: var(--forest-green);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-  transform: translateY(-4px);
-}
-
-.theme-card h4 {
-  font-family: var(--font-serif);
-  font-size: 1.35rem;
-  color: var(--forest-green);
   margin-bottom: var(--space-sm);
+}
+
+.how-i-work-scroll .section-heading {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  color: var(--charcoal);
+  margin-bottom: var(--space-xl);
+  line-height: 1.1;
+}
+
+.process-cylinder {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  height: 400px; /* Enough for 3 stacked steps */
+  perspective: 1000px;
+}
+
+.process-step {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.process-number {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 8vw, 6rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--forest-green);
+  opacity: 0.15;
+  flex-shrink: 0;
+  min-width: 120px;
+}
+
+.process-content h3 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  color: var(--charcoal);
+  margin-bottom: var(--space-xs);
   line-height: 1.2;
 }
 
-.theme-card p {
+.process-content p {
   color: var(--slate);
-  font-size: 0.95rem;
   line-height: 1.7;
+  font-size: 1.05rem;
+  max-width: 480px;
+}
+
+/* ═══════ STATEMENT MOMENT ═══════ */
+.statement-section {
+  padding: 0;
+  overflow: hidden;
+  background-color: var(--forest-green);
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.statement-inner {
+  width: 100%;
+  text-align: center;
+  padding: var(--space-2xl) var(--space-lg);
+}
+
+.statement-text {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 10vw, 8rem);
+  font-weight: 700;
+  line-height: 1.0;
+  letter-spacing: -0.04em;
+  color: var(--parchment);
   margin: 0;
 }
 
-/* Philosophy Quotes — Giant Display Text (NDS Signature) */
-.philosophy-quotes {
-  margin: var(--space-xl) 0;
+/* ═══════ TOOLKIT MARQUEE ═══════ */
+.toolkit-section {
+  padding: var(--space-2xl) 0;
+  overflow: hidden;
+}
+
+.toolkit-section .label {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin-bottom: var(--space-sm);
+}
+
+.toolkit-section .section-heading {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  color: var(--charcoal);
+  margin-bottom: var(--space-xl);
+  line-height: 1.1;
+}
+
+.marquee-wrap {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl);
-}
-
-.quote {
-  font-family: var(--font-display);
-  font-size: clamp(2.5rem, 7vw, 5rem);
-  font-weight: 700;
-  font-style: normal;
-  color: var(--charcoal);
-  text-align: left;
-  margin: 0;
-  padding: 0;
-  background: none;
-  border-left: 6px solid var(--forest-green);
-  border-radius: 0;
-  line-height: 1.0;
-  letter-spacing: -0.03em;
-  max-width: 100%;
-  padding-left: var(--space-lg);
-}
-
-/* Skills */
-.skills-section {
-  background-color: var(--cream);
-  padding: var(--space-2xl) 0;
-}
-
-.skills-section .section-title {
-  font-family: var(--font-serif);
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  color: var(--charcoal);
-  margin-bottom: var(--space-xl);
-  line-height: 1.1;
-}
-
-.skills-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--space-sm);
-  max-width: 1000px;
+  margin-top: var(--space-md);
 }
 
-.skill-item {
-  background-color: var(--parchment);
-  padding: var(--space-sm) var(--space-md);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--border-radius-sm);
-  color: var(--charcoal);
+.marquee-track {
+  display: flex;
+  gap: var(--space-md);
+  width: max-content;
+  will-change: transform;
+}
+
+.marquee-forward {
+  animation: marquee-scroll 40s linear infinite;
+}
+
+.marquee-reverse {
+  animation: marquee-scroll-reverse 35s linear infinite;
+}
+
+@keyframes marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marquee-scroll-reverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.marquee-item {
   font-family: var(--font-sans);
-  font-size: 0.95rem;
+  font-size: clamp(0.9rem, 1.5vw, 1.1rem);
   font-weight: 500;
-  transition: all var(--duration-base) var(--ease-out);
+  color: var(--charcoal);
+  white-space: nowrap;
+  padding: 14px 28px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 100px;
+  transition: all 0.3s ease;
+  user-select: none;
 }
 
-.skill-item:hover {
+.marquee-item:hover {
   border-color: var(--forest-green);
   color: var(--forest-green);
-  transform: translateY(-2px);
 }
 
-/* Timeline */
-.timeline-section {
+/* ═══════ CTA ═══════ */
+.cta-section {
   padding: var(--space-2xl) 0;
+  text-align: center;
 }
 
-.timeline-section .section-title {
-  font-family: var(--font-serif);
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  color: var(--charcoal);
-  margin-bottom: var(--space-xl);
-  line-height: 1.1;
+.cta-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
 }
 
-.about .timeline {
-  max-width: 700px;
-  position: relative;
-  padding-left: 3rem;
-}
-
-.about .timeline::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background-color: var(--forest-green);
-  opacity: 0.3;
-}
-
-.about .timeline-item {
-  position: relative;
-  padding-bottom: var(--space-xl);
-  padding-left: 3rem;
-}
-
-.about .timeline-item::before {
-  content: '';
-  position: absolute;
-  left: -3rem;
-  top: 4px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: var(--forest-green);
-  border: 3px solid var(--parchment);
-  box-shadow: 0 0 0 3px var(--forest-green);
-}
-
-.about .timeline-year {
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
+.cta-heading {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 7rem);
   font-weight: 700;
+  line-height: 1.0;
+  letter-spacing: -0.04em;
+  color: var(--charcoal);
+}
+
+.cta-sub {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: var(--slate);
+  max-width: 500px;
+}
+
+.cta-button {
+  display: inline-block;
+  margin-top: var(--space-sm);
+  padding: 18px 48px;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--warm-gray);
-  display: block;
-  margin-bottom: var(--space-xs);
+  text-decoration: none;
+  color: var(--cream);
+  background-color: var(--forest-green);
+  border: 2px solid var(--forest-green);
+  border-radius: 0;
+  transition: all 0.3s ease;
 }
 
-.about .timeline-content {
-  font-family: var(--font-serif);
-  font-size: 1.25rem;
-  color: var(--charcoal);
-  line-height: 1.4;
+.cta-button:hover {
+  background-color: transparent;
+  color: var(--forest-green);
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .explorer-themes {
-    grid-template-columns: 1fr;
-  }
-}
-
+/* ═══════ RESPONSIVE ═══════ */
 @media (max-width: 768px) {
   .about {
     padding-top: 70px;
@@ -342,19 +334,25 @@ Reads like a biography in a private club's member directory
     padding: var(--space-2xl) 0 var(--space-xl);
   }
 
-  .skills-grid {
-    grid-template-columns: 1fr;
+  .process-sticky {
+    padding: 0 var(--space-md);
   }
 
-  .about .timeline {
-    padding-left: 2rem;
+  .process-step {
+    flex-direction: column;
+    gap: var(--space-sm);
   }
 
-  .about .timeline-item {
-    padding-left: 2rem;
+  .process-number {
+    min-width: auto;
+    font-size: clamp(3rem, 12vw, 4rem);
   }
 
-  .about .timeline-item::before {
-    left: -2rem;
+  .statement-section {
+    min-height: 50vh;
+  }
+
+  .cta-button {
+    padding: 16px 36px;
   }
 }
