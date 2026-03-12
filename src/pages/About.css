@@ -86,13 +86,25 @@ Reads like a biography in a private club's member directory
   border-bottom-color: var(--hunter-green);
 }
 
-/* ═══════ HOW I WORK ═══════ */
-.how-i-work {
-  background-color: var(--cream);
-  padding: var(--space-2xl) 0;
+/* ═══════ HOW I WORK — Scroll-driven cylinder ═══════ */
+.how-i-work-scroll {
+  height: 300vh; /* Scroll runway for 3 steps */
+  position: relative;
 }
 
-.how-i-work .label {
+.process-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 var(--space-lg);
+  overflow: hidden;
+}
+
+.how-i-work-scroll .label {
   font-family: var(--font-sans);
   font-size: 0.85rem;
   font-weight: 600;
@@ -102,7 +114,7 @@ Reads like a biography in a private club's member directory
   margin-bottom: var(--space-sm);
 }
 
-.how-i-work .section-heading {
+.how-i-work-scroll .section-heading {
   font-family: var(--font-serif);
   font-size: clamp(2rem, 5vw, 3.5rem);
   color: var(--charcoal);
@@ -110,40 +122,41 @@ Reads like a biography in a private club's member directory
   line-height: 1.1;
 }
 
-.process-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  max-width: 800px;
+.process-cylinder {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  height: 200px;
+  perspective: 1000px;
 }
 
 .process-step {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   display: flex;
   align-items: flex-start;
   gap: var(--space-lg);
-  padding: var(--space-lg) 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-.process-step:last-child {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 .process-number {
   font-family: var(--font-display);
-  font-size: clamp(3rem, 6vw, 5rem);
+  font-size: clamp(3.5rem, 8vw, 6rem);
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.03em;
   color: var(--forest-green);
-  opacity: 0.2;
+  opacity: 0.15;
   flex-shrink: 0;
-  min-width: 100px;
+  min-width: 120px;
 }
 
 .process-content h3 {
   font-family: var(--font-serif);
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
   color: var(--charcoal);
   margin-bottom: var(--space-xs);
   line-height: 1.2;
@@ -152,8 +165,8 @@ Reads like a biography in a private club's member directory
 .process-content p {
   color: var(--slate);
   line-height: 1.7;
-  font-size: 1rem;
-  max-width: 500px;
+  font-size: 1.05rem;
+  max-width: 480px;
 }
 
 /* ═══════ STATEMENT MOMENT ═══════ */
@@ -319,6 +332,10 @@ Reads like a biography in a private club's member directory
     padding: var(--space-2xl) 0 var(--space-xl);
   }
 
+  .process-sticky {
+    padding: 0 var(--space-md);
+  }
+
   .process-step {
     flex-direction: column;
     gap: var(--space-sm);
@@ -326,6 +343,7 @@ Reads like a biography in a private club's member directory
 
   .process-number {
     min-width: auto;
+    font-size: clamp(3rem, 12vw, 4rem);
   }
 
   .statement-section {

@@ -31,9 +31,71 @@ const toolkitRow2 = [
   'HubSpot', 'Aptos SDK', 'Vite', 'CSS/SASS', 'SEO', 'Midjourney', 'Canva',
 ]
 
+const processSteps = [
+  { number: '01', title: 'Understand', desc: 'Sit across the table. Learn the business, the audience, the constraints. Strategy without context is just guessing.' },
+  { number: '02', title: 'Build', desc: 'Design it, code it, launch it. No handoffs to wonder about — I go from concept to working product.' },
+  { number: '03', title: 'Ship', desc: 'Get it live, measure what happens, iterate fast. The work isn\'t done until it\'s performing.' },
+]
+
+function ProcessStep({ step, scrollYProgress, index, total }) {
+  // Each step gets a third of the scroll range
+  const segment = 1 / total
+  const start = index * segment
+  const center = start + segment * 0.5
+  const end = start + segment
+
+  // Cylinder rotation: rotate in from below (70deg), sit flat (0), rotate out above (-70deg)
+  const rotateX = useTransform(
+    scrollYProgress,
+    [start, center - segment * 0.15, center, center + segment * 0.15, end],
+    [70, 10, 0, -10, -70]
+  )
+
+  // Opacity: fade in, full, fade out
+  const opacity = useTransform(
+    scrollYProgress,
+    [start, center - segment * 0.25, center, center + segment * 0.25, end],
+    [0, 1, 1, 1, 0]
+  )
+
+  // Y translation to reinforce the cylinder feel
+  const y = useTransform(
+    scrollYProgress,
+    [start, center, end],
+    [80, 0, -80]
+  )
+
+  // Scale slightly smaller when rotated away
+  const scale = useTransform(
+    scrollYProgress,
+    [start, center - segment * 0.2, center, center + segment * 0.2, end],
+    [0.85, 0.98, 1, 0.98, 0.85]
+  )
+
+  return (
+    <motion.div
+      className="process-step"
+      style={{ rotateX, opacity, y, scale, transformOrigin: 'center center' }}
+    >
+      <span className="process-number">{step.number}</span>
+      <div className="process-content">
+        <h3>{step.title}</h3>
+        <p>{step.desc}</p>
+      </div>
+    </motion.div>
+  )
+}
+
 function About() {
   const [showFullStory, setShowFullStory] = useState(false)
+  const processRef = useRef(null)
   const statementRef = useRef(null)
+
+  const { scrollYProgress: processScroll } = useScroll({
+    target: processRef,
+    offset: ["start start", "end end"]
+  })
+
   const { scrollYProgress: statementScroll } = useScroll({
     target: statementRef,
     offset: ["start end", "end start"]
@@ -176,76 +238,46 @@ function About() {
         </div>
       </section>
 
-      {/* ═══════ HOW I WORK ═══════ */}
-      <SqueezeSection className="how-i-work section">
-        <div className="container">
-          <motion.p
-            className="label"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, ease: ndsEase }}
-          >
-            Process
-          </motion.p>
-          <motion.h2
-            className="section-heading"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1, ease: ndsEase }}
-          >
-            How I Work
-          </motion.h2>
-          <motion.div
-            className="process-steps"
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-          >
-            <motion.div className="process-step" variants={staggerItem}>
-              <span className="process-number">01</span>
-              <div className="process-content">
-                <h3>Understand</h3>
-                <p>Sit across the table. Learn the business, the audience, the constraints. Strategy without context is just guessing.</p>
-              </div>
-            </motion.div>
-            <motion.div className="process-step" variants={staggerItem}>
-              <span className="process-number">02</span>
-              <div className="process-content">
-                <h3>Build</h3>
-                <p>Design it, code it, launch it. No handoffs to wonder about — I go from concept to working product.</p>
-              </div>
-            </motion.div>
-            <motion.div className="process-step" variants={staggerItem}>
-              <span className="process-number">03</span>
-              <div className="process-content">
-                <h3>Ship</h3>
-                <p>Get it live, measure what happens, iterate fast. The work isn't done until it's performing.</p>
-              </div>
-            </motion.div>
-          </motion.div>
+      {/* ═══════ HOW I WORK — Scroll-driven cylinder picker ═══════ */}
+      <section className="how-i-work-scroll" ref={processRef}>
+        <div className="process-sticky">
+          <div className="container">
+            <p className="label">Process</p>
+            <h2 className="section-heading">How I Work</h2>
+          </div>
+          <div className="process-cylinder">
+            {processSteps.map((step, i) => (
+              <ProcessStep
+                key={i}
+                step={step}
+                scrollYProgress={processScroll}
+                index={i}
+                total={processSteps.length}
+              />
+            ))}
+          </div>
         </div>
-      </SqueezeSection>
+      </section>
 
       {/* ═══════ STATEMENT MOMENT ═══════ */}
-      <section className="statement-section section" ref={statementRef}>
-        <motion.div
-          className="statement-inner"
-          style={{ y: statementY }}
-        >
-          <motion.p
-            className="statement-text"
-            initial={{ opacity: 0, y: 60 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, ease: ndsEase }}
+      <div ref={statementRef}>
+        <SqueezeSection className="statement-section section">
+          <motion.div
+            className="statement-inner"
+            style={{ y: statementY }}
           >
-            I don't pitch ideas.<br />I ship them.
-          </motion.p>
-        </motion.div>
-      </section>
+            <motion.p
+              className="statement-text"
+              initial={{ opacity: 0, y: 60 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8, ease: ndsEase }}
+            >
+              I don't pitch ideas.<br />I ship them.
+            </motion.p>
+          </motion.div>
+        </SqueezeSection>
+      </div>
 
       {/* ═══════ TOOLKIT MARQUEE ═══════ */}
       <section className="toolkit-section section">
