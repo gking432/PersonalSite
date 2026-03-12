@@ -12,8 +12,19 @@ Reads like a biography in a private club's member directory
 .about-hero {
   min-height: 60vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* Pin hero content to the top so it doesn't recenter when story expands */
   padding: var(--space-3xl) 0 var(--space-2xl);
+}
+
+/* On About, align the meta column to the top of the story column */
+.about-hero .hero-split {
+  align-items: flex-start;
+}
+
+.about-hero .hero-meta {
+  align-self: flex-start;
+  /* Nudge down so its top aligns roughly with the intro paragraph, not the heading */
+  margin-top: var(--space-xl);
 }
 
 .about-hero .label {
@@ -37,10 +48,19 @@ Reads like a biography in a private club's member directory
 }
 
 .about-intro {
-  font-size: clamp(1.15rem, 2.5vw, 1.35rem);
-  line-height: 1.7;
+  font-size: 1rem; /* Match regular body text size */
+  line-height: 1.8;
   color: var(--slate);
-  max-width: 700px;
+  max-width: 100%;
+}
+
+/* Hero story paragraphs (intro + full story) */
+.about-hero .hero-split-left p:not(.label) {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--slate);
+  max-width: 100%;
+  margin-bottom: var(--space-md); /* Extra spacing between paragraphs */
 }
 
 /* Sections */
@@ -78,6 +98,33 @@ Reads like a biography in a private club's member directory
   color: var(--charcoal);
   margin: var(--space-lg) 0;
   line-height: 1.5;
+}
+
+/* My Story */
+.my-story-cut {
+  font-weight: 600;
+  font-style: italic;
+  color: var(--charcoal);
+}
+
+.my-story-toggle {
+  margin-top: var(--space-sm);
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--forest-green);
+  cursor: pointer;
+  border-bottom: 1px solid var(--forest-green);
+}
+
+.my-story-toggle:hover {
+  color: var(--hunter-green);
+  border-bottom-color: var(--hunter-green);
 }
 
 /* Achievement List */
