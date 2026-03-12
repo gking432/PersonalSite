@@ -297,6 +297,14 @@ function About() {
       <div ref={statementRef} className="statement-scroll-runway">
         <div className="statement-sticky-wrapper">
           <SqueezeSection className="statement-section section">
+          <video
+            className="statement-section-video"
+            autoPlay
+            loop
+            muted
+            playsInline
+            src="/Photo Sections/Untitled (Presentation).mp4"
+          />
           <div className="container">
             <motion.div
               className="statement-inner"

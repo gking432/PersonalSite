@@ -198,15 +198,28 @@ Reads like a biography in a private club's member directory
   padding: 0;
   overflow: hidden;
   background-color: var(--forest-green);
-  background-image: url('/Photo Sections/6.png');
-  background-size: cover;
-  background-position: center;
   width: 100%;
   height: 85vh;
   max-height: 85vh;
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  position: relative;
+}
+
+.statement-section-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.statement-section .container {
+  position: relative;
+  z-index: 1;
 }
 
 .statement-inner {
