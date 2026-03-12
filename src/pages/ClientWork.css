@@ -10,10 +10,10 @@ Showcase freelance/client projects with modal deep-dives
 
 /* Hero */
 .client-work-hero {
-  min-height: 50vh;
+  min-height: 60vh;
   display: flex;
   align-items: center;
-  padding: var(--space-2xl) 0 var(--space-xl);
+  padding: var(--space-3xl) 0 var(--space-2xl);
 }
 
 .client-work-hero .label {
@@ -27,8 +27,8 @@ Showcase freelance/client projects with modal deep-dives
 }
 
 .client-work-hero h1 {
-  font-family: var(--font-serif);
-  font-size: clamp(3rem, 10vw, 7rem);
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 12vw, 10rem);
   font-weight: 700;
   line-height: 0.95;
   letter-spacing: -0.04em;
@@ -44,132 +44,74 @@ Showcase freelance/client projects with modal deep-dives
 }
 
 /* ==========================================
-   PROJECT GRID — Card Layout
+   FEATURED PROJECTS — Editorial Layout
    ========================================== */
-.client-projects-section {
-  padding: var(--space-xl) 0 var(--space-2xl);
+.client-feature {
+  padding: var(--space-3xl) 0;
 }
 
-.client-projects-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2.5rem;
-  max-width: 1100px;
-}
-
-.client-project-card {
+.client-feature-alt {
   background-color: var(--cream);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  padding: 2.5rem;
-  cursor: pointer;
-  transition: all var(--transition);
-  position: relative;
-  overflow: hidden;
+  padding: var(--space-3xl) 0;
 }
 
-.client-project-card::after {
-  content: 'View Project';
-  position: absolute;
-  bottom: 2rem;
-  right: 2rem;
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--forest-green);
-  opacity: 0;
-  transform: translateY(8px);
-  transition: all var(--transition);
-}
-
-.client-project-card:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  transform: translateY(-3px);
-  border-color: var(--forest-green);
-}
-
-.client-project-card:hover::after {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.client-card-number {
-  font-family: var(--font-sans);
-  font-size: 0.7rem;
+/* Header */
+.client-feature-number {
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 14vw, 12rem);
   font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--warm-gray);
-  margin-bottom: 1.5rem;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--gray-200);
   display: block;
+  margin-bottom: var(--space-sm);
 }
 
-.client-card-name {
+.client-feature-name {
   font-family: var(--font-serif);
-  font-size: 1.75rem;
-  font-weight: 600;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
   color: var(--charcoal);
-  margin-bottom: 0.75rem;
-  line-height: 1.2;
+  margin-bottom: var(--space-sm);
 }
 
-.client-card-type {
+.client-feature-tagline {
   font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--forest-green);
-  margin-bottom: 1rem;
+  color: var(--warm-gray);
 }
 
-.client-card-desc {
-  font-size: 0.95rem;
-  line-height: 1.7;
-  color: var(--slate);
-  margin-bottom: 0;
-}
-
-/* Featured card (PetUnis) takes full width */
-.client-project-card.featured {
-  grid-column: 1 / -1;
+/* Body — preview/scope on left, details on right */
+.client-feature-body {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: center;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--space-xl);
+  margin-top: var(--space-xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--gray-200);
 }
 
-.featured-badge {
-  font-family: var(--font-sans);
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--cream);
-  background-color: var(--forest-green);
-  padding: 4px 12px;
-  display: inline-block;
-  margin-bottom: 1rem;
-}
-
-.featured-preview {
-  background-color: var(--parchment);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  padding: 1.5rem;
+/* Left column — preview images or scope */
+.client-feature-preview {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-.featured-preview-slot {
+.client-feature-preview-slot {
   position: relative;
   aspect-ratio: 4/3;
   background: linear-gradient(135deg, rgba(26, 58, 46, 0.08), rgba(26, 58, 46, 0.03));
   overflow: hidden;
 }
 
-.featured-preview-slot img {
+.client-feature-preview-slot img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -177,9 +119,102 @@ Showcase freelance/client projects with modal deep-dives
   display: block;
 }
 
-.featured-preview-slot:nth-child(3) img {
+.client-feature-preview-slot:nth-child(3) img {
   object-position: center center;
   transform: scale(1.08);
+}
+
+.client-feature-screenshot {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.client-feature-screenshot img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.client-feature-scope {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.client-feature-scope-label {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+}
+
+.client-feature-scope-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.client-feature-scope-item {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: var(--charcoal);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+/* Right column — description, tech, CTA */
+.client-feature-desc {
+  color: var(--slate);
+  line-height: 1.8;
+  margin-bottom: var(--space-lg);
+  font-size: 1.1rem;
+}
+
+.client-feature-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.client-feature .tech-badge {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  padding: 6px 12px;
+  border: 1px solid var(--gray-200);
+  background: transparent;
+  transition: all var(--duration-fast);
+}
+
+.client-feature .tech-badge:hover {
+  border-color: var(--forest-green);
+  color: var(--forest-green);
+}
+
+.client-feature-cta {
+  display: inline-block;
+  padding: 14px 36px;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background-color: var(--forest-green);
+  color: var(--cream);
+  border: 2px solid var(--forest-green);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.client-feature-cta:hover {
+  background-color: transparent;
+  color: var(--forest-green);
 }
 
 
@@ -960,12 +995,9 @@ Showcase freelance/client projects with modal deep-dives
    RESPONSIVE
    ========================================== */
 @media (max-width: 1024px) {
-  .client-projects-grid {
+  .client-feature-body {
     grid-template-columns: 1fr;
-  }
-
-  .client-project-card.featured {
-    grid-template-columns: 1fr;
+    gap: var(--space-lg);
   }
 
   .modal-content-grid {
@@ -999,8 +1031,20 @@ Showcase freelance/client projects with modal deep-dives
     padding: var(--space-xl) 0;
   }
 
-  .client-project-card {
-    padding: 2rem;
+  .client-feature {
+    padding: var(--space-2xl) 0;
+  }
+
+  .client-feature-alt {
+    padding: var(--space-2xl) 0;
+  }
+
+  .client-feature-number {
+    font-size: clamp(4rem, 20vw, 8rem);
+  }
+
+  .client-feature-preview {
+    grid-template-columns: 1fr;
   }
 
   .modal-backdrop {
