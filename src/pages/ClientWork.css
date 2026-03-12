@@ -184,7 +184,7 @@ Showcase freelance/client projects with modal deep-dives
 
 
 /* ==========================================
-   FLOATING CARD MODAL
+   FLOATING CARD MODAL — NDS Editorial
    ========================================== */
 .modal-backdrop {
   position: fixed;
@@ -192,9 +192,9 @@ Showcase freelance/client projects with modal deep-dives
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(120, 120, 120, 0.6);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(42, 42, 42, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   z-index: 1000;
   display: flex;
   align-items: flex-start;
@@ -210,7 +210,7 @@ Showcase freelance/client projects with modal deep-dives
   padding: 2rem 0;
 }
 
-/* Header buttons — floating top-right, above heading: back + close */
+/* Header buttons — floating top-right */
 .modal-header-btns {
   position: absolute;
   top: -0.75rem;
@@ -224,30 +224,27 @@ Showcase freelance/client projects with modal deep-dives
 .modal-back-btn-header,
 .modal-close-btn {
   background: transparent;
-  border: none;
-  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   width: 40px;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: white;
-  box-shadow: none;
+  color: rgba(255, 255, 255, 0.7);
   transition: all var(--transition);
 }
 
 .modal-back-btn-header:hover,
 .modal-close-btn:hover {
-  color: rgba(255, 255, 255, 0.85);
-  transform: scale(1.1);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
-/* Shared floating card style */
+/* Shared card style — editorial, not app-like */
 .modal-card {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+  background: var(--parchment);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 /* ===== MAIN OVERVIEW ===== */
@@ -307,18 +304,19 @@ Showcase freelance/client projects with modal deep-dives
 .screenshot-placeholder {
   width: 100%;
   aspect-ratio: 16 / 9;
-  background: linear-gradient(135deg, rgba(26, 58, 46, 0.06), rgba(26, 58, 46, 0.02));
+  background: var(--cream);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-sans);
   font-size: 0.8rem;
-  letter-spacing: 0.08em;
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--warm-gray);
   overflow: hidden;
   position: relative;
-  transition: transform var(--transition), box-shadow var(--transition);
+  transition: all var(--transition);
 }
 
 .screenshot-placeholder:has(img) {
@@ -433,9 +431,9 @@ Showcase freelance/client projects with modal deep-dives
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  align-items: flex-start;
+  justify-content: flex-end;
+  text-align: left;
   min-height: 120px;
   overflow: hidden;
 }
@@ -537,34 +535,42 @@ Showcase freelance/client projects with modal deep-dives
 }
 
 .modal-module-card:hover {
+  border-color: var(--forest-green);
   transform: translateY(-3px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
 }
 
 .module-label {
-  font-family: var(--font-sans);
-  font-size: 0.95rem;
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
   font-weight: 600;
   color: var(--charcoal);
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.25rem;
   display: block;
+  position: relative;
+  z-index: 1;
 }
 
 .module-count {
   font-family: var(--font-sans);
   font-size: 0.7rem;
-  letter-spacing: 0.05em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--warm-gray);
+  position: relative;
+  z-index: 1;
 }
 
 .module-arrow {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  color: var(--warm-gray);
+  color: var(--forest-green);
   opacity: 0;
   transform: translateX(-4px);
   transition: all var(--transition);
+  z-index: 1;
 }
 
 .modal-module-card:hover .module-arrow {
@@ -590,7 +596,8 @@ Showcase freelance/client projects with modal deep-dives
   font-family: var(--font-sans);
   font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--forest-green);
   padding: 0;
   margin-bottom: 1rem;
@@ -626,14 +633,12 @@ Showcase freelance/client projects with modal deep-dives
 .drilldown-hero {
   padding: 0;
   overflow: hidden;
-  border-radius: 12px;
 }
 
 .drilldown-hero img {
   width: 100%;
   height: auto;
   display: block;
-  /* Image is 940×460px — display at natural aspect ratio, no cropping */
 }
 
 /* 3 category cards */
@@ -648,9 +653,8 @@ Showcase freelance/client projects with modal deep-dives
   page-break-inside: avoid;
   -webkit-column-break-inside: avoid;
   margin-bottom: 1rem;
-  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 .drilldown-ads-masonry-item img {
@@ -789,7 +793,7 @@ Showcase freelance/client projects with modal deep-dives
 .teams-images-overlay {
   position: fixed;
   inset: 0;
-  background: white;
+  background: var(--parchment);
   z-index: 10001;
   display: flex;
   flex-direction: column;
@@ -826,15 +830,20 @@ Showcase freelance/client projects with modal deep-dives
   right: 1rem;
   width: 40px;
   height: 40px;
-  border: 1px solid rgba(0,0,0,0.1);
-  border-radius: 50%;
-  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: var(--parchment);
   color: var(--charcoal);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
+  transition: all var(--transition);
+}
+
+.teams-images-close:hover {
+  border-color: var(--forest-green);
+  color: var(--forest-green);
 }
 
 .teams-images-scroll {
@@ -872,7 +881,7 @@ Showcase freelance/client projects with modal deep-dives
   right: 0;
   width: 100%;
   height: 50px;
-  background: white;
+  background: var(--parchment);
   z-index: 1;
   pointer-events: none;
 }
@@ -880,8 +889,7 @@ Showcase freelance/client projects with modal deep-dives
 .website-preview-iframe {
   width: 100%;
   flex: 1;
-  border: none;
-  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   background: white;
 }
 
@@ -918,9 +926,8 @@ Showcase freelance/client projects with modal deep-dives
   page-break-inside: avoid;
   -webkit-column-break-inside: avoid;
   margin-bottom: 0.5rem;
-  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
   aspect-ratio: 1;
 }
 
