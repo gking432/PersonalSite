@@ -338,6 +338,67 @@ const staggerItem = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: ndsEase } }
 }
 
+// Preload images function
+function preloadImages(imageUrls) {
+  imageUrls.forEach((url) => {
+    const img = new Image()
+    img.src = url
+  })
+}
+
+// Get image URLs for a specific module
+function getModuleImageUrls(module, project) {
+  const imageUrls = []
+
+  // Ads images
+  if (module.adsImagesFolder) {
+    const ads = project?.id === 'weatherfixers' ? weatherfixersAds : petunisAds
+    ads.forEach((filename) => {
+      const base = module.adsBasePath === '' ? '' : (module.adsBasePath || 'pdfs')
+      const encoded = filename.split('/').map(encodeURIComponent).join('/')
+      const src = base ? `/${base}/${module.adsImagesFolder}/${encoded}` : `/${module.adsImagesFolder}/${encoded}`
+      imageUrls.push(src)
+    })
+  }
+
+  // Postcards images
+  if (module.postcardsImagesFolder) {
+    weatherfixersPostcards.forEach((filename) => {
+      const base = module.postcardsBasePath === '' ? '' : (module.postcardsBasePath || 'pdfs')
+      const encoded = filename.split('/').map(encodeURIComponent).join('/')
+      const src = base ? `/${base}/${module.postcardsImagesFolder}/${encoded}` : `/${module.postcardsImagesFolder}/${encoded}`
+      imageUrls.push(src)
+    })
+  }
+
+  // Teams images
+  if (module.teamsImagesFolder) {
+    petunisTeams.forEach((filename) => {
+      const src = `/pdfs/${module.teamsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`
+      imageUrls.push(src)
+    })
+    petunisForPeople.forEach((filename) => {
+      const src = `/pdfs/${module.teamsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`
+      imageUrls.push(src)
+    })
+  }
+
+  // Design files images
+  if (module.designFilesFolder) {
+    petunisDesignFiles.forEach((filename) => {
+      const src = `/pdfs/${module.designFilesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`
+      imageUrls.push(src)
+    })
+  }
+
+  // Hero image
+  if (module.heroImage) {
+    imageUrls.push(module.heroImage)
+  }
+
+  return imageUrls
+}
+
 function ClientWork() {
   const [activeProject, setActiveProject] = useState(null)
   const [activeModule, setActiveModule] = useState(null)
@@ -351,6 +412,32 @@ function ClientWork() {
     document.documentElement.classList.toggle('modal-open', locked)
     return () => document.documentElement.classList.remove('modal-open')
   }, [activeProject, showTeamsImages, showForPeopleImages, showDesignFiles, websitePreviewUrl])
+
+  // Preload images when activeModule changes (throttled to avoid performance issues)
+  useEffect(() => {
+    if (!activeModule || !activeProject) return
+
+    // Use requestIdleCallback to preload during idle time, avoiding animation lag
+    const schedulePreload = (callback) => {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(callback, { timeout: 1000 })
+      } else {
+        setTimeout(callback, 200)
+      }
+    }
+
+    schedulePreload(() => {
+      const imageUrls = getModuleImageUrls(activeModule, activeProject)
+
+      // Start preloading (batch to avoid overwhelming the browser)
+      const batchSize = 8 // Smaller batches
+      for (let i = 0; i < imageUrls.length; i += batchSize) {
+        setTimeout(() => {
+          preloadImages(imageUrls.slice(i, i + batchSize))
+        }, i * 80) // Increased stagger time to reduce load
+      }
+    })
+  }, [activeModule, activeProject])
 
   const handleClose = () => {
     setActiveProject(null)
@@ -866,6 +953,29 @@ function ClientWork() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.4, delay: 0.2 + i * 0.06, ease: ndsEase }}
                                 onClick={() => mod.websiteUrl ? setWebsitePreviewUrl(mod.websiteUrl) : setActiveModule(mod)}
+                                onMouseEnter={() => {
+                                  // Preload images on hover for faster loading (throttled to avoid performance issues)
+                                  if (!mod.websiteUrl) {
+                                    // Use requestIdleCallback if available, otherwise setTimeout with delay
+                                    const schedulePreload = (callback) => {
+                                      if ('requestIdleCallback' in window) {
+                                        requestIdleCallback(callback, { timeout: 2000 })
+                                      } else {
+                                        setTimeout(callback, 100)
+                                      }
+                                    }
+                                    
+                                    schedulePreload(() => {
+                                      const imageUrls = getModuleImageUrls(mod, activeProject)
+                                      const batchSize = 10 // Reduced batch size
+                                      for (let i = 0; i < imageUrls.length; i += batchSize) {
+                                        setTimeout(() => {
+                                          preloadImages(imageUrls.slice(i, i + batchSize))
+                                        }, i * 50) // Increased stagger time
+                                      }
+                                    })
+                                  }
+                                }}
                               >
                                 <span className="module-label">{mod.label}</span>
                                 <span className="module-count">{mod.items.length} items</span>
