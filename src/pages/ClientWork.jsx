@@ -474,7 +474,9 @@ function ClientWork() {
               <p className="teams-images-subtitle">Product mockups for every NFL franchise</p>
             </div>
             <div className="teams-images-scroll" onClick={(e) => e.stopPropagation()}>
-              {petunisTeams.map((filename) => (
+              {petunisTeams
+                .filter((filename) => !filename.startsWith('For People/'))
+                .map((filename) => (
                 <img
                   key={filename}
                   src={`/pdfs/${activeModule.teamsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
@@ -564,7 +566,10 @@ function ClientWork() {
               <h2 className="teams-images-title">{activeProject?.name || 'Website'} — Website</h2>
               <p className="teams-images-subtitle">Live preview</p>
             </div>
-            <div className="website-preview-iframe-wrap" onClick={(e) => e.stopPropagation()}>
+            <div
+              className={`website-preview-iframe-wrap white-bar-${activeProject?.id === 'petunis' ? 'petunis' : 'weatherfixers'}`}
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="website-preview-white-bar"></div>
               <iframe
                 src={websitePreviewUrl}
@@ -750,22 +755,6 @@ function ClientWork() {
               onClick={handleBackdropClick}
             >
               <div className="modal-layout" onClick={(e) => e.stopPropagation()}>
-                {/* Header buttons: back (when drilldown) + close */}
-                <div className="modal-header-btns">
-                  {activeModule && (
-                    <button className="modal-back-btn-header" onClick={() => setActiveModule(null)} aria-label="Back">
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path d="M12 16l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </button>
-                  )}
-                  <button className="modal-close-btn" onClick={handleClose} aria-label="Close">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                      <path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    </svg>
-                  </button>
-                </div>
-
                 <AnimatePresence mode="wait">
                   {activeModule ? (
                     /* ===== DRILL-DOWN VIEW ===== */
@@ -784,12 +773,18 @@ function ClientWork() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3, ease: ndsEase }}
                       >
-                        <button className="modal-back-btn" onClick={() => setActiveModule(null)}>
-                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                            <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                          Back to {activeProject.name}
-                        </button>
+                        <div className="modal-back-card-header">
+                          <button className="modal-back-btn modal-icon-btn" onClick={() => setActiveModule(null)} aria-label={`Back to ${activeProject.name}`}>
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                              <path d="M12 16l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </button>
+                          <button className="modal-close-btn modal-icon-btn" onClick={handleClose} aria-label="Close">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                              <path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            </svg>
+                          </button>
+                        </div>
                         <h2>{activeModule.label}</h2>
                         <p className="drilldown-subtitle">{activeProject.name} — {activeProject.type}</p>
                       </motion.div>
@@ -940,7 +935,14 @@ function ClientWork() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.4, ease: ndsEase }}
                       >
-                        <h2>{activeProject.name}</h2>
+                        <div className="modal-title-card-header">
+                          <h2>{activeProject.name}</h2>
+                          <button className="modal-close-btn modal-icon-btn" onClick={handleClose} aria-label="Close">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                              <path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            </svg>
+                          </button>
+                        </div>
                         <p className="modal-type">{activeProject.type}</p>
                         <p className="modal-desc">{activeProject.description}</p>
                       </motion.div>

@@ -245,35 +245,54 @@ Showcase freelance/client projects with modal deep-dives
   padding: 2rem 0;
 }
 
-/* Header buttons — floating top-right */
-.modal-header-btns {
-  position: absolute;
-  top: -0.75rem;
-  right: -0.5rem;
-  z-index: 20;
+/* Title card header — title + close button in corner */
+.modal-title-card-header {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.4rem;
 }
 
-.modal-back-btn-header,
-.modal-close-btn {
+.modal-title-card-header .modal-icon-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+}
+
+.modal-title-card-header h2 {
+  margin-bottom: 0;
+  padding-right: 3rem;
+}
+
+/* Shared icon button style — green icon, no background */
+.modal-icon-btn {
+  flex-shrink: 0;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: none;
   width: 40px;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--forest-green);
   transition: all var(--transition);
 }
 
-.modal-back-btn-header:hover,
-.modal-close-btn:hover {
-  color: white;
-  border-color: rgba(255, 255, 255, 0.5);
+.modal-icon-btn:hover {
+  color: var(--hunter-green);
+}
+
+/* Back card header — back + close buttons in upper right corner */
+.modal-back-card-header {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 1;
 }
 
 /* Shared card style — editorial, not app-like */
@@ -291,6 +310,7 @@ Showcase freelance/client projects with modal deep-dives
 
 /* Title Card */
 .modal-title-card {
+  position: relative;
   padding: 2rem 2.5rem;
 }
 
@@ -298,7 +318,6 @@ Showcase freelance/client projects with modal deep-dives
   font-family: var(--font-serif);
   font-size: clamp(1.75rem, 4vw, 2.5rem);
   color: var(--charcoal);
-  margin-bottom: 0.4rem;
   line-height: 1.15;
 }
 
@@ -621,29 +640,9 @@ Showcase freelance/client projects with modal deep-dives
 }
 
 .modal-back-card {
+  position: relative;
   padding: 2rem 2.5rem;
-}
-
-.modal-back-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--forest-green);
-  padding: 0;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  transition: all var(--transition);
-}
-
-.modal-back-btn:hover {
-  gap: 0.6rem;
+  padding-right: 5rem;
 }
 
 .modal-back-card h2 {
@@ -909,9 +908,9 @@ Showcase freelance/client projects with modal deep-dives
   position: relative;
 }
 
+/* White bar variants — use project-specific class on website-preview-iframe-wrap */
 .website-preview-white-bar {
   position: absolute;
-  top: -15px;
   left: 0;
   right: 0;
   width: 100%;
@@ -919,6 +918,20 @@ Showcase freelance/client projects with modal deep-dives
   background: var(--parchment);
   z-index: 1;
   pointer-events: none;
+}
+
+/* WeatherFixers — bar positioned higher, extra space below "Live preview" to avoid overlap */
+.website-preview-iframe-wrap.white-bar-weatherfixers {
+  margin-top: 1.25rem;
+}
+
+.website-preview-iframe-wrap.white-bar-weatherfixers .website-preview-white-bar {
+  top: -15px;
+}
+
+/* PetUnis — bar positioned lower (original placement) */
+.website-preview-iframe-wrap.white-bar-petunis .website-preview-white-bar {
+  top: 0;
 }
 
 .website-preview-iframe {

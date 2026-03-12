@@ -53,7 +53,7 @@ function Projects() {
       tagline: 'Blockchain · Token Creation · Web3',
       description: 'Built a user-friendly interface for creating and deploying tokens on the Aptos blockchain. Simplified a complex technical process into an accessible web application that anyone can use.',
       tech: ['Aptos blockchain', 'React', 'TypeScript'],
-      stat: { number: 1, suffix: '', label: 'Blockchain Shipped' },
+      stat: { number: 1, suffix: '', label: 'Blockchain Launched' },
       links: { github: '#', documentation: '#' }
     },
     {
@@ -297,7 +297,7 @@ function Projects() {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2, ease: ndsEase }}
           >
-            Always shipping. Check back soon for new projects and updates.
+            Always launching. Check back soon for new projects and updates.
           </motion.p>
         </div>
       </SqueezeSection>

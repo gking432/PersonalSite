@@ -408,7 +408,7 @@ function Home() {
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ duration: 1, delay: 0.8, ease: ndsEase }}
             >
-              I don't pitch ideas — I ship them. Three years building at the intersection
+              I don't pitch ideas — I deliver them. Three years building at the intersection
               of marketing, technology, and AI. Midwest work ethic. Real results.
             </motion.p>
 
@@ -456,7 +456,7 @@ function Home() {
           >
             {[
               { target: 3, suffix: '+', label: 'Years Building' },
-              { target: 5, suffix: '+', label: 'Products Shipped' },
+              { target: 5, suffix: '+', label: 'Products Launched' },
               { target: 100, suffix: '+', label: 'People Educated' },
             ].map((stat, i) => (
               <motion.div className="stat-item" key={i} variants={itemVariants}>
@@ -556,7 +556,7 @@ function Home() {
         }}
         label="Approach"
         giantText="Think big picture. Compartmentalize. Execute."
-        paragraph="I see systems, not just tasks. Whether it's a product launch, a marketing campaign, or a new application—I break complex goals into clear deliverables and ship them."
+        paragraph="I see systems, not just tasks. Whether it's a product launch, a marketing campaign, or a new application—I break complex goals into clear deliverables and deliver them."
       />
 
       {/* ═══════ EXPERIENCE TIMELINE ═══════ */}
