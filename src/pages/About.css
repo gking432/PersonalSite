@@ -126,7 +126,7 @@ Reads like a biography in a private club's member directory
   position: relative;
   width: 100%;
   max-width: 700px;
-  height: 200px;
+  height: 400px; /* Enough for 3 stacked steps */
   perspective: 1000px;
 }
 
@@ -138,6 +138,8 @@ Reads like a biography in a private club's member directory
   display: flex;
   align-items: flex-start;
   gap: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   will-change: transform, opacity;
   backface-visibility: hidden;
 }

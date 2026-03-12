@@ -37,39 +37,38 @@ const processSteps = [
   { number: '03', title: 'Ship', desc: 'Get it live, measure what happens, iterate fast. The work isn\'t done until it\'s performing.' },
 ]
 
+const STEP_HEIGHT = 120 // px per stacked step
+
 function ProcessStep({ step, scrollYProgress, index, total }) {
-  // Each step gets a third of the scroll range
   const segment = 1 / total
   const start = index * segment
-  const center = start + segment * 0.5
-  const end = start + segment
+  const arrive = start + segment * 0.5
+  const landedY = index * STEP_HEIGHT
 
-  // Cylinder rotation: rotate in from below (70deg), sit flat (0), rotate out above (-70deg)
+  // Roll in from below, land at stacked position, stay
   const rotateX = useTransform(
     scrollYProgress,
-    [start, center - segment * 0.15, center, center + segment * 0.15, end],
-    [70, 10, 0, -10, -70]
+    [start, arrive],
+    [70, 0]
   )
 
-  // Opacity: fade in, full, fade out
   const opacity = useTransform(
     scrollYProgress,
-    [start, center - segment * 0.25, center, center + segment * 0.25, end],
-    [0, 1, 1, 1, 0]
+    [start, start + segment * 0.25],
+    [0, 1]
   )
 
-  // Y translation to reinforce the cylinder feel
+  // Slide up from below into stacked position, then hold
   const y = useTransform(
     scrollYProgress,
-    [start, center, end],
-    [80, 0, -80]
+    [start, arrive],
+    [landedY + 100, landedY]
   )
 
-  // Scale slightly smaller when rotated away
   const scale = useTransform(
     scrollYProgress,
-    [start, center - segment * 0.2, center, center + segment * 0.2, end],
-    [0.85, 0.98, 1, 0.98, 0.85]
+    [start, arrive],
+    [0.9, 1]
   )
 
   return (
