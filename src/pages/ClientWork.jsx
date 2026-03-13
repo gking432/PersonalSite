@@ -337,7 +337,7 @@ const staggerContainer = {
 function ProjectSection({ project, index, isExpanded, onToggle }) {
   const isAlt = index % 2 !== 0
   const number = String(index + 1).padStart(2, '0')
-  const expandRef = useRef(null)
+  const sectionRef = useRef(null)
   const [expandedModules, setExpandedModules] = useState({})
 
   const toggleModule = (modId) => {
@@ -348,17 +348,20 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
     if (isExpanded) {
       onToggle(null)
       setExpandedModules({})
+      setTimeout(() => {
+        sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 100)
     } else {
       onToggle(project.id)
       setTimeout(() => {
-        expandRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }, 100)
     }
   }
 
   const content = (
-    <div className="container">
-      {/* Collapsed: editorial header + body */}
+    <div className="container" ref={sectionRef}>
+      {/* Header — always visible */}
       <motion.div
         className="client-feature-header"
         initial="hidden"
@@ -377,368 +380,291 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
         </motion.p>
       </motion.div>
 
-      <div className="client-feature-body">
-        <motion.div
-          className="client-feature-left"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.6, ease: ndsEase }}
-        >
-          {project.featured && project.screenshotImage ? (
-            <div className="client-feature-preview">
-              <div className="client-feature-preview-slot">
-                <img src="/pdfs/Test%20PetUnis%20Ads.png" alt="" />
-              </div>
-              <div className="client-feature-preview-slot">
-                <img src={project.screenshotImage} alt="" />
-              </div>
-              <div className="client-feature-preview-slot">
-                <img src="/pdfs/For%20People%20Background.png" alt="" />
-              </div>
-            </div>
-          ) : project.screenshotImage ? (
-            <div className="client-feature-screenshot">
-              <img src={project.screenshotImage} alt={project.screenshotLabel} />
-            </div>
-          ) : (
-            <div className="client-feature-scope">
-              <span className="client-feature-scope-label">Scope</span>
-              <div className="client-feature-scope-list">
-                {project.modules.map((mod) => (
-                  <span key={mod.id} className="client-feature-scope-item">{mod.label}</span>
+      {/* Body — swaps between default and expanded */}
+      <AnimatePresence mode="wait">
+        {!isExpanded ? (
+          /* ─── DEFAULT VIEW ─── */
+          <motion.div
+            key="default"
+            className="client-feature-body"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.4, ease: ndsEase }}
+          >
+            <motion.div
+              className="client-feature-left"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, ease: ndsEase }}
+            >
+              {project.featured && project.screenshotImage ? (
+                <div className="client-feature-preview">
+                  <div className="client-feature-preview-slot">
+                    <img src="/pdfs/Test%20PetUnis%20Ads.png" alt="" />
+                  </div>
+                  <div className="client-feature-preview-slot">
+                    <img src={project.screenshotImage} alt="" />
+                  </div>
+                  <div className="client-feature-preview-slot">
+                    <img src="/pdfs/For%20People%20Background.png" alt="" />
+                  </div>
+                </div>
+              ) : project.screenshotImage ? (
+                <div className="client-feature-screenshot">
+                  <img src={project.screenshotImage} alt={project.screenshotLabel} />
+                </div>
+              ) : (
+                <div className="client-feature-scope">
+                  <span className="client-feature-scope-label">Scope</span>
+                  <div className="client-feature-scope-list">
+                    {project.modules.map((mod) => (
+                      <span key={mod.id} className="client-feature-scope-item">{mod.label}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+            <div className="client-feature-details">
+              <p className="client-feature-desc">{project.shortDesc}</p>
+              <div className="client-feature-tech">
+                {project.tech.map((tech) => (
+                  <span key={tech} className="tech-badge">{tech}</span>
                 ))}
               </div>
+              <button className="client-feature-cta" onClick={handleToggle}>
+                View Project
+              </button>
             </div>
-          )}
-        </motion.div>
-        <motion.div
-          className="client-feature-details"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
-          variants={staggerContainer}
-        >
-          <motion.p className="client-feature-desc" variants={fadeUp}>{project.shortDesc}</motion.p>
-          <motion.div className="client-feature-tech" variants={fadeUp}>
-            {project.tech.map((tech) => (
-              <span key={tech} className="tech-badge">{tech}</span>
-            ))}
           </motion.div>
-          <motion.button
-            className="client-feature-cta"
-            variants={fadeUp}
-            onClick={handleToggle}
-          >
-            {isExpanded ? 'Close Project' : 'View Project'}
-          </motion.button>
-        </motion.div>
-      </div>
-
-      {/* ─── EXPANDED: inline deep-dive ─── */}
-      <AnimatePresence>
-        {isExpanded && (
+        ) : (
+          /* ─── EXPANDED VIEW — replaces body ─── */
           <motion.div
-            ref={expandRef}
+            key="expanded"
             className="client-expand"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.6, ease: ndsEase }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.4, ease: ndsEase }}
           >
-            <div className="client-expand-inner">
-              {/* Divider */}
-              <div className="client-expand-divider" />
+            {/* Project heading */}
+            <div className="client-expand-heading">
+              <h3 className="client-expand-title">{project.name}</h3>
+              <p className="client-expand-subtitle">{project.type} · {project.year}</p>
+            </div>
 
-              {/* Project heading */}
+            {/* Brief / Strategy / Scope — 3-column */}
+            <div className="client-expand-meta">
               <motion.div
-                className="client-expand-heading"
+                className="client-expand-meta-item"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: ndsEase }}
+                transition={{ duration: 0.5, delay: 0.05, ease: ndsEase }}
               >
-                <h3 className="client-expand-title">{project.name}</h3>
-                <p className="client-expand-subtitle">{project.type} · {project.year}</p>
+                <span className="client-expand-meta-label">The Brief</span>
+                <p>{project.brief}</p>
               </motion.div>
-
-              {/* Brief / Strategy / Scope — 3-column editorial */}
-              <div className="client-expand-meta">
-                <motion.div
-                  className="client-expand-meta-item"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1, ease: ndsEase }}
-                >
-                  <span className="client-expand-meta-label">The Brief</span>
-                  <p>{project.brief}</p>
-                </motion.div>
-                <motion.div
-                  className="client-expand-meta-item"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.15, ease: ndsEase }}
-                >
-                  <span className="client-expand-meta-label">Strategy</span>
-                  <p>{project.strategy}</p>
-                </motion.div>
-                <motion.div
-                  className="client-expand-meta-item"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2, ease: ndsEase }}
-                >
-                  <span className="client-expand-meta-label">Scope</span>
-                  <p>{project.scope}</p>
-                </motion.div>
-              </div>
-
-              {/* Screenshot — full width if available */}
-              {project.screenshotImage && (
-                <motion.div
-                  className="client-expand-screenshot"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.25, ease: ndsEase }}
-                >
-                  <img src={project.screenshotImage} alt={project.screenshotLabel} />
-                </motion.div>
-              )}
-
-              {/* Modules — expandable subsections */}
-              <div className="client-expand-modules">
-                <span className="client-expand-section-label">What I Built</span>
-
-                {project.modules.map((mod, mi) => {
-                  const modExpanded = expandedModules[mod.id]
-
-                  // Website module — expandable with iframe preview
-                  if (mod.websiteUrl) {
-                    return (
-                      <motion.div
-                        key={mod.id}
-                        className="client-module-section"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, delay: 0.3 + mi * 0.06, ease: ndsEase }}
-                      >
-                        <button
-                          className={`client-module-row ${modExpanded ? 'active' : ''}`}
-                          onClick={() => toggleModule(mod.id)}
-                        >
-                          <div className="client-module-row-left">
-                            <span className="client-module-number">{String(mi + 1).padStart(2, '0')}</span>
-                            <span className="client-module-name">{mod.label}</span>
-                          </div>
-                          <div className="client-module-row-right">
-                            <span className="client-module-count">{mod.items.length} deliverables</span>
-                            <svg className={`client-module-chevron ${modExpanded ? 'open' : ''}`} width="16" height="16" viewBox="0 0 16 16" fill="none">
-                              <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                          </div>
-                        </button>
-
-                        <AnimatePresence>
-                          {modExpanded && (
-                            <motion.div
-                              className="client-module-content"
-                              initial={{ opacity: 0, height: 0 }}
-                              animate={{ opacity: 1, height: 'auto' }}
-                              exit={{ opacity: 0, height: 0 }}
-                              transition={{ duration: 0.4, ease: ndsEase }}
-                            >
-                              <div className="client-module-content-inner">
-                                <div className="client-module-deliverables">
-                                  {mod.items.map((item, i) => (
-                                    <div key={i} className="client-module-deliverable">
-                                      <span className="client-module-deliverable-num">{String(i + 1).padStart(2, '0')}</span>
-                                      <p>{item}</p>
-                                    </div>
-                                  ))}
-                                </div>
-                                <div className="client-module-iframe-wrap">
-                                  <iframe
-                                    src={mod.websiteUrl}
-                                    title={`${project.name} — ${mod.label}`}
-                                    className="client-module-iframe"
-                                  />
-                                </div>
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </motion.div>
-                    )
-                  }
-
-                  return (
-                    <motion.div
-                      key={mod.id}
-                      className="client-module-section"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: 0.3 + mi * 0.06, ease: ndsEase }}
-                    >
-                      <button
-                        className={`client-module-row ${modExpanded ? 'active' : ''}`}
-                        onClick={() => toggleModule(mod.id)}
-                      >
-                        <div className="client-module-row-left">
-                          <span className="client-module-number">{String(mi + 1).padStart(2, '0')}</span>
-                          <span className="client-module-name">{mod.label}</span>
-                        </div>
-                        <div className="client-module-row-right">
-                          <span className="client-module-count">{mod.items.length} deliverables</span>
-                          <svg className={`client-module-chevron ${modExpanded ? 'open' : ''}`} width="16" height="16" viewBox="0 0 16 16" fill="none">
-                            <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        </div>
-                      </button>
-
-                      <AnimatePresence>
-                        {modExpanded && (
-                          <motion.div
-                            className="client-module-content"
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.4, ease: ndsEase }}
-                          >
-                            <div className="client-module-content-inner">
-                              {/* Deliverables list */}
-                              <div className="client-module-deliverables">
-                                {mod.items.map((item, i) => (
-                                  <div key={i} className="client-module-deliverable">
-                                    <span className="client-module-deliverable-num">{String(i + 1).padStart(2, '0')}</span>
-                                    <p>{item}</p>
-                                  </div>
-                                ))}
-                              </div>
-
-                              {/* Hero image */}
-                              {mod.heroImage && (
-                                <div className="client-module-hero-img">
-                                  <img src={mod.heroImage} alt={mod.label} />
-                                </div>
-                              )}
-
-                              {/* Ads masonry */}
-                              {mod.adsImagesFolder && (
-                                <div className="client-module-masonry">
-                                  {(project.id === 'weatherfixers' ? weatherfixersAds : petunisAds).map((filename) => {
-                                    const base = mod.adsBasePath === '' ? '' : (mod.adsBasePath || 'pdfs')
-                                    const encoded = filename.split('/').map(encodeURIComponent).join('/')
-                                    const src = base ? `/${base}/${mod.adsImagesFolder}/${encoded}` : `/${mod.adsImagesFolder}/${encoded}`
-                                    return (
-                                      <div key={filename} className="client-module-masonry-item">
-                                        <img src={src} alt="" loading="lazy" />
-                                      </div>
-                                    )
-                                  })}
-                                </div>
-                              )}
-
-                              {/* Postcards grid */}
-                              {mod.postcardsImagesFolder && (
-                                <div className="client-module-postcards">
-                                  {weatherfixersPostcards.map((filename) => {
-                                    const base = mod.postcardsBasePath === '' ? '' : (mod.postcardsBasePath || 'pdfs')
-                                    const encoded = filename.split('/').map(encodeURIComponent).join('/')
-                                    const src = base ? `/${base}/${mod.postcardsImagesFolder}/${encoded}` : `/${mod.postcardsImagesFolder}/${encoded}`
-                                    return (
-                                      <div key={filename} className="client-module-postcard-item">
-                                        <img src={src} alt="" loading="lazy" />
-                                      </div>
-                                    )
-                                  })}
-                                </div>
-                              )}
-
-                              {/* Teams images — For Pets */}
-                              {mod.teamsImagesFolder && (
-                                <>
-                                  <div className="client-module-gallery-section">
-                                    <span className="client-module-gallery-label">For Pets — All 32 Teams</span>
-                                    <div className="client-module-teams-grid">
-                                      {petunisTeams.map((filename) => (
-                                        <img
-                                          key={filename}
-                                          src={`/pdfs/${mod.teamsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
-                                          alt=""
-                                          loading="lazy"
-                                        />
-                                      ))}
-                                    </div>
-                                  </div>
-
-                                  <div className="client-module-gallery-section">
-                                    <span className="client-module-gallery-label">For People</span>
-                                    <div className="client-module-teams-grid">
-                                      {petunisForPeople.map((filename) => (
-                                        <img
-                                          key={filename}
-                                          src={`/pdfs/${mod.teamsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
-                                          alt=""
-                                          loading="lazy"
-                                        />
-                                      ))}
-                                    </div>
-                                  </div>
-                                </>
-                              )}
-
-                              {/* Design files */}
-                              {mod.designFilesFolder && (
-                                <div className="client-module-gallery-section">
-                                  <span className="client-module-gallery-label">Design Files</span>
-                                  {(() => {
-                                    const byTeam = petunisDesignFiles.reduce((acc, path) => {
-                                      const team = path.split('/')[0]
-                                      if (!acc[team]) acc[team] = []
-                                      acc[team].push(path)
-                                      return acc
-                                    }, {})
-                                    const teamDisplayName = (name) => name === 'Ravens' ? 'Bengals' : name
-                                    return Object.entries(byTeam)
-                                      .sort((a, b) => a[0].localeCompare(b[0]))
-                                      .map(([team, files]) => (
-                                        <div key={team} className="client-module-design-team">
-                                          <span className="client-module-design-team-label">{teamDisplayName(team)}</span>
-                                          <div className="client-module-design-grid">
-                                            {files.map((filename) => (
-                                              <div key={filename} className="client-module-design-item">
-                                                <img
-                                                  src={`/pdfs/${mod.designFilesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
-                                                  alt=""
-                                                  loading="lazy"
-                                                />
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      ))
-                                  })()}
-                                </div>
-                              )}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </motion.div>
-                  )
-                })}
-              </div>
-
-              {/* Close button at bottom */}
-              <motion.button
-                className="client-expand-close"
-                onClick={handleToggle}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
+              <motion.div
+                className="client-expand-meta-item"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1, ease: ndsEase }}
               >
-                Close Project
-              </motion.button>
+                <span className="client-expand-meta-label">Strategy</span>
+                <p>{project.strategy}</p>
+              </motion.div>
+              <motion.div
+                className="client-expand-meta-item"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.15, ease: ndsEase }}
+              >
+                <span className="client-expand-meta-label">Scope</span>
+                <p>{project.scope}</p>
+              </motion.div>
             </div>
+
+            {/* Modules — expandable subsections */}
+            <div className="client-expand-modules">
+              <span className="client-expand-section-label">What I Built</span>
+
+              {project.modules.map((mod, mi) => {
+                const modExpanded = expandedModules[mod.id]
+
+                return (
+                  <motion.div
+                    key={mod.id}
+                    className="client-module-section"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.2 + mi * 0.06, ease: ndsEase }}
+                  >
+                    <button
+                      className={`client-module-row ${modExpanded ? 'active' : ''}`}
+                      onClick={() => toggleModule(mod.id)}
+                    >
+                      <div className="client-module-row-left">
+                        <span className="client-module-number">{String(mi + 1).padStart(2, '0')}</span>
+                        <span className="client-module-name">{mod.label}</span>
+                      </div>
+                      <div className="client-module-row-right">
+                        <span className="client-module-count">{mod.items.length} deliverables</span>
+                        <svg className={`client-module-chevron ${modExpanded ? 'open' : ''}`} width="16" height="16" viewBox="0 0 16 16" fill="none">
+                          <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
+                    </button>
+
+                    <AnimatePresence>
+                      {modExpanded && (
+                        <motion.div
+                          className="client-module-content"
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.4, ease: ndsEase }}
+                        >
+                          <div className="client-module-content-inner">
+                            {/* Deliverables list */}
+                            <div className="client-module-deliverables">
+                              {mod.items.map((item, i) => (
+                                <div key={i} className="client-module-deliverable">
+                                  <span className="client-module-deliverable-num">{String(i + 1).padStart(2, '0')}</span>
+                                  <p>{item}</p>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Website iframe */}
+                            {mod.websiteUrl && (
+                              <div className="client-module-iframe-wrap">
+                                <iframe
+                                  src={mod.websiteUrl}
+                                  title={`${project.name} — ${mod.label}`}
+                                  className="client-module-iframe"
+                                />
+                              </div>
+                            )}
+
+                            {/* Hero image */}
+                            {mod.heroImage && (
+                              <div className="client-module-hero-img">
+                                <img src={mod.heroImage} alt={mod.label} />
+                              </div>
+                            )}
+
+                            {/* Ads masonry */}
+                            {mod.adsImagesFolder && (
+                              <div className="client-module-masonry">
+                                {(project.id === 'weatherfixers' ? weatherfixersAds : petunisAds).map((filename) => {
+                                  const base = mod.adsBasePath === '' ? '' : (mod.adsBasePath || 'pdfs')
+                                  const encoded = filename.split('/').map(encodeURIComponent).join('/')
+                                  const src = base ? `/${base}/${mod.adsImagesFolder}/${encoded}` : `/${mod.adsImagesFolder}/${encoded}`
+                                  return (
+                                    <div key={filename} className="client-module-masonry-item">
+                                      <img src={src} alt="" loading="lazy" />
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            )}
+
+                            {/* Postcards grid */}
+                            {mod.postcardsImagesFolder && (
+                              <div className="client-module-postcards">
+                                {weatherfixersPostcards.map((filename) => {
+                                  const base = mod.postcardsBasePath === '' ? '' : (mod.postcardsBasePath || 'pdfs')
+                                  const encoded = filename.split('/').map(encodeURIComponent).join('/')
+                                  const src = base ? `/${base}/${mod.postcardsImagesFolder}/${encoded}` : `/${mod.postcardsImagesFolder}/${encoded}`
+                                  return (
+                                    <div key={filename} className="client-module-postcard-item">
+                                      <img src={src} alt="" loading="lazy" />
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            )}
+
+                            {/* Teams images — For Pets */}
+                            {mod.teamsImagesFolder && (
+                              <>
+                                <div className="client-module-gallery-section">
+                                  <span className="client-module-gallery-label">For Pets — All 32 Teams</span>
+                                  <div className="client-module-teams-grid">
+                                    {petunisTeams.map((filename) => (
+                                      <img
+                                        key={filename}
+                                        src={`/pdfs/${mod.teamsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
+                                        alt=""
+                                        loading="lazy"
+                                      />
+                                    ))}
+                                  </div>
+                                </div>
+
+                                <div className="client-module-gallery-section">
+                                  <span className="client-module-gallery-label">For People</span>
+                                  <div className="client-module-teams-grid">
+                                    {petunisForPeople.map((filename) => (
+                                      <img
+                                        key={filename}
+                                        src={`/pdfs/${mod.teamsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
+                                        alt=""
+                                        loading="lazy"
+                                      />
+                                    ))}
+                                  </div>
+                                </div>
+                              </>
+                            )}
+
+                            {/* Design files */}
+                            {mod.designFilesFolder && (
+                              <div className="client-module-gallery-section">
+                                <span className="client-module-gallery-label">Design Files</span>
+                                {(() => {
+                                  const byTeam = petunisDesignFiles.reduce((acc, path) => {
+                                    const team = path.split('/')[0]
+                                    if (!acc[team]) acc[team] = []
+                                    acc[team].push(path)
+                                    return acc
+                                  }, {})
+                                  const teamDisplayName = (name) => name === 'Ravens' ? 'Bengals' : name
+                                  return Object.entries(byTeam)
+                                    .sort((a, b) => a[0].localeCompare(b[0]))
+                                    .map(([team, files]) => (
+                                      <div key={team} className="client-module-design-team">
+                                        <span className="client-module-design-team-label">{teamDisplayName(team)}</span>
+                                        <div className="client-module-design-grid">
+                                          {files.map((filename) => (
+                                            <div key={filename} className="client-module-design-item">
+                                              <img
+                                                src={`/pdfs/${mod.designFilesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
+                                                alt=""
+                                                loading="lazy"
+                                              />
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    ))
+                                })()}
+                              </div>
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                )
+              })}
+            </div>
+
+            {/* Close button */}
+            <button className="client-expand-close" onClick={handleToggle}>
+              Close Project
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
