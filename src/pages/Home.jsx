@@ -316,7 +316,7 @@ function Home() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, ease: ndsEase }}
             >
-              Marketing Leader &middot; Builder &middot; AI Practitioner
+              Marketing Leader &middot; Builder &middot; Operator
             </motion.p>
 
             <motion.div
@@ -332,8 +332,8 @@ function Home() {
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ duration: 1, delay: 0.8, ease: ndsEase }}
             >
-              I don't pitch ideas — I deliver them. Three years building at the intersection
-              of marketing, technology, and AI. Midwest work ethic. Real results.
+              I don't pitch ideas — I deliver them. From corporate marketing to running my own
+              consultancy to building products from scratch. Midwest work ethic. Real results.
             </motion.p>
 
             <motion.div
@@ -460,7 +460,7 @@ function Home() {
         }}
         label="Philosophy"
         giantText="Curiosity plus execution equals capability"
-        paragraph="I don't wait for permission to learn something new. When I wanted to understand blockchain, I built a token launcher. When I saw AI transforming how people work, I created a lecture series. The last three years weren't a gap—they were deliberate exploration."
+        paragraph="I don't wait for permission to learn something new. When I wanted to understand crypto, I built a token launchpad. When I needed an interview prep tool, I built one. Every project in my portfolio started the same way: I saw a problem, and I built the solution."
       />
 
       <PokerTable slideFrom="right" />
@@ -497,8 +497,8 @@ function Home() {
               {
                 year: '2023–2025',
                 title: 'Independent Work',
-                role: 'Builder & Client Marketing Manager',
-                desc: 'Drove acquisition campaigns for multiple clients. Built blockchain and AI applications. Designed digital strategies. Taught AI literacy. Moved from doing the work → outsourcing → strategic management.',
+                role: 'Marketing Consultant & Product Builder',
+                desc: 'Ran a marketing consultancy serving early-stage companies. Managed branding, digital strategy, and acquisition campaigns. Built multiple products end-to-end — brand, strategy, development, and go-to-market — all independently.',
                 side: 'right'
               },
               {

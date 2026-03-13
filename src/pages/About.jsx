@@ -205,71 +205,48 @@ function About() {
                 ))}
               </h1>
             <motion.p
-              className="about-intro"
+              className=”about-intro”
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
             >
-              After beginning my career with Sub-Zero Group, Inc. I decided to take a chance on myself and began doing freelance marketing work.
-              This bloomed into a small but legitimate agency. I instantly realized I loved the work of building brands, launching campaigns,
-              designing websites, and sitting across the table from someone with an idea, trying to figure out how to make it real. Building was <em>the</em> thing.
-              Not the deliverables, not being my own boss, but the process I had created. It was the brainstorming sessions, the strategy pivots, and the
-              moment a client saw their vision take shape.
-            </motion.p>
-            <motion.p
-              className="my-story-cut"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.6, ease: ndsEase }}
-            >
-              Cut to Artificial Intelligence…
+              I started my career at Sub-Zero Group, Inc., where I rotated through sales operations, product marketing, and dealer sales — learning how
+              premium brands are built and maintained at scale. After that, I did what a lot of marketers talk about but few actually do: I went out on
+              my own. I started a marketing consultancy, working with early-stage companies on branding, digital strategy, and customer acquisition. I sat
+              across the table from founders with ideas and figured out how to make those ideas real. That’s when I discovered what I actually cared about.
+              Not the title, not being my own boss — but <em>building</em>.
             </motion.p>
 
             {showFullStory && (
               <>
                 <p>
-                  As more and more AI tools became readily available and much, much cheaper (think one-click website builders, automated advertising
-                  campaigns, instantaneous copy and creative for any product/service/idea/niche, etc.), you’d think my job would become easier and more
-                  profitable, which was my initial thought as well.
+                  Running my own shop taught me everything a corporate role never could. I handled strategy, creative, client management, and execution —
+                  simultaneously, with no safety net. I learned how to scope work, manage expectations, and deliver under constraints that would make most
+                  agency teams blink. More importantly, I learned what happens when you’re the one responsible for every outcome, not just one piece of the funnel.
                 </p>
                 <p>
-                However, it soon became clear that as costs lessened, so did my value; and what started as a marketing agency quickly became a sales agency for AI marketing tools. These tools were faster, cheaper, and better than what I was offering, which only made matters worse.
+                  As the marketing landscape evolved, I realized I wanted to get closer to the product side of the work. I didn’t just want to market things — I wanted
+                  to build them. So I started building. A cryptocurrency token launchpad with full go-to-market strategy. An AI-powered interview prep platform. A
+                  cartography print studio. Each one a complete product: brand identity, positioning, development, and acquisition strategy, all done by me.
                 </p>
                 <p>
-                Instead of building, I was pitching cheap software, paying for services to sell to others, and racing competitor agencies to the lowest price. The "race to $0" is real, and it happened very, very quickly. As the margin on my core offerings shrank by more than 80%, I had to take a step back to realize my business was no longer growing. In fact, it was rapidly shrinking.
+                  That range is the point. I’m a marketing leader who can go from whiteboard to working product. I can build the landing page, write the copy,
+                  design the brand, set up the analytics, and launch the campaign — not because I <em>have</em> to, but because understanding every layer makes me
+                  better at leading the ones I delegate. I’ve spent years learning modern tools, including AI, not as a novelty but because they fundamentally
+                  change how fast a small team can move. I treat them the way a good carpenter treats power tools: they don’t replace the craft, they accelerate it.
                 </p>
                 <p>
-                  So I had to ask an honest question: What do I actually want to do?
-                  The answer was obvious. I want to build, and I'd always wanted to build. Having an agency was always less about having an agency and more
-                  about having a vehicle for the work I enjoyed: collaborating with people, solving real problems, and creating things that didn't exist before.
+                  The through-line of my career has always been the same: take something from zero to one. Whether that’s a client’s first website, a product idea
+                  that didn’t exist yesterday, or a brand that needs to find its audience — I’m at my best when I’m building from scratch and figuring it out as I go.
                 </p>
                 <p>
-                  I had to pivot. I started reading about everything AI: LLMs, data centers, complex models, new companies, cooling processes, political angles,
-                  energy consumption, AI psychosis (yes it’s real, and it’s shockingly common). I wrote research papers, blog posts, articles, and lectures.
-                  I built my own tools with AI: a to-do list app for myself, a workout tracker, and a marathon prep application all designed specifically for me.
-                  I then branched out and built a cryptocurrency token launchpad, an AI interview prep platform, and a cartography print studio. Each of these
-                  projects complete with a full brand kit and customer acquisition strategy.
+                  Now I’m looking for the right team. A company that’s serious about growth and wants a marketing leader who doesn’t just think strategically but
+                  executes on it — someone who understands how ideas become products, how products find customers, and how to build momentum without burning budget on
+                  guesswork. I’ve done the solo chapter. I’m ready to bring everything I’ve learned to a team that’s building something worth building.
                 </p>
                 <p>
-                  Through this process, I realized the skills I gathered while running an agency didn’t become less valuable, they were simply misaligned.
-                  When you combine marketing strategy with the ability to actually build things, you stop guessing. You can test ideas, customize software,
-                  launch products, experiment with positioning, and see what works in real time.
-                </p>
-                <p>
-                  Now, some people may read this and say, “Well, anyone can do that stuff with AI.” So I’ll pose a question: could you do it? Right now, could
-                  you build any of these things? Would you even know where to start? With enough time and practice, of course you could. But with enough time
-                  and practice, I could do your job too. The difference is that I’ve already put in the time. I understand how these tools work, why they change
-                  the economics of customer connection, and how companies can actually use them to build better products and reach consumers more effectively.
-                </p>
-                <p>
-                  That perspective is why I’m interested in working with organizations that are serious about growth. Companies that don’t just want someone to
-                  run campaigns, but someone who can think strategically about how ideas become products, how products become brands, and how brands become momentum.
-                  All this to say, I'm not looking for just any opportunity, and I've already done the say yes to everything chapter. I'm looking for a company that's
-                  serious about growth, eager for strategic thinkers, and values the kind of person who prefers to do something rather than talk about doing something.
-                </p>
-                <p>
-                  If that sounds like your team, I'd like to hear about it. Whether that's a full-time role, a consulting engagement, or a speaking opportunity —
-                  I'm open to the conversation. I just want to be in the room where things are getting built.
+                  Whether that’s a leadership role, a consulting engagement, or something I haven’t considered yet — I’m open to the conversation.
+                  I just want to be in the room where things are getting built.
                 </p>
               </>
             )}
