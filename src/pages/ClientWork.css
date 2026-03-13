@@ -238,6 +238,31 @@ No modals. Progressive disclosure on-page.
   margin-bottom: var(--space-xl);
 }
 
+/* Project heading inside expansion */
+.client-expand-heading {
+  margin-bottom: var(--space-lg);
+}
+
+.client-expand-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--charcoal);
+  margin: 0 0 0.5rem;
+}
+
+.client-expand-subtitle {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--forest-green);
+  margin: 0;
+}
+
 /* Brief / Strategy / Scope — 3-column */
 .client-expand-meta {
   display: grid;
@@ -286,28 +311,22 @@ No modals. Progressive disclosure on-page.
   display: block;
 }
 
-.client-expand-screenshot-link {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--cream);
-  background: var(--forest-green);
-  padding: 12px 20px;
-  text-decoration: none;
-  transition: all 0.3s ease;
+/* ==========================================
+   IFRAME — Website preview inside module
+   ========================================== */
+.client-module-iframe-wrap {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  position: relative;
+  aspect-ratio: 16 / 9;
 }
 
-.client-expand-screenshot-link:hover {
-  background: var(--hunter-green);
-  padding-right: 24px;
+.client-module-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: white;
+  display: block;
 }
 
 /* ==========================================
@@ -407,29 +426,6 @@ No modals. Progressive disclosure on-page.
   transform: rotate(180deg);
 }
 
-/* Website module — link row */
-.client-module-link {
-  border-top: 1px solid var(--gray-200);
-  text-decoration: none;
-  color: inherit;
-}
-
-.client-module-link:last-child,
-.client-module-link + .client-module-section:last-child {
-  border-bottom: 1px solid var(--gray-200);
-}
-
-.client-module-action {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--forest-green);
-}
 
 /* ==========================================
    MODULE CONTENT — Expanded

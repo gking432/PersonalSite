@@ -450,6 +450,17 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
               {/* Divider */}
               <div className="client-expand-divider" />
 
+              {/* Project heading */}
+              <motion.div
+                className="client-expand-heading"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: ndsEase }}
+              >
+                <h3 className="client-expand-title">{project.name}</h3>
+                <p className="client-expand-subtitle">{project.type} · {project.year}</p>
+              </motion.div>
+
               {/* Brief / Strategy / Scope — 3-column editorial */}
               <div className="client-expand-meta">
                 <motion.div
@@ -490,19 +501,6 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
                   transition={{ duration: 0.5, delay: 0.25, ease: ndsEase }}
                 >
                   <img src={project.screenshotImage} alt={project.screenshotLabel} />
-                  {project.modules.find(m => m.websiteUrl) && (
-                    <a
-                      href={project.modules.find(m => m.websiteUrl).websiteUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="client-expand-screenshot-link"
-                    >
-                      Visit Live Site
-                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                        <path d="M4 12L12 4M12 4H6M12 4v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </a>
-                  )}
                 </motion.div>
               )}
 
@@ -513,32 +511,62 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
                 {project.modules.map((mod, mi) => {
                   const modExpanded = expandedModules[mod.id]
 
-                  // Website module — just a link, no expand
+                  // Website module — expandable with iframe preview
                   if (mod.websiteUrl) {
                     return (
-                      <motion.a
+                      <motion.div
                         key={mod.id}
-                        href={mod.websiteUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="client-module-row client-module-link"
+                        className="client-module-section"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.4, delay: 0.3 + mi * 0.06, ease: ndsEase }}
                       >
-                        <div className="client-module-row-left">
-                          <span className="client-module-number">{String(mi + 1).padStart(2, '0')}</span>
-                          <span className="client-module-name">{mod.label}</span>
-                        </div>
-                        <div className="client-module-row-right">
-                          <span className="client-module-count">{mod.items.length} deliverables</span>
-                          <span className="client-module-action">Visit Site
-                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                              <path d="M4 12L12 4M12 4H6M12 4v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <button
+                          className={`client-module-row ${modExpanded ? 'active' : ''}`}
+                          onClick={() => toggleModule(mod.id)}
+                        >
+                          <div className="client-module-row-left">
+                            <span className="client-module-number">{String(mi + 1).padStart(2, '0')}</span>
+                            <span className="client-module-name">{mod.label}</span>
+                          </div>
+                          <div className="client-module-row-right">
+                            <span className="client-module-count">{mod.items.length} deliverables</span>
+                            <svg className={`client-module-chevron ${modExpanded ? 'open' : ''}`} width="16" height="16" viewBox="0 0 16 16" fill="none">
+                              <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                             </svg>
-                          </span>
-                        </div>
-                      </motion.a>
+                          </div>
+                        </button>
+
+                        <AnimatePresence>
+                          {modExpanded && (
+                            <motion.div
+                              className="client-module-content"
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              transition={{ duration: 0.4, ease: ndsEase }}
+                            >
+                              <div className="client-module-content-inner">
+                                <div className="client-module-deliverables">
+                                  {mod.items.map((item, i) => (
+                                    <div key={i} className="client-module-deliverable">
+                                      <span className="client-module-deliverable-num">{String(i + 1).padStart(2, '0')}</span>
+                                      <p>{item}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                                <div className="client-module-iframe-wrap">
+                                  <iframe
+                                    src={mod.websiteUrl}
+                                    title={`${project.name} — ${mod.label}`}
+                                    className="client-module-iframe"
+                                  />
+                                </div>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </motion.div>
                     )
                   }
 
