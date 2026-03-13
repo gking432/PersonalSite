@@ -88,19 +88,19 @@ Reads like a biography in a private club's member directory
 
 /* ═══════ HOW I WORK — Scroll-driven cylinder ═══════ */
 .how-i-work-scroll {
-  height: 300vh; /* Scroll runway for 3 steps */
+  height: 350vh; /* Scroll runway for label + heading + 3 steps */
   position: relative;
 }
 
 .process-sticky {
   position: sticky;
-  top: 101px; /* match header height so label isn't hidden under navbar */
+  top: 101px;
   height: calc(100vh - 101px);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  padding: 0 var(--space-lg);
+  padding: var(--space-md) var(--space-lg) 0;
   overflow: hidden;
 }
 
@@ -122,11 +122,16 @@ Reads like a biography in a private club's member directory
   line-height: 1.1;
 }
 
+.how-i-work-scroll .container {
+  perspective: 1000px;
+  padding-top: var(--space-md);
+}
+
 .process-cylinder {
   position: relative;
   width: 100%;
   max-width: 700px;
-  height: 650px; /* Enough for 3 stacked steps at 200px spacing */
+  height: 560px; /* Fits 3 steps with adjusted spacing */
   perspective: 1000px;
 }
 

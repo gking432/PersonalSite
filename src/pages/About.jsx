@@ -37,7 +37,46 @@ const processSteps = [
   { number: '03', title: 'Deliver', desc: 'Get it live, measure what happens, iterate fast. The work isn\'t done until it\'s performing.' },
 ]
 
-const STEP_HEIGHT = 200 // px per stacked step
+const STEP_HEIGHTS = [0, 200, 368] // px per step - tighter gap between 2 and 3 to match 0-1
+const HEADER_SCROLL = 0.2 // Label + heading animate first, steps start after
+
+// Label + heading animate in first, before process steps
+function ProcessLabelHeading({ processScroll }) {
+  const labelRotateX = useTransform(processScroll, [0, 0.07], [60, 0])
+  const labelOpacity = useTransform(processScroll, [0, 0.05], [0, 1])
+  const labelY = useTransform(processScroll, [0, 0.07], [40, 0])
+
+  const headingRotateX = useTransform(processScroll, [0.06, 0.14], [60, 0])
+  const headingOpacity = useTransform(processScroll, [0.07, 0.12], [0, 1])
+  const headingY = useTransform(processScroll, [0.06, 0.14], [50, 0])
+
+  return (
+    <>
+      <motion.p
+        className="label"
+        style={{
+          rotateX: labelRotateX,
+          opacity: labelOpacity,
+          y: labelY,
+          transformOrigin: 'center center'
+        }}
+      >
+        Process
+      </motion.p>
+      <motion.h2
+        className="section-heading"
+        style={{
+          rotateX: headingRotateX,
+          opacity: headingOpacity,
+          y: headingY,
+          transformOrigin: 'center center'
+        }}
+      >
+        How I Work
+      </motion.h2>
+    </>
+  )
+}
 
 // Word-by-word color reveal on scroll (same as Home photo sections)
 function StatementGiantText({ children, scrollYProgress, lineBreakAfter }) {
@@ -72,12 +111,12 @@ function StatementGiantText({ children, scrollYProgress, lineBreakAfter }) {
 }
 
 function ProcessStep({ step, scrollYProgress, index, total }) {
-  const segment = 1 / total
-  const start = index * segment
+  const segment = (1 - HEADER_SCROLL) / total
+  const start = HEADER_SCROLL + index * segment
   const arrive = start + segment * 0.5
-  const landedY = index * STEP_HEIGHT
+  const landedY = STEP_HEIGHTS[index]
 
-  // Roll in from below, land at stacked position, stay
+  // Roll in from below, land at stacked position, stay (starts after label+heading)
   const rotateX = useTransform(
     scrollYProgress,
     [start, arrive],
@@ -276,24 +315,7 @@ function About() {
       <section className="how-i-work-scroll" ref={processRef}>
         <div className="process-sticky">
           <div className="container">
-            <motion.p
-              className="label"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-30%" }}
-              transition={{ duration: 0.5, ease: ndsEase }}
-            >
-              Process
-            </motion.p>
-            <motion.h2
-              className="section-heading"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-30%" }}
-              transition={{ duration: 0.6, delay: 0.1, ease: ndsEase }}
-            >
-              How I Work
-            </motion.h2>
+            <ProcessLabelHeading processScroll={processScroll} />
             <div className="process-cylinder">
               {processSteps.map((step, i) => (
                 <ProcessStep
