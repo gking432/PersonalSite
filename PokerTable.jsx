@@ -131,6 +131,18 @@ function PokerTable() {
   return (
     <section className="poker-table-section" ref={sectionRef}>
       <div className="poker-table-wrapper">
+        {/* Felt table background — fades from bottom-right into parchment */}
+        <div className="felt-table-bg" aria-hidden="true">
+          <svg className="felt-noise" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <filter id="feltGrain">
+              <feTurbulence baseFrequency="1.2" numOctaves="4" seed="3" />
+              <feColorMatrix type="saturate" values="0" />
+            </filter>
+            <rect width="100%" height="100%" filter="url(#feltGrain)" opacity="0.07" />
+          </svg>
+          <div className="felt-stitch" />
+        </div>
+
         {/* Left Column */}
         <motion.div className="poker-content-column" style={{ opacity: contentOpacity }}>
           <div className="container">
@@ -162,18 +174,6 @@ function PokerTable() {
             </motion.div>
           </div>
         </motion.div>
-
-        {/* Felt table background — fades from bottom-right into parchment */}
-        <div className="felt-table-bg" aria-hidden="true">
-          <svg className="felt-noise" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-            <filter id="feltGrain">
-              <feTurbulence baseFrequency="1.2" numOctaves="4" seed="3" />
-              <feColorMatrix type="saturate" values="0" />
-            </filter>
-            <rect width="100%" height="100%" filter="url(#feltGrain)" opacity="0.07" />
-          </svg>
-          <div className="felt-stitch" />
-        </div>
 
         {/* Right Column — Card Surface */}
         <div className="poker-table-column">

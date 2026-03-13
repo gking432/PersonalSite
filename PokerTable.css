@@ -111,12 +111,13 @@ Cards on forest-green surface, NDS card backs, editorial fronts.
    Forest green felt that bleeds from bottom-right into parchment.
    ========================================== */
 .felt-table-bg {
-  position: sticky;
-  top: 101px;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: calc(100vh - 101px);
+  height: 100%;
   pointer-events: none;
-  z-index: 1;
+  z-index: 0;
   overflow: hidden;
   /* The felt color — forest green */
   background: radial-gradient(
