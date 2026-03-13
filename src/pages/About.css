@@ -94,8 +94,8 @@ Reads like a biography in a private club's member directory
 
 .process-sticky {
   position: sticky;
-  top: 0;
-  height: 100vh;
+  top: 101px; /* match header height so label isn't hidden under navbar */
+  height: calc(100vh - 101px);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -396,6 +396,8 @@ Reads like a biography in a private club's member directory
   }
 
   .process-sticky {
+    top: 80px; /* smaller header height on mobile */
+    height: calc(100vh - 80px);
     padding: 0 var(--space-md);
   }
 

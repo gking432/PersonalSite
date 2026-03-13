@@ -479,119 +479,27 @@ Showcase freelance/client projects with modal deep-dives
 }
 
 .modal-module-card {
-  padding: 1.75rem;
+  padding: 1.25rem 1.5rem;
   cursor: pointer;
   transition: all var(--transition);
   position: relative;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-end;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
   text-align: left;
-  min-height: 120px;
-  overflow: hidden;
-}
-
-.modal-module-card.module-card-ads-bg {
-  background-image: url('/pdfs/Test%20PetUnis%20Ads.png');
-  background-size: cover;
-  background-position: top center;
-}
-
-.modal-module-card.module-card-ads-bg::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.5);
-  z-index: 0;
-}
-
-.modal-module-card.module-card-ads-bg .module-label {
-  position: relative;
-  z-index: 1;
-}
-
-.modal-module-card.module-card-ads-bg .module-count,
-.modal-module-card.module-card-ads-bg .module-arrow {
-  display: none;
-}
-
-.modal-module-card.module-card-merchandising-bg {
-  background-image: url('/pdfs/For%20People%20Background.png');
-  background-size: 140%;
-  background-position: center;
-}
-
-.modal-module-card.module-card-merchandising-bg::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.5);
-  z-index: 0;
-}
-
-.modal-module-card.module-card-merchandising-bg .module-label {
-  position: relative;
-  z-index: 1;
-}
-
-.modal-module-card.module-card-merchandising-bg .module-count,
-.modal-module-card.module-card-merchandising-bg .module-arrow {
-  display: none;
-}
-
-.modal-module-card.module-card-weatherfixers-ads-bg {
-  background-image: url('/WeatherFixers/Ads/WeatherFixers%20Potential%20Ads/2.png');
-  background-size: 115%;
-  background-position: center;
-}
-
-.modal-module-card.module-card-weatherfixers-ads-bg::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.65);
-  z-index: 0;
-}
-
-.modal-module-card.module-card-weatherfixers-ads-bg .module-label {
-  position: relative;
-  z-index: 1;
-}
-
-.modal-module-card.module-card-weatherfixers-ads-bg .module-count,
-.modal-module-card.module-card-weatherfixers-ads-bg .module-arrow {
-  display: none;
-}
-
-.modal-module-card.module-card-weatherfixers-directmail-bg {
-  background-image: url('/WeatherFixers/Ads/WeatherFixers%20Postcard%20(8%20x%206.5%20in)/1.png');
-  background-size: 115%;
-  background-position: center;
-}
-
-.modal-module-card.module-card-weatherfixers-directmail-bg::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.65);
-  z-index: 0;
-}
-
-.modal-module-card.module-card-weatherfixers-directmail-bg .module-label {
-  position: relative;
-  z-index: 1;
-}
-
-.modal-module-card.module-card-weatherfixers-directmail-bg .module-count,
-.modal-module-card.module-card-weatherfixers-directmail-bg .module-arrow {
-  display: none;
+  min-height: auto;
+  background-color: var(--cream);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--border-radius-sm);
+  overflow: visible;
 }
 
 .modal-module-card:hover {
   border-color: var(--forest-green);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  background-color: var(--forest-green);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .module-label {
@@ -599,37 +507,31 @@ Showcase freelance/client projects with modal deep-dives
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--charcoal);
-  margin-bottom: 0.25rem;
+  margin: 0;
   display: block;
   position: relative;
   z-index: 1;
+  transition: color var(--transition);
 }
 
-.module-count {
-  font-family: var(--font-sans);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--warm-gray);
-  position: relative;
-  z-index: 1;
+.modal-module-card:hover .module-label {
+  color: white;
 }
 
 .module-arrow {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
   color: var(--forest-green);
-  opacity: 0;
-  transform: translateX(-4px);
+  opacity: 0.5;
+  transform: translateX(0);
   transition: all var(--transition);
   z-index: 1;
+  flex-shrink: 0;
+  margin-left: 1.5rem;
 }
 
 .modal-module-card:hover .module-arrow {
+  color: white;
   opacity: 1;
-  transform: translateX(0);
+  transform: translateX(6px);
 }
 
 /* ===== DRILL-DOWN VIEW ===== */

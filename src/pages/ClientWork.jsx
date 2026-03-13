@@ -1006,7 +1006,7 @@ function ClientWork() {
                               .map((mod, i) => (
                               <motion.div
                                 key={mod.id}
-                                className={`modal-card modal-module-card ${activeProject.id === 'petunis' && mod.id === 'ads' ? 'module-card-ads-bg' : ''} ${activeProject.id === 'petunis' && mod.id === 'merchandising' ? 'module-card-merchandising-bg' : ''} ${activeProject.id === 'weatherfixers' && mod.id === 'ads' ? 'module-card-weatherfixers-ads-bg' : ''} ${activeProject.id === 'weatherfixers' && mod.id === 'directmail' ? 'module-card-weatherfixers-directmail-bg' : ''}`}
+                                className="modal-card modal-module-card"
                                 initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.4, delay: 0.2 + i * 0.06, ease: ndsEase }}
@@ -1036,9 +1036,8 @@ function ClientWork() {
                                 }}
                               >
                                 <span className="module-label">{mod.label}</span>
-                                <span className="module-count">{mod.items.length} items</span>
-                                <svg className="module-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                  <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <svg className="module-arrow" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                                  <path d="M7 5l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                                 </svg>
                               </motion.div>
                             ))}

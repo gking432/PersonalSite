@@ -276,8 +276,24 @@ function About() {
       <section className="how-i-work-scroll" ref={processRef}>
         <div className="process-sticky">
           <div className="container">
-            <p className="label">Process</p>
-            <h2 className="section-heading">How I Work</h2>
+            <motion.p
+              className="label"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-30%" }}
+              transition={{ duration: 0.5, ease: ndsEase }}
+            >
+              Process
+            </motion.p>
+            <motion.h2
+              className="section-heading"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-30%" }}
+              transition={{ duration: 0.6, delay: 0.1, ease: ndsEase }}
+            >
+              How I Work
+            </motion.h2>
             <div className="process-cylinder">
               {processSteps.map((step, i) => (
                 <ProcessStep
@@ -303,7 +319,7 @@ function About() {
             loop
             muted
             playsInline
-            src="/Photo Sections/Untitled (Presentation).mp4"
+            src="/Photo Sections/Brown.mp4"
           />
           <div className="container">
             <motion.div
