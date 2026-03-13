@@ -8,6 +8,7 @@ Cards on forest-green surface, NDS card backs, editorial fronts.
   position: relative;
   height: 400vh;
   background-color: var(--parchment);
+  overflow: hidden;
 }
 
 .poker-table-wrapper {
@@ -106,29 +107,52 @@ Cards on forest-green surface, NDS card backs, editorial fronts.
 }
 
 /* ==========================================
-   NDS SURFACE — Forest green circle
+   FELT TABLE BACKGROUND
+   Forest green felt that bleeds from bottom-right into parchment.
    ========================================== */
-.nds-card-surface {
-  position: absolute;
-  top: 50%;
-  left: 35%;
-  transform: translate(-50%, -50%);
-  width: min(700px, 90vh);
-  height: min(700px, 90vh);
-  border-radius: 50%;
-  background: var(--forest-green);
+.felt-table-bg {
+  position: sticky;
+  top: 101px;
+  width: 100%;
+  height: calc(100vh - 101px);
+  pointer-events: none;
+  z-index: 1;
   overflow: hidden;
-  box-shadow:
-    0 40px 120px rgba(26, 58, 46, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  /* The felt color — forest green */
+  background: radial-gradient(
+    ellipse 85% 90% at 85% 60%,
+    var(--forest-green) 0%,
+    var(--forest-green) 30%,
+    rgba(26, 58, 46, 0.7) 50%,
+    rgba(26, 58, 46, 0.3) 65%,
+    rgba(26, 58, 46, 0.08) 78%,
+    transparent 92%
+  );
 }
 
-.nds-surface-noise {
+.felt-noise {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+/* Stitched border — the padded rail of a real table */
+.felt-stitch {
+  position: absolute;
+  top: 8%;
+  right: 3%;
+  width: 58%;
+  height: 84%;
+  border-radius: 50% / 45%;
+  border: 2px dashed rgba(244, 241, 234, 0.1);
+  pointer-events: none;
+  /* Subtle inner shadow for depth */
+  box-shadow:
+    inset 0 0 60px rgba(0, 0, 0, 0.15),
+    0 0 40px rgba(26, 58, 46, 0.1);
 }
 
 /* ==========================================
@@ -427,10 +451,6 @@ Cards on forest-green surface, NDS card backs, editorial fronts.
   .cards-area {
     left: 56%;
   }
-
-  .nds-card-surface {
-    left: 40%;
-  }
 }
 
 @media (max-width: 1440px) {
@@ -484,10 +504,20 @@ Cards on forest-green surface, NDS card backs, editorial fronts.
     min-height: auto;
   }
 
-  .nds-card-surface {
-    width: min(400px, 80vw);
-    height: min(400px, 80vw);
-    left: 40%;
+  .felt-table-bg {
+    background: radial-gradient(
+      ellipse 100% 90% at 75% 55%,
+      var(--forest-green) 0%,
+      var(--forest-green) 20%,
+      rgba(26, 58, 46, 0.5) 45%,
+      rgba(26, 58, 46, 0.15) 65%,
+      transparent 85%
+    );
+  }
+
+  .felt-stitch {
+    width: 70%;
+    right: 5%;
   }
 
   .cards-area {
@@ -534,11 +564,6 @@ Cards on forest-green surface, NDS card backs, editorial fronts.
   .card-container {
     width: 100px;
     height: 140px;
-  }
-
-  .nds-card-surface {
-    width: min(320px, 85vw);
-    height: min(320px, 85vw);
   }
 
   .close-btn {

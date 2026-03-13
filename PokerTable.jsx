@@ -163,23 +163,24 @@ function PokerTable() {
           </div>
         </motion.div>
 
+        {/* Felt table background — fades from bottom-right into parchment */}
+        <div className="felt-table-bg" aria-hidden="true">
+          <svg className="felt-noise" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <filter id="feltGrain">
+              <feTurbulence baseFrequency="1.2" numOctaves="4" seed="3" />
+              <feColorMatrix type="saturate" values="0" />
+            </filter>
+            <rect width="100%" height="100%" filter="url(#feltGrain)" opacity="0.07" />
+          </svg>
+          <div className="felt-stitch" />
+        </div>
+
         {/* Right Column — Card Surface */}
         <div className="poker-table-column">
           <motion.div
             className="poker-table-container"
             style={{ x: tableX }}
           >
-            {/* NDS Surface — forest green circle with noise */}
-            <div className="nds-card-surface">
-              <svg className="nds-surface-noise" width="100%" height="100%">
-                <filter id="surfaceNoise">
-                  <feTurbulence baseFrequency="0.9" numOctaves="4" seed="2" />
-                  <feColorMatrix type="saturate" values="0" />
-                </filter>
-                <rect width="100%" height="100%" filter="url(#surfaceNoise)" opacity="0.06" />
-              </svg>
-            </div>
-
             {/* Cards */}
             <div className="cards-area">
               {projects.map((project, i) => (
