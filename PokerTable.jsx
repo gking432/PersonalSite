@@ -188,18 +188,49 @@ function PokerTable() {
                       transition: { duration: 0.2, ease: ndsEase }
                     }}
                   >
-                    {/* NDS Card Back — CSS generated */}
-                    <div className="nds-card-back">
-                      <svg className="nds-card-noise" width="100%" height="100%">
-                        <filter id={`cardNoise${i}`}>
-                          <feTurbulence baseFrequency="0.8" numOctaves="4" seed={i + 5} />
-                          <feColorMatrix type="saturate" values="0" />
-                        </filter>
-                        <rect width="100%" height="100%" filter={`url(#cardNoise${i})`} opacity="0.08" />
-                      </svg>
-                      <div className="nds-card-back-border">
-                        <div className="nds-card-back-inner">
-                          <span className="nds-card-monogram">GN</span>
+                    {/* Playing Card Back */}
+                    <div className="card-back">
+                      <div className="card-back-edge">
+                        <div className="card-back-frame">
+                          <svg className="card-back-pattern" viewBox="0 0 200 300" preserveAspectRatio="xMidYMid slice">
+                            <defs>
+                              <pattern id={`diamonds${i}`} x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                                <rect width="20" height="20" fill="none" />
+                                <rect x="8" y="8" width="4" height="4" rx="0.5" fill="rgba(244,241,234,0.08)" transform="rotate(45 10 10)" />
+                                <circle cx="0" cy="0" r="1" fill="rgba(244,241,234,0.05)" />
+                                <circle cx="20" cy="0" r="1" fill="rgba(244,241,234,0.05)" />
+                                <circle cx="0" cy="20" r="1" fill="rgba(244,241,234,0.05)" />
+                                <circle cx="20" cy="20" r="1" fill="rgba(244,241,234,0.05)" />
+                              </pattern>
+                              <pattern id={`filigree${i}`} x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                                <rect width="40" height="40" fill="none" />
+                                <path d="M20 0 Q25 10 20 20 Q15 10 20 0Z" fill="rgba(244,241,234,0.04)" />
+                                <path d="M0 20 Q10 25 20 20 Q10 15 0 20Z" fill="rgba(244,241,234,0.04)" />
+                                <path d="M20 20 Q25 30 20 40 Q15 30 20 20Z" fill="rgba(244,241,234,0.04)" />
+                                <path d="M20 20 Q30 25 40 20 Q30 15 20 20Z" fill="rgba(244,241,234,0.04)" />
+                              </pattern>
+                            </defs>
+                            <rect width="200" height="300" fill={`url(#diamonds${i})`} />
+                            <rect width="200" height="300" fill={`url(#filigree${i})`} />
+                          </svg>
+                          <div className="card-back-medallion">
+                            <div className="card-back-medallion-ring">
+                              <span className="card-back-monogram">G</span>
+                            </div>
+                          </div>
+                          {/* Corner pips */}
+                          <svg className="card-back-pip card-back-pip-tl" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 1L10 6H15L11 9.5L12.5 15L8 11.5L3.5 15L5 9.5L1 6H6L8 1Z" fill="rgba(244,241,234,0.1)" />
+                          </svg>
+                          <svg className="card-back-pip card-back-pip-tr" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 1L10 6H15L11 9.5L12.5 15L8 11.5L3.5 15L5 9.5L1 6H6L8 1Z" fill="rgba(244,241,234,0.1)" />
+                          </svg>
+                          <svg className="card-back-pip card-back-pip-bl" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 1L10 6H15L11 9.5L12.5 15L8 11.5L3.5 15L5 9.5L1 6H6L8 1Z" fill="rgba(244,241,234,0.1)" />
+                          </svg>
+                          <svg className="card-back-pip card-back-pip-br" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 1L10 6H15L11 9.5L12.5 15L8 11.5L3.5 15L5 9.5L1 6H6L8 1Z" fill="rgba(244,241,234,0.1)" />
+                          </svg>
                         </div>
                       </div>
                     </div>
@@ -259,17 +290,47 @@ function PokerTable() {
               >
                 {/* BACK FACE */}
                 <div className="inspected-face inspected-face-back">
-                  <div className="nds-card-back inspected-back">
-                    <svg className="nds-card-noise" width="100%" height="100%">
-                      <filter id="inspectNoise">
-                        <feTurbulence baseFrequency="0.8" numOctaves="4" seed="10" />
-                        <feColorMatrix type="saturate" values="0" />
-                      </filter>
-                      <rect width="100%" height="100%" filter="url(#inspectNoise)" opacity="0.08" />
-                    </svg>
-                    <div className="nds-card-back-border">
-                      <div className="nds-card-back-inner">
-                        <span className="nds-card-monogram">GN</span>
+                  <div className="card-back">
+                    <div className="card-back-edge">
+                      <div className="card-back-frame">
+                        <svg className="card-back-pattern" viewBox="0 0 200 300" preserveAspectRatio="xMidYMid slice">
+                          <defs>
+                            <pattern id="diamondsInspect" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                              <rect width="20" height="20" fill="none" />
+                              <rect x="8" y="8" width="4" height="4" rx="0.5" fill="rgba(244,241,234,0.08)" transform="rotate(45 10 10)" />
+                              <circle cx="0" cy="0" r="1" fill="rgba(244,241,234,0.05)" />
+                              <circle cx="20" cy="0" r="1" fill="rgba(244,241,234,0.05)" />
+                              <circle cx="0" cy="20" r="1" fill="rgba(244,241,234,0.05)" />
+                              <circle cx="20" cy="20" r="1" fill="rgba(244,241,234,0.05)" />
+                            </pattern>
+                            <pattern id="filigreeInspect" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                              <rect width="40" height="40" fill="none" />
+                              <path d="M20 0 Q25 10 20 20 Q15 10 20 0Z" fill="rgba(244,241,234,0.04)" />
+                              <path d="M0 20 Q10 25 20 20 Q10 15 0 20Z" fill="rgba(244,241,234,0.04)" />
+                              <path d="M20 20 Q25 30 20 40 Q15 30 20 20Z" fill="rgba(244,241,234,0.04)" />
+                              <path d="M20 20 Q30 25 40 20 Q30 15 20 20Z" fill="rgba(244,241,234,0.04)" />
+                            </pattern>
+                          </defs>
+                          <rect width="200" height="300" fill="url(#diamondsInspect)" />
+                          <rect width="200" height="300" fill="url(#filigreeInspect)" />
+                        </svg>
+                        <div className="card-back-medallion">
+                          <div className="card-back-medallion-ring">
+                            <span className="card-back-monogram">G</span>
+                          </div>
+                        </div>
+                        <svg className="card-back-pip card-back-pip-tl" viewBox="0 0 16 16" fill="none">
+                          <path d="M8 1L10 6H15L11 9.5L12.5 15L8 11.5L3.5 15L5 9.5L1 6H6L8 1Z" fill="rgba(244,241,234,0.1)" />
+                        </svg>
+                        <svg className="card-back-pip card-back-pip-tr" viewBox="0 0 16 16" fill="none">
+                          <path d="M8 1L10 6H15L11 9.5L12.5 15L8 11.5L3.5 15L5 9.5L1 6H6L8 1Z" fill="rgba(244,241,234,0.1)" />
+                        </svg>
+                        <svg className="card-back-pip card-back-pip-bl" viewBox="0 0 16 16" fill="none">
+                          <path d="M8 1L10 6H15L11 9.5L12.5 15L8 11.5L3.5 15L5 9.5L1 6H6L8 1Z" fill="rgba(244,241,234,0.1)" />
+                        </svg>
+                        <svg className="card-back-pip card-back-pip-br" viewBox="0 0 16 16" fill="none">
+                          <path d="M8 1L10 6H15L11 9.5L12.5 15L8 11.5L3.5 15L5 9.5L1 6H6L8 1Z" fill="rgba(244,241,234,0.1)" />
+                        </svg>
                       </div>
                     </div>
                   </div>

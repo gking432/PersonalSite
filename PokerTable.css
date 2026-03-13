@@ -147,9 +147,11 @@ Cards on forest-green surface, NDS card backs, editorial fronts.
 }
 
 /* ==========================================
-   NDS CARD BACK — Forest green, noise, monogram
+   PLAYING CARD BACK
+   Classic card back: maroon, ornate borders,
+   diamond lattice, central medallion, corner pips.
    ========================================== */
-.nds-card-back {
+.card-back {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -158,44 +160,85 @@ Cards on forest-green surface, NDS card backs, editorial fronts.
   border-radius: 12px;
   overflow: hidden;
   box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.25),
-    0 4px 16px rgba(0, 0, 0, 0.15);
+    0 20px 60px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
-.nds-card-noise {
+/* White edge — like a real card */
+.card-back-edge {
+  position: absolute;
+  inset: 4px;
+  border: 2px solid rgba(244, 241, 234, 0.2);
+  border-radius: 8px;
+}
+
+/* Inner ornate frame */
+.card-back-frame {
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(244, 241, 234, 0.12);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+/* Diamond lattice + filigree pattern */
+.card-back-pattern {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Center medallion */
+.card-back-medallion {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid rgba(244, 241, 234, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(92, 26, 42, 0.9);
+  box-shadow:
+    0 0 0 6px rgba(244, 241, 234, 0.04),
+    0 0 0 8px rgba(244, 241, 234, 0.08);
+}
+
+.card-back-medallion-ring {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(244, 241, 234, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-back-monogram {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: rgba(244, 241, 234, 0.2);
+  user-select: none;
+  line-height: 1;
+}
+
+/* Corner pips — small stars in each corner */
+.card-back-pip {
+  position: absolute;
+  width: 12px;
+  height: 12px;
   pointer-events: none;
 }
 
-.nds-card-back-border {
-  position: absolute;
-  inset: 10px;
-  border: 1px solid rgba(244, 241, 234, 0.15);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.nds-card-back-inner {
-  position: absolute;
-  inset: 6px;
-  border: 1px solid rgba(244, 241, 234, 0.08);
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.nds-card-monogram {
-  font-family: var(--font-serif);
-  font-size: 2.5rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: rgba(244, 241, 234, 0.12);
-  user-select: none;
-}
+.card-back-pip-tl { top: 6px; left: 6px; }
+.card-back-pip-tr { top: 6px; right: 6px; }
+.card-back-pip-bl { bottom: 6px; left: 6px; }
+.card-back-pip-br { bottom: 6px; right: 6px; }
 
 /* ==========================================
    INSPECTION — 3D CARD FLIP
@@ -238,7 +281,7 @@ Cards on forest-green surface, NDS card backs, editorial fronts.
 }
 
 /* Back face */
-.inspected-face-back .nds-card-back {
+.inspected-face-back .card-back {
   border-radius: 12px;
 }
 
@@ -464,8 +507,23 @@ Cards on forest-green surface, NDS card backs, editorial fronts.
     height: 170px;
   }
 
-  .nds-card-monogram {
-    font-size: 1.25rem;
+  .card-back-medallion {
+    width: 36px;
+    height: 36px;
+  }
+
+  .card-back-medallion-ring {
+    width: 26px;
+    height: 26px;
+  }
+
+  .card-back-monogram {
+    font-size: 0.9rem;
+  }
+
+  .card-back-pip {
+    width: 8px;
+    height: 8px;
   }
 
   .inspected-card {
