@@ -333,6 +333,127 @@ const staggerContainer = {
   visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
 }
 
+/* ─── Tabbed Gallery for Merchandising ─── */
+function MerchandisingTabs({ mod }) {
+  const [activeTab, setActiveTab] = useState('pets')
+  const scrollRef = useRef(null)
+
+  const tabs = [
+    { id: 'pets', label: 'For Pets' },
+    { id: 'people', label: 'For People' },
+    ...(mod.designFilesFolder ? [{ id: 'designs', label: 'Design Files' }] : [])
+  ]
+
+  // Reset scroll when tab changes
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId)
+    if (scrollRef.current) scrollRef.current.scrollTop = 0
+  }
+
+  return (
+    <div className="merch-tabs">
+      <div className="merch-tabs-header">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            className={`merch-tab ${activeTab === tab.id ? 'active' : ''}`}
+            onClick={() => handleTabChange(tab.id)}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="merch-tabs-viewport" ref={scrollRef}>
+        <AnimatePresence mode="wait">
+          {activeTab === 'pets' && (
+            <motion.div
+              key="pets"
+              className="merch-tabs-panel"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: ndsEase }}
+            >
+              <div className="client-module-teams-grid">
+                {petunisTeams.map((filename) => (
+                  <img
+                    key={filename}
+                    src={`/pdfs/${mod.teamsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
+                    alt=""
+                    loading="lazy"
+                  />
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'people' && (
+            <motion.div
+              key="people"
+              className="merch-tabs-panel"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: ndsEase }}
+            >
+              <div className="client-module-teams-grid">
+                {petunisForPeople.map((filename) => (
+                  <img
+                    key={filename}
+                    src={`/pdfs/${mod.teamsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
+                    alt=""
+                    loading="lazy"
+                  />
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'designs' && mod.designFilesFolder && (
+            <motion.div
+              key="designs"
+              className="merch-tabs-panel"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: ndsEase }}
+            >
+              {(() => {
+                const byTeam = petunisDesignFiles.reduce((acc, path) => {
+                  const team = path.split('/')[0]
+                  if (!acc[team]) acc[team] = []
+                  acc[team].push(path)
+                  return acc
+                }, {})
+                const teamDisplayName = (name) => name === 'Ravens' ? 'Bengals' : name
+                return Object.entries(byTeam)
+                  .sort((a, b) => a[0].localeCompare(b[0]))
+                  .map(([team, files]) => (
+                    <div key={team} className="client-module-design-team">
+                      <span className="client-module-design-team-label">{teamDisplayName(team)}</span>
+                      <div className="client-module-design-grid">
+                        {files.map((filename) => (
+                          <div key={filename} className="client-module-design-item">
+                            <img
+                              src={`/pdfs/${mod.designFilesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
+                              alt=""
+                              loading="lazy"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))
+              })()}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  )
+}
+
 /* ─── Inline Project Section ─── */
 function ProjectSection({ project, index, isExpanded, onToggle }) {
   const isAlt = index % 2 !== 0
@@ -586,71 +707,9 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
                               </div>
                             )}
 
-                            {/* Teams images — For Pets */}
+                            {/* Tabbed gallery — For Pets / For People / Design Files */}
                             {mod.teamsImagesFolder && (
-                              <>
-                                <div className="client-module-gallery-section">
-                                  <span className="client-module-gallery-label">For Pets — All 32 Teams</span>
-                                  <div className="client-module-teams-grid">
-                                    {petunisTeams.map((filename) => (
-                                      <img
-                                        key={filename}
-                                        src={`/pdfs/${mod.teamsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
-                                        alt=""
-                                        loading="lazy"
-                                      />
-                                    ))}
-                                  </div>
-                                </div>
-
-                                <div className="client-module-gallery-section">
-                                  <span className="client-module-gallery-label">For People</span>
-                                  <div className="client-module-teams-grid">
-                                    {petunisForPeople.map((filename) => (
-                                      <img
-                                        key={filename}
-                                        src={`/pdfs/${mod.teamsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
-                                        alt=""
-                                        loading="lazy"
-                                      />
-                                    ))}
-                                  </div>
-                                </div>
-                              </>
-                            )}
-
-                            {/* Design files */}
-                            {mod.designFilesFolder && (
-                              <div className="client-module-gallery-section">
-                                <span className="client-module-gallery-label">Design Files</span>
-                                {(() => {
-                                  const byTeam = petunisDesignFiles.reduce((acc, path) => {
-                                    const team = path.split('/')[0]
-                                    if (!acc[team]) acc[team] = []
-                                    acc[team].push(path)
-                                    return acc
-                                  }, {})
-                                  const teamDisplayName = (name) => name === 'Ravens' ? 'Bengals' : name
-                                  return Object.entries(byTeam)
-                                    .sort((a, b) => a[0].localeCompare(b[0]))
-                                    .map(([team, files]) => (
-                                      <div key={team} className="client-module-design-team">
-                                        <span className="client-module-design-team-label">{teamDisplayName(team)}</span>
-                                        <div className="client-module-design-grid">
-                                          {files.map((filename) => (
-                                            <div key={filename} className="client-module-design-item">
-                                              <img
-                                                src={`/pdfs/${mod.designFilesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
-                                                alt=""
-                                                loading="lazy"
-                                              />
-                                            </div>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    ))
-                                })()}
-                              </div>
+                              <MerchandisingTabs mod={mod} />
                             )}
                           </div>
                         </motion.div>

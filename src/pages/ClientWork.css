@@ -506,23 +506,56 @@ No modals. Progressive disclosure on-page.
 }
 
 /* ==========================================
-   TEAMS / FOR PEOPLE — Full-width stacked
+   MERCHANDISING TABS — Tabbed gallery
    ========================================== */
-.client-module-gallery-section {
-  margin-bottom: var(--space-lg);
+.merch-tabs {
+  border: 1px solid var(--gray-200);
 }
 
-.client-module-gallery-label {
+.merch-tabs-header {
+  display: flex;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.merch-tab {
+  flex: 1;
+  padding: 14px 20px;
   font-family: var(--font-sans);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--warm-gray);
-  display: block;
-  margin-bottom: var(--space-md);
-  padding-bottom: var(--space-sm);
-  border-bottom: 1px solid var(--gray-200);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: -1px;
+}
+
+.merch-tab:not(:last-child) {
+  border-right: 1px solid var(--gray-200);
+}
+
+.merch-tab:hover {
+  color: var(--charcoal);
+}
+
+.merch-tab.active {
+  color: var(--forest-green);
+  border-bottom-color: var(--forest-green);
+  background: rgba(26, 58, 46, 0.03);
+}
+
+.merch-tabs-viewport {
+  max-height: 70vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.merch-tabs-panel {
+  padding: 1rem;
 }
 
 .client-module-teams-grid img {
