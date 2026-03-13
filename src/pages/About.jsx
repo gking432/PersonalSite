@@ -213,8 +213,8 @@ function About() {
               I started my career at Sub-Zero Group, Inc., where I rotated through sales operations, product marketing, and dealer sales — learning how
               premium brands are built and maintained at scale. After that, I did what a lot of marketers talk about but few actually do: I went out on
               my own. I started a marketing consultancy, working with early-stage companies on branding, digital strategy, and customer acquisition. I sat
-              across the table from founders with ideas and figured out how to make those ideas real. That's when I discovered what I actually cared about.
-              Not the title, not being my own boss — but <em>building</em>.
+              across the table from founders with ideas and figured out how to make those ideas real. That's when I discovered what I actually cared about:
+              not the title, not being my own boss — but <em>taking things from zero to one</em>.
             </motion.p>
 
             {showFullStory && (
@@ -226,22 +226,24 @@ function About() {
                 </p>
                 <p>
                   As the marketing landscape evolved, I realized I wanted to get closer to the product side of the work. I didn't just want to market things — I wanted
-                  to build them. So I started building. A cryptocurrency token launchpad with full go-to-market strategy. An AI-powered interview prep platform. A
-                  cartography print studio. Each one a complete product: brand identity, positioning, development, and acquisition strategy, all done by me.
+                  to own them end-to-end. So I started doing exactly that. A cryptocurrency token launchpad with full go-to-market strategy. An AI-powered interview
+                  prep platform. A cartography print studio. Each one I managed like a product manager would: market research, roadmap, build, launch, and iteration —
+                  except I was also the one writing the code, designing the brand, and running the campaigns. Both for clients and on my own dime.
                 </p>
                 <p>
-                  That range is the point. I'm a marketing leader who can go from whiteboard to working product. I can build the landing page, write the copy,
+                  That range is the point. I'm a marketing executive who thinks like a product manager. I can build the landing page, write the copy,
                   design the brand, set up the analytics, and launch the campaign — not because I <em>have</em> to, but because understanding every layer makes me
-                  better at leading the ones I delegate. I've spent years learning modern tools, including AI, not as a novelty but because they fundamentally
-                  change how fast a small team can move. I treat them the way a good carpenter treats power tools: they don't replace the craft, they accelerate it.
+                  better at leading the ones I delegate. AI has been central to how I work. I write about it, I lecture on it, and I have strong opinions on where
+                  it's headed. I don't treat it as a buzzword — I use it daily as a force multiplier that fundamentally changes how fast a small team can move.
                 </p>
                 <p>
                   The through-line of my career has always been the same: take something from zero to one. Whether that's a client's first website, a product idea
-                  that didn't exist yesterday, or a brand that needs to find its audience — I'm at my best when I'm building from scratch and figuring it out as I go.
+                  that didn't exist yesterday, or a brand that needs to find its audience — I'm at my best when I'm identifying a problem, building the solution,
+                  and shipping it.
                 </p>
                 <p>
-                  Now I'm looking for the right team. A company that's serious about growth and wants a marketing leader who doesn't just think strategically but
-                  executes on it — someone who understands how ideas become products, how products find customers, and how to build momentum without burning budget on
+                  Now I'm looking for the right team. A company that's serious about growth and wants a leader who sits at the intersection of marketing, product,
+                  and AI — someone who understands how ideas become products, how products find customers, and how to build momentum without burning budget on
                   guesswork. I've done the solo chapter. I'm ready to bring everything I've learned to a team that's building something worth building.
                 </p>
                 <p>
@@ -277,7 +279,7 @@ function About() {
               </div>
               <div className="hero-meta-item">
                 <span className="hero-meta-label">Focus</span>
-                <span className="hero-meta-value">Marketing + Technology</span>
+                <span className="hero-meta-value">Marketing · Product · AI</span>
               </div>
               <div className="hero-meta-item">
                 <span className="hero-meta-label">Status</span>
@@ -326,11 +328,11 @@ function About() {
               style={{ y: statementY }}
             >
               <p className="statement-subtitle">Philosophy</p>
-              <StatementGiantText scrollYProgress={statementTextScroll} lineBreakAfter={1}>
-                Build. Measure. Iterate.
+              <StatementGiantText scrollYProgress={statementTextScroll} lineBreakAfter={2}>
+                Zero to one. That's the job.
               </StatementGiantText>
               <p className="statement-paragraph">
-                Strategy meets execution. No handoffs. No guessing. Just the work of making ideas real.
+                Marketing strategy, product ownership, and AI — not as separate disciplines, but as one integrated approach to building things that matter.
               </p>
             </motion.div>
           </div>

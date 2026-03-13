@@ -316,7 +316,7 @@ function Home() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, ease: ndsEase }}
             >
-              Marketing Leader &middot; Builder &middot; Operator
+              Marketing Executive &middot; Product Manager &middot; AI Strategist
             </motion.p>
 
             <motion.div
@@ -332,8 +332,8 @@ function Home() {
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ duration: 1, delay: 0.8, ease: ndsEase }}
             >
-              I don't pitch ideas — I deliver them. From corporate marketing to running my own
-              consultancy to building products from scratch. Midwest work ethic. Real results.
+              From corporate marketing to founding my own consultancy to taking products from
+              zero to one — I combine marketing leadership, product management, and AI to build what others just talk about.
             </motion.p>
 
             <motion.div
@@ -460,7 +460,7 @@ function Home() {
         }}
         label="Philosophy"
         giantText="Curiosity plus execution equals capability"
-        paragraph="I don't wait for permission to learn something new. When I wanted to understand crypto, I built a token launchpad. When I needed an interview prep tool, I built one. Every project in my portfolio started the same way: I saw a problem, and I built the solution."
+        paragraph="I don't wait for permission to learn something new. When I wanted to understand crypto, I built a token launchpad. When I needed an interview prep tool, I built one with AI. Every project started the same way: I identified a problem, managed it from concept to launch, and shipped a real product."
       />
 
       <PokerTable slideFrom="right" />
@@ -497,15 +497,15 @@ function Home() {
               {
                 year: '2023–2025',
                 title: 'Independent Work',
-                role: 'Marketing Consultant & Product Builder',
-                desc: 'Ran a marketing consultancy serving early-stage companies. Managed branding, digital strategy, and acquisition campaigns. Built multiple products end-to-end — brand, strategy, development, and go-to-market — all independently.',
+                role: 'Marketing Consultant & Product Manager',
+                desc: 'Ran a marketing consultancy serving early-stage companies while independently taking multiple products from zero to one. Owned the full lifecycle — market research, roadmap, branding, development, and go-to-market — leveraging AI to move at startup speed.',
                 side: 'right'
               },
               {
                 year: '2026',
                 title: 'Next Chapter',
-                role: 'Marketing Leadership',
-                desc: 'Targeting Director or CMO roles with ambitious companies where I can combine strategic thinking with hands-on execution. Ready to build something that matters.',
+                role: 'Marketing & Product Leadership',
+                desc: 'Seeking leadership roles where marketing strategy, product thinking, and AI fluency converge. Ready to bring zero-to-one experience to a team building something that matters.',
                 side: 'left'
               }
             ].map((item, i) => (
@@ -548,8 +548,8 @@ function Home() {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.3, ease: ndsEase }}
             >
-              I'm looking for a marketing leadership role at a company that values
-              craft, speed, and substance. If that's you — let's talk.
+              I'm looking for a leadership role at a company that values marketing strategy,
+              product thinking, and the leverage that AI brings. If that's you — let's talk.
             </motion.p>
 
             <motion.div
