@@ -34,10 +34,42 @@ const toolkitRow2 = [
 const processSteps = [
   { number: '01', title: 'Understand', desc: 'Sit across the table. Learn the business, the audience, the constraints. Strategy without context is just guessing.' },
   { number: '02', title: 'Build', desc: 'Design it, code it, launch it. No handoffs to wonder about — I go from concept to working product.' },
-  { number: '03', title: 'Ship', desc: 'Get it live, measure what happens, iterate fast. The work isn\'t done until it\'s performing.' },
+  { number: '03', title: 'Deliver', desc: 'Get it live, measure what happens, iterate fast. The work isn\'t done until it\'s performing.' },
 ]
 
-const STEP_HEIGHT = 120 // px per stacked step
+const STEP_HEIGHT = 200 // px per stacked step
+
+// Word-by-word color reveal on scroll (same as Home photo sections)
+function StatementGiantText({ children, scrollYProgress, lineBreakAfter }) {
+  const words = typeof children === 'string' ? children.split(' ') : [children]
+  const totalWords = words.length
+
+  const wordColors = words.map((_, index) => {
+    const wordStart = (index / totalWords) * 0.45
+    const wordEnd = 0.05 + (index / totalWords) * 0.45
+    return useTransform(
+      scrollYProgress,
+      [wordStart, wordEnd],
+      ['rgba(244, 241, 234, 0.3)', 'rgba(244, 241, 234, 1)']
+    )
+  })
+
+  return (
+    <p className="statement-text">
+      {words.map((word, index) => (
+        <span key={index}>
+          <motion.span
+            style={{ color: wordColors[index] }}
+            className="statement-text-word"
+          >
+            {word}
+          </motion.span>
+          {index < words.length - 1 && (index === lineBreakAfter ? <br /> : ' ')}
+        </span>
+      ))}
+    </p>
+  )
+}
 
 function ProcessStep({ step, scrollYProgress, index, total }) {
   const segment = 1 / total
@@ -99,6 +131,10 @@ function About() {
     target: statementRef,
     offset: ["start end", "end start"]
   })
+  const { scrollYProgress: statementTextScroll } = useScroll({
+    target: statementRef,
+    offset: ["start start", "end start"]
+  })
   const statementY = useTransform(statementScroll, [0, 1], [60, -60])
 
   return (
@@ -137,7 +173,7 @@ function About() {
             >
               After beginning my career with Sub-Zero Group, Inc. I decided to take a chance on myself and began doing freelance marketing work.
               This bloomed into a small but legitimate agency. I instantly realized I loved the work of building brands, launching campaigns,
-              designing websites, and sitting across the table from someone with an idea, trying to figure out how to make it real. Building was the thing.
+              designing websites, and sitting across the table from someone with an idea, trying to figure out how to make it real. Building was <em>the</em> thing.
               Not the deliverables, not being my own boss, but the process I had created. It was the brainstorming sessions, the strategy pivots, and the
               moment a client saw their vision take shape.
             </motion.p>
@@ -158,11 +194,10 @@ function About() {
                   profitable, which was my initial thought as well.
                 </p>
                 <p>
-                  However, it became increasingly clear that as costs lessened, so did my value; and what started as a marketing agency, almost overnight,
-                  became a sales agency for tools built upon artificial intelligence. The worst part? These tools were absolutely faster, cheaper, and better
-                  than what I was offering. Suddenly, instead of building, I was pitching cheap software, paying for services to sell to others, and racing
-                  competitor agencies to the lowest price. The race to $0 is real, and it happened very, very quickly. As the margin on my core offerings
-                  shrank by more than 80%, I had to take a step back to realize I was no longer growing; in fact, I was shrinking.
+                However, it soon became clear that as costs lessened, so did my value; and what started as a marketing agency quickly became a sales agency for AI marketing tools. These tools were faster, cheaper, and better than what I was offering, which only made matters worse.
+                </p>
+                <p>
+                Instead of building, I was pitching cheap software, paying for services to sell to others, and racing competitor agencies to the lowest price. The "race to $0" is real, and it happened very, very quickly. As the margin on my core offerings shrank by more than 80%, I had to take a step back to realize my business was no longer growing. In fact, it was rapidly shrinking.
                 </p>
                 <p>
                   So I had to ask an honest question: What do I actually want to do?
@@ -207,7 +242,7 @@ function About() {
               transition={{ duration: 0.6, delay: 0.8, ease: ndsEase }}
               onClick={() => setShowFullStory(prev => !prev)}
             >
-              {showFullStory ? 'Read less' : 'Read more'}
+              {showFullStory ? 'Show less' : 'Read more'}
             </motion.button>
             </div>
             <motion.div
@@ -241,41 +276,67 @@ function About() {
       <section className="how-i-work-scroll" ref={processRef}>
         <div className="process-sticky">
           <div className="container">
-            <p className="label">Process</p>
-            <h2 className="section-heading">How I Work</h2>
-          </div>
-          <div className="process-cylinder">
-            {processSteps.map((step, i) => (
-              <ProcessStep
-                key={i}
-                step={step}
-                scrollYProgress={processScroll}
-                index={i}
-                total={processSteps.length}
-              />
-            ))}
+            <motion.p
+              className="label"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-30%" }}
+              transition={{ duration: 0.5, ease: ndsEase }}
+            >
+              Process
+            </motion.p>
+            <motion.h2
+              className="section-heading"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-30%" }}
+              transition={{ duration: 0.6, delay: 0.1, ease: ndsEase }}
+            >
+              How I Work
+            </motion.h2>
+            <div className="process-cylinder">
+              {processSteps.map((step, i) => (
+                <ProcessStep
+                  key={i}
+                  step={step}
+                  scrollYProgress={processScroll}
+                  index={i}
+                  total={processSteps.length}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* ═══════ STATEMENT MOMENT ═══════ */}
-      <div ref={statementRef}>
-        <SqueezeSection className="statement-section section">
-          <motion.div
-            className="statement-inner"
-            style={{ y: statementY }}
-          >
-            <motion.p
-              className="statement-text"
-              initial={{ opacity: 0, y: 60 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, ease: ndsEase }}
+      <div ref={statementRef} className="statement-scroll-runway">
+        <div className="statement-sticky-wrapper">
+          <SqueezeSection className="statement-section section">
+          <video
+            className="statement-section-video"
+            autoPlay
+            loop
+            muted
+            playsInline
+            src="/Photo Sections/Brown.mp4"
+          />
+          <div className="container">
+            <motion.div
+              className="statement-inner"
+              style={{ y: statementY }}
             >
-              I don't pitch ideas.<br />I ship them.
-            </motion.p>
-          </motion.div>
+              <p className="statement-subtitle">Philosophy</p>
+              <StatementGiantText scrollYProgress={statementTextScroll} lineBreakAfter={1}>
+                Build. Measure. Iterate.
+              </StatementGiantText>
+              <p className="statement-paragraph">
+                Strategy meets execution. No handoffs. No guessing. Just the work of making ideas real.
+              </p>
+            </motion.div>
+          </div>
         </SqueezeSection>
+        </div>
       </div>
 
       {/* ═══════ TOOLKIT MARQUEE ═══════ */}

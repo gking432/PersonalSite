@@ -94,8 +94,8 @@ Reads like a biography in a private club's member directory
 
 .process-sticky {
   position: sticky;
-  top: 0;
-  height: 100vh;
+  top: 101px; /* match header height so label isn't hidden under navbar */
+  height: calc(100vh - 101px);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -126,7 +126,7 @@ Reads like a biography in a private club's member directory
   position: relative;
   width: 100%;
   max-width: 700px;
-  height: 400px; /* Enough for 3 stacked steps */
+  height: 650px; /* Enough for 3 stacked steps at 200px spacing */
   perspective: 1000px;
 }
 
@@ -172,20 +172,73 @@ Reads like a biography in a private club's member directory
 }
 
 /* ═══════ STATEMENT MOMENT ═══════ */
-.statement-section {
-  padding: 0;
-  overflow: hidden;
-  background-color: var(--forest-green);
-  min-height: 70vh;
+.statement-scroll-runway {
+  height: 200vh;
+  position: relative;
+}
+
+.statement-sticky-wrapper {
+  position: sticky;
+  top: var(--header-height);
+  height: calc(100vh - var(--header-height));
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.statement-sticky-wrapper .squeeze-wrapper {
+  width: 100%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.statement-section {
+  padding: 0;
+  overflow: hidden;
+  background-color: var(--forest-green);
+  width: 100%;
+  height: 85vh;
+  max-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+}
+
+.statement-section-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.statement-section .container {
+  position: relative;
+  z-index: 1;
+}
+
 .statement-inner {
   width: 100%;
-  text-align: center;
-  padding: var(--space-2xl) var(--space-lg);
+  text-align: left;
+  padding: var(--space-2xl) 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4px, 1vh, 12px);
+}
+
+.statement-subtitle {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 234, 0.7);
+  margin: 0;
 }
 
 .statement-text {
@@ -196,6 +249,14 @@ Reads like a biography in a private club's member directory
   letter-spacing: -0.04em;
   color: var(--parchment);
   margin: 0;
+}
+
+.statement-paragraph {
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: rgba(244, 241, 234, 0.9);
+  margin: 0;
+  max-width: 560px;
 }
 
 /* ═══════ TOOLKIT MARQUEE ═══════ */
@@ -335,6 +396,8 @@ Reads like a biography in a private club's member directory
   }
 
   .process-sticky {
+    top: 80px; /* smaller header height on mobile */
+    height: calc(100vh - 80px);
     padding: 0 var(--space-md);
   }
 

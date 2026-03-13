@@ -149,7 +149,7 @@ function Writing() {
               <p>Thoughts on customer acquisition, branding, and campaign execution</p>
             </motion.div>
             <motion.div className="category-card" variants={staggerItem}>
-              <h3>Building & Shipping</h3>
+              <h3>Building & Delivering</h3>
               <p>Lessons learned from building products and turning ideas into reality</p>
             </motion.div>
             <motion.div className="category-card" variants={staggerItem}>
