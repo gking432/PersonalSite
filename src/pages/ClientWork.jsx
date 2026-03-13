@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react'
-import { createPortal } from 'react-dom'
+import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
 import SqueezeSection from '../components/SqueezeSection'
@@ -334,196 +333,92 @@ const staggerContainer = {
   visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
 }
 
-const staggerItem = {
-  hidden: { opacity: 0, y: 25 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: ndsEase } }
-}
+/* ─── Tabbed Gallery for Merchandising ─── */
+function MerchandisingTabs({ mod }) {
+  const [activeTab, setActiveTab] = useState('pets')
+  const scrollRef = useRef(null)
 
-// Preload images function
-function preloadImages(imageUrls) {
-  imageUrls.forEach((url) => {
-    const img = new Image()
-    img.src = url
-  })
-}
+  const tabs = [
+    { id: 'pets', label: 'For Pets' },
+    { id: 'people', label: 'For People' },
+    ...(mod.designFilesFolder ? [{ id: 'designs', label: 'Design Files' }] : [])
+  ]
 
-// Get image URLs for a specific module
-function getModuleImageUrls(module, project) {
-  const imageUrls = []
-
-  // Ads images
-  if (module.adsImagesFolder) {
-    const ads = project?.id === 'weatherfixers' ? weatherfixersAds : petunisAds
-    ads.forEach((filename) => {
-      const base = module.adsBasePath === '' ? '' : (module.adsBasePath || 'pdfs')
-      const encoded = filename.split('/').map(encodeURIComponent).join('/')
-      const src = base ? `/${base}/${module.adsImagesFolder}/${encoded}` : `/${module.adsImagesFolder}/${encoded}`
-      imageUrls.push(src)
-    })
+  // Reset scroll when tab changes
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId)
+    if (scrollRef.current) scrollRef.current.scrollTop = 0
   }
-
-  // Postcards images
-  if (module.postcardsImagesFolder) {
-    weatherfixersPostcards.forEach((filename) => {
-      const base = module.postcardsBasePath === '' ? '' : (module.postcardsBasePath || 'pdfs')
-      const encoded = filename.split('/').map(encodeURIComponent).join('/')
-      const src = base ? `/${base}/${module.postcardsImagesFolder}/${encoded}` : `/${module.postcardsImagesFolder}/${encoded}`
-      imageUrls.push(src)
-    })
-  }
-
-  // Teams images
-  if (module.teamsImagesFolder) {
-    petunisTeams.forEach((filename) => {
-      const src = `/pdfs/${module.teamsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`
-      imageUrls.push(src)
-    })
-    petunisForPeople.forEach((filename) => {
-      const src = `/pdfs/${module.teamsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`
-      imageUrls.push(src)
-    })
-  }
-
-  // Design files images
-  if (module.designFilesFolder) {
-    petunisDesignFiles.forEach((filename) => {
-      const src = `/pdfs/${module.designFilesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`
-      imageUrls.push(src)
-    })
-  }
-
-  // Hero image
-  if (module.heroImage) {
-    imageUrls.push(module.heroImage)
-  }
-
-  return imageUrls
-}
-
-function ClientWork() {
-  const [activeProject, setActiveProject] = useState(null)
-  const [activeModule, setActiveModule] = useState(null)
-  const [showTeamsImages, setShowTeamsImages] = useState(false)
-  const [showForPeopleImages, setShowForPeopleImages] = useState(false)
-  const [showDesignFiles, setShowDesignFiles] = useState(false)
-  const [websitePreviewUrl, setWebsitePreviewUrl] = useState(null)
-
-  useEffect(() => {
-    const locked = activeProject || showTeamsImages || showForPeopleImages || showDesignFiles || websitePreviewUrl
-    document.documentElement.classList.toggle('modal-open', locked)
-    return () => document.documentElement.classList.remove('modal-open')
-  }, [activeProject, showTeamsImages, showForPeopleImages, showDesignFiles, websitePreviewUrl])
-
-  // Preload images when activeModule changes (throttled to avoid performance issues)
-  useEffect(() => {
-    if (!activeModule || !activeProject) return
-
-    // Use requestIdleCallback to preload during idle time, avoiding animation lag
-    const schedulePreload = (callback) => {
-      if ('requestIdleCallback' in window) {
-        requestIdleCallback(callback, { timeout: 1000 })
-      } else {
-        setTimeout(callback, 200)
-      }
-    }
-
-    schedulePreload(() => {
-      const imageUrls = getModuleImageUrls(activeModule, activeProject)
-
-      // Start preloading (batch to avoid overwhelming the browser)
-      const batchSize = 8 // Smaller batches
-      for (let i = 0; i < imageUrls.length; i += batchSize) {
-        setTimeout(() => {
-          preloadImages(imageUrls.slice(i, i + batchSize))
-        }, i * 80) // Increased stagger time to reduce load
-      }
-    })
-  }, [activeModule, activeProject])
-
-  const handleClose = () => {
-    setActiveProject(null)
-    setActiveModule(null)
-    setShowTeamsImages(false)
-    setShowForPeopleImages(false)
-    setShowDesignFiles(false)
-    setWebsitePreviewUrl(null)
-  }
-
-  const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) {
-      handleClose()
-    }
-  }
-
-  const websiteModuleForActiveProject =
-    activeProject?.modules?.find((mod) => mod.websiteUrl)
 
   return (
-    <PageTransition>
-      <div className="client-work">
-        {showTeamsImages && activeModule?.teamsImagesFolder && createPortal(
-          <div
-            className="teams-images-overlay"
-            onClick={() => setShowTeamsImages(false)}
+    <div className="merch-tabs">
+      <div className="merch-tabs-header">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            className={`merch-tab ${activeTab === tab.id ? 'active' : ''}`}
+            onClick={() => handleTabChange(tab.id)}
           >
-            <button className="teams-images-close" onClick={(e) => { e.stopPropagation(); setShowTeamsImages(false); }} aria-label="Close">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
-            </button>
-            <div className="teams-images-header">
-              <h2 className="teams-images-title">PetUnis — All 32 Teams</h2>
-              <p className="teams-images-subtitle">Product mockups for every NFL franchise</p>
-            </div>
-            <div className="teams-images-scroll" onClick={(e) => e.stopPropagation()}>
-              {petunisTeams
-                .filter((filename) => !filename.startsWith('For People/'))
-                .map((filename) => (
-                <img
-                  key={filename}
-                  src={`/pdfs/${activeModule.teamsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
-                  alt=""
-                />
-              ))}
-            </div>
-          </div>,
-          document.body
-        )}
-        {showForPeopleImages && activeModule?.teamsImagesFolder && createPortal(
-          <div
-            className="teams-images-overlay"
-            onClick={() => setShowForPeopleImages(false)}
-          >
-            <button className="teams-images-close" onClick={(e) => { e.stopPropagation(); setShowForPeopleImages(false); }} aria-label="Close">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
-            </button>
-            <div className="teams-images-header">
-              <h2 className="teams-images-title">PetUnis — For People</h2>
-              <p className="teams-images-subtitle">Product mockups for people apparel</p>
-            </div>
-            <div className="teams-images-scroll" onClick={(e) => e.stopPropagation()}>
-              {petunisForPeople.map((filename) => (
-                <img
-                  key={filename}
-                  src={`/pdfs/${activeModule.teamsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
-                  alt=""
-                />
-              ))}
-            </div>
-          </div>,
-          document.body
-        )}
-        {showDesignFiles && activeModule?.designFilesFolder && createPortal(
-          <div
-            className="teams-images-overlay"
-            onClick={() => setShowDesignFiles(false)}
-          >
-            <button className="teams-images-close" onClick={(e) => { e.stopPropagation(); setShowDesignFiles(false); }} aria-label="Close">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
-            </button>
-            <div className="teams-images-header">
-              <h2 className="teams-images-title">PetUnis — Design Files</h2>
-              <p className="teams-images-subtitle">Design assets for all 32 NFL teams</p>
-            </div>
-            <div className="design-files-scroll" onClick={(e) => e.stopPropagation()}>
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="merch-tabs-viewport" ref={scrollRef}>
+        <AnimatePresence mode="wait">
+          {activeTab === 'pets' && (
+            <motion.div
+              key="pets"
+              className="merch-tabs-panel"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: ndsEase }}
+            >
+              <div className="client-module-teams-grid">
+                {petunisTeams.map((filename) => (
+                  <img
+                    key={filename}
+                    src={`/pdfs/${mod.teamsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
+                    alt=""
+                    loading="lazy"
+                  />
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'people' && (
+            <motion.div
+              key="people"
+              className="merch-tabs-panel"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: ndsEase }}
+            >
+              <div className="client-module-teams-grid">
+                {petunisForPeople.map((filename) => (
+                  <img
+                    key={filename}
+                    src={`/pdfs/${mod.teamsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
+                    alt=""
+                    loading="lazy"
+                  />
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'designs' && mod.designFilesFolder && (
+            <motion.div
+              key="designs"
+              className="merch-tabs-panel"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: ndsEase }}
+            >
               {(() => {
                 const byTeam = petunisDesignFiles.reduce((acc, path) => {
                   const team = path.split('/')[0]
@@ -535,51 +430,327 @@ function ClientWork() {
                 return Object.entries(byTeam)
                   .sort((a, b) => a[0].localeCompare(b[0]))
                   .map(([team, files]) => (
-                  <div key={team} className="design-files-team-section">
-                    <h3 className="design-files-team-label">{teamDisplayName(team)}</h3>
-                    <div className="design-files-masonry">
-                      {files.map((filename) => (
-                        <div key={filename} className="design-files-masonry-item">
-                          <img
-                            src={`/pdfs/${activeModule.designFilesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
-                            alt=""
-                          />
-                        </div>
-                      ))}
+                    <div key={team} className="client-module-design-team">
+                      <span className="client-module-design-team-label">{teamDisplayName(team)}</span>
+                      <div className="client-module-design-grid">
+                        {files.map((filename) => (
+                          <div key={filename} className="client-module-design-item">
+                            <img
+                              src={`/pdfs/${mod.designFilesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
+                              alt=""
+                              loading="lazy"
+                            />
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))
+                  ))
               })()}
-            </div>
-          </div>,
-          document.body
-        )}
-        {websitePreviewUrl && createPortal(
-          <div
-            className="teams-images-overlay website-preview-overlay"
-            onClick={() => setWebsitePreviewUrl(null)}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  )
+}
+
+/* ─── Inline Project Section ─── */
+function ProjectSection({ project, index, isExpanded, onToggle }) {
+  const isAlt = index % 2 !== 0
+  const number = String(index + 1).padStart(2, '0')
+  const sectionRef = useRef(null)
+  const [expandedModules, setExpandedModules] = useState({})
+
+  const toggleModule = (modId) => {
+    setExpandedModules(prev => ({ ...prev, [modId]: !prev[modId] }))
+  }
+
+  const handleToggle = () => {
+    if (isExpanded) {
+      onToggle(null)
+      setExpandedModules({})
+      setTimeout(() => {
+        sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 100)
+    } else {
+      onToggle(project.id)
+      setTimeout(() => {
+        sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 100)
+    }
+  }
+
+  const content = (
+    <div className="container" ref={sectionRef}>
+      {/* Header — always visible */}
+      <motion.div
+        className="client-feature-header"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={staggerContainer}
+      >
+        <motion.span className="client-feature-number" variants={fadeUp}>
+          {number}
+        </motion.span>
+        <motion.h2 className="client-feature-name" variants={fadeUp}>
+          {project.name}
+        </motion.h2>
+        <motion.p className="client-feature-tagline" variants={fadeUp}>
+          {project.type} · {project.year}
+        </motion.p>
+      </motion.div>
+
+      {/* Body — swaps between default and expanded */}
+      <AnimatePresence mode="wait">
+        {!isExpanded ? (
+          /* ─── DEFAULT VIEW ─── */
+          <motion.div
+            key="default"
+            className="client-feature-body"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.4, ease: ndsEase }}
           >
-            <button className="teams-images-close" onClick={(e) => { e.stopPropagation(); setWebsitePreviewUrl(null); }} aria-label="Close">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
-            </button>
-            <div className="website-preview-header">
-              <h2 className="teams-images-title">{activeProject?.name || 'Website'} — Website</h2>
-              <p className="teams-images-subtitle">Live preview</p>
-            </div>
-            <div
-              className={`website-preview-iframe-wrap white-bar-${activeProject?.id === 'petunis' ? 'petunis' : 'weatherfixers'}`}
-              onClick={(e) => e.stopPropagation()}
+            <motion.div
+              className="client-feature-left"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, ease: ndsEase }}
             >
-              <div className="website-preview-white-bar"></div>
-              <iframe
-                src={websitePreviewUrl}
-                title={`${activeProject?.name || 'Website'} website preview`}
-                className="website-preview-iframe"
-              />
+              {project.featured && project.screenshotImage ? (
+                <div className="client-feature-preview">
+                  <div className="client-feature-preview-slot">
+                    <img src="/pdfs/Test%20PetUnis%20Ads.png" alt="" />
+                  </div>
+                  <div className="client-feature-preview-slot">
+                    <img src={project.screenshotImage} alt="" />
+                  </div>
+                  <div className="client-feature-preview-slot">
+                    <img src="/pdfs/For%20People%20Background.png" alt="" />
+                  </div>
+                </div>
+              ) : project.screenshotImage ? (
+                <div className="client-feature-screenshot">
+                  <img src={project.screenshotImage} alt={project.screenshotLabel} />
+                </div>
+              ) : (
+                <div className="client-feature-scope">
+                  <span className="client-feature-scope-label">Scope</span>
+                  <div className="client-feature-scope-list">
+                    {project.modules.map((mod) => (
+                      <span key={mod.id} className="client-feature-scope-item">{mod.label}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+            <div className="client-feature-details">
+              <p className="client-feature-desc">{project.shortDesc}</p>
+              <div className="client-feature-tech">
+                {project.tech.map((tech) => (
+                  <span key={tech} className="tech-badge">{tech}</span>
+                ))}
+              </div>
+              <button className="client-feature-cta" onClick={handleToggle}>
+                View Project
+              </button>
             </div>
-          </div>,
-          document.body
+          </motion.div>
+        ) : (
+          /* ─── EXPANDED VIEW — replaces body ─── */
+          <motion.div
+            key="expanded"
+            className="client-expand"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.4, ease: ndsEase }}
+          >
+            {/* Project heading */}
+            <div className="client-expand-heading">
+              <h3 className="client-expand-title">{project.name}</h3>
+              <p className="client-expand-subtitle">{project.type} · {project.year}</p>
+            </div>
+
+            {/* Brief / Strategy / Scope — 3-column */}
+            <div className="client-expand-meta">
+              <motion.div
+                className="client-expand-meta-item"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.05, ease: ndsEase }}
+              >
+                <span className="client-expand-meta-label">The Brief</span>
+                <p>{project.brief}</p>
+              </motion.div>
+              <motion.div
+                className="client-expand-meta-item"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1, ease: ndsEase }}
+              >
+                <span className="client-expand-meta-label">Strategy</span>
+                <p>{project.strategy}</p>
+              </motion.div>
+              <motion.div
+                className="client-expand-meta-item"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.15, ease: ndsEase }}
+              >
+                <span className="client-expand-meta-label">Scope</span>
+                <p>{project.scope}</p>
+              </motion.div>
+            </div>
+
+            {/* Modules — expandable subsections */}
+            <div className="client-expand-modules">
+              <span className="client-expand-section-label">What I Built</span>
+
+              {project.modules.map((mod, mi) => {
+                const modExpanded = expandedModules[mod.id]
+
+                return (
+                  <motion.div
+                    key={mod.id}
+                    className="client-module-section"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.2 + mi * 0.06, ease: ndsEase }}
+                  >
+                    <button
+                      className={`client-module-row ${modExpanded ? 'active' : ''}`}
+                      onClick={() => toggleModule(mod.id)}
+                    >
+                      <div className="client-module-row-left">
+                        <span className="client-module-number">{String(mi + 1).padStart(2, '0')}</span>
+                        <span className="client-module-name">{mod.label}</span>
+                      </div>
+                      <div className="client-module-row-right">
+                        <span className="client-module-count">{mod.items.length} deliverables</span>
+                        <svg className={`client-module-chevron ${modExpanded ? 'open' : ''}`} width="16" height="16" viewBox="0 0 16 16" fill="none">
+                          <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
+                    </button>
+
+                    <AnimatePresence>
+                      {modExpanded && (
+                        <motion.div
+                          className="client-module-content"
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.4, ease: ndsEase }}
+                        >
+                          <div className="client-module-content-inner">
+                            {/* Deliverables list */}
+                            <div className="client-module-deliverables">
+                              {mod.items.map((item, i) => (
+                                <div key={i} className="client-module-deliverable">
+                                  <span className="client-module-deliverable-num">{String(i + 1).padStart(2, '0')}</span>
+                                  <p>{item}</p>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Website iframe */}
+                            {mod.websiteUrl && (
+                              <div className="client-module-iframe-wrap">
+                                <iframe
+                                  src={mod.websiteUrl}
+                                  title={`${project.name} — ${mod.label}`}
+                                  className="client-module-iframe"
+                                />
+                              </div>
+                            )}
+
+                            {/* Hero image */}
+                            {mod.heroImage && (
+                              <div className="client-module-hero-img">
+                                <img src={mod.heroImage} alt={mod.label} />
+                              </div>
+                            )}
+
+                            {/* Ads masonry */}
+                            {mod.adsImagesFolder && (
+                              <div className="client-module-masonry">
+                                {(project.id === 'weatherfixers' ? weatherfixersAds : petunisAds).map((filename) => {
+                                  const base = mod.adsBasePath === '' ? '' : (mod.adsBasePath || 'pdfs')
+                                  const encoded = filename.split('/').map(encodeURIComponent).join('/')
+                                  const src = base ? `/${base}/${mod.adsImagesFolder}/${encoded}` : `/${mod.adsImagesFolder}/${encoded}`
+                                  return (
+                                    <div key={filename} className="client-module-masonry-item">
+                                      <img src={src} alt="" loading="lazy" />
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            )}
+
+                            {/* Postcards grid */}
+                            {mod.postcardsImagesFolder && (
+                              <div className="client-module-postcards">
+                                {weatherfixersPostcards.map((filename) => {
+                                  const base = mod.postcardsBasePath === '' ? '' : (mod.postcardsBasePath || 'pdfs')
+                                  const encoded = filename.split('/').map(encodeURIComponent).join('/')
+                                  const src = base ? `/${base}/${mod.postcardsImagesFolder}/${encoded}` : `/${mod.postcardsImagesFolder}/${encoded}`
+                                  return (
+                                    <div key={filename} className="client-module-postcard-item">
+                                      <img src={src} alt="" loading="lazy" />
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            )}
+
+                            {/* Tabbed gallery — For Pets / For People / Design Files */}
+                            {mod.teamsImagesFolder && (
+                              <MerchandisingTabs mod={mod} />
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                )
+              })}
+            </div>
+
+            {/* Close button */}
+            <button className="client-expand-close" onClick={handleToggle}>
+              Close Project
+            </button>
+          </motion.div>
         )}
+      </AnimatePresence>
+    </div>
+  )
+
+  if (isAlt) {
+    return (
+      <SqueezeSection key={project.id} className="client-feature client-feature-alt">
+        {content}
+      </SqueezeSection>
+    )
+  }
+
+  return (
+    <section key={project.id} className="client-feature">
+      {content}
+    </section>
+  )
+}
+
+function ClientWork() {
+  const [expandedProject, setExpandedProject] = useState(null)
+
+  return (
+    <PageTransition>
+      <div className="client-work">
         {/* Hero */}
         <section className="client-work-hero">
           <div className="container">
@@ -643,414 +814,16 @@ function ClientWork() {
           </div>
         </section>
 
-        {/* Featured Projects — Editorial Layout */}
-        {clientProjects.map((project, index) => {
-          const isAlt = index % 2 !== 0
-          const number = String(index + 1).padStart(2, '0')
-
-          const projectContent = (
-            <div className="container">
-              <motion.div
-                className="client-feature-header"
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-100px" }}
-                variants={staggerContainer}
-              >
-                <motion.span className="client-feature-number" variants={fadeUp}>
-                  {number}
-                </motion.span>
-                <motion.h2 className="client-feature-name" variants={fadeUp}>
-                  {project.name}
-                </motion.h2>
-                <motion.p className="client-feature-tagline" variants={fadeUp}>
-                  {project.type} · {project.year}
-                </motion.p>
-              </motion.div>
-
-              <div className="client-feature-body">
-                <motion.div
-                  className="client-feature-left"
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-50px" }}
-                  transition={{ duration: 0.6, ease: ndsEase }}
-                >
-                  {project.featured && project.screenshotImage ? (
-                    <div className="client-feature-preview">
-                      <div className="client-feature-preview-slot">
-                        <img src="/pdfs/Test%20PetUnis%20Ads.png" alt="" />
-                      </div>
-                      <div className="client-feature-preview-slot">
-                        <img src={project.screenshotImage} alt="" />
-                      </div>
-                      <div className="client-feature-preview-slot">
-                        <img src="/pdfs/For%20People%20Background.png" alt="" />
-                      </div>
-                    </div>
-                  ) : project.screenshotImage ? (
-                    <div className="client-feature-screenshot">
-                      <img src={project.screenshotImage} alt={project.screenshotLabel} />
-                    </div>
-                  ) : (
-                    <div className="client-feature-scope">
-                      <span className="client-feature-scope-label">Scope</span>
-                      <div className="client-feature-scope-list">
-                        {project.modules.map((mod) => (
-                          <span key={mod.id} className="client-feature-scope-item">{mod.label}</span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </motion.div>
-                <motion.div
-                  className="client-feature-details"
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, margin: "-50px" }}
-                  variants={staggerContainer}
-                >
-                  <motion.p className="client-feature-desc" variants={fadeUp}>{project.shortDesc}</motion.p>
-                  <motion.div className="client-feature-tech" variants={fadeUp}>
-                    {project.tech.map((tech) => (
-                      <span key={tech} className="tech-badge">{tech}</span>
-                    ))}
-                  </motion.div>
-                  <motion.button
-                    className="client-feature-cta"
-                    variants={fadeUp}
-                    onClick={() => setActiveProject(project)}
-                  >
-                    View Project
-                  </motion.button>
-                </motion.div>
-              </div>
-            </div>
-          )
-
-          if (isAlt) {
-            return (
-              <SqueezeSection key={project.id} className="client-feature client-feature-alt">
-                {projectContent}
-              </SqueezeSection>
-            )
-          }
-
-          return (
-            <section key={project.id} className="client-feature">
-              {projectContent}
-            </section>
-          )
-        })}
-
-        {/* Project Modal */}
-        <AnimatePresence>
-          {activeProject && (
-            <motion.div
-              className="modal-backdrop"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              onClick={handleBackdropClick}
-            >
-              <div className="modal-layout" onClick={(e) => e.stopPropagation()}>
-                <AnimatePresence mode="wait">
-                  {activeModule ? (
-                    /* ===== DRILL-DOWN VIEW ===== */
-                    <motion.div
-                      key="drilldown"
-                      className="modal-drilldown"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.3, ease: ndsEase }}
-                    >
-                      {/* Back button card */}
-                      <motion.div
-                        className="modal-card modal-back-card"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3, ease: ndsEase }}
-                      >
-                        <div className="modal-back-card-header">
-                          <button className="modal-back-btn modal-icon-btn" onClick={() => setActiveModule(null)} aria-label={`Back to ${activeProject.name}`}>
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                              <path d="M12 16l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                          </button>
-                          <button className="modal-close-btn modal-icon-btn" onClick={handleClose} aria-label="Close">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                              <path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                            </svg>
-                          </button>
-                        </div>
-                        <h2>{activeModule.label}</h2>
-                        <p className="drilldown-subtitle">{activeProject.name} — {activeProject.type}</p>
-                      </motion.div>
-
-                      {/* Hero section with banner */}
-                      {activeModule.heroImage && (
-                        <motion.div
-                          className="drilldown-hero"
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.3, delay: 0.05, ease: ndsEase }}
-                        >
-                          <img src={activeModule.heroImage} alt={activeModule.label} />
-                        </motion.div>
-                      )}
-
-                      {/* Ads masonry, postcards masonry, OR 3 category cards */}
-                      {activeModule.adsImagesFolder ? (
-                        <motion.div
-                          className="drilldown-ads-masonry"
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.3, ease: ndsEase }}
-                        >
-                          {(activeProject?.id === 'weatherfixers' ? weatherfixersAds : petunisAds).map((filename) => {
-                            const base = activeModule.adsBasePath === '' ? '' : (activeModule.adsBasePath || 'pdfs')
-                            const encoded = filename.split('/').map(encodeURIComponent).join('/')
-                            const src = base ? `/${base}/${activeModule.adsImagesFolder}/${encoded}` : `/${activeModule.adsImagesFolder}/${encoded}`
-                            return (
-                              <div key={filename} className="drilldown-ads-masonry-item">
-                                <img src={src} alt="" />
-                              </div>
-                            )
-                          })}
-                        </motion.div>
-                      ) : activeModule.postcardsImagesFolder ? (
-                        <motion.div
-                          className="drilldown-ads-masonry drilldown-postcards-masonry"
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.3, ease: ndsEase }}
-                        >
-                          {weatherfixersPostcards.map((filename) => {
-                            const base = activeModule.postcardsBasePath === '' ? '' : (activeModule.postcardsBasePath || 'pdfs')
-                            const encoded = filename.split('/').map(encodeURIComponent).join('/')
-                            const src = base ? `/${base}/${activeModule.postcardsImagesFolder}/${encoded}` : `/${activeModule.postcardsImagesFolder}/${encoded}`
-                            return (
-                              <div key={filename} className="drilldown-ads-masonry-item">
-                                <img src={src} alt="" />
-                              </div>
-                            )
-                          })}
-                        </motion.div>
-                      ) : (
-                        <div className="drilldown-categories-grid">
-                          {(() => {
-                            const items = activeModule.items
-                            const chunkSize = Math.ceil(items.length / 3)
-                            const chunks = [0, 1, 2].map(i => items.slice(i * chunkSize, (i + 1) * chunkSize))
-                            return chunks.map((chunk, chunkIdx) => {
-                              const isTeamsCard = activeModule.teamsImagesFolder && chunkIdx === 0
-                              const isForPeopleCard = activeModule.teamsImagesFolder && chunkIdx === 1
-                              const isDesignFilesCard = activeModule.designFilesFolder && chunkIdx === 2
-                              const heroBgUrl = isTeamsCard
-                                ? `/pdfs/${encodeURIComponent('Test PetUnis Ads.png')}`
-                                : isForPeopleCard
-                                  ? `/pdfs/${encodeURIComponent('For People Background.png')}`
-                                  : isDesignFilesCard
-                                    ? (() => {
-                                        const firstRavens = petunisDesignFiles.find((p) => p.startsWith('Ravens/'))
-                                        return firstRavens
-                                          ? `/pdfs/${activeModule.designFilesFolder}/${firstRavens.split('/').map(encodeURIComponent).join('/')}`
-                                          : null
-                                      })()
-                                    : null
-                              const isHeroCard = isTeamsCard || isForPeopleCard || isDesignFilesCard
-                              return (
-                                <motion.div
-                                  key={chunkIdx}
-                                  className={`modal-card drilldown-category-card ${isHeroCard ? 'clickable teams-hero-card' : ''} ${isForPeopleCard ? 'for-people-hero-card' : ''}`}
-                                  initial={{ opacity: 0, y: 20 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ duration: 0.3, delay: 0.1 + chunkIdx * 0.05, ease: ndsEase }}
-                                  onClick={isTeamsCard ? () => setShowTeamsImages(true) : isForPeopleCard ? () => setShowForPeopleImages(true) : isDesignFilesCard ? () => setShowDesignFiles(true) : undefined}
-                                >
-                                  {isTeamsCard ? (
-                                    <>
-                                      <img
-                                        src={heroBgUrl}
-                                        alt=""
-                                        className="teams-hero-card-bg"
-                                      />
-                                      <div className="teams-hero-card-overlay">
-                                        <span className="teams-hero-card-text">For Pets</span>
-                                      </div>
-                                    </>
-                                  ) : isForPeopleCard ? (
-                                    <>
-                                      <img
-                                        src={heroBgUrl}
-                                        alt=""
-                                        className="teams-hero-card-bg"
-                                      />
-                                      <div className="teams-hero-card-overlay">
-                                        <span className="teams-hero-card-text">For People</span>
-                                      </div>
-                                    </>
-                                  ) : isDesignFilesCard ? (
-                                    <>
-                                      <img
-                                        src={heroBgUrl}
-                                        alt=""
-                                        className="teams-hero-card-bg"
-                                      />
-                                      <div className="teams-hero-card-overlay">
-                                        <span className="teams-hero-card-text">Design Files</span>
-                                      </div>
-                                    </>
-                                  ) : (
-                                    chunk.map((item, i) => (
-                                      <div key={i} className="drilldown-category-item">
-                                        <span className="drilldown-item-number">{String(chunkIdx * chunkSize + i + 1).padStart(2, '0')}</span>
-                                        <p>{item}</p>
-                                      </div>
-                                    ))
-                                  )}
-                                </motion.div>
-                              )
-                            })
-                          })()}
-                        </div>
-                      )}
-                    </motion.div>
-                  ) : (
-                    /* ===== MAIN PROJECT VIEW ===== */
-                    <motion.div
-                      key="overview"
-                      className="modal-overview"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.3, ease: ndsEase }}
-                    >
-                      {/* Title Card */}
-                      <motion.div
-                        className="modal-card modal-title-card"
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, ease: ndsEase }}
-                      >
-                        <div className="modal-title-card-header">
-                          <h2>{activeProject.name}</h2>
-                          <button className="modal-close-btn modal-icon-btn" onClick={handleClose} aria-label="Close">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                              <path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                            </svg>
-                          </button>
-                        </div>
-                        <p className="modal-type">{activeProject.type}</p>
-                        <p className="modal-desc">{activeProject.description}</p>
-                      </motion.div>
-
-                      {/* Content Grid: Screenshot (rect) + Brief (spans full height) + Modules (under screenshot) */}
-                      <div className="modal-content-grid">
-                        <motion.div
-                          className="modal-card modal-screenshot-card"
-                          initial={{ opacity: 0, y: 30 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.4, delay: 0.08, ease: ndsEase }}
-                        >
-                          <div
-                            className={`screenshot-placeholder ${websiteModuleForActiveProject ? 'clickable' : ''}`}
-                            onClick={
-                              websiteModuleForActiveProject
-                                ? () => setWebsitePreviewUrl(websiteModuleForActiveProject.websiteUrl)
-                                : undefined
-                            }
-                          >
-                            {activeProject.screenshotImage ? (
-                              <img src={activeProject.screenshotImage} alt={activeProject.screenshotLabel} />
-                            ) : (
-                              activeProject.screenshotLabel
-                            )}
-                            {websiteModuleForActiveProject && (
-                              <span className="screenshot-placeholder-hover">
-                                {activeProject?.id === 'petunis' ? 'View Storefront' : 'View Website'}
-                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                                  <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                </svg>
-                              </span>
-                            )}
-                          </div>
-                        </motion.div>
-
-                        <motion.div
-                          className="modal-card modal-brief-card"
-                          initial={{ opacity: 0, y: 30 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.4, delay: 0.15, ease: ndsEase }}
-                        >
-                          <div className="brief-section">
-                            <span className="brief-label">The Brief</span>
-                            <p>{activeProject.brief}</p>
-                          </div>
-                          <div className="brief-section">
-                            <span className="brief-label">Strategy</span>
-                            <p>{activeProject.strategy}</p>
-                          </div>
-                          <div className="brief-section">
-                            <span className="brief-label">Scope</span>
-                            <p>{activeProject.scope}</p>
-                          </div>
-                        </motion.div>
-
-                        <div className="modal-modules-row">
-                          <div className={`modal-modules-grid ${websiteModuleForActiveProject ? 'filtered' : ''}`}>
-                            {activeProject.modules
-                              .filter((mod) => !websiteModuleForActiveProject || !mod.websiteUrl)
-                              .map((mod, i) => (
-                              <motion.div
-                                key={mod.id}
-                                className="modal-card modal-module-card"
-                                initial={{ opacity: 0, y: 30 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.4, delay: 0.2 + i * 0.06, ease: ndsEase }}
-                                onClick={() => mod.websiteUrl ? setWebsitePreviewUrl(mod.websiteUrl) : setActiveModule(mod)}
-                                onMouseEnter={() => {
-                                  // Preload images on hover for faster loading (throttled to avoid performance issues)
-                                  if (!mod.websiteUrl) {
-                                    // Use requestIdleCallback if available, otherwise setTimeout with delay
-                                    const schedulePreload = (callback) => {
-                                      if ('requestIdleCallback' in window) {
-                                        requestIdleCallback(callback, { timeout: 2000 })
-                                      } else {
-                                        setTimeout(callback, 100)
-                                      }
-                                    }
-                                    
-                                    schedulePreload(() => {
-                                      const imageUrls = getModuleImageUrls(mod, activeProject)
-                                      const batchSize = 10 // Reduced batch size
-                                      for (let i = 0; i < imageUrls.length; i += batchSize) {
-                                        setTimeout(() => {
-                                          preloadImages(imageUrls.slice(i, i + batchSize))
-                                        }, i * 50) // Increased stagger time
-                                      }
-                                    })
-                                  }
-                                }}
-                              >
-                                <span className="module-label">{mod.label}</span>
-                                <svg className="module-arrow" width="18" height="18" viewBox="0 0 18 18" fill="none">
-                                  <path d="M7 5l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                </svg>
-                              </motion.div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Projects */}
+        {clientProjects.map((project, index) => (
+          <ProjectSection
+            key={project.id}
+            project={project}
+            index={index}
+            isExpanded={expandedProject === project.id}
+            onToggle={setExpandedProject}
+          />
+        ))}
       </div>
     </PageTransition>
   )

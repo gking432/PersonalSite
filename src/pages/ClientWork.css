@@ -1,6 +1,6 @@
 /*
-CLIENT WORK PAGE — Quadrant Modal Gallery
-Showcase freelance/client projects with modal deep-dives
+CLIENT WORK PAGE — NDS Editorial Inline Expansion
+No modals. Progressive disclosure on-page.
 */
 
 .client-work {
@@ -8,7 +8,9 @@ Showcase freelance/client projects with modal deep-dives
   padding-top: 80px;
 }
 
-/* Hero */
+/* ==========================================
+   HERO
+   ========================================== */
 .client-work-hero {
   min-height: 60vh;
   display: flex;
@@ -86,7 +88,7 @@ Showcase freelance/client projects with modal deep-dives
   color: var(--warm-gray);
 }
 
-/* Body — preview/scope on left, details on right */
+/* Body — preview on left, details on right */
 .client-feature-body {
   display: grid;
   grid-template-columns: 1fr 2fr;
@@ -219,372 +221,255 @@ Showcase freelance/client projects with modal deep-dives
 
 
 /* ==========================================
-   FLOATING CARD MODAL — NDS Editorial
+   EXPANDED VIEW — Replaces body in-place
    ========================================== */
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(42, 42, 42, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: 1000;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 2rem;
-  overflow-y: auto;
+.client-expand {
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--gray-200);
+  margin-top: var(--space-xl);
 }
 
-.modal-layout {
-  max-width: 1100px;
-  width: 100%;
-  position: relative;
-  padding: 2rem 0;
+/* Project heading inside expansion */
+.client-expand-heading {
+  margin-bottom: var(--space-lg);
 }
 
-/* Title card header — title + close button in corner */
-.modal-title-card-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 0.4rem;
-}
-
-.modal-title-card-header .modal-icon-btn {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-}
-
-.modal-title-card-header h2 {
-  margin-bottom: 0;
-  padding-right: 3rem;
-}
-
-/* Shared icon button style — green icon, no background */
-.modal-icon-btn {
-  flex-shrink: 0;
-  background: transparent;
-  border: none;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--forest-green);
-  transition: all var(--transition);
-}
-
-.modal-icon-btn:hover {
-  color: var(--hunter-green);
-}
-
-/* Back card header — back + close buttons in upper right corner */
-.modal-back-card-header {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  z-index: 1;
-}
-
-/* Shared card style — editorial, not app-like */
-.modal-card {
-  background: var(--parchment);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-/* ===== MAIN OVERVIEW ===== */
-.modal-overview {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-/* Title Card */
-.modal-title-card {
-  position: relative;
-  padding: 2rem 2.5rem;
-}
-
-.modal-title-card h2 {
+.client-expand-title {
   font-family: var(--font-serif);
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
   color: var(--charcoal);
-  line-height: 1.15;
+  margin: 0 0 0.5rem;
 }
 
-.modal-title-card .modal-type {
-  font-family: var(--font-sans);
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--forest-green);
-  margin-bottom: 0.75rem;
-}
-
-.modal-title-card .modal-desc {
-  font-size: 0.95rem;
-  line-height: 1.7;
-  color: var(--slate);
-  max-width: 700px;
-  margin-bottom: 0;
-}
-
-/* Content Grid — Screenshot (rect) | Brief (spans full) | Modules (fill space to brief bottom) */
-.modal-content-grid {
-  display: grid;
-  grid-template-columns: 1fr 320px;
-  grid-template-rows: auto 1fr;
-  gap: 1rem;
-  align-items: stretch;
-}
-
-.modal-screenshot-card {
-  grid-column: 1;
-  grid-row: 1;
-  padding: 0;
-  overflow: hidden;
-}
-
-.screenshot-placeholder {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background: var(--cream);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.client-expand-subtitle {
   font-family: var(--font-sans);
   font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--warm-gray);
-  overflow: hidden;
-  position: relative;
-  transition: all var(--transition);
+  color: var(--forest-green);
+  margin: 0;
 }
 
-.screenshot-placeholder:has(img) {
-  aspect-ratio: unset;
-  display: block;
+/* Brief / Strategy / Scope — 3-column */
+.client-expand-meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
 }
 
-.screenshot-placeholder.clickable {
-  cursor: pointer;
+.client-expand-meta-item {
+  padding-right: var(--space-lg);
 }
 
-.screenshot-placeholder img {
-  width: 100%;
-  height: auto;
-  display: block;
-  vertical-align: top;
-  transition: opacity var(--transition);
+.client-expand-meta-item:not(:last-child) {
+  border-right: 1px solid var(--gray-200);
 }
 
-
-.screenshot-placeholder-hover {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  background: rgba(0, 0, 0, 0);
-  color: white;
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  opacity: 0;
-  transition: opacity var(--transition), background var(--transition);
-  z-index: 1;
-}
-
-.screenshot-placeholder.clickable:hover {
-  box-shadow: none;
-}
-
-.screenshot-placeholder.clickable:hover img {
-  filter: brightness(0.88);
-}
-
-.screenshot-placeholder.clickable:hover .screenshot-placeholder-hover {
-  opacity: 1;
-  background: rgba(0, 0, 0, 0.25);
-}
-
-.modal-brief-card {
-  grid-column: 2;
-  grid-row: 1 / -1;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  align-self: stretch;
-}
-
-.brief-section {
-  flex: 1;
-}
-
-.brief-label {
+.client-expand-meta-label {
   font-family: var(--font-sans);
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--warm-gray);
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.75rem;
   display: block;
 }
 
-.brief-section p {
-  font-size: 0.85rem;
-  line-height: 1.65;
+.client-expand-meta-item p {
+  font-size: 0.95rem;
+  line-height: 1.7;
   color: var(--slate);
-  margin-bottom: 0;
+  margin: 0;
 }
 
-/* Modules Row — What I Built (fills space between screenshot and brief bottom) */
-.modal-modules-row {
-  grid-column: 1;
-  grid-row: 2;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  min-height: 0;
-}
-
-.modal-modules-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  flex: 1;
-  min-height: 0;
-  align-items: stretch;
-}
-
-/* When website module is hidden (screenshot links to site), 2 cards span full width of screenshot */
-.modal-modules-grid.filtered {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.modal-module-card {
-  padding: 1.25rem 1.5rem;
-  cursor: pointer;
-  transition: all var(--transition);
+/* ==========================================
+   IFRAME — Website preview inside module
+   ========================================== */
+.client-module-iframe-wrap {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  overflow: hidden;
   position: relative;
+  aspect-ratio: 16 / 9;
+}
+
+.client-module-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: white;
+  display: block;
+}
+
+/* ==========================================
+   MODULES — Expandable Subsections
+   ========================================== */
+.client-expand-modules {
+  margin-bottom: var(--space-xl);
+}
+
+.client-expand-section-label {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  display: block;
+  margin-bottom: var(--space-md);
+}
+
+/* Module row — the clickable header */
+.client-module-section {
+  border-top: 1px solid var(--gray-200);
+}
+
+.client-module-section:last-child {
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.client-module-row {
+  width: 100%;
   display: flex;
-  flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  text-align: left;
-  min-height: auto;
-  background-color: var(--cream);
-  border: 2px solid var(--gray-200);
-  border-radius: var(--border-radius-sm);
-  overflow: visible;
+  padding: var(--space-md) 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: inherit;
 }
 
-.modal-module-card:hover {
-  border-color: var(--forest-green);
-  background-color: var(--forest-green);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+.client-module-row:hover {
+  padding-left: var(--space-sm);
 }
 
-.module-label {
-  font-family: var(--font-serif);
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--charcoal);
-  margin: 0;
-  display: block;
-  position: relative;
-  z-index: 1;
-  transition: color var(--transition);
+.client-module-row.active {
+  padding-left: var(--space-sm);
 }
 
-.modal-module-card:hover .module-label {
-  color: white;
-}
-
-.module-arrow {
-  color: var(--forest-green);
-  opacity: 0.5;
-  transform: translateX(0);
-  transition: all var(--transition);
-  z-index: 1;
-  flex-shrink: 0;
-  margin-left: 1.5rem;
-}
-
-.modal-module-card:hover .module-arrow {
-  color: white;
-  opacity: 1;
-  transform: translateX(6px);
-}
-
-/* ===== DRILL-DOWN VIEW ===== */
-.modal-drilldown {
+.client-module-row-left {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  align-items: center;
+  gap: var(--space-md);
 }
 
-.modal-back-card {
-  position: relative;
-  padding: 2rem 2.5rem;
-  padding-right: 5rem;
-}
-
-.modal-back-card h2 {
-  font-family: var(--font-serif);
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
-  color: var(--charcoal);
-  margin-bottom: 0.4rem;
-  line-height: 1.15;
-}
-
-.drilldown-subtitle {
+.client-module-number {
   font-family: var(--font-sans);
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--forest-green);
-  margin-bottom: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--warm-gray);
+  flex-shrink: 0;
 }
 
-/* Drilldown hero banner */
-.drilldown-hero {
-  padding: 0;
+.client-module-name {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--charcoal);
+  letter-spacing: -0.01em;
+}
+
+.client-module-row-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.client-module-count {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+}
+
+.client-module-chevron {
+  color: var(--forest-green);
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.client-module-chevron.open {
+  transform: rotate(180deg);
+}
+
+
+/* ==========================================
+   MODULE CONTENT — Expanded
+   ========================================== */
+.client-module-content {
   overflow: hidden;
 }
 
-.drilldown-hero img {
+.client-module-content-inner {
+  padding-bottom: var(--space-xl);
+}
+
+/* Deliverables list */
+.client-module-deliverables {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  margin-bottom: var(--space-lg);
+}
+
+.client-module-deliverable {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md) var(--space-sm) 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.client-module-deliverable-num {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--warm-gray);
+  flex-shrink: 0;
+  padding-top: 0.2rem;
+}
+
+.client-module-deliverable p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--charcoal);
+  margin: 0;
+}
+
+/* Hero image inside module */
+.client-module-hero-img {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  margin-bottom: var(--space-lg);
+}
+
+.client-module-hero-img img {
   width: 100%;
   height: auto;
   display: block;
 }
 
-/* 3 category cards */
-/* Ads masonry — Pinterest-style collage */
-.drilldown-ads-masonry {
+/* ==========================================
+   MASONRY — Ads images
+   ========================================== */
+.client-module-masonry {
   column-count: 3;
   column-gap: 1rem;
 }
 
-.drilldown-ads-masonry-item {
+.client-module-masonry-item {
   break-inside: avoid;
   page-break-inside: avoid;
   -webkit-column-break-inside: avoid;
@@ -593,317 +478,151 @@ Showcase freelance/client projects with modal deep-dives
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
-.drilldown-ads-masonry-item img {
+.client-module-masonry-item img {
   width: 100%;
   height: auto;
   display: block;
   vertical-align: top;
 }
 
-@media (max-width: 768px) {
-  .drilldown-ads-masonry {
-    column-count: 2;
-  }
-}
-
-@media (max-width: 480px) {
-  .drilldown-ads-masonry {
-    column-count: 1;
-  }
-}
-
-/* Direct Mail postcards: 2x2 grid, 2 span full width, no corner rounding */
-.drilldown-postcards-masonry {
+/* ==========================================
+   POSTCARDS — 2-column grid
+   ========================================== */
+.client-module-postcards {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
-  width: 100%;
 }
 
-.drilldown-postcards-masonry .drilldown-ads-masonry-item {
-  border-radius: 0;
-}
-
-@media (max-width: 480px) {
-  .drilldown-postcards-masonry {
-    grid-template-columns: 1fr;
-  }
-}
-
-.drilldown-categories-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-}
-
-.drilldown-category-card {
-  padding: 1.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.drilldown-category-card.clickable {
-  cursor: pointer;
-}
-
-.drilldown-category-card.clickable:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-}
-
-/* Teams hero card — background image + PetUnis overlay */
-.drilldown-category-card.teams-hero-card {
-  position: relative;
-  padding: 0;
+.client-module-postcard-item {
   overflow: hidden;
-  background: var(--gray-100);
-  min-height: 160px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
-.teams-hero-card-bg {
-  position: absolute;
-  inset: 0;
+.client-module-postcard-item img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top center;
+  height: auto;
+  display: block;
 }
 
-.for-people-hero-card .teams-hero-card-bg {
-  object-position: center 55%;
-  transform: scale(1.04);
+/* ==========================================
+   MERCHANDISING TABS — Tabbed gallery
+   ========================================== */
+.merch-tabs {
+  border: 1px solid var(--gray-200);
 }
 
-.teams-hero-card-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.4);
+.merch-tabs-header {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background var(--duration-base) var(--ease-out);
+  border-bottom: 1px solid var(--gray-200);
 }
 
-.drilldown-category-card.teams-hero-card:hover .teams-hero-card-overlay {
-  background: rgba(255, 255, 255, 0.6);
-}
-
-.teams-hero-card-text {
-  font-family: var(--font-serif);
-  font-size: clamp(1.125rem, 2vw, 1.5rem);
-  font-weight: 700;
-  color: var(--charcoal);
-  letter-spacing: -0.02em;
-  transition: all var(--duration-base) var(--ease-out);
-}
-
-.drilldown-category-card.teams-hero-card:hover .teams-hero-card-text {
-  font-size: clamp(1.25rem, 2.25vw, 1.75rem);
-}
-
-.drilldown-category-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-}
-
-.drilldown-item-number {
-  font-family: var(--font-sans);
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--warm-gray);
-  flex-shrink: 0;
-  padding-top: 0.15rem;
-}
-
-.drilldown-category-item p,
-.drilldown-item p {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: var(--charcoal);
-  margin-bottom: 0;
-}
-
-/* ===== TEAMS IMAGES — PNGs stacked vertically ===== */
-.teams-images-overlay {
-  position: fixed;
-  inset: 0;
-  background: var(--parchment);
-  z-index: 10001;
-  display: flex;
-  flex-direction: column;
-}
-
-.teams-images-header {
-  flex-shrink: 0;
-  padding: 2rem 2.5rem 1.5rem;
-}
-
-.teams-images-title {
-  font-family: var(--font-serif);
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: var(--charcoal);
-  margin: 0;
-  line-height: 1.15;
-}
-
-.teams-images-subtitle {
+.merch-tab {
+  flex: 1;
+  padding: 14px 20px;
   font-family: var(--font-sans);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--forest-green);
-  margin: 0.5rem 0 0;
-}
-
-.teams-images-close {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: 40px;
-  height: 40px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  background: var(--parchment);
-  color: var(--charcoal);
+  color: var(--warm-gray);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-  transition: all var(--transition);
+  transition: all 0.2s ease;
+  margin-bottom: -1px;
 }
 
-.teams-images-close:hover {
-  border-color: var(--forest-green);
+.merch-tab:not(:last-child) {
+  border-right: 1px solid var(--gray-200);
+}
+
+.merch-tab:hover {
+  color: var(--charcoal);
+}
+
+.merch-tab.active {
   color: var(--forest-green);
+  border-bottom-color: var(--forest-green);
+  background: rgba(26, 58, 46, 0.03);
 }
 
-.teams-images-scroll {
-  flex: 1;
+.merch-tabs-viewport {
+  max-height: 70vh;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0 2.5rem 2rem;
-  min-height: 0;
 }
 
-.teams-images-scroll img {
+.merch-tabs-panel {
+  padding: 1rem;
+}
+
+.client-module-teams-grid img {
   width: 100%;
   display: block;
   margin-bottom: 0;
 }
 
-/* Website preview — iframe embed */
-.website-preview-overlay .website-preview-header {
-  flex-shrink: 0;
-  padding: 1.5rem 2.5rem 0.25rem;
+/* ==========================================
+   DESIGN FILES — Small grid by team
+   ========================================== */
+.client-module-design-team {
+  margin-bottom: var(--space-lg);
 }
 
-.website-preview-iframe-wrap {
-  flex: 1;
-  min-height: 0;
-  padding: 0 2.5rem 2rem;
-  display: flex;
-  position: relative;
-}
-
-/* White bar variants — use project-specific class on website-preview-iframe-wrap */
-.website-preview-white-bar {
-  position: absolute;
-  left: 0;
-  right: 0;
-  width: 100%;
-  height: 50px;
-  background: var(--parchment);
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* WeatherFixers — bar positioned higher, extra space below "Live preview" to avoid overlap */
-.website-preview-iframe-wrap.white-bar-weatherfixers {
-  margin-top: 1.25rem;
-}
-
-.website-preview-iframe-wrap.white-bar-weatherfixers .website-preview-white-bar {
-  top: -15px;
-}
-
-/* PetUnis — bar positioned lower (original placement) */
-.website-preview-iframe-wrap.white-bar-petunis .website-preview-white-bar {
-  top: 0;
-}
-
-.website-preview-iframe {
-  width: 100%;
-  flex: 1;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: white;
-}
-
-/* Design files — masonry by team, small squares */
-.design-files-scroll {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 0 2.5rem 2rem;
-  min-height: 0;
-}
-
-.design-files-team-section {
-  margin-bottom: 2rem;
-}
-
-.design-files-team-label {
+.client-module-design-team-label {
   font-family: var(--font-sans);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--warm-gray);
-  margin: 0 0 0.75rem;
+  display: block;
+  margin-bottom: 0.75rem;
 }
 
-.design-files-masonry {
-  column-count: 6;
-  column-gap: 0.5rem;
+.client-module-design-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.5rem;
 }
 
-.design-files-masonry-item {
-  break-inside: avoid;
-  page-break-inside: avoid;
-  -webkit-column-break-inside: avoid;
-  margin-bottom: 0.5rem;
+.client-module-design-item {
+  aspect-ratio: 1;
   overflow: hidden;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
-  aspect-ratio: 1;
 }
 
-.design-files-masonry-item img {
+.client-module-design-item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
 
-@media (max-width: 1024px) {
-  .design-files-masonry {
-    column-count: 4;
-  }
+/* ==========================================
+   CLOSE BUTTON — Bottom of expansion
+   ========================================== */
+.client-expand-close {
+  display: inline-block;
+  padding: 14px 36px;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--forest-green);
+  border: 2px solid var(--forest-green);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: var(--space-md);
 }
 
-@media (max-width: 768px) {
-  .design-files-masonry {
-    column-count: 3;
-  }
-}
-
-@media (max-width: 480px) {
-  .design-files-masonry {
-    column-count: 2;
-  }
+.client-expand-close:hover {
+  background: var(--forest-green);
+  color: var(--cream);
 }
 
 /* ==========================================
@@ -915,24 +634,23 @@ Showcase freelance/client projects with modal deep-dives
     gap: var(--space-lg);
   }
 
-  .modal-content-grid {
+  .client-expand-meta {
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
+    gap: var(--space-lg);
   }
 
-  .modal-screenshot-card {
-    grid-row: 1;
+  .client-expand-meta-item {
+    padding-right: 0;
+    padding-bottom: var(--space-lg);
   }
 
-  .modal-brief-card {
-    grid-column: 1;
-    grid-row: 2;
-    align-self: auto;
-    gap: 1.25rem;
+  .client-expand-meta-item:not(:last-child) {
+    border-right: none;
+    border-bottom: 1px solid var(--gray-200);
   }
 
-  .modal-modules-row {
-    grid-row: 3;
+  .client-module-design-grid {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
@@ -962,43 +680,41 @@ Showcase freelance/client projects with modal deep-dives
     grid-template-columns: 1fr;
   }
 
-  .modal-backdrop {
-    padding: 1rem;
+  .client-module-masonry {
+    column-count: 2;
   }
 
-  .modal-layout {
-    padding: 1rem 0;
-  }
-
-  .modal-title-card {
-    padding: 1.5rem 1.75rem;
-  }
-
-  .modal-modules-grid {
+  .client-module-postcards {
     grid-template-columns: 1fr;
   }
 
-
-  .modal-module-card {
-    min-height: 80px;
-  }
-
-  .modal-header-btns {
-    right: 0;
-    top: -0.5rem;
-  }
-
-  .drilldown-categories-grid {
+  .client-module-deliverables {
     grid-template-columns: 1fr;
   }
 
-  .modal-back-card {
-    padding: 1.5rem 1.75rem;
+  .client-module-design-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .client-module-row-left {
+    gap: var(--space-sm);
+  }
+
+  .client-module-name {
+    font-size: 1.1rem;
+  }
+
+  .client-module-count {
+    display: none;
   }
 }
 
 @media (max-width: 480px) {
-  .screenshot-placeholder:not(:has(img)) {
-    aspect-ratio: 4 / 3;
+  .client-module-masonry {
+    column-count: 1;
+  }
+
+  .client-module-design-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }

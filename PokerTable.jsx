@@ -2,44 +2,20 @@ import { motion, AnimatePresence, useScroll, useTransform, useAnimationControls 
 import { useState, useRef, useEffect } from 'react'
 import './PokerTable.css'
 
-const POKER_TABLE_SVG = '/images/Pokertable.svg'
-const CARD_BACK_SVG = '/images/Cardback.svg'
-const SHADOW_SVG = '/images/Shadow.svg'
-
-const IMAGE_SRCS = [POKER_TABLE_SVG, CARD_BACK_SVG, SHADOW_SVG]
-
 const ndsEase = [0.22, 1, 0.36, 1]
 
 function PokerTable() {
   const [inspectingCard, setInspectingCard] = useState(null)
   const [showPrompt, setShowPrompt] = useState(false)
-  const [imagesLoaded, setImagesLoaded] = useState(false)
   const sectionRef = useRef(null)
   const cardRefs = [useRef(null), useRef(null), useRef(null)]
   const cardPositionRef = useRef(null)
   const cardsDealtRef = useRef(false)
 
-  // Animation controls for each card
   const card1Controls = useAnimationControls()
   const card2Controls = useAnimationControls()
   const card3Controls = useAnimationControls()
   const cardControls = [card1Controls, card2Controls, card3Controls]
-
-  // Preload all images
-  useEffect(() => {
-    let cancelled = false
-    Promise.all(
-      IMAGE_SRCS.map(src => new Promise((resolve) => {
-        const img = new Image()
-        img.onload = resolve
-        img.onerror = resolve // don't block on failure
-        img.src = src
-      }))
-    ).then(() => {
-      if (!cancelled) setImagesLoaded(true)
-    })
-    return () => { cancelled = true }
-  }, [])
 
   // Initialize cards off-screen
   useEffect(() => {
@@ -54,16 +30,9 @@ function PokerTable() {
     offset: ["start end", "end start"]
   })
 
-  // Table slides in from right, then slides back out on continued scroll
   const tableX = useTransform(scrollYProgress, [0, 0.4, 0.7, 0.88], [1800, 0, 0, 1800])
-
-  // Shadow fades in with table, fades out BEFORE table starts sliding out
-  const shadowOpacity = useTransform(scrollYProgress, [0.1, 0.4, 0.58, 0.7], [0, 1, 1, 0])
-
-  // Text column fades out alongside the shadow
   const contentOpacity = useTransform(scrollYProgress, [0.58, 0.7], [1, 0])
 
-  // Track whether scroll has reached the deal threshold
   const scrollReadyRef = useRef(false)
 
   useEffect(() => {
@@ -73,17 +42,15 @@ function PokerTable() {
     return () => unsubscribe()
   }, [scrollYProgress])
 
-  // Deal cards once BOTH images are loaded AND scroll has reached threshold
+  // Deal cards
   useEffect(() => {
-    if (!imagesLoaded || cardsDealtRef.current) return
+    if (cardsDealtRef.current) return
 
-    // If scroll already past threshold, deal immediately
     if (scrollReadyRef.current) {
       dealCards()
       return
     }
 
-    // Otherwise wait for scroll to reach threshold
     const unsubscribe = scrollYProgress.on("change", (latest) => {
       if (latest >= 0.4 && !cardsDealtRef.current) {
         dealCards()
@@ -115,34 +82,35 @@ function PokerTable() {
         setTimeout(() => setShowPrompt(true), 2300)
       }, 1000)
     }
-  }, [imagesLoaded, scrollYProgress, card1Controls, card2Controls, card3Controls])
+  }, [scrollYProgress, card1Controls, card2Controls, card3Controls])
 
-  // Projects data
   const projects = [
     {
       name: "Aptos Token Launcher",
-      description: "Web application for creating and deploying tokens on Aptos blockchain.",
-      stat: "100+ Tokens Deployed",
+      description: "Web application for creating and deploying tokens on Aptos blockchain. Simplified a complex technical process into an accessible interface.",
+      stat: "100+",
+      statLabel: "Tokens Deployed",
       tech: ["React", "Aptos SDK", "Web3"],
       link: "/projects/aptos"
     },
     {
       name: "PrepMe AI",
-      description: "Interview practice platform using Claude AI with real-time feedback.",
-      stat: "50+ Active Users",
+      description: "Interview practice platform using Claude AI with real-time feedback. Helps users improve their interview skills through realistic simulations.",
+      stat: "50+",
+      statLabel: "Active Users",
       tech: ["React", "Anthropic API", "Voice"],
       link: "/projects/prepme"
     },
     {
       name: "AI Literacy Lectures",
-      description: "Educational program teaching everyday users about AI fundamentals.",
-      stat: "100+ Attendees",
+      description: "Educational program teaching everyday users about AI fundamentals. Breaking down complex concepts into digestible, actionable knowledge.",
+      stat: "100+",
+      statLabel: "Attendees",
       tech: ["Education", "Public Speaking", "AI"],
       link: "/projects/lectures"
     }
   ]
 
-  // Handle card click — capture the card's visual center + size
   const handleCardClick = (index) => {
     const cardEl = cardRefs[index]?.current
     if (!cardEl) return
@@ -163,15 +131,7 @@ function PokerTable() {
   return (
     <section className="poker-table-section" ref={sectionRef}>
       <div className="poker-table-wrapper">
-        {/* Shadow Overlay */}
-        <motion.div
-          className="poker-table-shadow-overlay"
-          style={{ opacity: shadowOpacity }}
-        >
-          <img src={SHADOW_SVG} alt="" />
-        </motion.div>
-
-        {/* Left Column - Text Content */}
+        {/* Left Column */}
         <motion.div className="poker-content-column" style={{ opacity: contentOpacity }}>
           <div className="container">
             <motion.p
@@ -198,21 +158,17 @@ function PokerTable() {
               animate={{ opacity: showPrompt ? 1 : 0 }}
               transition={{ duration: 0.6, ease: ndsEase }}
             >
-              <p>GO AHEAD, PICK ONE</p>
+              <p>Select a project</p>
             </motion.div>
           </div>
         </motion.div>
 
-        {/* Right Column - Poker Table */}
+        {/* Right Column — Card Surface */}
         <div className="poker-table-column">
           <motion.div
             className="poker-table-container"
             style={{ x: tableX }}
           >
-            <div className="poker-table-image">
-              <img src={POKER_TABLE_SVG} alt="Poker Table" />
-            </div>
-
             {/* Cards */}
             <div className="cards-area">
               {projects.map((project, i) => (
@@ -232,8 +188,52 @@ function PokerTable() {
                       transition: { duration: 0.2, ease: ndsEase }
                     }}
                   >
-                    <img src={SHADOW_SVG} className="card-shadow" alt="" />
-                    <img src={CARD_BACK_SVG} className="card-back" alt="Card back" />
+                    {/* Playing Card Back */}
+                    <div className="card-back">
+                      <div className="card-back-edge">
+                        <div className="card-back-frame">
+                          <svg className="card-back-pattern" viewBox="0 0 200 300" preserveAspectRatio="xMidYMid slice">
+                            <defs>
+                              <pattern id={`diamonds${i}`} x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                                <rect width="20" height="20" fill="none" />
+                                <rect x="8" y="8" width="4" height="4" rx="0.5" fill="rgba(244,241,234,0.08)" transform="rotate(45 10 10)" />
+                                <circle cx="0" cy="0" r="1" fill="rgba(244,241,234,0.05)" />
+                                <circle cx="20" cy="0" r="1" fill="rgba(244,241,234,0.05)" />
+                                <circle cx="0" cy="20" r="1" fill="rgba(244,241,234,0.05)" />
+                                <circle cx="20" cy="20" r="1" fill="rgba(244,241,234,0.05)" />
+                              </pattern>
+                              <pattern id={`filigree${i}`} x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                                <rect width="40" height="40" fill="none" />
+                                <path d="M20 0 Q25 10 20 20 Q15 10 20 0Z" fill="rgba(244,241,234,0.04)" />
+                                <path d="M0 20 Q10 25 20 20 Q10 15 0 20Z" fill="rgba(244,241,234,0.04)" />
+                                <path d="M20 20 Q25 30 20 40 Q15 30 20 20Z" fill="rgba(244,241,234,0.04)" />
+                                <path d="M20 20 Q30 25 40 20 Q30 15 20 20Z" fill="rgba(244,241,234,0.04)" />
+                              </pattern>
+                            </defs>
+                            <rect width="200" height="300" fill={`url(#diamonds${i})`} />
+                            <rect width="200" height="300" fill={`url(#filigree${i})`} />
+                          </svg>
+                          <div className="card-back-medallion">
+                            <div className="card-back-medallion-ring">
+                              <span className="card-back-monogram">G</span>
+                            </div>
+                          </div>
+                          {/* Corner pips */}
+                          <svg className="card-back-pip card-back-pip-tl" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 1L10 6H15L11 9.5L12.5 15L8 11.5L3.5 15L5 9.5L1 6H6L8 1Z" fill="rgba(244,241,234,0.1)" />
+                          </svg>
+                          <svg className="card-back-pip card-back-pip-tr" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 1L10 6H15L11 9.5L12.5 15L8 11.5L3.5 15L5 9.5L1 6H6L8 1Z" fill="rgba(244,241,234,0.1)" />
+                          </svg>
+                          <svg className="card-back-pip card-back-pip-bl" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 1L10 6H15L11 9.5L12.5 15L8 11.5L3.5 15L5 9.5L1 6H6L8 1Z" fill="rgba(244,241,234,0.1)" />
+                          </svg>
+                          <svg className="card-back-pip card-back-pip-br" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 1L10 6H15L11 9.5L12.5 15L8 11.5L3.5 15L5 9.5L1 6H6L8 1Z" fill="rgba(244,241,234,0.1)" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
                   </motion.div>
                 </motion.div>
               ))}
@@ -242,11 +242,11 @@ function PokerTable() {
         </div>
       </div>
 
-      {/* ═══════ INSPECTION MODAL — TRUE 3D CARD FLIP ═══════ */}
+      {/* ═══════ INSPECTION — 3D CARD FLIP ═══════ */}
       <AnimatePresence>
         {inspectingCard !== null && cardPositionRef.current && (
           <>
-            {/* Dark overlay */}
+            {/* Parchment blur overlay */}
             <motion.div
               key="overlay"
               className="inspection-overlay"
@@ -256,7 +256,7 @@ function PokerTable() {
               onClick={handleDismiss}
             />
 
-            {/* The card — starts at table card position, flies to center, flips */}
+            {/* Card — flies from table to center, flips */}
             <motion.div
               key={`inspect-${inspectingCard}`}
               className="inspected-card"
@@ -273,8 +273,8 @@ function PokerTable() {
                 top: typeof window !== 'undefined' ? window.innerHeight / 2 : 400,
                 x: '-50%',
                 y: '-50%',
-                width: 380,
-                height: 560,
+                width: 400,
+                height: 580,
                 transition: { duration: 0.6, ease: ndsEase }
               }}
               exit={{
@@ -282,27 +282,73 @@ function PokerTable() {
                 transition: { duration: 0.15, ease: ndsEase }
               }}
             >
-              {/* Inner — flips to reveal project, reverses on close */}
               <motion.div
                 className="inspected-card-inner"
                 initial={{ rotateY: 0 }}
                 animate={{ rotateY: 180, transition: { duration: 0.6, ease: ndsEase } }}
                 exit={{ rotateY: 0, transition: { duration: 0.25, ease: ndsEase } }}
               >
-                {/* BACK FACE — card back image (visible at rotateY: 0) */}
+                {/* BACK FACE */}
                 <div className="inspected-face inspected-face-back">
-                  <img src={CARD_BACK_SVG} alt="Card back" />
+                  <div className="card-back">
+                    <div className="card-back-edge">
+                      <div className="card-back-frame">
+                        <svg className="card-back-pattern" viewBox="0 0 200 300" preserveAspectRatio="xMidYMid slice">
+                          <defs>
+                            <pattern id="diamondsInspect" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                              <rect width="20" height="20" fill="none" />
+                              <rect x="8" y="8" width="4" height="4" rx="0.5" fill="rgba(244,241,234,0.08)" transform="rotate(45 10 10)" />
+                              <circle cx="0" cy="0" r="1" fill="rgba(244,241,234,0.05)" />
+                              <circle cx="20" cy="0" r="1" fill="rgba(244,241,234,0.05)" />
+                              <circle cx="0" cy="20" r="1" fill="rgba(244,241,234,0.05)" />
+                              <circle cx="20" cy="20" r="1" fill="rgba(244,241,234,0.05)" />
+                            </pattern>
+                            <pattern id="filigreeInspect" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                              <rect width="40" height="40" fill="none" />
+                              <path d="M20 0 Q25 10 20 20 Q15 10 20 0Z" fill="rgba(244,241,234,0.04)" />
+                              <path d="M0 20 Q10 25 20 20 Q10 15 0 20Z" fill="rgba(244,241,234,0.04)" />
+                              <path d="M20 20 Q25 30 20 40 Q15 30 20 20Z" fill="rgba(244,241,234,0.04)" />
+                              <path d="M20 20 Q30 25 40 20 Q30 15 20 20Z" fill="rgba(244,241,234,0.04)" />
+                            </pattern>
+                          </defs>
+                          <rect width="200" height="300" fill="url(#diamondsInspect)" />
+                          <rect width="200" height="300" fill="url(#filigreeInspect)" />
+                        </svg>
+                        <div className="card-back-medallion">
+                          <div className="card-back-medallion-ring">
+                            <span className="card-back-monogram">G</span>
+                          </div>
+                        </div>
+                        <svg className="card-back-pip card-back-pip-tl" viewBox="0 0 16 16" fill="none">
+                          <path d="M8 1L10 6H15L11 9.5L12.5 15L8 11.5L3.5 15L5 9.5L1 6H6L8 1Z" fill="rgba(244,241,234,0.1)" />
+                        </svg>
+                        <svg className="card-back-pip card-back-pip-tr" viewBox="0 0 16 16" fill="none">
+                          <path d="M8 1L10 6H15L11 9.5L12.5 15L8 11.5L3.5 15L5 9.5L1 6H6L8 1Z" fill="rgba(244,241,234,0.1)" />
+                        </svg>
+                        <svg className="card-back-pip card-back-pip-bl" viewBox="0 0 16 16" fill="none">
+                          <path d="M8 1L10 6H15L11 9.5L12.5 15L8 11.5L3.5 15L5 9.5L1 6H6L8 1Z" fill="rgba(244,241,234,0.1)" />
+                        </svg>
+                        <svg className="card-back-pip card-back-pip-br" viewBox="0 0 16 16" fill="none">
+                          <path d="M8 1L10 6H15L11 9.5L12.5 15L8 11.5L3.5 15L5 9.5L1 6H6L8 1Z" fill="rgba(244,241,234,0.1)" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                {/* FRONT FACE — project info (visible at rotateY: 180) */}
+                {/* FRONT FACE — NDS editorial project card */}
                 <div className="inspected-face inspected-face-front">
                   <button className="close-btn" onClick={(e) => { e.stopPropagation(); handleDismiss() }}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M18 6L6 18M6 6l12 12"/>
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                     </svg>
                   </button>
                   <div className="project-info">
-                    <div className="project-stat">{projects[inspectingCard].stat}</div>
+                    <div className="project-stat-group">
+                      <span className="project-stat-number">{projects[inspectingCard].stat}</span>
+                      <span className="project-stat-label">{projects[inspectingCard].statLabel}</span>
+                    </div>
+                    <div className="project-divider" />
                     <h3>{projects[inspectingCard].name}</h3>
                     <p>{projects[inspectingCard].description}</p>
                     <div className="project-tech">
@@ -311,7 +357,10 @@ function PokerTable() {
                       ))}
                     </div>
                     <a href={projects[inspectingCard].link} className="project-link">
-                      View Project →
+                      View Project
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                        <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
                     </a>
                   </div>
                 </div>

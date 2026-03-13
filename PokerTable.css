@@ -1,32 +1,13 @@
 /*
-POKER TABLE — VIDEO GAME CARD FLIP
-True 3D card flip with backface-visibility.
-Card lifts from table → flies to center → flips to reveal project.
-Dismiss → flips back → returns to stack.
+POKER TABLE — NDS EDITORIAL CARD DEAL
+3D card flip with prestige styling.
+Cards on forest-green surface, NDS card backs, editorial fronts.
 */
 
 .poker-table-section {
   position: relative;
   height: 400vh;
   background-color: var(--parchment);
-}
-
-/* Shadow Overlay */
-.poker-table-shadow-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.poker-table-shadow-overlay img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
 }
 
 .poker-table-wrapper {
@@ -40,7 +21,9 @@ Dismiss → flips back → returns to stack.
   overflow: hidden;
 }
 
-/* Left Column - Text Content */
+/* ==========================================
+   LEFT COLUMN — Text
+   ========================================== */
 .poker-content-column {
   flex: 0 0 40%;
   max-width: 40%;
@@ -61,16 +44,6 @@ Dismiss → flips back → returns to stack.
   flex: 1;
   display: flex;
   flex-direction: column;
-}
-
-/* Right Column - Poker Table */
-.poker-table-column {
-  flex: 0 0 60%;
-  max-width: none;
-  position: relative;
-  height: calc(100vh - 101px);
-  overflow: visible;
-  z-index: 2;
 }
 
 .poker-content-column .label {
@@ -100,16 +73,25 @@ Dismiss → flips back → returns to stack.
 
 .poker-prompt p {
   font-family: var(--font-sans);
-  font-size: 1.25rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--charcoal);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--warm-gray);
   text-transform: uppercase;
 }
 
 /* ==========================================
-   POKER TABLE CONTAINER
+   RIGHT COLUMN — Card Surface
    ========================================== */
+.poker-table-column {
+  flex: 0 0 60%;
+  max-width: none;
+  position: relative;
+  height: calc(100vh - 101px);
+  overflow: visible;
+  z-index: 2;
+}
+
 .poker-table-container {
   position: absolute;
   top: 0;
@@ -118,27 +100,13 @@ Dismiss → flips back → returns to stack.
   min-width: 100%;
   height: calc(100vh - 101px);
   pointer-events: none;
-}
-
-.poker-table-image {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: auto;
-  height: 100%;
-  pointer-events: none;
-}
-
-.poker-table-image img {
-  width: auto;
-  height: 100%;
-  max-width: none;
-  object-fit: contain;
-  object-position: right center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ==========================================
-   CARDS AREA
+   CARDS
    ========================================== */
 .cards-area {
   position: absolute;
@@ -166,7 +134,6 @@ Dismiss → flips back → returns to stack.
 .card-container:nth-child(2) { z-index: 2; }
 .card-container:nth-child(3) { z-index: 3; }
 
-/* Inner layer for hover — avoids Framer Motion animate/whileHover conflict */
 .card-hover-layer {
   position: absolute;
   inset: 0;
@@ -174,58 +141,129 @@ Dismiss → flips back → returns to stack.
   height: 100%;
 }
 
-/* Hide the table card when its inspected version is showing */
 .card-container.card-hidden {
   opacity: 0 !important;
   pointer-events: none;
 }
 
-.card-shadow {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
-}
-
+/* ==========================================
+   PLAYING CARD BACK
+   Classic card back: maroon, ornate borders,
+   diamond lattice, central medallion, corner pips.
+   ========================================== */
 .card-back {
   position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  z-index: 2;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  object-fit: cover;
-  object-position: center;
-  outline: none;
+  background: #5C1A2A;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
+/* White edge — like a real card */
+.card-back-edge {
+  position: absolute;
+  inset: 4px;
+  border: 2px solid rgba(244, 241, 234, 0.2);
+  border-radius: 8px;
+}
+
+/* Inner ornate frame */
+.card-back-frame {
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(244, 241, 234, 0.12);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+/* Diamond lattice + filigree pattern */
+.card-back-pattern {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Center medallion */
+.card-back-medallion {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid rgba(244, 241, 234, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(92, 26, 42, 0.9);
+  box-shadow:
+    0 0 0 6px rgba(244, 241, 234, 0.04),
+    0 0 0 8px rgba(244, 241, 234, 0.08);
+}
+
+.card-back-medallion-ring {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(244, 241, 234, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-back-monogram {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: rgba(244, 241, 234, 0.2);
+  user-select: none;
+  line-height: 1;
+}
+
+/* Corner pips — small stars in each corner */
+.card-back-pip {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+}
+
+.card-back-pip-tl { top: 6px; left: 6px; }
+.card-back-pip-tr { top: 6px; right: 6px; }
+.card-back-pip-bl { bottom: 6px; left: 6px; }
+.card-back-pip-br { bottom: 6px; right: 6px; }
+
 /* ==========================================
-   INSPECTION MODE — TRUE 3D CARD FLIP
+   INSPECTION — 3D CARD FLIP
    ========================================== */
 
-/* Dark Overlay */
+/* Parchment blur overlay */
 .inspection-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(250, 248, 243, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   z-index: 1000;
   cursor: pointer;
 }
 
-/* The card wrapper — position/size animated by Framer Motion */
 .inspected-card {
   position: fixed;
   z-index: 1001;
-  /* No width/height here — Framer Motion controls dimensions */
   perspective: 1200px;
 }
 
-/* Inner container — handles the rotateY flip */
 .inspected-card-inner {
   width: 100%;
   height: 100%;
@@ -233,51 +271,46 @@ Dismiss → flips back → returns to stack.
   transform-style: preserve-3d;
 }
 
-/* Each face fills the card, only one visible at a time */
 .inspected-face {
   position: absolute;
   inset: 0;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  border-radius: 16px;
+  border-radius: 12px;
   overflow: hidden;
 }
 
-/* Back face — the card back image. Visible at rotateY: 0 */
-.inspected-face-back img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+/* Back face */
+.inspected-face-back .card-back {
+  border-radius: 12px;
 }
 
-/* Front face — project info. Pre-rotated 180deg, visible when parent is at rotateY: 180 */
+/* Front face — NDS editorial */
 .inspected-face-front {
   transform: rotateY(180deg);
-  width: 380px;
-  height: 560px;
-  background: url('/card.svg') no-repeat center;
-  background-size: 380px auto;
-  padding: 0;
+  background: var(--parchment);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.15),
+    0 8px 24px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
-  overflow: visible; /* allow close btn to sit outside card */
+  overflow: visible;
+  padding: 2.5rem;
 }
 
-/* Close Button — floated completely off the card, white X only */
+/* Close Button */
 .close-btn {
   position: absolute;
-  top: -28px;
-  right: -28px;
-  width: 40px;
-  height: 40px;
+  top: -44px;
+  right: 0;
+  width: 36px;
+  height: 36px;
   background: transparent;
-  color: white;
-  border: none;
-  border-radius: 0;
+  color: var(--charcoal);
+  border: 1px solid var(--gray-200);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -287,90 +320,121 @@ Dismiss → flips back → returns to stack.
 }
 
 .close-btn:hover {
-  color: rgba(255, 255, 255, 0.8);
-  transform: scale(1.1);
+  border-color: var(--forest-green);
+  color: var(--forest-green);
 }
 
 .close-btn svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
-/* Project Info — shrunk to fit center of card.svg (inner content area) */
+/* ==========================================
+   PROJECT INFO — Editorial card content
+   ========================================== */
 .project-info {
-  width: 52%;
-  max-height: 72%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   text-align: left;
-  overflow: hidden;
 }
 
-.project-stat {
+.project-stat-group {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.project-stat-number {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--forest-green);
+}
+
+.project-stat-label {
   font-family: var(--font-sans);
-  font-size: 0.6rem;
+  font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--forest-green);
-  margin-bottom: 8px;
+  color: var(--warm-gray);
+}
+
+.project-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--gray-200);
+  margin-bottom: 1.25rem;
 }
 
 .project-info h3 {
   font-family: var(--font-serif);
-  font-size: 1.35rem;
-  line-height: 1.2;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
   color: var(--charcoal);
-  margin-bottom: 8px;
+  margin-bottom: 0.75rem;
 }
 
 .project-info p {
-  font-size: 0.75rem;
-  line-height: 1.5;
+  font-size: 0.9rem;
+  line-height: 1.65;
   color: var(--slate);
-  margin-bottom: 12px;
+  margin-bottom: 1.25rem;
   flex-grow: 1;
 }
 
 .project-tech {
   display: flex;
-  flex-wrap: nowrap;
-  gap: 4px;
-  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 1.25rem;
 }
 
 .project-tech span {
   font-family: var(--font-sans);
-  font-size: 0.55rem;
+  font-size: 0.65rem;
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--warm-gray);
-  padding: 4px 8px;
+  padding: 5px 10px;
   border: 1px solid var(--gray-200);
-  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.project-tech span:hover {
+  border-color: var(--forest-green);
+  color: var(--forest-green);
 }
 
 .project-link {
   font-family: var(--font-sans);
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--forest-green);
-  text-decoration: none;
-  padding: 8px 16px;
+  color: var(--cream);
+  background: var(--forest-green);
   border: 2px solid var(--forest-green);
-  border-radius: 6px;
+  text-decoration: none;
+  padding: 12px 24px;
   transition: all 0.2s ease;
-  display: block;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
   align-self: stretch;
 }
 
 .project-link:hover {
-  background-color: var(--forest-green);
-  color: var(--cream);
+  background: transparent;
+  color: var(--forest-green);
 }
 
 /* ==========================================
@@ -391,10 +455,6 @@ Dismiss → flips back → returns to stack.
 @media (max-width: 1024px) {
   .poker-table-container {
     right: -50px;
-  }
-
-  .poker-table-image img {
-    max-width: 100vw;
   }
 }
 
@@ -437,17 +497,6 @@ Dismiss → flips back → returns to stack.
     min-height: auto;
   }
 
-  .poker-table-image {
-    width: 100%;
-  }
-
-  .poker-table-image img {
-    width: 100%;
-    max-width: 100vw;
-    object-fit: contain;
-    object-position: right center;
-  }
-
   .cards-area {
     left: 20%;
     width: 400px;
@@ -458,20 +507,43 @@ Dismiss → flips back → returns to stack.
     height: 170px;
   }
 
+  .card-back-medallion {
+    width: 36px;
+    height: 36px;
+  }
+
+  .card-back-medallion-ring {
+    width: 26px;
+    height: 26px;
+  }
+
+  .card-back-monogram {
+    font-size: 0.9rem;
+  }
+
+  .card-back-pip {
+    width: 8px;
+    height: 8px;
+  }
+
   .inspected-card {
     perspective: 800px;
   }
 
+  .inspected-face-front {
+    padding: 1.75rem;
+  }
+
+  .project-stat-number {
+    font-size: 2.25rem;
+  }
+
   .project-info h3 {
-    font-size: 1.5rem;
+    font-size: 1.35rem;
   }
 
   .project-info p {
-    font-size: 1rem;
-  }
-
-  .poker-prompt p {
-    font-size: 1rem;
+    font-size: 0.85rem;
   }
 }
 
@@ -479,11 +551,6 @@ Dismiss → flips back → returns to stack.
   .poker-table-column {
     height: 50vh;
     min-height: 400px;
-  }
-
-  .poker-table-image img {
-    object-fit: contain;
-    object-position: right center;
   }
 
   .card-container {
@@ -494,7 +561,7 @@ Dismiss → flips back → returns to stack.
   .close-btn {
     width: 32px;
     height: 32px;
-    top: 12px;
-    right: 12px;
+    top: -40px;
+    right: 0;
   }
 }
