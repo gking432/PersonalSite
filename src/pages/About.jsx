@@ -205,7 +205,7 @@ function About() {
                 ))}
               </h1>
             <motion.p
-              className=”about-intro”
+              className="about-intro"
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
@@ -213,7 +213,7 @@ function About() {
               I started my career at Sub-Zero Group, Inc., where I rotated through sales operations, product marketing, and dealer sales — learning how
               premium brands are built and maintained at scale. After that, I did what a lot of marketers talk about but few actually do: I went out on
               my own. I started a marketing consultancy, working with early-stage companies on branding, digital strategy, and customer acquisition. I sat
-              across the table from founders with ideas and figured out how to make those ideas real. That’s when I discovered what I actually cared about.
+              across the table from founders with ideas and figured out how to make those ideas real. That's when I discovered what I actually cared about.
               Not the title, not being my own boss — but <em>building</em>.
             </motion.p>
 
@@ -222,30 +222,30 @@ function About() {
                 <p>
                   Running my own shop taught me everything a corporate role never could. I handled strategy, creative, client management, and execution —
                   simultaneously, with no safety net. I learned how to scope work, manage expectations, and deliver under constraints that would make most
-                  agency teams blink. More importantly, I learned what happens when you’re the one responsible for every outcome, not just one piece of the funnel.
+                  agency teams blink. More importantly, I learned what happens when you're the one responsible for every outcome, not just one piece of the funnel.
                 </p>
                 <p>
-                  As the marketing landscape evolved, I realized I wanted to get closer to the product side of the work. I didn’t just want to market things — I wanted
+                  As the marketing landscape evolved, I realized I wanted to get closer to the product side of the work. I didn't just want to market things — I wanted
                   to build them. So I started building. A cryptocurrency token launchpad with full go-to-market strategy. An AI-powered interview prep platform. A
                   cartography print studio. Each one a complete product: brand identity, positioning, development, and acquisition strategy, all done by me.
                 </p>
                 <p>
-                  That range is the point. I’m a marketing leader who can go from whiteboard to working product. I can build the landing page, write the copy,
+                  That range is the point. I'm a marketing leader who can go from whiteboard to working product. I can build the landing page, write the copy,
                   design the brand, set up the analytics, and launch the campaign — not because I <em>have</em> to, but because understanding every layer makes me
-                  better at leading the ones I delegate. I’ve spent years learning modern tools, including AI, not as a novelty but because they fundamentally
-                  change how fast a small team can move. I treat them the way a good carpenter treats power tools: they don’t replace the craft, they accelerate it.
+                  better at leading the ones I delegate. I've spent years learning modern tools, including AI, not as a novelty but because they fundamentally
+                  change how fast a small team can move. I treat them the way a good carpenter treats power tools: they don't replace the craft, they accelerate it.
                 </p>
                 <p>
-                  The through-line of my career has always been the same: take something from zero to one. Whether that’s a client’s first website, a product idea
-                  that didn’t exist yesterday, or a brand that needs to find its audience — I’m at my best when I’m building from scratch and figuring it out as I go.
+                  The through-line of my career has always been the same: take something from zero to one. Whether that's a client's first website, a product idea
+                  that didn't exist yesterday, or a brand that needs to find its audience — I'm at my best when I'm building from scratch and figuring it out as I go.
                 </p>
                 <p>
-                  Now I’m looking for the right team. A company that’s serious about growth and wants a marketing leader who doesn’t just think strategically but
+                  Now I'm looking for the right team. A company that's serious about growth and wants a marketing leader who doesn't just think strategically but
                   executes on it — someone who understands how ideas become products, how products find customers, and how to build momentum without burning budget on
-                  guesswork. I’ve done the solo chapter. I’m ready to bring everything I’ve learned to a team that’s building something worth building.
+                  guesswork. I've done the solo chapter. I'm ready to bring everything I've learned to a team that's building something worth building.
                 </p>
                 <p>
-                  Whether that’s a leadership role, a consulting engagement, or something I haven’t considered yet — I’m open to the conversation.
+                  Whether that's a leadership role, a consulting engagement, or something I haven't considered yet — I'm open to the conversation.
                   I just want to be in the room where things are getting built.
                 </p>
               </>
