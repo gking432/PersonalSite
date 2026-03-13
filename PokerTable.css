@@ -8,7 +8,6 @@ Cards on forest-green surface, NDS card backs, editorial fronts.
   position: relative;
   height: 400vh;
   background-color: var(--parchment);
-  overflow: hidden;
 }
 
 .poker-table-wrapper {
