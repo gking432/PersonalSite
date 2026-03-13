@@ -17,11 +17,11 @@ function PokerTable() {
   const card3Controls = useAnimationControls()
   const cardControls = [card1Controls, card2Controls, card3Controls]
 
-  // Initialize cards off-screen
+  // Initialize cards off-screen (bottom of viewport)
   useEffect(() => {
-    card1Controls.set({ x: 3000, y: 0, rotate: 99, opacity: 1 })
-    card2Controls.set({ x: 3000, y: 0, rotate: 99, opacity: 1 })
-    card3Controls.set({ x: 3000, y: 0, rotate: 99, opacity: 1 })
+    card1Controls.set({ x: -70, y: 800, rotate: -24, opacity: 1 })
+    card2Controls.set({ x: 0, y: 800, rotate: -6, opacity: 1 })
+    card3Controls.set({ x: 70, y: 800, rotate: 10, opacity: 1 })
   }, [card1Controls, card2Controls, card3Controls])
 
   // Scroll tracking
@@ -30,8 +30,9 @@ function PokerTable() {
     offset: ["start end", "end start"]
   })
 
-  const tableX = useTransform(scrollYProgress, [0, 0.4, 0.7, 0.88], [1800, 0, 0, 1800])
+  const tableX = useTransform(scrollYProgress, [0, 0.4, 0.7, 0.88], [0, 0, 0, 1800])
   const contentOpacity = useTransform(scrollYProgress, [0.58, 0.7], [1, 0])
+  const bgOpacity = useTransform(scrollYProgress, [0.08, 0.2, 0.58, 0.7], [0, 1, 1, 0])
 
   const scrollReadyRef = useRef(false)
 
@@ -63,20 +64,20 @@ function PokerTable() {
       cardsDealtRef.current = true
 
       card1Controls.start({
-        x: 0, y: 0, rotate: -15,
+        x: -70, y: 0, rotate: -24,
         transition: { duration: 0.8, ease: ndsEase }
       })
 
       setTimeout(() => {
         card2Controls.start({
-          x: 120, y: -18, rotate: -3,
+          x: 0, y: -18, rotate: -6,
           transition: { duration: 0.8, ease: ndsEase }
         })
       }, 500)
 
       setTimeout(() => {
         card3Controls.start({
-          x: 240, y: -5, rotate: 9,
+          x: 70, y: -12, rotate: 10,
           transition: { duration: 0.8, ease: ndsEase }
         })
         setTimeout(() => setShowPrompt(true), 2300)
@@ -130,6 +131,10 @@ function PokerTable() {
 
   return (
     <section className="poker-table-section" ref={sectionRef}>
+      <motion.div
+        className="poker-table-bg"
+        style={{ opacity: bgOpacity }}
+      />
       <div className="poker-table-wrapper">
         {/* Left Column */}
         <motion.div className="poker-content-column" style={{ opacity: contentOpacity }}>
@@ -158,7 +163,7 @@ function PokerTable() {
               animate={{ opacity: showPrompt ? 1 : 0 }}
               transition={{ duration: 0.6, ease: ndsEase }}
             >
-              <p>Select a project</p>
+              <p>Pick a card, any card</p>
             </motion.div>
           </div>
         </motion.div>
@@ -177,7 +182,8 @@ function PokerTable() {
                   ref={cardRefs[i]}
                   className={`card-container ${inspectingCard === i ? 'card-hidden' : ''}`}
                   animate={cardControls[i]}
-                  initial={{ x: 3000, y: 0, rotate: 99, opacity: 1 }}
+                  initial={{ x: [-70, 0, 70][i], y: 800, rotate: [-24, -6, 10][i], opacity: 1 }}
+                  style={{ transformOrigin: 'center bottom' }}
                   onClick={() => handleCardClick(i)}
                 >
                   <motion.div
