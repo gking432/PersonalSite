@@ -220,153 +220,65 @@ One cohesive piece. Generous whitespace. Parchment base.
 }
 
 /* ═══════════════════════════════════════════
-   CAPABILITIES — SQUEEZE + HORIZONTAL SCROLL + 3D TILT
+   APPROACH — EDITORIAL TYPOGRAPHY SECTION
+   Lives on parchment. Breathes between colored sections.
    ═══════════════════════════════════════════ */
-.capabilities-scroll-container {
-  height: 300vh;
-  position: relative;
-  margin-top: 60px; /* breathing room from stats */
+.approach {
+  padding: var(--space-3xl) 0 var(--space-2xl);
+  background-color: var(--parchment);
 }
 
-.capabilities-sticky {
-  position: sticky;
-  top: var(--header-height);
-  height: calc(100vh - var(--header-height));
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  background-color: var(--charcoal);
-  will-change: transform;
-  transform-origin: center;
-}
-
-.capabilities-track {
-  display: flex;
-  gap: var(--space-lg);
-  padding: 0 var(--space-xl);
-  will-change: transform;
-  align-items: center;
-}
-
-/* Header card (first item in track) */
-.capability-header-card {
-  min-width: 400px;
-  max-width: 400px;
-  flex-shrink: 0;
-  padding: var(--space-xl) var(--space-lg);
-}
-
-.capability-header-card .label {
-  color: rgba(244, 241, 234, 0.5);
+.approach .label {
   margin-bottom: var(--space-md);
 }
 
-.capability-header-card .section-heading {
+.approach-statement {
   font-family: var(--font-display);
-  font-size: clamp(3rem, 8vw, 5rem);
-  color: var(--cream);
-  margin-bottom: var(--space-md);
-  line-height: 0.95;
+  font-size: clamp(2.2rem, 5.5vw, 4.5rem);
+  font-weight: 400;
+  line-height: 1.05;
   letter-spacing: -0.03em;
+  color: var(--charcoal);
+  max-width: 900px;
+  margin-bottom: var(--space-2xl);
 }
 
-.capability-header-desc {
-  font-size: 1.1rem;
-  line-height: 1.7;
-  color: rgba(244, 241, 234, 0.7) !important;
-  max-width: 100% !important;
+.approach-principles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-xl);
+  max-width: 1000px;
 }
 
-/* 3D TILT CARD */
-.tilt-card {
-  position: relative;
-  perspective: 800px;
-  cursor: default;
+.approach-principle {
+  padding-top: var(--space-md);
+  border-top: 1px solid rgba(42, 42, 42, 0.12);
 }
 
-.tilt-card-inner {
-  position: relative;
-  z-index: 1;
-}
-
-.tilt-card-glare {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 2;
-}
-
-/* Capability cards (inside tilt) */
-.capability-card-3d {
-  min-width: 420px;
-  max-width: 420px;
-  flex-shrink: 0;
-  background: rgba(244, 241, 234, 0.06);
-  border: 1px solid rgba(244, 241, 234, 0.12);
-  border-radius: 20px;
-  padding: var(--space-lg) var(--space-lg) var(--space-md);
-  transition: background 0.4s var(--ease-out), border-color 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out);
-  overflow: hidden;
-}
-
-.capability-card-3d:hover {
-  background: rgba(244, 241, 234, 0.1);
-  border-color: rgba(244, 241, 234, 0.25);
-  box-shadow:
-    0 30px 80px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(244, 241, 234, 0.1);
-}
-
-.capability-card-number {
-  font-family: var(--font-display);
-  font-size: 4rem;
-  font-weight: 700;
-  color: rgba(244, 241, 234, 0.08);
-  line-height: 1;
-  margin-bottom: var(--space-md);
-  letter-spacing: -0.02em;
-}
-
-.capability-card-3d h3 {
-  font-family: var(--font-serif);
-  font-size: 2rem;
-  color: var(--cream);
-  margin-bottom: var(--space-md);
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-}
-
-.capability-card-3d p {
-  font-size: 1rem;
-  line-height: 1.75;
-  color: rgba(244, 241, 234, 0.7);
-  margin-bottom: var(--space-lg);
-  max-width: 100%;
-}
-
-.capability-card-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.capability-card-tags span {
+.approach-number {
   font-family: var(--font-sans);
   font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(244, 241, 234, 0.4);
-  padding: 6px 14px;
-  border: 1px solid rgba(244, 241, 234, 0.15);
-  border-radius: 100px;
-  transition: all 0.3s var(--ease-out);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--warm-gray);
+  display: block;
+  margin-bottom: var(--space-sm);
 }
 
-.capability-card-3d:hover .capability-card-tags span {
-  color: rgba(244, 241, 234, 0.7);
-  border-color: rgba(244, 241, 234, 0.3);
+.approach-principle h3 {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  color: var(--charcoal);
+  margin-bottom: var(--space-xs);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.approach-principle p {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--slate);
+  max-width: 320px;
 }
 
 /* ═══════════════════════════════════════════
@@ -660,14 +572,8 @@ One cohesive piece. Generous whitespace. Parchment base.
     font-size: clamp(2.5rem, 10vw, 6rem);
   }
 
-  .capability-header-card {
-    min-width: 300px;
-    max-width: 300px;
-  }
-
-  .capability-card-3d {
-    min-width: 340px;
-    max-width: 340px;
+  .approach-principles {
+    gap: var(--space-lg);
   }
 
   .background {
@@ -703,39 +609,14 @@ One cohesive piece. Generous whitespace. Parchment base.
     font-size: clamp(3rem, 10vw, 6rem);
   }
 
-  /* Horizontal scroll — stack on mobile */
-  .capabilities-scroll-container {
-    height: auto;
-    margin-top: 30px;
+  .approach {
+    padding: var(--space-2xl) 0 var(--space-xl);
   }
 
-  .capabilities-sticky {
-    position: relative;
-    height: auto;
-    flex-direction: column;
-    padding: var(--space-2xl) 0;
-    /* Disable squeeze on mobile — just show full */
-    transform: none !important;
-    border-radius: 0 !important;
-  }
-
-  .capabilities-track {
-    flex-direction: column;
-    padding: 0 var(--gutter);
-    gap: var(--space-md);
-    transform: none !important;
-    opacity: 1 !important;
-  }
-
-  .capability-header-card {
-    min-width: auto;
-    max-width: 100%;
-    padding: var(--space-lg) 0;
-  }
-
-  .capability-card-3d {
-    min-width: auto;
-    max-width: 100%;
+  .approach-principles {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+    max-width: 500px;
   }
 
   .photo-section {

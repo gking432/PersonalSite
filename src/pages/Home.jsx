@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import { motion, useScroll, useTransform, useInView, useMotionValue, useSpring } from 'framer-motion'
-import { useRef, useEffect, useState, useCallback } from 'react'
+import { motion, useScroll, useTransform, useInView, useSpring } from 'framer-motion'
+import { useRef, useEffect, useState } from 'react'
 import PokerTable from '../../PokerTable'
 import PageTransition from '../components/PageTransition'
 import './Home.css'
@@ -44,67 +44,6 @@ function SqueezeSection({ children, className, as: Tag = 'section' }) {
         {children}
       </motion.div>
     </div>
-  )
-}
-
-// ─── 3D TILT CARD ───
-function TiltCard({ children, className, style }) {
-  const ref = useRef(null)
-  const x = useMotionValue(0)
-  const y = useMotionValue(0)
-
-  const mouseXSpring = useSpring(x, { stiffness: 300, damping: 30 })
-  const mouseYSpring = useSpring(y, { stiffness: 300, damping: 30 })
-
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], [12, -12])
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], [-12, 12])
-
-  const glareX = useTransform(mouseXSpring, [-0.5, 0.5], [0, 100])
-  const glareY = useTransform(mouseYSpring, [-0.5, 0.5], [0, 100])
-  const glareOpacity = useMotionValue(0)
-
-  const handleMouse = useCallback((e) => {
-    const rect = ref.current.getBoundingClientRect()
-    const centerX = (e.clientX - rect.left) / rect.width - 0.5
-    const centerY = (e.clientY - rect.top) / rect.height - 0.5
-    x.set(centerX)
-    y.set(centerY)
-    glareOpacity.set(0.15)
-  }, [x, y, glareOpacity])
-
-  const handleLeave = useCallback(() => {
-    x.set(0)
-    y.set(0)
-    glareOpacity.set(0)
-  }, [x, y, glareOpacity])
-
-  return (
-    <motion.div
-      ref={ref}
-      className={`tilt-card ${className || ''}`}
-      onMouseMove={handleMouse}
-      onMouseLeave={handleLeave}
-      style={{
-        rotateX,
-        rotateY,
-        transformStyle: 'preserve-3d',
-        ...style,
-      }}
-    >
-      <div className="tilt-card-inner" style={{ transformStyle: 'preserve-3d' }}>
-        {children}
-      </div>
-      <motion.div
-        className="tilt-card-glare"
-        style={{
-          background: useTransform(
-            [glareX, glareY],
-            ([gx, gy]) => `radial-gradient(circle at ${gx}% ${gy}%, rgba(255,255,255,0.25), transparent 60%)`
-          ),
-          opacity: glareOpacity,
-        }}
-      />
-    </motion.div>
   )
 }
 
@@ -357,21 +296,6 @@ function Home() {
   const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0])
   const heroPerspective = useTransform(scrollYProgress, [0, 0.15], [0, 8])
 
-  // Horizontal scroll for capabilities
-  const horizontalRef = useRef(null)
-  const { scrollYProgress: horizontalProgress } = useScroll({
-    target: horizontalRef,
-    offset: ["start start", "end end"]
-  })
-  const horizontalX = useTransform(horizontalProgress, [0, 0.85], ["2%", "-62%"])
-  const horizontalOpacity = useTransform(horizontalProgress, [0, 0.08, 0.9, 1], [0.5, 1, 1, 0.5])
-
-  // Capabilities squeeze — starts immediately, fully squeezed by ~20% through
-  const rawCapScale = useTransform(horizontalProgress, [0, 0.2], [1, 0.88])
-  const rawCapRadius = useTransform(horizontalProgress, [0, 0.2], [0, 24])
-  const capSqueezeScale = useSpring(rawCapScale, { stiffness: 120, damping: 30 })
-  const capSqueezeRadius = useSpring(rawCapRadius, { stiffness: 120, damping: 30 })
-
   return (
     <PageTransition>
     <div className="home">
@@ -392,7 +316,7 @@ function Home() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, ease: ndsEase }}
             >
-              Marketing Leader &middot; Builder &middot; AI Practitioner
+              Marketing Executive &middot; Product Manager &middot; AI Strategist
             </motion.p>
 
             <motion.div
@@ -408,8 +332,8 @@ function Home() {
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ duration: 1, delay: 0.8, ease: ndsEase }}
             >
-              I don't pitch ideas — I deliver them. Three years building at the intersection
-              of marketing, technology, and AI. Midwest work ethic. Real results.
+              From corporate marketing to founding my own consultancy to taking products from
+              zero to one — I combine marketing leadership, product management, and AI to build what others just talk about.
             </motion.p>
 
             <motion.div
@@ -471,66 +395,60 @@ function Home() {
         </div>
       </SqueezeSection>
 
-      {/* ═══════ CAPABILITIES — SQUEEZE + HORIZONTAL SCROLL ═══════ */}
-      <section ref={horizontalRef} className="capabilities-scroll-container">
-        <motion.div
-          className="capabilities-sticky"
-          style={{ scale: capSqueezeScale, borderRadius: capSqueezeRadius }}
-        >
-          <motion.div className="capabilities-track" style={{ x: horizontalX, opacity: horizontalOpacity }}>
-
-            <div className="capability-header-card">
-              <p className="label">What I Do</p>
-              <h2 className="section-heading">Capabilities</h2>
-              <p className="capability-header-desc">
-                Not a specialist. A full-stack marketing leader who builds.
-              </p>
-            </div>
-
-            <TiltCard className="capability-card-3d">
-              <div className="capability-card-number">01</div>
-              <h3>Growth Engine</h3>
-              <p>
-                National campaigns for Sub-Zero. Acquisition strategies that convert.
-                I've seen what moves the needle at scale — and I've done it myself.
-              </p>
-              <div className="capability-card-tags">
-                <span>Campaigns</span>
-                <span>eCommerce</span>
-                <span>Analytics</span>
-              </div>
-            </TiltCard>
-
-            <TiltCard className="capability-card-3d">
-              <div className="capability-card-number">02</div>
-              <h3>Builder</h3>
-              <p>
-                Blockchain token launcher. AI interview platform. Productivity tools.
-                I don't wait for engineering — I am engineering.
-              </p>
-              <div className="capability-card-tags">
-                <span>React</span>
-                <span>Python</span>
-                <span>APIs</span>
-              </div>
-            </TiltCard>
-
-            <TiltCard className="capability-card-3d">
-              <div className="capability-card-number">03</div>
-              <h3>AI Practitioner</h3>
-              <p>
-                Daily user since day one. Created education programs teaching real
-                workflows to real people. Not hype — utility.
-              </p>
-              <div className="capability-card-tags">
-                <span>AI Tools</span>
-                <span>Education</span>
-                <span>Workflow</span>
-              </div>
-            </TiltCard>
-
-          </motion.div>
-        </motion.div>
+      {/* ═══════ APPROACH — EDITORIAL ═══════ */}
+      <section className="approach">
+        <div className="container">
+          <motion.p
+            className="label"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, ease: ndsEase }}
+          >
+            Approach
+          </motion.p>
+          <motion.h2
+            className="approach-statement"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.1, ease: ndsEase }}
+          >
+            I find the gap between strategy and execution — then I close it.
+          </motion.h2>
+          <div className="approach-principles">
+            {[
+              {
+                number: '01',
+                title: 'See the system',
+                desc: 'Markets, products, users — I map the full picture before making a move.'
+              },
+              {
+                number: '02',
+                title: 'Build, don\'t brief',
+                desc: 'If I can prototype it, I will. Speed compounds when you eliminate handoffs.'
+              },
+              {
+                number: '03',
+                title: 'Measure what matters',
+                desc: 'Vanity metrics are noise. I track the numbers that move the business.'
+              }
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                className="approach-principle"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, delay: 0.2 + i * 0.12, ease: ndsEase }}
+              >
+                <span className="approach-number">{item.number}</span>
+                <h3>{item.title}</h3>
+                <p>{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* ═══════ PHOTO SECTION 1 — SQUEEZE + PARALLAX ═══════ */}
@@ -542,7 +460,7 @@ function Home() {
         }}
         label="Philosophy"
         giantText="Curiosity plus execution equals capability"
-        paragraph="I don't wait for permission to learn something new. When I wanted to understand blockchain, I built a token launcher. When I saw AI transforming how people work, I created a lecture series. The last three years weren't a gap—they were deliberate exploration."
+        paragraph="I don't wait for permission to learn something new. When I wanted to understand crypto, I built a token launchpad. When I needed an interview prep tool, I built one with AI. Every project started the same way: I identified a problem, managed it from concept to launch, and shipped a real product."
       />
 
       <PokerTable slideFrom="right" />
@@ -579,15 +497,15 @@ function Home() {
               {
                 year: '2023–2025',
                 title: 'Independent Work',
-                role: 'Builder & Client Marketing Manager',
-                desc: 'Drove acquisition campaigns for multiple clients. Built blockchain and AI applications. Designed digital strategies. Taught AI literacy. Moved from doing the work → outsourcing → strategic management.',
+                role: 'Marketing Consultant & Product Manager',
+                desc: 'Ran a marketing consultancy serving early-stage companies while independently taking multiple products from zero to one. Owned the full lifecycle — market research, roadmap, branding, development, and go-to-market — leveraging AI to move at startup speed.',
                 side: 'right'
               },
               {
                 year: '2026',
                 title: 'Next Chapter',
-                role: 'Marketing Leadership',
-                desc: 'Targeting Director or CMO roles with ambitious companies where I can combine strategic thinking with hands-on execution. Ready to build something that matters.',
+                role: 'Marketing & Product Leadership',
+                desc: 'Seeking leadership roles where marketing strategy, product thinking, and AI fluency converge. Ready to bring zero-to-one experience to a team building something that matters.',
                 side: 'left'
               }
             ].map((item, i) => (
@@ -630,8 +548,8 @@ function Home() {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.3, ease: ndsEase }}
             >
-              I'm looking for a marketing leadership role at a company that values
-              craft, speed, and substance. If that's you — let's talk.
+              I'm looking for a leadership role at a company that values marketing strategy,
+              product thinking, and the leverage that AI brings. If that's you — let's talk.
             </motion.p>
 
             <motion.div
