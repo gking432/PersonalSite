@@ -184,10 +184,10 @@ function About() {
           <div className="hero-split">
             <div className="hero-split-left">
               <motion.p
-                className="label"
+                className="label about-tagline"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: ndsEase }}
+                transition={{ duration: 0.5, delay: 0.1, ease: ndsEase }}
               >
                 About
               </motion.p>
@@ -198,7 +198,7 @@ function About() {
                     style={{ display: 'inline-block' }}
                     initial={{ opacity: 0, y: 60 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 0.1 + i * 0.05, ease: ndsEase }}
+                    transition={{ duration: 0.7, delay: 0.2 + i * 0.05, ease: ndsEase }}
                   >
                     {char}
                   </motion.span>
@@ -210,45 +210,64 @@ function About() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
             >
-              I started my career at Sub-Zero Group, Inc., where I rotated through sales operations, product marketing, and dealer sales — learning how
-              premium brands are built and maintained at scale. After that, I did what a lot of marketers talk about but few actually do: I went out on
-              my own. I started a marketing consultancy, working with early-stage companies on branding, digital strategy, and customer acquisition. I sat
-              across the table from founders with ideas and figured out how to make those ideas real. That's when I discovered what I actually cared about:
-              not the title, not being my own boss — but <em>taking things from zero to one</em>.
+              My career has lived at the intersection of marketing, product, and emerging technology. I take ideas from zero to one and figure out how to capture their audience. I'm a marketer who builds things.
             </motion.p>
+
+            <p>
+              I started my career with Sub-Zero Group, Inc. in a rotating program that took me through sales operations, product marketing, product launch, and external dealer sales. It was a masterclass in how premium brands are built and maintained at scale. I saw firsthand how product ideas sweep through markets, how distribution works on a national level, and how marketing, sales, and product must align for a brand to thrive.
+            </p>
+            <p>
+              Working inside a company functioning at the highest level gave me an appreciation for the operational side of growth; how strategy translates into real revenue through sales teams, distribution networks, and a disciplined brand/product relationship.
+            </p>
+            <p>
+              As the rotational program came to an end, I decided to take a risk and bet on myself.
+            </p>
 
             {showFullStory && (
               <>
                 <p>
-                  Running my own shop taught me everything a corporate role never could. I handled strategy, creative, client management, and execution —
-                  simultaneously, with no safety net. I learned how to scope work, manage expectations, and deliver under constraints that would make most
-                  agency teams blink. More importantly, I learned what happens when you're the one responsible for every outcome, not just one piece of the funnel.
+                  I started doing freelance marketing work, which turned into a small but legitimate agency. I found myself sitting across the table from aspiring entrepreneurs, trying to figure out how to bring their ideas to life. We'd talk branding, campaigns, websites, and customer acquisition, always eager to start something new.
                 </p>
                 <p>
-                  As the marketing landscape evolved, I realized I wanted to get closer to the product side of the work. I didn't just want to market things — I wanted
-                  to own them end-to-end. So I started doing exactly that. A cryptocurrency token launchpad with full go-to-market strategy. An AI-powered interview
-                  prep platform. A cartography print studio. Each one I managed like a product manager would: market research, roadmap, build, launch, and iteration —
-                  except I was also the one writing the code, designing the brand, and running the campaigns. Both for clients and on my own dime.
+                  That was the first time I realized what kind of work I actually love.
                 </p>
                 <p>
-                  That range is the point. I'm a marketing executive who thinks like a product manager. I can build the landing page, write the copy,
-                  design the brand, set up the analytics, and launch the campaign — not because I <em>have</em> to, but because understanding every layer makes me
-                  better at leading the ones I delegate. AI has been central to how I work. I write about it, I lecture on it, and I have strong opinions on where
-                  it's headed. I don't treat it as a buzzword — I use it daily as a force multiplier that fundamentally changes how fast a small team can move.
+                  It wasn't the deliverables. It wasn't being my own boss. It was building.
                 </p>
                 <p>
-                  The through-line of my career has always been the same: take something from zero to one. Whether that's a client's first website, a product idea
-                  that didn't exist yesterday, or a brand that needs to find its audience — I'm at my best when I'm identifying a problem, building the solution,
-                  and shipping it.
+                  The brainstorming sessions, the strategy pivots, and the moment a client saw their idea start to take shape made all the late nights, repetitive designs, and cold calls worth it. I love taking something from zero to one.
                 </p>
                 <p>
-                  Now I'm looking for the right team. A company that's serious about growth and wants a leader who sits at the intersection of marketing, product,
-                  and AI — someone who understands how ideas become products, how products find customers, and how to build momentum without burning budget on
-                  guesswork. I've done the solo chapter. I'm ready to bring everything I've learned to a team that's building something worth building.
+                  Running my agency forced me to learn the full stack of marketing in a way traditional roles rarely require. Operating in that world gave me strong instincts about what actually drives growth and what is just noise.
                 </p>
                 <p>
-                  Whether that's a leadership role, a consulting engagement, or something I haven't considered yet — I'm open to the conversation.
-                  I just want to be in the room where things are getting built.
+                  Then AI arrived.
+                </p>
+                <p>
+                  As more AI tools became widely available and dramatically cheaper, it initially felt like a gift to the industry.
+                </p>
+                <p>
+                  For me, it was the opposite.
+                </p>
+                <p>
+                  Almost overnight, what had been a marketing business became a sales operation for AI tools. Anybody could generate basic websites, good-enough copy, and sloppy (but cheap) creative in a matter of minutes. I was now in a race with other agencies to the lowest price, and the margins on my core offerings dropped by more than 80%. This wasn't a winning strategy long-term as AI was changing the economics and behaviors of the entire industry faster than I was able to adapt.
+                </p>
+                <p>
+                  This led me to a new way of thinking about modern marketing: in a world where AI makes everyone fast, quality becomes the real lever. The winners won't be those producing the most content or running the most campaigns. The winners will possess the judgment to know what's worth building and have the ability to execute above the noise.
+                </p>
+                <p>
+                  So I went deep into AI, aiming to understand the ecosystem behind this new tech. Large language models, data infrastructure, emerging companies, the economics of compute, energy consumption, the adoption cycle, psychological side effects, and political concerns were all areas I wanted to explore.
+                </p>
+                <p>
+                  I wrote research papers, articles, and lectures on these topics. More importantly, I started building with the use of AI. I created a cartography print studio, a cryptocurrency launchpad, and an AI-powered interview platform.
+                  I treated each project like a product with hours of market research, positioning, brand development, product design, and a launch strategy.
+                </p>
+                <p>
+                  Today, AI is part of how I operate. I use it daily, write about it, speak on it, and build with it. However, the core of what I do hasn't changed. I take ideas from zero to one and figure out how to get them in front of people.
+                  I can build the landing page, write the positioning, design the brand, structure the campaign, and set up the analytics. I don't need to do it all myself (I'd prefer not to), but understanding every layer makes me better at leading the people responsible for them.
+                </p>
+                <p>
+                  I'm looking for a team that values strategic thinking, bias toward action, and the ambition to build something that matters. If that sounds like your team, I'd love to hear from you.
                 </p>
               </>
             )}

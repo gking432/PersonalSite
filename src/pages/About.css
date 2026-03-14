@@ -42,20 +42,27 @@ Reads like a biography in a private club's member directory
   line-height: 0.95;
   letter-spacing: -0.04em;
   color: var(--charcoal);
+  margin-bottom: var(--space-md);
+}
+
+.about-tagline {
+  margin-bottom: var(--space-sm);
+  text-transform: none;
+}
+
+.about-hero .about-intro {
+  font-size: clamp(1.15rem, 2.5vw, 1.35rem);
+  line-height: 1.7;
+  color: var(--slate);
+  max-width: 100%;
   margin-bottom: var(--space-lg);
 }
 
-.about-intro {
-  font-size: 1rem;
-  line-height: 1.8;
-  color: var(--slate);
-  max-width: 100%;
-}
-
-.about-hero .hero-split-left p:not(.label) {
-  font-size: 1rem;
-  line-height: 1.8;
-  color: var(--slate);
+.about-hero .hero-split-left p:not(.label):not(.about-intro) {
+  font-family: var(--font-serif);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--charcoal);
   max-width: 100%;
   margin-bottom: var(--space-md);
 }

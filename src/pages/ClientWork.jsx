@@ -56,7 +56,6 @@ const clientProjects = [
       {
         id: 'merchandising',
         label: 'Merchandising',
-        heroImage: '/images/petunis-merchandising-hero.png',
         teamsImagesFolder: 'petunis-teams',
         designFilesFolder: 'petunis-designfiles',
         items: [
@@ -376,7 +375,7 @@ function MerchandisingTabs({ mod }) {
               transition={{ duration: 0.25, ease: ndsEase }}
             >
               <div className="client-module-teams-grid">
-                {petunisTeams.map((filename) => (
+                {petunisTeams.filter((f) => !f.startsWith('For People/')).map((filename) => (
                   <img
                     key={filename}
                     src={`/pdfs/${mod.teamsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
@@ -676,7 +675,7 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
                             {/* Website iframe */}
                             {mod.websiteUrl && (
                               <div className="client-module-iframe-container">
-                                <div className="client-module-iframe-bar"></div>
+                                <div className={`client-module-iframe-bar client-module-iframe-bar-${project.id === 'weatherfixers' ? 'weatherfixers' : 'petunis'}`}></div>
                                 <div className="client-module-iframe-wrap">
                                   <iframe
                                     src={mod.websiteUrl}

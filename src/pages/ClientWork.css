@@ -301,10 +301,18 @@ No modals. Progressive disclosure on-page.
   left: -1px;
   right: -1px;
   width: calc(100% + 2px);
-  height: 60px;
-  background-color: var(--parchment);
   z-index: 10;
   pointer-events: none;
+}
+
+.client-module-iframe-bar-petunis {
+  height: 62px;
+  background-color: var(--parchment);
+}
+
+.client-module-iframe-bar-weatherfixers {
+  height: 32px;
+  background-color: var(--cream);
 }
 
 .client-module-iframe-wrap {
@@ -320,6 +328,7 @@ No modals. Progressive disclosure on-page.
   border: none;
   background: white;
   display: block;
+  overflow-x: hidden;
 }
 
 /* ==========================================
