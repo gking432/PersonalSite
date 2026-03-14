@@ -291,6 +291,22 @@ No modals. Progressive disclosure on-page.
 /* ==========================================
    IFRAME — Website preview inside module
    ========================================== */
+.client-module-iframe-container {
+  position: relative;
+}
+
+.client-module-iframe-bar {
+  position: absolute;
+  top: 0;
+  left: -1px;
+  right: -1px;
+  width: calc(100% + 2px);
+  height: 60px;
+  background-color: var(--parchment);
+  z-index: 10;
+  pointer-events: none;
+}
+
 .client-module-iframe-wrap {
   border: 1px solid rgba(0, 0, 0, 0.08);
   overflow: hidden;

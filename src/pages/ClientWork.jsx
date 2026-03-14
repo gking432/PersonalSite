@@ -460,9 +460,39 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
   const number = String(index + 1).padStart(2, '0')
   const sectionRef = useRef(null)
   const [expandedModules, setExpandedModules] = useState({})
+  const moduleRefs = useRef({})
+  const moduleButtonRefs = useRef({})
 
   const toggleModule = (modId) => {
-    setExpandedModules(prev => ({ ...prev, [modId]: !prev[modId] }))
+    const wasExpanded = expandedModules[modId]
+    
+    // If opening a new module, close all others first
+    if (!wasExpanded) {
+      setExpandedModules({ [modId]: true })
+      
+      // Wait for DOM to update and animations to settle before scrolling
+      // Use requestAnimationFrame to ensure layout has updated
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            const buttonRef = moduleButtonRefs.current[modId]
+            if (buttonRef) {
+              const headerHeight = 80 // --header-height from CSS
+              const buttonPosition = buttonRef.getBoundingClientRect().top + window.pageYOffset
+              const offsetPosition = buttonPosition - headerHeight
+              
+              window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+              })
+            }
+          }, 450) // Wait for module close animation (400ms) + buffer
+        })
+      })
+    } else {
+      // Closing the module
+      setExpandedModules(prev => ({ ...prev, [modId]: false }))
+    }
   }
 
   const handleToggle = () => {
@@ -569,12 +599,6 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.4, ease: ndsEase }}
           >
-            {/* Project heading */}
-            <div className="client-expand-heading">
-              <h3 className="client-expand-title">{project.name}</h3>
-              <p className="client-expand-subtitle">{project.type} · {project.year}</p>
-            </div>
-
             {/* Brief / Strategy / Scope — 3-column */}
             <div className="client-expand-meta">
               <motion.div
@@ -616,12 +640,14 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
                 return (
                   <motion.div
                     key={mod.id}
+                    ref={(el) => { if (el) moduleRefs.current[mod.id] = el }}
                     className="client-module-section"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.2 + mi * 0.06, ease: ndsEase }}
                   >
                     <button
+                      ref={(el) => { if (el) moduleButtonRefs.current[mod.id] = el }}
                       className={`client-module-row ${modExpanded ? 'active' : ''}`}
                       onClick={() => toggleModule(mod.id)}
                     >
@@ -647,6 +673,20 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
                           transition={{ duration: 0.4, ease: ndsEase }}
                         >
                           <div className="client-module-content-inner">
+                            {/* Website iframe */}
+                            {mod.websiteUrl && (
+                              <div className="client-module-iframe-container">
+                                <div className="client-module-iframe-bar"></div>
+                                <div className="client-module-iframe-wrap">
+                                  <iframe
+                                    src={mod.websiteUrl}
+                                    title={`${project.name} — ${mod.label}`}
+                                    className="client-module-iframe"
+                                  />
+                                </div>
+                              </div>
+                            )}
+
                             {/* Deliverables list */}
                             <div className="client-module-deliverables">
                               {mod.items.map((item, i) => (
@@ -656,17 +696,6 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
                                 </div>
                               ))}
                             </div>
-
-                            {/* Website iframe */}
-                            {mod.websiteUrl && (
-                              <div className="client-module-iframe-wrap">
-                                <iframe
-                                  src={mod.websiteUrl}
-                                  title={`${project.name} — ${mod.label}`}
-                                  className="client-module-iframe"
-                                />
-                              </div>
-                            )}
 
                             {/* Hero image */}
                             {mod.heroImage && (
