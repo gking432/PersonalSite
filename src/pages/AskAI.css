@@ -1,19 +1,21 @@
 /*
-ASK AI PAGE — Minimal, mysterious, confident
+ASK AI PAGE — NDS Editorial Design
+Minimal, confident, mysterious. Let the results do the talking.
 */
 
 .ask-ai {
   background-color: var(--parchment);
   padding-top: 80px;
-  min-height: 100vh;
 }
 
-/* Hero */
+/* ==========================================
+   HERO — Split layout (matches Projects)
+   ========================================== */
 .ask-ai-hero {
-  min-height: 50vh;
+  min-height: 60vh;
   display: flex;
   align-items: center;
-  padding: var(--space-3xl) 0 var(--space-xl);
+  padding: var(--space-3xl) 0 var(--space-2xl);
 }
 
 .ask-ai-hero .label {
@@ -28,7 +30,7 @@ ASK AI PAGE — Minimal, mysterious, confident
 
 .ask-ai-hero h1 {
   font-family: var(--font-display);
-  font-size: clamp(3rem, 10vw, 8rem);
+  font-size: clamp(4rem, 12vw, 10rem);
   font-weight: 700;
   line-height: 0.95;
   letter-spacing: -0.04em;
@@ -37,29 +39,67 @@ ASK AI PAGE — Minimal, mysterious, confident
 }
 
 .ask-ai-subtitle {
-  font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+  font-size: clamp(1.15rem, 2.5vw, 1.35rem);
   line-height: 1.7;
   color: var(--slate);
-  max-width: 600px;
+  max-width: 700px;
   font-style: italic;
 }
 
-/* LLM Links Section */
+/* ==========================================
+   PROMPT SECTION — Squeezed cream band
+   ========================================== */
+.ask-ai-prompt-section {
+  background-color: var(--cream);
+  padding: var(--space-2xl) 0;
+  text-align: center;
+}
+
+.prompt-block {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.prompt-instruction {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  margin-bottom: var(--space-md);
+}
+
+.prompt-text {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--charcoal);
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* ==========================================
+   LLM CARDS — Grid layout
+   ========================================== */
 .ask-ai-links {
-  padding: var(--space-xl) 0 var(--space-3xl);
+  padding: var(--space-2xl) 0 var(--space-3xl);
 }
 
 .llm-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--space-md);
-  max-width: 900px;
+  max-width: 1000px;
 }
 
 .llm-card {
   display: block;
   background-color: var(--cream);
-  padding: var(--space-lg) var(--space-xl);
+  padding: var(--space-xl) var(--space-xl) var(--space-lg);
   border-radius: var(--border-radius-lg);
   border: 1px solid var(--gray-200);
   text-decoration: none;
@@ -73,27 +113,30 @@ ASK AI PAGE — Minimal, mysterious, confident
   transform: translateY(-4px);
 }
 
-.llm-card h3 {
-  font-family: var(--font-serif);
-  font-size: 1.5rem;
-  color: var(--charcoal);
-  margin-bottom: 4px;
-  line-height: 1.3;
+.llm-card-maker {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  display: block;
+  margin-bottom: var(--space-sm);
 }
 
-.llm-card p {
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  color: var(--warm-gray);
-  letter-spacing: 0.02em;
+.llm-card h3 {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  color: var(--charcoal);
+  line-height: 1.2;
 }
 
 .llm-arrow {
   position: absolute;
-  top: var(--space-lg);
+  top: var(--space-xl);
   right: var(--space-xl);
   font-size: 1.25rem;
-  color: var(--warm-gray);
+  color: var(--gray-200);
   transition: all var(--duration-fast) var(--ease-out);
 }
 
@@ -102,18 +145,64 @@ ASK AI PAGE — Minimal, mysterious, confident
   transform: translateX(4px);
 }
 
-/* Responsive */
+/* ==========================================
+   BOTTOM CTA — Forest green band
+   ========================================== */
+.ask-ai-cta-section {
+  background-color: var(--forest-green);
+  text-align: center;
+  padding: var(--space-3xl) 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.ask-ai-cta-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.ask-ai-cta-section p {
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  color: var(--cream);
+  line-height: 1.3;
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  font-style: italic;
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+@media (max-width: 1024px) {
+  .llm-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .ask-ai {
     padding-top: 70px;
   }
 
   .ask-ai-hero {
-    min-height: 40vh;
-    padding: var(--space-2xl) 0 var(--space-lg);
+    min-height: 50vh;
+    padding: var(--space-2xl) 0 var(--space-xl);
   }
 
   .llm-grid {
     grid-template-columns: 1fr;
+  }
+
+  .ask-ai-prompt-section {
+    padding: var(--space-xl) 0;
   }
 }
