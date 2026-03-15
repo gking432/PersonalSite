@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform, useInView, useSpring } from 'framer-motion'
 import { useRef, useEffect, useState } from 'react'
 import PokerTable from '../../PokerTable'
-import GlobeSection from '../../GlobeSection'
+
 import PageTransition from '../components/PageTransition'
 import './Home.css'
 
@@ -465,8 +465,6 @@ function Home() {
       />
 
       <PokerTable slideFrom="right" />
-
-      <GlobeSection />
 
       {/* ═══════ PHOTO SECTION 2 — SQUEEZE + PARALLAX ═══════ */}
       <PhotoSection

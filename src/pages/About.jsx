@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
 import SqueezeSection from '../components/SqueezeSection'
+import GlobeSection from '../../GlobeSection'
 import './About.css'
 
 const ndsEase = [0.22, 1, 0.36, 1]
@@ -289,6 +290,9 @@ function About() {
           </div>
         </div>
       </section>
+
+      {/* ═══════ GLOBE — Visual journey through career ═══════ */}
+      <GlobeSection />
 
       {/* ═══════ HOW I WORK — Scroll-driven cylinder picker ═══════ */}
       <section className="how-i-work-scroll" ref={processRef}>
