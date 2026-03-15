@@ -1,0 +1,51 @@
+/* ═══════════════════════════════════════════
+   HORIZON JOURNEY — Full day-cycle scroll experience
+   5 environmental text reveals, NDS squeeze treatment
+   ═══════════════════════════════════════════ */
+
+.horizon-section {
+  padding: 20px 0;
+}
+
+.horizon-scroll-runway {
+  position: relative;
+  height: 700vh;
+}
+
+.horizon-sticky-wrapper {
+  position: sticky;
+  top: var(--header-height, 60px);
+  height: calc(100vh - var(--header-height, 60px));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.horizon-squeeze {
+  width: 100%;
+  height: 100%;
+  background: #050508;
+  will-change: transform;
+  transform-origin: center;
+}
+
+.horizon-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  .horizon-scroll-runway {
+    height: 600vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .horizon-scroll-runway {
+    height: 550vh;
+  }
+}

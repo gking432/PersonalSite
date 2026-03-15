@@ -9,6 +9,7 @@ import Writing from './pages/Writing'
 import Videos from './pages/Videos'
 import Contact from './pages/Contact'
 import ClientWork from './pages/ClientWork'
+import PokerTablePage from './pages/PokerTablePage'
 
 function App() {
   const location = useLocation()
@@ -25,6 +26,7 @@ function App() {
           <Route path="/videos" element={<Videos />} />
           <Route path="/client-work" element={<ClientWork />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/poker" element={<PokerTablePage />} />
         </Routes>
       </AnimatePresence>
     </Layout>

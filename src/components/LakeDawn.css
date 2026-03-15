@@ -1,0 +1,25 @@
+/* ═══════════════════════════════════════════
+   LAKE DAWN — Scroll-driven sunrise
+   Canvas-rendered generative landscape.
+   ═══════════════════════════════════════════ */
+
+.lake-section {
+  position: relative;
+  height: 400vh;
+}
+
+.lake-sticky {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  background: #0a0c0b;
+}
+
+.lake-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}

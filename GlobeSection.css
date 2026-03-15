@@ -1,0 +1,310 @@
+/*
+GLOBE SECTION — Real continent outlines + sequential zoom storytelling
+Canvas renders the globe with GeoJSON data. Story cards appear per stop.
+Dark background, prestige palette, NDS easing.
+*/
+
+.globe-section {
+  position: relative;
+  height: 800vh;
+}
+
+/* ── DARK BACKGROUND (fixed, opacity driven by scroll) ── */
+.globe-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(155deg, #0f1a15 0%, #0e0e0e 40%, #090909 100%);
+}
+
+/* ── STICKY WRAPPER ── */
+.globe-sticky {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+  overflow: hidden;
+}
+
+/* ── HEADER ── */
+.globe-header-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: calc(var(--header-height) + var(--space-lg)) var(--gutter) 0;
+}
+
+.globe-header {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.globe-label {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 234, 0.45);
+  margin-bottom: var(--space-xs);
+}
+
+.globe-heading {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: #f4f1ea;
+}
+
+/* ── TIMELINE NAV ── */
+.globe-timeline {
+  position: absolute;
+  left: var(--gutter);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.globe-timeline-track {
+  position: absolute;
+  left: 5px;
+  top: 12px;
+  bottom: 12px;
+  width: 1px;
+  background: rgba(244, 241, 234, 0.12);
+}
+
+.globe-timeline-stop {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.globe-timeline-dot {
+  position: relative;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(244, 241, 234, 0.25);
+  background: transparent;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  flex-shrink: 0;
+}
+
+.globe-timeline-stop:hover .globe-timeline-dot {
+  border-color: rgba(244, 241, 234, 0.6);
+  background: rgba(244, 241, 234, 0.1);
+}
+
+.globe-timeline-stop.visited .globe-timeline-dot {
+  border-color: rgba(244, 241, 234, 0.35);
+  background: rgba(244, 241, 234, 0.15);
+}
+
+.globe-timeline-stop.active .globe-timeline-dot {
+  border-color: rgba(244, 241, 234, 0.9);
+  background: rgba(244, 241, 234, 0.9);
+  box-shadow: 0 0 12px rgba(244, 241, 234, 0.3);
+}
+
+.globe-timeline-label {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: rgba(244, 241, 234, 0.85);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ── CANVAS ── */
+.globe-canvas-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  flex: 1;
+}
+
+.globe-canvas-container canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ═══════════════════════════════════════════
+   STORY CARD — bottom-left of viewport
+   Shows during dwell phases
+   ═══════════════════════════════════════════ */
+.globe-story-card {
+  position: absolute;
+  bottom: var(--space-xl);
+  right: var(--gutter);
+  width: 360px;
+  background: rgba(250, 248, 243, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: var(--border-radius-md);
+  padding: 28px 32px;
+  z-index: 20;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.3),
+    0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.globe-story-index {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--warm-gray);
+  display: block;
+  margin-bottom: 12px;
+}
+
+.globe-story-chapter {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--forest-green);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.globe-story-city {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--charcoal);
+  margin: 0 0 10px 0;
+}
+
+.globe-story-text {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: var(--slate);
+  margin: 0;
+  max-width: none;
+}
+
+/* Outro card — centered variant */
+.globe-outro-card {
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  width: 420px;
+}
+
+.globe-outro-card .globe-story-chapter {
+  margin-bottom: 8px;
+}
+
+.globe-outro-card .globe-story-city {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  letter-spacing: -0.03em;
+}
+
+.globe-outro-card .globe-story-text {
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .globe-story-card {
+    width: 320px;
+    padding: 24px 28px;
+  }
+
+  .globe-story-city {
+    font-size: 1.3rem;
+  }
+
+  .globe-story-text {
+    font-size: 0.84rem;
+  }
+
+  .globe-outro-card {
+    width: 360px;
+  }
+}
+
+@media (max-width: 768px) {
+  .globe-section {
+    height: 600vh;
+  }
+
+  .globe-heading {
+    font-size: clamp(1.6rem, 5vw, 2.5rem);
+  }
+
+  .globe-story-card {
+    width: auto;
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: var(--space-lg);
+    padding: 20px 24px;
+  }
+
+  .globe-story-city {
+    font-size: 1.2rem;
+  }
+
+  .globe-story-text {
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
+
+  .globe-outro-card {
+    left: var(--gutter);
+    right: var(--gutter);
+    transform: none;
+    width: auto;
+    text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .globe-section {
+    height: 500vh;
+  }
+
+  .globe-story-card {
+    padding: 16px 20px;
+  }
+
+  .globe-timeline {
+    display: none;
+  }
+}

@@ -1,0 +1,600 @@
+/* ═══════════════════════════════════════════
+   VAULT DOOR — CSS 3D
+   No canvas. Real perspective transforms.
+   Door swings outward, reveals dark room,
+   walk-in POV to bird's-eye table.
+   ═══════════════════════════════════════════ */
+
+.vault-section {
+  position: relative;
+  height: 600vh;
+}
+
+.vault-sticky {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  background: #0a0c0b;
+}
+
+/* ═══════════════════════════════════════════
+   DARK ROOM (behind the door)
+   ═══════════════════════════════════════════ */
+
+.vault-room {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #060807;
+}
+
+/* Spotlight pool on the floor/table area */
+.vault-spotlight {
+  position: absolute;
+  bottom: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 500px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(244, 241, 234, 0.07) 0%,
+    rgba(244, 241, 234, 0.025) 30%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* Visible light cone from ceiling */
+.vault-spotlight-cone {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 240px;
+  height: 50%;
+  background: linear-gradient(
+    to bottom,
+    rgba(244, 241, 234, 0.03),
+    rgba(244, 241, 234, 0.012) 60%,
+    transparent
+  );
+  clip-path: polygon(42% 0%, 58% 0%, 88% 100%, 12% 100%);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════
+   WALK-IN CAMERA (first-person approach)
+   ═══════════════════════════════════════════ */
+
+.vault-walk-perspective {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  perspective: 1000px;
+  perspective-origin: 50% 45%;
+  pointer-events: none;
+}
+
+.vault-walk-transform {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════
+   THE TABLE
+   ═══════════════════════════════════════════ */
+
+.vault-table {
+  position: relative;
+  transform-style: preserve-3d;
+  pointer-events: auto;
+}
+
+.vault-table-surface {
+  position: relative;
+  width: 800px;
+  max-width: 90vw;
+  padding: 48px 40px;
+  background: linear-gradient(
+    175deg,
+    #2a2c2b 0%,
+    #222424 40%,
+    #1e2020 60%,
+    #262828 100%
+  );
+  border: 1px solid rgba(244, 241, 234, 0.06);
+  border-radius: 6px;
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.8),
+    0 10px 30px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.vault-table-sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  background: radial-gradient(
+    ellipse at 50% 30%,
+    rgba(244, 241, 234, 0.03) 0%,
+    transparent 60%
+  );
+  pointer-events: none;
+}
+
+.vault-table-edge {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 14px;
+  background: linear-gradient(180deg, #1a1c1b 0%, #121413 100%);
+  border-radius: 0 0 4px 4px;
+  transform: rotateX(-90deg);
+  transform-origin: top center;
+}
+
+/* ═══════════════════════════════════════════
+   DOSSIERS (project cards on the table)
+   ═══════════════════════════════════════════ */
+
+.vault-dossiers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.vault-dossier-link {
+  display: flex;
+  flex-direction: column;
+  padding: 28px 24px;
+  background: rgba(244, 241, 234, 0.02);
+  border: 1px solid rgba(244, 241, 234, 0.06);
+  border-radius: 4px;
+  text-decoration: none;
+  height: 100%;
+  transition:
+    background 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.vault-dossier-link:hover {
+  background: rgba(244, 241, 234, 0.05);
+  border-color: rgba(244, 241, 234, 0.14);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.vault-dossier-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.vault-dossier-number {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: rgba(244, 241, 234, 0.25);
+}
+
+.vault-dossier-arrow {
+  color: rgba(244, 241, 234, 0.2);
+  font-size: 0.9rem;
+  transition: all 0.4s;
+}
+
+.vault-dossier-link:hover .vault-dossier-arrow {
+  color: rgba(244, 241, 234, 0.6);
+  transform: translateX(4px);
+}
+
+.vault-dossier-tag {
+  font-family: var(--font-sans);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 234, 0.35);
+  margin-bottom: 8px;
+}
+
+.vault-dossier-title {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: #f4f1ea;
+  margin: 0 0 10px 0;
+}
+
+.vault-dossier-desc {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: rgba(244, 241, 234, 0.5);
+  margin: 0;
+}
+
+/* ═══════════════════════════════════════════
+   VAULT FRAME (the opening surround)
+   Stays in place, then scales as we
+   "walk through" it.
+   ═══════════════════════════════════════════ */
+
+.vault-frame {
+  position: absolute;
+  inset: 2%;
+  z-index: 2;
+  border: 18px solid #2a2826;
+  border-radius: 4px;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 2px #3a3836,
+    inset 0 0 30px rgba(0, 0, 0, 0.5),
+    0 0 60px rgba(0, 0, 0, 0.4),
+    inset 0 2px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* ═══════════════════════════════════════════
+   THE DOOR
+   Full CSS 3D. Swings outward on left hinge.
+   Thick edge visible during swing.
+   ═══════════════════════════════════════════ */
+
+.vault-door-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.vault-door-fade {
+  position: absolute;
+  inset: 0;
+}
+
+.vault-door-perspective {
+  position: absolute;
+  inset: 2%;
+  perspective: 1800px;
+  perspective-origin: 30% 50%;
+}
+
+.vault-door-body {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform-origin: left center;
+}
+
+/* ── FRONT FACE ── */
+
+.vault-door-front {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 2px;
+
+  /* Layered brushed steel — no canvas, no flicker */
+  background:
+    /* Horizontal brush lines */
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 1px,
+      rgba(255, 255, 255, 0.012) 1px,
+      rgba(255, 255, 255, 0.012) 2px
+    ),
+    /* Subtle vertical banding */
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 40px,
+      rgba(0, 0, 0, 0.012) 40px,
+      rgba(0, 0, 0, 0.012) 80px
+    ),
+    /* Base metal gradient */
+    linear-gradient(
+      175deg,
+      #c8c4be 0%,
+      #bab6b0 15%,
+      #b0aca6 35%,
+      #a8a4a0 50%,
+      #b4b0aa 65%,
+      #bab6b0 80%,
+      #c0bcb6 100%
+    );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.08);
+}
+
+/* Recessed panel lines */
+.vault-panel {
+  position: absolute;
+  top: 7%;
+  bottom: 7%;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 2px;
+  box-shadow:
+    inset 0 1px 3px rgba(0, 0, 0, 0.04),
+    0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.vault-panel-left {
+  left: 5%;
+  right: 55%;
+}
+
+.vault-panel-right {
+  left: 50%;
+  right: 8%;
+}
+
+/* ── LOCKING BOLTS (right side) ── */
+
+.vault-bolt {
+  position: absolute;
+  right: 5%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+}
+
+.vault-bolt-bar {
+  position: relative;
+  width: 55px;
+  height: 11px;
+  background: linear-gradient(
+    180deg,
+    #a09c96 0%,
+    #88847e 30%,
+    #78746e 70%,
+    #8a8680 100%
+  );
+  border-radius: 2px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+/* Bolt slot line */
+.vault-bolt-bar::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 30%;
+  width: 40%;
+  height: 2px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 1px;
+  transform: translateY(-50%);
+}
+
+.vault-bolt-housing {
+  position: absolute;
+  right: -20px;
+  width: 22px;
+  height: 18px;
+  background: linear-gradient(180deg, #6a6864 0%, #5a5650 100%);
+  border-radius: 2px;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
+}
+
+/* ── HINGES (left side) ── */
+
+.vault-hinge {
+  position: absolute;
+  left: 3%;
+  transform: translateY(-50%);
+}
+
+.vault-hinge-plate {
+  position: relative;
+  width: 22px;
+  height: 44px;
+  background: linear-gradient(
+    180deg,
+    #7a7670 0%,
+    #6a6660 50%,
+    #5a5650 100%
+  );
+  border-radius: 3px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Hinge bolts (top + bottom) */
+.vault-hinge-plate::before,
+.vault-hinge-plate::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #a09c96, #6a6660);
+  transform: translateX(-50%);
+}
+
+.vault-hinge-plate::before { top: 6px; }
+.vault-hinge-plate::after { bottom: 6px; }
+
+.vault-hinge-pin {
+  position: absolute;
+  left: -3px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #8a8680, #5a5650);
+  transform: translateY(-50%);
+}
+
+/* ── WHEEL HANDLE ── */
+
+.vault-wheel-wrap {
+  position: absolute;
+  top: 50%;
+  left: 46%;
+  transform: translate(-50%, -50%);
+  width: min(28vh, 28vw);
+  height: min(28vh, 28vw);
+  filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.3));
+}
+
+.vault-wheel-svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── NAMEPLATE ── */
+
+.vault-nameplate {
+  position: absolute;
+  top: 50%;
+  left: 46%;
+  transform: translate(-50%, calc(-50% - min(17vh, 17vw)));
+  padding: 7px 28px;
+  background: linear-gradient(175deg, #9a968f, #7a7670);
+  border-radius: 2px;
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.vault-nameplate-text {
+  font-family: var(--font-sans);
+  font-size: clamp(0.5rem, 1vw, 0.75rem);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: rgba(244, 241, 234, 0.65);
+}
+
+.vault-nameplate-screw {
+  position: absolute;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #6a6660;
+  transform: translateY(-50%);
+}
+
+/* Phillips head cross */
+.vault-nameplate-screw::before,
+.vault-nameplate-screw::after {
+  content: '';
+  position: absolute;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.vault-nameplate-screw::before {
+  top: 50%;
+  left: 1px;
+  right: 1px;
+  height: 0.5px;
+  transform: translateY(-50%);
+}
+
+.vault-nameplate-screw::after {
+  left: 50%;
+  top: 1px;
+  bottom: 1px;
+  width: 0.5px;
+  transform: translateX(-50%);
+}
+
+.vault-screw-l { left: 6px; }
+.vault-screw-r { right: 6px; }
+
+/* ── DOOR EDGE (thickness) ──
+   This is the face that becomes visible as
+   the door swings outward. 45px of solid steel. */
+
+.vault-door-edge {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  width: 45px;
+  height: 100%;
+  backface-visibility: hidden;
+  transform-origin: left center;
+  transform: rotateY(90deg);
+  background: linear-gradient(
+    90deg,
+    #5a5650 0%,
+    #6a6660 20%,
+    #78746e 50%,
+    #6a6660 80%,
+    #5a5650 100%
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Bolt channel grooves visible on the edge */
+.vault-edge-channel {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  height: 6px;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 1px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .vault-section {
+    height: 500vh;
+  }
+
+  .vault-table-surface {
+    padding: 28px 18px;
+  }
+
+  .vault-dossiers {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .vault-dossier-link {
+    padding: 22px 18px;
+  }
+
+  .vault-dossier-title {
+    font-size: 1.05rem;
+  }
+
+  .vault-bolt-bar {
+    width: 35px;
+    height: 8px;
+  }
+
+  .vault-door-edge {
+    width: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .vault-section {
+    height: 450vh;
+  }
+}

@@ -271,6 +271,110 @@ Reads like a biography in a private club's member directory
   max-width: 560px;
 }
 
+/* ═══════ PHOTO SECTION 1 — PHILOSOPHY ═══════ */
+.philosophy-photo-scroll-runway {
+  height: 200vh;
+  position: relative;
+}
+
+.philosophy-photo-sticky-wrapper {
+  position: sticky;
+  top: var(--header-height);
+  height: calc(100vh - var(--header-height));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.philosophy-photo-sticky-wrapper .squeeze-wrapper {
+  width: 100%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.philosophy-photo-section {
+  padding: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 85vh;
+  max-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+}
+
+.philosophy-photo-bg {
+  position: absolute;
+  inset: -10%;
+  background: linear-gradient(135deg, #1a3a2e 0%, #2d5016 100%);
+}
+
+.philosophy-photo-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.philosophy-photo-section .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* ═══════ PHOTO SECTION 2 — APPROACH ═══════ */
+.approach-photo-scroll-runway {
+  height: 200vh;
+  position: relative;
+}
+
+.approach-photo-sticky-wrapper {
+  position: sticky;
+  top: var(--header-height);
+  height: calc(100vh - var(--header-height));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.approach-photo-sticky-wrapper .squeeze-wrapper {
+  width: 100%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.approach-photo-section {
+  padding: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 85vh;
+  max-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+}
+
+.approach-photo-bg {
+  position: absolute;
+  inset: -10%;
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d5278 100%);
+}
+
+.approach-photo-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.approach-photo-section .container {
+  position: relative;
+  z-index: 1;
+}
+
 /* ═══════ TOOLKIT MARQUEE ═══════ */
 .toolkit-section {
   padding: var(--space-2xl) 0;
