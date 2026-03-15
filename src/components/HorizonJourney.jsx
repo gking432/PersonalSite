@@ -743,56 +743,86 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites) {
 
 // ═══════════════════════════════════════════
 // CELESTIAL WATER REFLECTION
-// Renders sun or moon reflection as wavy strip distortion
+// Renders disc + glow to offscreen canvas, flips and distorts
+// strip-by-strip — same technique as the text reflection
 // ═══════════════════════════════════════════
-function drawCelestialReflection(ctx, w, h, bodyX, bodyR, progress, color, alpha) {
+function drawCelestialReflection(ctx, w, h, bodyX, bodyY, bodyR, progress, color, alpha, sprites) {
   const horizonY = h * 0.46
   const waterH = h - horizonY
   if (alpha < 0.01) return
 
+  // Height above horizon determines reflection distance below horizon
+  const heightAbove = horizonY - bodyY
+  if (heightAbove < 0) return // below horizon, no reflection
+
+  // Render the disc + glow to offscreen canvas
+  const offscreen = sprites.reflectionCanvas
+  const offCtx = sprites.reflectionCtx
+  const padding = bodyR * 4
+  const offW = Math.ceil(padding * 2)
+  const offH = Math.ceil(padding * 2)
+
+  offscreen.width = offW
+  offscreen.height = offH
+  offCtx.clearRect(0, 0, offW, offH)
+
+  const cx = offW / 2
+  const cy = offH / 2
+
+  // Draw glow
+  const glowR = bodyR * 3
+  const gg = offCtx.createRadialGradient(cx, cy, bodyR * 0.5, cx, cy, glowR)
+  gg.addColorStop(0, rgb(color, 0.4))
+  gg.addColorStop(0.3, rgb(color, 0.15))
+  gg.addColorStop(0.6, rgb(color, 0.05))
+  gg.addColorStop(1, rgb(color, 0))
+  offCtx.fillStyle = gg
+  offCtx.fillRect(0, 0, offW, offH)
+
+  // Draw disc
+  const dg = offCtx.createRadialGradient(cx, cy, 0, cx, cy, bodyR)
+  dg.addColorStop(0, rgb([255, 255, 250], 0.95))
+  dg.addColorStop(0.5, rgb(color, 0.9))
+  dg.addColorStop(1, rgb(color, 0.7))
+  offCtx.fillStyle = dg
+  offCtx.beginPath()
+  offCtx.arc(cx, cy, bodyR, 0, Math.PI * 2)
+  offCtx.fill()
+
+  // Draw flipped into water, strip by strip with wave distortion
+  // Reflection appears at the mirror point: horizonY + heightAbove
   ctx.save()
   ctx.beginPath()
   ctx.rect(0, horizonY, w, waterH)
   ctx.clip()
 
-  // Render the disc to offscreen, then distort strip-by-strip
-  const offH = Math.ceil(bodyR * 2.5)
-  const offW = Math.ceil(bodyR * 2.5)
-
-  // Draw the reflection column using strip-by-strip wave distortion
+  const destX = bodyX - offW / 2
+  const destY = horizonY + (heightAbove - offH / 2) // mirror position
   const stripH = 2
-  const columnH = waterH * 0.65
-  const stripCount = Math.ceil(columnH / stripH)
 
-  for (let i = 0; i < stripCount; i++) {
-    const t = i / stripCount
-    const sy = horizonY + t * columnH
-    const depth = t
+  ctx.globalAlpha = alpha
 
-    // Two wave frequencies
-    const wave1 = Math.sin(depth * 16 + progress * 14) * (1.5 + depth * 12)
-    const wave2 = Math.sin(depth * 8.3 + progress * 9 + 2) * (0.8 + depth * 5)
-    const waveX = wave1 + wave2
+  for (let y = 0; y < offH; y += stripH) {
+    const t = y / offH
+    // Wave distortion increases with distance from horizon
+    const distFromHorizon = (destY + y - horizonY) / waterH
+    const waveAmp = Math.max(0, distFromHorizon) * 15 + 2
+    const waveOffset = Math.sin(y * 0.08 + progress * 12) * waveAmp
+      + Math.sin(y * 0.04 + progress * 8 + 1.5) * waveAmp * 0.5
 
-    // Fade and narrow with depth
-    const stripAlpha = alpha * (1 - depth * 0.75) * (0.7 + 0.3 * Math.sin(depth * 20 + progress * 12))
-    const stripW = bodyR * (1.8 - depth * 0.8)
-
+    // Source from bottom-up (flip)
+    const srcY = offH - y - stripH
+    // Fade with depth
+    const stripAlpha = alpha * (1 - Math.max(0, distFromHorizon) * 0.6)
     if (stripAlpha < 0.005) continue
 
     ctx.globalAlpha = stripAlpha
-    ctx.fillStyle = rgb(color, 1)
-    ctx.fillRect(bodyX - stripW / 2 + waveX, sy, stripW, stripH + 0.5)
+    ctx.drawImage(
+      offscreen,
+      0, srcY, offW, stripH,
+      destX + waveOffset, destY + y, offW, stripH
+    )
   }
-
-  // Bright hotspot at horizon
-  const hotGrad = ctx.createRadialGradient(bodyX, horizonY, 0, bodyX, horizonY + bodyR * 2, bodyR * 3)
-  hotGrad.addColorStop(0, rgb(color, alpha * 0.6))
-  hotGrad.addColorStop(0.3, rgb(color, alpha * 0.2))
-  hotGrad.addColorStop(1, rgb(color, 0))
-  ctx.globalAlpha = 1
-  ctx.fillStyle = hotGrad
-  ctx.fillRect(bodyX - bodyR * 3, horizonY, bodyR * 6, bodyR * 4)
 
   ctx.restore()
 }
@@ -894,7 +924,7 @@ function drawLakeTexture(ctx, w, h, progress, ripplePatches) {
 // ═══════════════════════════════════════════
 // MOON — rises in the same arc path as the sun
 // ═══════════════════════════════════════════
-function drawMoon(ctx, w, h, progress) {
+function drawMoon(ctx, w, h, progress, sprites) {
   const horizonY = h * 0.46
 
   // Moon rises starting at 0.68, tracking the sun's arc path from the right
@@ -905,11 +935,10 @@ function drawMoon(ctx, w, h, progress) {
   const fadeIn = easeOutCubic(clamp01(moonP / 0.30))
   if (fadeIn < 0.01) return
 
-  // Moon follows the sun's arc path — rises from the right side (where sun sets)
-  // Sun sets at progress ~0.80, at X position w * (0.15 + 1 * 0.7) = w * 0.85
-  // Moon rises from near that same horizon point
+  // Moon rises from the same LEFT side as the sun (like the real sky cycle)
+  // Sun rises from w*0.15 — moon rises from the same origin point
   const moonArc = moonP
-  const moonX = w * (0.82 - moonArc * 0.12)
+  const moonX = w * (0.15 + moonArc * 0.20)
   const moonBaseY = horizonY - Math.sin(moonArc * Math.PI * 0.4) * h * 0.25
   const moonY = lerp(horizonY, moonBaseY, fadeIn)
   const moonR = Math.min(w, h) * 0.025
@@ -952,8 +981,8 @@ function drawMoon(ctx, w, h, progress) {
 
   ctx.restore()
 
-  // Moon reflection — wavy strip distortion (same technique as text reflection)
-  drawCelestialReflection(ctx, w, h, moonX, moonR, progress, [200, 215, 240], fadeIn * 0.18)
+  // Moon reflection — rendered to offscreen, flipped with wave distortion
+  drawCelestialReflection(ctx, w, h, moonX, moonY, moonR, progress, [200, 215, 240], fadeIn * 0.18, sprites)
 }
 
 // ═══════════════════════════════════════════
@@ -1213,7 +1242,7 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
   }
 
   // ═══════ MOON (rises as sun sets — overlaps with fog clearing) ═══════
-  drawMoon(ctx, w, h, progress)
+  drawMoon(ctx, w, h, progress, sprites)
 
   // ═══════ REFLECTION REVEAL (overlaps with fog fade) ═══════
   const c4 = CONTENT_STOPS[4]
@@ -1227,7 +1256,7 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
     const sunArcP = clamp01((progress - 0.14) / 0.66)
     const noonness = Math.sin(sunArcP * Math.PI)
     const refColor = lerpColor([255, 180, 80], [255, 240, 200], noonness)
-    drawCelestialReflection(ctx, w, h, sunX, sunR, progress, refColor, 0.30)
+    drawCelestialReflection(ctx, w, h, sunX, sunY, sunR, progress, refColor, 0.30, sprites)
   }
 
   // ═══════ LAKE TEXTURE (localized ripple patches) ═══════
@@ -1236,9 +1265,9 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
   // ═══════ LANDSCAPE MIST / FOG ═══════
   // Morning mist
   const morningMist = clamp01((progress - 0.16) / 0.08) * (1 - clamp01((progress - 0.30) / 0.08))
-  // Fog rolls in VERY gradually: starts as barely-there wisps at 0.32,
-  // builds imperceptibly over 0.30 of progress, peaks around 0.62
-  const fogRollIn = easeInOutCubic(clamp01((progress - 0.32) / 0.30)) * (1 - clamp01((progress - 0.68) / 0.10))
+  // Fog rolls in VERY gradually: starts as barely-there wisps at 0.28,
+  // builds imperceptibly over 0.36 of progress, peaks around 0.62
+  const fogRollIn = easeInOutCubic(clamp01((progress - 0.28) / 0.36)) * (1 - clamp01((progress - 0.68) / 0.10))
   // Evening mist
   const eveningMist = clamp01((progress - 0.78) / 0.06) * (1 - clamp01((progress - 0.88) / 0.06))
   const mistAlpha = Math.max(morningMist, fogRollIn, eveningMist)
@@ -1257,16 +1286,21 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
       ctx.fillRect(mx + drift - mw, my - mw * 0.3, mw * 2, mw * 0.6)
     }
 
-    // Dense treeline fog — eased in very gradually
-    const denseFog = easeInOutCubic(clamp01((fogRollIn - 0.30) / 0.70))
-    if (denseFog > 0.01) {
+    // Dense treeline fog — fades in proportionally with the base fog
+    // No threshold — it comes in as a continuous part of the fog buildup
+    // Each patch has its own staggered delay for organic appearance
+    if (fogRollIn > 0.01) {
       for (let i = 0; i < 18; i++) {
+        const patchDelay = srand(i * 41 + 703) * 0.4 // each patch starts at different time
+        const patchFog = easeInOutCubic(clamp01((fogRollIn - patchDelay) / (1 - patchDelay)))
+        if (patchFog < 0.01) continue
+
         const fx = srand(i * 23 + 700) * w
         const fy = horizonY + (srand(i * 31 + 701) - 0.5) * h * 0.06
         const fw = (0.06 + srand(i * 37 + 702) * 0.10) * w
         const windDrift = Math.sin(i * 1.7 + progress * 3) * 25
         const fg = ctx.createRadialGradient(fx + windDrift, fy, 0, fx + windDrift, fy, fw)
-        const fAlpha = denseFog * (0.3 + srand(i * 41 + 703) * 0.35)
+        const fAlpha = patchFog * (0.25 + srand(i * 43 + 704) * 0.25)
         fg.addColorStop(0, rgb([200, 195, 180], fAlpha * 0.10))
         fg.addColorStop(0.4, rgb([200, 195, 180], fAlpha * 0.06))
         fg.addColorStop(1, 'rgba(200,195,180,0)')
