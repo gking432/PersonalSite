@@ -27,7 +27,7 @@ function Layout({ children }) {
   }, [menuOpen])
 
   const isActive = (path) => location.pathname === path
-  const isWorkActive = location.pathname === '/projects' || location.pathname === '/client-work'
+  const isWorkActive = location.pathname === '/projects' || location.pathname === '/client-work' || location.pathname === '/ask-ai'
 
   const navLinks = [
     { path: '/about', label: 'About' },
@@ -36,6 +36,7 @@ function Layout({ children }) {
       dropdown: [
         { path: '/projects', label: 'Dev Projects' },
         { path: '/client-work', label: 'Client Work' },
+        { path: '/ask-ai', label: 'Ask AI' },
       ]
     },
     { path: '/speaking', label: 'Speaking' },
@@ -48,6 +49,7 @@ function Layout({ children }) {
     { path: '/about', label: 'About' },
     { path: '/projects', label: 'Dev Projects' },
     { path: '/client-work', label: 'Client Work' },
+    { path: '/ask-ai', label: 'Ask AI' },
     { path: '/speaking', label: 'Speaking' },
     { path: '/writing', label: 'Writing' },
     { path: '/contact', label: 'Contact' },
