@@ -46,8 +46,8 @@ const SKY_ENDNIGHT = [[5,5,15],[8,8,20],[10,10,25],[12,12,28],[15,15,32]]
 
 const SKY_PHASES = [
   { at: 0.00, palette: SKY_NIGHT },
-  { at: 0.06, palette: SKY_PREDAWN },
-  { at: 0.12, palette: SKY_DAWN },
+  { at: 0.12, palette: SKY_PREDAWN },
+  { at: 0.18, palette: SKY_DAWN },
   { at: 0.22, palette: SKY_MORNING },
   { at: 0.40, palette: SKY_NOON },
   { at: 0.58, palette: SKY_GOLDEN },
@@ -77,7 +77,7 @@ function toWaterColor(c) {
 // ═══════════════════════════════════════════
 const CONTENT_STOPS = [
   {
-    at: 0.04, duration: 0.15, reveal: 'constellation',
+    at: 0.02, duration: 0.16, reveal: 'constellation',
     label: 'PHILOSOPHY',
     text: ['Every system has', 'a pattern. I find it.'],
     sub: 'Markets, products, teams — I map the terrain before I move.',
@@ -765,107 +765,95 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites) {
 }
 
 // ═══════════════════════════════════════════
-// LOON — silhouette swimming across the lake
+// MOON — rises as sun sets, illuminates water for reflection reveal
 // ═══════════════════════════════════════════
-function drawLoon(ctx, w, h, progress) {
+function drawMoon(ctx, w, h, progress) {
   const horizonY = h * 0.46
 
-  // Loon is a daytime creature: appears morning, exits before dusk
-  const loonStart = 0.20
-  const loonEnd = 0.72
-  if (progress < loonStart || progress > loonEnd) return
+  // Moon rises from ~0.70, fully visible by ~0.78
+  const moonStart = 0.70
+  if (progress < moonStart) return
 
-  const loonP = (progress - loonStart) / (loonEnd - loonStart)
-  const fadeIn = clamp01(loonP / 0.06)
-  const fadeOut = clamp01((1 - loonP) / 0.06)
-  const loonFade = fadeIn * fadeOut
-  if (loonFade < 0.01) return
+  const moonP = clamp01((progress - moonStart) / 0.18)
+  const fadeIn = easeOutCubic(clamp01(moonP / 0.35))
+  if (fadeIn < 0.01) return
 
-  // Swim from right to left
-  const loonX = w * (0.85 - loonP * 0.70)
-  const loonBaseY = horizonY + (h - horizonY) * 0.12
-  const bobY = Math.sin(progress * 35) * 1.2
-
-  const s = Math.min(w, h) * 0.0018
+  // Moon position: rises from right horizon, arcs up
+  const moonArc = moonP
+  const moonX = w * (0.72 + moonArc * 0.08)
+  const moonBaseY = horizonY - Math.sin(moonArc * Math.PI * 0.5) * h * 0.28
+  const moonY = lerp(horizonY, moonBaseY, fadeIn)
+  const moonR = Math.min(w, h) * 0.025
 
   ctx.save()
-  ctx.translate(loonX, loonBaseY + bobY)
-  ctx.scale(s, s)
-  ctx.globalAlpha = loonFade * 0.65
 
-  // Loon body color (dark silhouette)
-  const bodyColor = rgb([12, 18, 12], 1)
-  ctx.fillStyle = bodyColor
+  // Moon glow (large, soft)
+  const glowR = moonR * 8
+  const mg = ctx.createRadialGradient(moonX, moonY, moonR * 0.5, moonX, moonY, glowR)
+  mg.addColorStop(0, rgb([180, 200, 230], fadeIn * 0.12))
+  mg.addColorStop(0.2, rgb([140, 160, 200], fadeIn * 0.06))
+  mg.addColorStop(0.5, rgb([100, 120, 170], fadeIn * 0.02))
+  mg.addColorStop(1, 'rgba(100,120,170,0)')
+  ctx.fillStyle = mg
+  ctx.fillRect(moonX - glowR, moonY - glowR, glowR * 2, glowR * 2)
 
-  // Body: elongated hull shape
+  // Moon disc
+  ctx.globalAlpha = fadeIn * 0.95
+  const dg = ctx.createRadialGradient(moonX - moonR * 0.2, moonY - moonR * 0.2, 0, moonX, moonY, moonR)
+  dg.addColorStop(0, rgb([240, 240, 255], 1))
+  dg.addColorStop(0.6, rgb([220, 225, 240], 0.95))
+  dg.addColorStop(1, rgb([200, 210, 230], 0.85))
+  ctx.fillStyle = dg
   ctx.beginPath()
-  ctx.ellipse(0, 0, 20, 6, 0, 0, Math.PI * 2)
+  ctx.arc(moonX, moonY, moonR, 0, Math.PI * 2)
   ctx.fill()
 
-  // Tail (slight uptick at back)
+  // Subtle crater hints
+  ctx.globalAlpha = fadeIn * 0.08
+  ctx.fillStyle = rgb([160, 170, 190], 1)
   ctx.beginPath()
-  ctx.moveTo(16, -1)
-  ctx.quadraticCurveTo(22, -4, 24, -3)
-  ctx.quadraticCurveTo(22, 0, 18, 1)
+  ctx.arc(moonX + moonR * 0.25, moonY - moonR * 0.15, moonR * 0.18, 0, Math.PI * 2)
   ctx.fill()
-
-  // Neck (curved)
   ctx.beginPath()
-  ctx.moveTo(-15, -2)
-  ctx.quadraticCurveTo(-18, -6, -17, -11)
-  ctx.quadraticCurveTo(-16, -13, -14, -11)
-  ctx.quadraticCurveTo(-15, -6, -12, -2)
+  ctx.arc(moonX - moonR * 0.3, moonY + moonR * 0.25, moonR * 0.12, 0, Math.PI * 2)
   ctx.fill()
-
-  // Head
   ctx.beginPath()
-  ctx.ellipse(-17, -13, 4, 3.5, -0.2, 0, Math.PI * 2)
-  ctx.fill()
-
-  // Beak
-  ctx.beginPath()
-  ctx.moveTo(-20, -14)
-  ctx.lineTo(-26, -13)
-  ctx.lineTo(-20, -12)
-  ctx.closePath()
-  ctx.fill()
-
-  // Eye (tiny bright dot)
-  ctx.fillStyle = rgb([180, 180, 160], loonFade * 0.6)
-  ctx.beginPath()
-  ctx.arc(-18, -13.5, 0.8, 0, Math.PI * 2)
+  ctx.arc(moonX + moonR * 0.05, moonY + moonR * 0.35, moonR * 0.15, 0, Math.PI * 2)
   ctx.fill()
 
   ctx.restore()
 
-  // Wake: V-shaped ripples trailing behind
+  // Moon reflection on water — silver column of light
+  const waterH = h - horizonY
+  const moonColW = moonR * 0.8
+  const refAlpha = fadeIn * 0.18
+
   ctx.save()
-  ctx.globalAlpha = loonFade * 0.12
-  const wakeSpread = 8
-  for (let i = 1; i <= 6; i++) {
-    const t = i / 6
-    const wx = loonX + t * w * 0.05 + 10 * s
-    const spread = t * wakeSpread * s
-    const wAlpha = loonFade * 0.08 * (1 - t)
-    ctx.strokeStyle = rgb([200, 210, 220], wAlpha)
-    ctx.lineWidth = 0.6
-    ctx.beginPath()
-    // Upper wake line
-    ctx.moveTo(loonX + 10 * s, loonBaseY + bobY)
-    ctx.quadraticCurveTo(
-      wx - w * 0.01, loonBaseY + bobY - spread * 0.3,
-      wx, loonBaseY + bobY - spread
-    )
-    ctx.stroke()
-    ctx.beginPath()
-    // Lower wake line
-    ctx.moveTo(loonX + 10 * s, loonBaseY + bobY)
-    ctx.quadraticCurveTo(
-      wx - w * 0.01, loonBaseY + bobY + spread * 0.3,
-      wx, loonBaseY + bobY + spread
-    )
-    ctx.stroke()
+  ctx.beginPath()
+  ctx.rect(0, horizonY, w, waterH)
+  ctx.clip()
+
+  // Soft central column
+  const colGrad = ctx.createLinearGradient(0, horizonY, 0, horizonY + waterH * 0.7)
+  colGrad.addColorStop(0, rgb([180, 200, 230], refAlpha))
+  colGrad.addColorStop(0.3, rgb([160, 180, 215], refAlpha * 0.5))
+  colGrad.addColorStop(0.7, rgb([140, 160, 200], refAlpha * 0.15))
+  colGrad.addColorStop(1, rgb([140, 160, 200], 0))
+  ctx.fillStyle = colGrad
+  ctx.fillRect(moonX - moonColW * 3, horizonY, moonColW * 6, waterH * 0.7)
+
+  // Shimmer strips
+  for (let i = 0; i < 25; i++) {
+    const t = i / 25
+    const sy = horizonY + t * waterH * 0.65
+    const sH = (waterH * 0.65) / 25
+    const wave = Math.sin(t * 12 + progress * 14) * (1 + t * 8)
+    const sW = moonColW * (1 + t * 2)
+    const sAlpha = refAlpha * (1 - t * 0.7)
+    ctx.fillStyle = rgb([200, 215, 240], sAlpha)
+    ctx.fillRect(moonX - sW / 2 + wave, sy, sW, sH + 1)
   }
+
   ctx.restore()
 }
 
@@ -961,9 +949,10 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
   ctx.fillRect(0, 0, w, horizonY + 1)
 
   // ═══════ STARS ═══════
+  // Stars stay fully visible through constellation reveal (~0.02 to 0.18)
   const starAlpha =
-    progress < 0.06 ? 1 :
-    progress < 0.15 ? 1 - clamp01((progress - 0.06) / 0.09) :
+    progress < 0.12 ? 1 :
+    progress < 0.20 ? 1 - clamp01((progress - 0.12) / 0.08) :
     progress > 0.72 ? clamp01((progress - 0.72) / 0.08) : 0
 
   if (starAlpha > 0.01) {
@@ -986,12 +975,12 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
   }
 
   // ═══════ HORIZON GLOW ═══════
-  const dawnGlow = clamp01((progress - 0.06) / 0.08) * (1 - clamp01((progress - 0.22) / 0.10))
+  const dawnGlow = clamp01((progress - 0.12) / 0.08) * (1 - clamp01((progress - 0.22) / 0.10))
   const goldenGlow = clamp01((progress - 0.55) / 0.08) * (1 - clamp01((progress - 0.78) / 0.08))
   const glowIntensity = Math.max(dawnGlow, goldenGlow)
 
   if (glowIntensity > 0.01) {
-    const sunArc = clamp01((progress - 0.08) / 0.72)
+    const sunArc = clamp01((progress - 0.14) / 0.66)
     const gSunX = w * (0.15 + sunArc * 0.7)
     const gg = ctx.createRadialGradient(gSunX, horizonY, 0, gSunX, horizonY, w * 0.5)
     gg.addColorStop(0, rgb([255, 170, 50], glowIntensity * 0.25))
@@ -1010,11 +999,11 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
   }
 
   // ═══════ SUN ═══════
-  const sunVisible = progress > 0.08 && progress < 0.82
+  const sunVisible = progress > 0.14 && progress < 0.82
   let sunX = 0, sunY = 0, sunR = 0
 
   if (sunVisible) {
-    const sunArc = clamp01((progress - 0.08) / 0.72)
+    const sunArc = clamp01((progress - 0.14) / 0.66)
     sunX = w * (0.15 + sunArc * 0.7)
     const arcHeight = h * 0.35
     sunY = horizonY - Math.sin(sunArc * Math.PI) * arcHeight
@@ -1146,7 +1135,7 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
 
   // Water horizon glow
   if (glowIntensity > 0.01) {
-    const sunArc = clamp01((progress - 0.08) / 0.72)
+    const sunArc = clamp01((progress - 0.14) / 0.66)
     const gSunX = w * (0.15 + sunArc * 0.7)
     const wg = ctx.createRadialGradient(gSunX, horizonY, 0, gSunX, horizonY + h * 0.12, w * 0.35)
     wg.addColorStop(0, rgb([230, 150, 50], glowIntensity * 0.15))
@@ -1186,6 +1175,9 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
     ctx.restore()
   }
 
+  // ═══════ MOON (rises as sun sets) ═══════
+  drawMoon(ctx, w, h, progress)
+
   // ═══════ REFLECTION REVEAL (dusk — bold text + water reflection) ═══════
   const c4 = CONTENT_STOPS[4]
   const c4p = clamp01((progress - c4.at) / c4.duration)
@@ -1195,36 +1187,60 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
 
   // ═══════ SUN REFLECTION ON WATER ═══════
   if (sunVisible) {
-    const colW = sunR * 1.2
     const waterH = h - horizonY
-    for (let i = 0; i < 40; i++) {
-      const t = i / 40
-      const stripY = horizonY + t * waterH * 0.8
-      const stripH = (waterH * 0.8) / 40
-      const waveX = Math.sin(t * 14 + progress * 10) * (2 + t * 12)
-      const alpha = 0.28 * (1 - t * 0.85)
-      const stripW = colW * (1.5 + t * 3)
-      const noonness = Math.sin(clamp01((progress - 0.08) / 0.72) * Math.PI)
-      const refColor = lerpColor([255, 180, 80], [255, 240, 200], noonness)
+    const sunArcP = clamp01((progress - 0.14) / 0.66)
+    const noonness = Math.sin(sunArcP * Math.PI)
+    const refColor = lerpColor([255, 180, 80], [255, 240, 200], noonness)
+    const colW = sunR * 1.2
+
+    // Central glowing column — wider and brighter at low sun angles
+    const colIntensity = 0.15 + (1 - noonness) * 0.15
+    const centralW = colW * (2 + (1 - noonness) * 2)
+    const colGrad = ctx.createLinearGradient(0, horizonY, 0, horizonY + waterH * 0.85)
+    colGrad.addColorStop(0, rgb(refColor, colIntensity))
+    colGrad.addColorStop(0.3, rgb(refColor, colIntensity * 0.6))
+    colGrad.addColorStop(0.7, rgb(refColor, colIntensity * 0.2))
+    colGrad.addColorStop(1, rgb(refColor, 0))
+    ctx.fillStyle = colGrad
+    ctx.fillRect(sunX - centralW, horizonY, centralW * 2, waterH * 0.85)
+
+    // Broken light strips (shimmer)
+    for (let i = 0; i < 50; i++) {
+      const t = i / 50
+      const stripY = horizonY + t * waterH * 0.85
+      const sH = (waterH * 0.85) / 50
+      const depth = t
+      // Two wave frequencies for more organic movement
+      const waveX1 = Math.sin(t * 14 + progress * 12) * (2 + depth * 14)
+      const waveX2 = Math.sin(t * 7.3 + progress * 8 + 1.5) * (1 + depth * 6)
+      const waveX = waveX1 + waveX2
+      const alpha = 0.30 * (1 - depth * 0.8)
+      const stripW = colW * (1.2 + depth * 2.5 + (1 - noonness) * depth * 2)
       ctx.fillStyle = rgb(refColor, alpha)
-      ctx.fillRect(sunX - stripW / 2 + waveX, stripY, stripW, stripH + 1)
+      ctx.fillRect(sunX - stripW / 2 + waveX, stripY, stripW, sH + 1)
     }
+
+    // Bright hotspot right at the horizon
+    const hotGrad = ctx.createRadialGradient(sunX, horizonY, 0, sunX, horizonY, sunR * 4)
+    hotGrad.addColorStop(0, rgb([255, 255, 240], 0.25))
+    hotGrad.addColorStop(0.3, rgb(refColor, 0.12))
+    hotGrad.addColorStop(1, rgb(refColor, 0))
+    ctx.fillStyle = hotGrad
+    ctx.fillRect(sunX - sunR * 4, horizonY, sunR * 8, sunR * 4)
   }
 
   // ═══════ LAKE TEXTURE (dynamic waves) ═══════
   drawLakeTexture(ctx, w, h, progress)
 
-  // ═══════ LOON ═══════
-  drawLoon(ctx, w, h, progress)
-
   // ═══════ LANDSCAPE MIST / FOG ═══════
   // Morning mist (brief, at dawn)
-  const morningMist = clamp01((progress - 0.12) / 0.08) * (1 - clamp01((progress - 0.28) / 0.08))
-  // Fog rolls in before and during the fog text reveal (starts at ~0.48, peaks ~0.62, clears ~0.76)
-  const fogRollIn = clamp01((progress - 0.48) / 0.10) * (1 - clamp01((progress - 0.72) / 0.08))
+  const morningMist = clamp01((progress - 0.16) / 0.08) * (1 - clamp01((progress - 0.30) / 0.08))
+  // Fog rolls in VERY gradually over a long period before the fog text reveal
+  // Starts as wisps at ~0.38, builds slowly through 0.50, peaks at ~0.64, clears by ~0.76
+  const fogRollIn = clamp01((progress - 0.38) / 0.22) * (1 - clamp01((progress - 0.74) / 0.08))
   // Evening mist
-  const eveningMist = clamp01((progress - 0.76) / 0.06) * (1 - clamp01((progress - 0.86) / 0.06))
-  const mistAlpha = Math.max(morningMist, fogRollIn * 1.4, eveningMist)
+  const eveningMist = clamp01((progress - 0.78) / 0.06) * (1 - clamp01((progress - 0.88) / 0.06))
+  const mistAlpha = Math.max(morningMist, fogRollIn, eveningMist)
 
   if (mistAlpha > 0.01) {
     for (const m of mist) {
@@ -1240,17 +1256,19 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
       ctx.fillRect(mx + drift - mw, my - mw * 0.3, mw * 2, mw * 0.6)
     }
 
-    // Extra dense fog around treeline during fogRollIn phase
-    if (fogRollIn > 0.1) {
+    // Additional treeline fog — only appears once fogRollIn is well established
+    // Uses easeInOutCubic so it creeps in rather than popping
+    const denseFog = easeInOutCubic(clamp01((fogRollIn - 0.35) / 0.65))
+    if (denseFog > 0.01) {
       for (let i = 0; i < 18; i++) {
         const fx = srand(i * 23 + 700) * w
         const fy = horizonY + (srand(i * 31 + 701) - 0.5) * h * 0.06
         const fw = (0.06 + srand(i * 37 + 702) * 0.10) * w
         const windDrift = Math.sin(i * 1.7 + progress * 3) * 25
         const fg = ctx.createRadialGradient(fx + windDrift, fy, 0, fx + windDrift, fy, fw)
-        const fAlpha = fogRollIn * (0.5 + srand(i * 41 + 703) * 0.5)
-        fg.addColorStop(0, rgb([200, 195, 180], fAlpha * 0.12))
-        fg.addColorStop(0.4, rgb([200, 195, 180], fAlpha * 0.07))
+        const fAlpha = denseFog * (0.4 + srand(i * 41 + 703) * 0.4)
+        fg.addColorStop(0, rgb([200, 195, 180], fAlpha * 0.10))
+        fg.addColorStop(0.4, rgb([200, 195, 180], fAlpha * 0.06))
         fg.addColorStop(1, 'rgba(200,195,180,0)')
         ctx.fillStyle = fg
         ctx.fillRect(fx + windDrift - fw, fy - fw * 0.35, fw * 2, fw * 0.7)
@@ -1259,7 +1277,7 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
   }
 
   // ═══════ VIGNETTE ═══════
-  const dayBrightness = Math.sin(clamp01((progress - 0.08) / 0.72) * Math.PI)
+  const dayBrightness = Math.sin(clamp01((progress - 0.14) / 0.66) * Math.PI)
   const vignetteStrength = 0.3 + (1 - dayBrightness) * 0.3
   const vg = ctx.createRadialGradient(
     w * 0.5, h * 0.5, Math.min(w, h) * 0.3,
