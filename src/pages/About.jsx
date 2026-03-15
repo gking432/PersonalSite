@@ -161,6 +161,7 @@ function About() {
   const [showFullStory, setShowFullStory] = useState(false)
   const processRef = useRef(null)
   const statementRef = useRef(null)
+  const approachRef = useRef(null)
 
   const { scrollYProgress: processScroll } = useScroll({
     target: processRef,
@@ -176,6 +177,17 @@ function About() {
     offset: ["start start", "end start"]
   })
   const statementY = useTransform(statementScroll, [0, 1], [60, -60])
+
+  // PhotoSection2 — Approach
+  const { scrollYProgress: approachScroll } = useScroll({
+    target: approachRef,
+    offset: ["start end", "end start"]
+  })
+  const { scrollYProgress: approachTextScroll } = useScroll({
+    target: approachRef,
+    offset: ["start start", "end start"]
+  })
+  const approachY = useTransform(approachScroll, [0, 1], [60, -60])
 
   return (
     <PageTransition>
@@ -379,6 +391,30 @@ function About() {
           </div>
         </div>
       </section>
+
+      {/* ═══════ PHOTO SECTION 2 — APPROACH ═══════ */}
+      <div ref={approachRef} className="approach-photo-scroll-runway">
+        <div className="approach-photo-sticky-wrapper">
+          <SqueezeSection className="approach-photo-section section">
+            <div className="approach-photo-bg" />
+            <div className="approach-photo-overlay" />
+            <div className="container">
+              <motion.div
+                className="statement-inner"
+                style={{ y: approachY }}
+              >
+                <p className="statement-subtitle">Approach</p>
+                <StatementGiantText scrollYProgress={approachTextScroll} lineBreakAfter={2}>
+                  Think big picture. Compartmentalize. Execute.
+                </StatementGiantText>
+                <p className="statement-paragraph">
+                  I see systems, not just tasks. Whether it's a product launch, a marketing campaign, or a new application — I break complex goals into clear deliverables and deliver them.
+                </p>
+              </motion.div>
+            </div>
+          </SqueezeSection>
+        </div>
+      </div>
 
       {/* ═══════ LET'S WORK TOGETHER CTA ═══════ */}
       <section className="cta-section section">
