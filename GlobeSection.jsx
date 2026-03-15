@@ -1,5 +1,5 @@
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import './GlobeSection.css'
 
 const ndsEase = [0.22, 1, 0.36, 1]
@@ -338,8 +338,23 @@ function GlobeSection() {
   const [geoLoaded, setGeoLoaded] = useState(false)
   const [activeStop, setActiveStop] = useState(-1)
   const [showHeader, setShowHeader] = useState(false)
+  const [hoveredStop, setHoveredStop] = useState(-1)
 
   const landPoints = useMemo(() => generateLandPoints(3000), [])
+
+  // Scroll to a specific stop when clicked in the timeline nav
+  const scrollToStop = useCallback((stopIndex) => {
+    if (!sectionRef.current) return
+    const section = sectionRef.current
+    const sectionTop = section.offsetTop
+    const sectionHeight = section.scrollHeight
+
+    // Calculate the scroll position for the middle of this stop's dwell phase
+    const stopMid = STOPS_START + stopIndex * PER_STOP + PER_STOP * (FLY_RATIO + DWELL_RATIO * 0.5)
+    const targetScroll = sectionTop + sectionHeight * stopMid - window.innerHeight * 0.5
+
+    window.scrollTo({ top: targetScroll, behavior: 'smooth' })
+  }, [])
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -622,6 +637,45 @@ function GlobeSection() {
             <h2 className="globe-heading">Where I've Been</h2>
           </motion.div>
         </div>
+
+        {/* Timeline Nav */}
+        <motion.nav
+          className="globe-timeline"
+          initial={{ opacity: 0, x: -20 }}
+          animate={showHeader ? { opacity: 1, x: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.3, ease: ndsEase }}
+        >
+          <div className="globe-timeline-track" />
+          {journeyStops.map((stop, i) => {
+            const isActive = activeStop === i
+            const isVisited = activeStop > i || activeStop === -2
+            const isHovered = hoveredStop === i
+            return (
+              <button
+                key={i}
+                className={`globe-timeline-stop${isActive ? ' active' : ''}${isVisited ? ' visited' : ''}${isHovered ? ' hovered' : ''}`}
+                onClick={() => scrollToStop(i)}
+                onMouseEnter={() => setHoveredStop(i)}
+                onMouseLeave={() => setHoveredStop(-1)}
+              >
+                <span className="globe-timeline-dot" />
+                <AnimatePresence>
+                  {(isActive || isHovered) && (
+                    <motion.span
+                      className="globe-timeline-label"
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -8 }}
+                      transition={{ duration: 0.25, ease: ndsEase }}
+                    >
+                      {stop.city}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </button>
+            )
+          })}
+        </motion.nav>
 
         {/* Canvas */}
         <div className="globe-canvas-container" ref={containerRef}>

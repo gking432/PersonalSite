@@ -67,6 +67,77 @@ Dark background, prestige palette, NDS easing.
   color: #f4f1ea;
 }
 
+/* ── TIMELINE NAV ── */
+.globe-timeline {
+  position: absolute;
+  left: var(--gutter);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.globe-timeline-track {
+  position: absolute;
+  left: 5px;
+  top: 12px;
+  bottom: 12px;
+  width: 1px;
+  background: rgba(244, 241, 234, 0.12);
+}
+
+.globe-timeline-stop {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.globe-timeline-dot {
+  position: relative;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(244, 241, 234, 0.25);
+  background: transparent;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  flex-shrink: 0;
+}
+
+.globe-timeline-stop:hover .globe-timeline-dot {
+  border-color: rgba(244, 241, 234, 0.6);
+  background: rgba(244, 241, 234, 0.1);
+}
+
+.globe-timeline-stop.visited .globe-timeline-dot {
+  border-color: rgba(244, 241, 234, 0.35);
+  background: rgba(244, 241, 234, 0.15);
+}
+
+.globe-timeline-stop.active .globe-timeline-dot {
+  border-color: rgba(244, 241, 234, 0.9);
+  background: rgba(244, 241, 234, 0.9);
+  box-shadow: 0 0 12px rgba(244, 241, 234, 0.3);
+}
+
+.globe-timeline-label {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: rgba(244, 241, 234, 0.85);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
 /* ── CANVAS ── */
 .globe-canvas-container {
   position: relative;
@@ -231,5 +302,9 @@ Dark background, prestige palette, NDS easing.
 
   .globe-story-card {
     padding: 16px 20px;
+  }
+
+  .globe-timeline {
+    display: none;
   }
 }
