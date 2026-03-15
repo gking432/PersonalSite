@@ -806,9 +806,13 @@ function drawCelestialReflection(ctx, w, h, bodyX, bodyY, bodyR, progress, color
     const t = y / offH
     // Wave distortion increases with distance from horizon
     const distFromHorizon = (destY + y - horizonY) / waterH
-    const waveAmp = Math.max(0, distFromHorizon) * 15 + 2
-    const waveOffset = Math.sin(y * 0.08 + progress * 12) * waveAmp
-      + Math.sin(y * 0.04 + progress * 8 + 1.5) * waveAmp * 0.5
+    // More wiggle (high frequency), less morph (low amplitude)
+    // Keeps the general form recognizable while shimmering actively
+    const waveAmp = Math.max(0, distFromHorizon) * 5 + 1.5
+    const waveOffset =
+      Math.sin(y * 0.12 + progress * 28) * waveAmp
+      + Math.sin(y * 0.07 + progress * 22 + 1.5) * waveAmp * 0.6
+      + Math.sin(y * 0.20 + progress * 35 + 3.0) * waveAmp * 0.3
 
     // Source from bottom-up (flip)
     const srcY = offH - y - stripH
@@ -980,6 +984,48 @@ function drawMoon(ctx, w, h, progress, sprites) {
   ctx.fill()
 
   ctx.restore()
+
+  // Moonlight wash — subtle blue-silver illumination over the whole scene
+  const moonlightAlpha = fadeIn * 0.06
+  if (moonlightAlpha > 0.005) {
+    ctx.save()
+    const mlGrad = ctx.createRadialGradient(moonX, moonY, 0, moonX, moonY, Math.max(w, h) * 0.8)
+    mlGrad.addColorStop(0, rgb([140, 160, 210], moonlightAlpha * 1.5))
+    mlGrad.addColorStop(0.2, rgb([120, 140, 190], moonlightAlpha))
+    mlGrad.addColorStop(0.5, rgb([100, 120, 170], moonlightAlpha * 0.5))
+    mlGrad.addColorStop(1, rgb([80, 100, 150], 0))
+    ctx.fillStyle = mlGrad
+    ctx.fillRect(0, 0, w, h)
+    ctx.restore()
+  }
+
+  // Moonlight shimmer on the water — silver glints
+  if (fadeIn > 0.1) {
+    const horizonY = h * 0.46
+    const waterH = h - horizonY
+    ctx.save()
+    ctx.beginPath()
+    ctx.rect(0, horizonY, w, waterH)
+    ctx.clip()
+
+    const shimmerCount = 20
+    for (let i = 0; i < shimmerCount; i++) {
+      const phase = progress * 20 + i * 5.7
+      const twinkle = (Math.sin(phase) * 0.5 + 0.5) * (Math.sin(phase * 2.3 + 1) * 0.5 + 0.5)
+      if (twinkle < 0.25) continue
+
+      // Concentrate shimmer near moon's X position but spread a bit
+      const spread = (srand(i * 11 + 400) - 0.5) * w * 0.4
+      const gx = moonX + spread
+      const gy = horizonY + srand(i * 17 + 401) * waterH * 0.5 + waterH * 0.02
+      const gs = (0.5 + srand(i * 23 + 402) * 1.5)
+
+      ctx.globalAlpha = fadeIn * twinkle * 0.10
+      ctx.fillStyle = rgb([200, 215, 240], 1)
+      ctx.fillRect(gx, gy, gs * 2.5, gs * 0.3)
+    }
+    ctx.restore()
+  }
 
   // Moon reflection — rendered to offscreen, flipped with wave distortion
   drawCelestialReflection(ctx, w, h, moonX, moonY, moonR, progress, [200, 215, 240], fadeIn * 0.18, sprites)
