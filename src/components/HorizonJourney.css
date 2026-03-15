@@ -1,0 +1,111 @@
+/* ═══════════════════════════════════════════
+   HORIZON JOURNEY — Full day-cycle scroll experience
+   Canvas-rendered landscape with sun arc, content stops,
+   and environmental text reveals.
+   ═══════════════════════════════════════════ */
+
+.horizon-section {
+  position: relative;
+  height: 700vh;
+}
+
+.horizon-sticky {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  background: #050508;
+  overflow: hidden;
+}
+
+.horizon-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ─── Content overlay (positioned over the canvas) ─── */
+.horizon-content-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.horizon-stop {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: none;
+}
+
+.horizon-stop.horizon-stop--active {
+  opacity: 1;
+}
+
+/* ─── Water ripple text container ─── */
+.horizon-stop-inner {
+  text-align: center;
+  max-width: 700px;
+  padding: 0 var(--gutter, 24px);
+  transform: translateY(8%);
+}
+
+.horizon-stop-label {
+  font-family: var(--font-sans, 'Inter', sans-serif);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 210, 120, 0.7);
+  margin-bottom: 12px;
+  display: block;
+}
+
+.horizon-stop-text {
+  font-family: var(--font-display, 'Instrument Serif', serif);
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: rgba(255, 250, 240, 0.95);
+  margin: 0;
+  text-shadow: 0 2px 40px rgba(0, 0, 0, 0.5);
+}
+
+.horizon-stop-sub {
+  font-family: var(--font-serif, 'Crimson Text', serif);
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  line-height: 1.7;
+  color: rgba(255, 245, 230, 0.7);
+  margin-top: 16px;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  .horizon-section {
+    height: 600vh;
+  }
+
+  .horizon-stop-text {
+    font-size: clamp(1.6rem, 7vw, 2.4rem);
+  }
+
+  .horizon-stop-sub {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .horizon-section {
+    height: 550vh;
+  }
+}

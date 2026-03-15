@@ -4,7 +4,7 @@ import { useRef, useEffect, useState } from 'react'
 
 
 import PageTransition from '../components/PageTransition'
-import LakeDawn from '../components/LakeDawn'
+import HorizonJourney from '../components/HorizonJourney'
 import './Home.css'
 
 // ─── NDS EASING ───
@@ -465,8 +465,8 @@ function Home() {
         paragraph="I don't wait for permission to learn something new. When I wanted to understand crypto, I built a token launchpad. When I needed an interview prep tool, I built one with AI. Every project started the same way: I identified a problem, managed it from concept to launch, and shipped a real product."
       />
 
-      {/* ═══════ LAKE DAWN — Scroll-driven sunrise ═══════ */}
-      <LakeDawn />
+      {/* ═══════ HORIZON JOURNEY — Full day-cycle scroll experience ═══════ */}
+      <HorizonJourney />
 
       {/* ═══════ EXPERIENCE TIMELINE ═══════ */}
       <section className="background">
