@@ -1013,9 +1013,15 @@ function HorizonJourney() {
     offset: ['start end', 'end start'],
   })
 
-  // Squeeze: scale down + round corners as section exits
-  const rawScale = useTransform(scrollYProgress, [0.87, 0.95], [1, 0.88])
-  const rawRadius = useTransform(scrollYProgress, [0.87, 0.95], [0, 24])
+  // Squeeze: always squeezed (like other NDS squeeze sections)
+  // Entry squeeze: scales from 1 → 0.88 as section enters viewport
+  const squeezeRef = useRef(null)
+  const { scrollYProgress: squeezeProgress } = useScroll({
+    target: squeezeRef,
+    offset: ['start 0.85', 'start 0.15'],
+  })
+  const rawScale = useTransform(squeezeProgress, [0, 1], [1, 0.88])
+  const rawRadius = useTransform(squeezeProgress, [0, 1], [0, 24])
   const scale = useSpring(rawScale, { stiffness: 120, damping: 30 })
   const borderRadius = useSpring(rawRadius, { stiffness: 120, damping: 30 })
 
@@ -1104,14 +1110,18 @@ function HorizonJourney() {
   }, [sceneData])
 
   return (
-    <section className="horizon-section" ref={sectionRef}>
-      <motion.div
-        className="horizon-sticky"
-        ref={containerRef}
-        style={{ scale, borderRadius, overflow: 'hidden' }}
-      >
-        <canvas ref={canvasRef} className="horizon-canvas" />
-      </motion.div>
+    <section className="horizon-section" ref={squeezeRef}>
+      <div className="horizon-scroll-runway" ref={sectionRef}>
+        <div className="horizon-sticky-wrapper">
+          <motion.div
+            className="horizon-squeeze"
+            ref={containerRef}
+            style={{ scale, borderRadius, overflow: 'hidden' }}
+          >
+            <canvas ref={canvasRef} className="horizon-canvas" />
+          </motion.div>
+        </div>
+      </div>
     </section>
   )
 }
