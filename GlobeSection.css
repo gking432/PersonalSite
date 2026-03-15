@@ -161,7 +161,7 @@ Dark background, prestige palette, NDS easing.
 .globe-story-card {
   position: absolute;
   bottom: var(--space-xl);
-  left: var(--gutter);
+  right: var(--gutter);
   width: 360px;
   background: rgba(250, 248, 243, 0.94);
   backdrop-filter: blur(16px);
@@ -270,7 +270,7 @@ Dark background, prestige palette, NDS easing.
   }
 
   .globe-story-card {
-    width: calc(100% - 2 * var(--gutter));
+    width: auto;
     left: var(--gutter);
     right: var(--gutter);
     bottom: var(--space-lg);

@@ -9,25 +9,28 @@ const ndsEase = [0.22, 1, 0.36, 1]
 // ═══════════════════════════════════════════
 const journeyStops = [
   {
-    lat: 43.20, lng: -89.00, zoom: 6,
+    lat: 43.20, lng: -89.00, zoom: 9,
     city: "Cambridge, WI",
     chapter: "The Beginning",
     story: "Born and raised in small-town Wisconsin. The kind of place where everyone knows your name and nobody locks their doors.",
     stateId: "55",
+    scrollWeight: 0.8, flyRatio: 0.2,
   },
   {
-    lat: 43.04, lng: -87.91, zoom: 7,
+    lat: 43.04, lng: -87.91, zoom: 10,
     city: "Milwaukee, WI",
     chapter: "College",
     story: "Marquette University. Marketing degree, business mindset. Learned how to think strategically and sell an idea.",
     stateId: "55",
+    scrollWeight: 0.7, flyRatio: 0.15,
   },
   {
-    lat: 43.07, lng: -89.40, zoom: 7,
+    lat: 43.07, lng: -89.40, zoom: 10,
     city: "Madison, WI",
     chapter: "First Real Job",
     story: "Sub-Zero Group. Inaugural candidate in their sales rotational program. Learned how enterprise actually works from the inside.",
     stateId: "55",
+    scrollWeight: 0.7, flyRatio: 0.15,
   },
   {
     lat: 33.49, lng: -111.93, zoom: 5,
@@ -35,6 +38,7 @@ const journeyStops = [
     chapter: "New Territory",
     story: "Relocated with Sub-Zero to manage dealer networks across the Southwest. First time living somewhere that wasn't Wisconsin.",
     stateId: "04",
+    scrollWeight: 1.4, flyRatio: 0.5,
   },
   {
     lat: 32.78, lng: -79.93, zoom: 5,
@@ -42,6 +46,7 @@ const journeyStops = [
     chapter: "Going Independent",
     story: "Started my own marketing consultancy. First taste of building something from nothing. Terrifying and addictive in equal measure.",
     stateId: "45",
+    scrollWeight: 1.4, flyRatio: 0.5,
   },
   {
     lat: 39.74, lng: -104.99, zoom: 5,
@@ -49,6 +54,7 @@ const journeyStops = [
     chapter: "Scaling Up",
     story: "Moved the business to Denver. Built products, served clients, shipped fast. Learned what it means to wear every hat.",
     stateId: "08",
+    scrollWeight: 1.3, flyRatio: 0.45,
   },
   {
     lat: 43.40, lng: -89.30, zoom: 5,
@@ -56,6 +62,7 @@ const journeyStops = [
     chapter: "Full Circle",
     story: "AI changed everything. The consultancy model got disrupted overnight. Came home to regroup and figure out what's next.",
     stateId: "55",
+    scrollWeight: 1.1, flyRatio: 0.4,
   },
 ]
 
@@ -69,9 +76,21 @@ const STOPS_END = 0.88
 const OUTRO_START = STOPS_END
 const OUTRO_END = 0.96
 const NUM_STOPS = journeyStops.length
-const PER_STOP = (STOPS_END - STOPS_START) / NUM_STOPS
-const FLY_RATIO = 0.3
-const DWELL_RATIO = 0.7
+
+// Precompute per-stop scroll breakpoints (distance-aware timing)
+const totalWeight = journeyStops.reduce((sum, s) => sum + s.scrollWeight, 0)
+const stopBreakpoints = (() => {
+  const bp = []
+  let cursor = STOPS_START
+  for (const stop of journeyStops) {
+    const allocation = (stop.scrollWeight / totalWeight) * (STOPS_END - STOPS_START)
+    const flyEnd = cursor + allocation * stop.flyRatio
+    const dwellEnd = cursor + allocation
+    bp.push({ start: cursor, flyEnd, dwellEnd })
+    cursor = dwellEnd
+  }
+  return bp
+})()
 
 function getScrollPhase(p) {
   if (p < INTRO_START) return { phase: 'hidden' }
@@ -79,15 +98,17 @@ function getScrollPhase(p) {
   if (p >= OUTRO_START && p < OUTRO_END) return { phase: 'outro', t: (p - OUTRO_START) / (OUTRO_END - OUTRO_START) }
   if (p >= OUTRO_END) return { phase: 'done' }
 
-  // Within stops range
-  const stopProgress = p - STOPS_START
-  const stopIndex = Math.min(Math.floor(stopProgress / PER_STOP), NUM_STOPS - 1)
-  const within = (stopProgress - stopIndex * PER_STOP) / PER_STOP
-
-  if (within < FLY_RATIO) {
-    return { phase: 'fly', stopIndex, t: within / FLY_RATIO }
+  // Find which stop we're in
+  for (let i = 0; i < NUM_STOPS; i++) {
+    const { start, flyEnd, dwellEnd } = stopBreakpoints[i]
+    if (p < dwellEnd || i === NUM_STOPS - 1) {
+      if (p < flyEnd) {
+        return { phase: 'fly', stopIndex: i, t: (p - start) / (flyEnd - start) }
+      }
+      return { phase: 'dwell', stopIndex: i, t: (p - flyEnd) / (dwellEnd - flyEnd) }
+    }
   }
-  return { phase: 'dwell', stopIndex, t: (within - FLY_RATIO) / DWELL_RATIO }
+  return { phase: 'dwell', stopIndex: NUM_STOPS - 1, t: 1 }
 }
 
 // ═══════════════════════════════════════════
@@ -106,22 +127,40 @@ function getCameraState(p) {
   }
 
   if (phase === 'fly') {
-    const eased = easeInOutCubic(t)
+    // Smoother easing curve for long-distance flights
+    const eased = easeInOutQuart(t)
     const target = journeyStops[stopIndex]
 
     let prevLat, prevLng, prevZoom
     if (stopIndex === 0) {
-      // Flying from intro end position
       prevLat = 20; prevLng = 40 - 140; prevZoom = 1
     } else {
       const prev = journeyStops[stopIndex - 1]
       prevLat = prev.lat; prevLng = prev.lng; prevZoom = prev.zoom
     }
 
+    // For cross-country flights, zoom out mid-flight then back in
+    const dist = Math.sqrt((target.lat - prevLat) ** 2 + (target.lng - prevLng) ** 2)
+    let zoom
+    if (dist > 10) {
+      // Long distance: pull back to ~3.5 at midpoint, ease back to target
+      const pullback = Math.min(prevZoom, target.zoom) * 0.45
+      const midZoom = Math.max(3, pullback)
+      if (t < 0.5) {
+        const zoomOut = easeOutCubic(t * 2)
+        zoom = lerp(prevZoom, midZoom, zoomOut)
+      } else {
+        const zoomIn = easeInOutCubic((t - 0.5) * 2)
+        zoom = lerp(midZoom, target.zoom, zoomIn)
+      }
+    } else {
+      zoom = lerp(prevZoom, target.zoom, eased)
+    }
+
     return {
       lat: lerp(prevLat, target.lat, eased),
       lng: lerp(prevLng, target.lng, eased),
-      zoom: lerp(prevZoom, target.zoom, eased),
+      zoom,
       activeStop: -1,
     }
   }
@@ -213,6 +252,7 @@ function projectPoint(lat, lng, centerLat, centerLng, radius) {
 function lerp(a, b, t) { return a + (b - a) * t }
 function easeOutCubic(t) { return 1 - (1 - t) ** 3 }
 function easeInOutCubic(t) { return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2 }
+function easeInOutQuart(t) { return t < 0.5 ? 8 * t * t * t * t : 1 - (-2 * t + 2) ** 4 / 2 }
 
 // ── LAND DOT GENERATION (fibonacci sphere, rectangle-based land check) ──
 const landRegions = [
@@ -350,7 +390,8 @@ function GlobeSection() {
     const sectionHeight = section.scrollHeight
 
     // Calculate the scroll position for the middle of this stop's dwell phase
-    const stopMid = STOPS_START + stopIndex * PER_STOP + PER_STOP * (FLY_RATIO + DWELL_RATIO * 0.5)
+    const bp = stopBreakpoints[stopIndex]
+    const stopMid = bp.flyEnd + (bp.dwellEnd - bp.flyEnd) * 0.5
     const targetScroll = sectionTop + sectionHeight * stopMid - window.innerHeight * 0.5
 
     window.scrollTo({ top: targetScroll, behavior: 'smooth' })
