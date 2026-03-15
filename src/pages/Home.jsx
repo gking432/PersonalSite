@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform, useInView, useSpring } from 'framer-motion'
 import { useRef, useEffect, useState } from 'react'
-import PokerTable from '../../PokerTable'
+
 
 import PageTransition from '../components/PageTransition'
+import VaultDoor from '../components/VaultDoor'
 import './Home.css'
 
 // ─── NDS EASING ───
@@ -464,19 +465,8 @@ function Home() {
         paragraph="I don't wait for permission to learn something new. When I wanted to understand crypto, I built a token launchpad. When I needed an interview prep tool, I built one with AI. Every project started the same way: I identified a problem, managed it from concept to launch, and shipped a real product."
       />
 
-      <PokerTable slideFrom="right" />
-
-      {/* ═══════ PHOTO SECTION 2 — SQUEEZE + PARALLAX ═══════ */}
-      <PhotoSection
-        sectionNumber={2}
-        imageStyle={{
-          backgroundColor: '#1e3a5f',
-          backgroundImage: 'linear-gradient(135deg, #1e3a5f 0%, #2d5278 100%)'
-        }}
-        label="Approach"
-        giantText="Think big picture. Compartmentalize. Execute."
-        paragraph="I see systems, not just tasks. Whether it's a product launch, a marketing campaign, or a new application—I break complex goals into clear deliverables and deliver them."
-      />
+      {/* ═══════ VAULT DOOR — "Some things are worth protecting" ═══════ */}
+      <VaultDoor />
 
       {/* ═══════ EXPERIENCE TIMELINE ═══════ */}
       <section className="background">
