@@ -928,22 +928,27 @@ function drawLakeTexture(ctx, w, h, progress, ripplePatches) {
 // ═══════════════════════════════════════════
 // MOON — rises in the same arc path as the sun
 // ═══════════════════════════════════════════
-function drawMoon(ctx, w, h, progress, sprites) {
+function drawMoon(ctx, w, h, progress, rawProgress, sprites) {
   const horizonY = h * 0.46
 
-  // Moon rises starting at 0.68, tracking the sun's arc path from the right
+  // Moon rises starting at progress 0.68
   const moonStart = 0.68
   if (progress < moonStart) return
 
-  const moonP = clamp01((progress - moonStart) / 0.20)
-  const fadeIn = easeOutCubic(clamp01(moonP / 0.30))
+  // Use rawProgress for arc so moon keeps moving as section scrolls away
+  // rawProgress 0.125→0.875 maps to progress 0→1, so moonStart 0.68 ≈ rawProgress 0.635
+  const rawMoonStart = 0.125 + moonStart * 0.75
+  // Moon travels across the sky over a long span — still moving at rawProgress 1.0+
+  const moonP = clamp01((rawProgress - rawMoonStart) / 0.50)
+  const fadeIn = easeOutCubic(clamp01(moonP / 0.15))
   if (fadeIn < 0.01) return
 
   // Moon rises from the same LEFT side as the sun (like the real sky cycle)
   // Sun rises from w*0.15 — moon rises from the same origin point
+  // Arc spans a wider range since it keeps moving as we scroll away
   const moonArc = moonP
-  const moonX = w * (0.15 + moonArc * 0.20)
-  const moonBaseY = horizonY - Math.sin(moonArc * Math.PI * 0.4) * h * 0.25
+  const moonX = w * (0.15 + moonArc * 0.35)
+  const moonBaseY = horizonY - Math.sin(moonArc * Math.PI * 0.45) * h * 0.30
   const moonY = lerp(horizonY, moonBaseY, fadeIn)
   const moonR = Math.min(w, h) * 0.025
 
@@ -1287,8 +1292,8 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
     ctx.restore()
   }
 
-  // ═══════ MOON (rises as sun sets — overlaps with fog clearing) ═══════
-  drawMoon(ctx, w, h, progress, sprites)
+  // ═══════ MOON (rises as sun sets — keeps moving as section scrolls away) ═══════
+  drawMoon(ctx, w, h, progress, rawProgress, sprites)
 
   // ═══════ REFLECTION REVEAL (overlaps with fog fade) ═══════
   const c4 = CONTENT_STOPS[4]
@@ -1311,9 +1316,9 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
   // ═══════ LANDSCAPE MIST / FOG ═══════
   // Morning mist
   const morningMist = clamp01((progress - 0.16) / 0.08) * (1 - clamp01((progress - 0.30) / 0.08))
-  // Fog rolls in VERY gradually: starts as barely-there wisps at 0.28,
-  // builds imperceptibly over 0.36 of progress, peaks around 0.62
-  const fogRollIn = easeInOutCubic(clamp01((progress - 0.28) / 0.36)) * (1 - clamp01((progress - 0.68) / 0.10))
+  // Fog rolls in VERY gradually: starts as barely-there wisps at 0.24,
+  // builds imperceptibly over 0.55 of progress — takes multiple scrolls to fully appear
+  const fogRollIn = easeInOutCubic(clamp01((progress - 0.24) / 0.55)) * (1 - clamp01((progress - 0.82) / 0.10))
   // Evening mist
   const eveningMist = clamp01((progress - 0.78) / 0.06) * (1 - clamp01((progress - 0.88) / 0.06))
   const mistAlpha = Math.max(morningMist, fogRollIn, eveningMist)
