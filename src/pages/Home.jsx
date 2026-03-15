@@ -453,18 +453,6 @@ function Home() {
         </div>
       </section>
 
-      {/* ═══════ PHOTO SECTION 1 — SQUEEZE + PARALLAX ═══════ */}
-      <PhotoSection
-        sectionNumber={1}
-        imageStyle={{
-          backgroundColor: '#2d5016',
-          backgroundImage: 'linear-gradient(135deg, #1a3a2e 0%, #2d5016 100%)'
-        }}
-        label="Philosophy"
-        giantText="Curiosity plus execution equals capability"
-        paragraph="I don't wait for permission to learn something new. When I wanted to understand crypto, I built a token launchpad. When I needed an interview prep tool, I built one with AI. Every project started the same way: I identified a problem, managed it from concept to launch, and shipped a real product."
-      />
-
       {/* ═══════ HORIZON JOURNEY — Full day-cycle scroll experience ═══════ */}
       <HorizonJourney />
 

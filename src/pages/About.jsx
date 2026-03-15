@@ -161,6 +161,7 @@ function About() {
   const [showFullStory, setShowFullStory] = useState(false)
   const processRef = useRef(null)
   const statementRef = useRef(null)
+  const philosophyRef = useRef(null)
   const approachRef = useRef(null)
 
   const { scrollYProgress: processScroll } = useScroll({
@@ -177,6 +178,17 @@ function About() {
     offset: ["start start", "end start"]
   })
   const statementY = useTransform(statementScroll, [0, 1], [60, -60])
+
+  // PhotoSection1 — Philosophy (moved from Home)
+  const { scrollYProgress: philosophyScroll } = useScroll({
+    target: philosophyRef,
+    offset: ["start end", "end start"]
+  })
+  const { scrollYProgress: philosophyTextScroll } = useScroll({
+    target: philosophyRef,
+    offset: ["start start", "end start"]
+  })
+  const philosophyY = useTransform(philosophyScroll, [0, 1], [60, -60])
 
   // PhotoSection2 — Approach
   const { scrollYProgress: approachScroll } = useScroll({
@@ -391,6 +403,30 @@ function About() {
           </div>
         </div>
       </section>
+
+      {/* ═══════ PHOTO SECTION 1 — PHILOSOPHY (from Home) ═══════ */}
+      <div ref={philosophyRef} className="philosophy-photo-scroll-runway">
+        <div className="philosophy-photo-sticky-wrapper">
+          <SqueezeSection className="philosophy-photo-section section">
+            <div className="philosophy-photo-bg" />
+            <div className="philosophy-photo-overlay" />
+            <div className="container">
+              <motion.div
+                className="statement-inner"
+                style={{ y: philosophyY }}
+              >
+                <p className="statement-subtitle">Philosophy</p>
+                <StatementGiantText scrollYProgress={philosophyTextScroll} lineBreakAfter={2}>
+                  Curiosity plus execution equals capability
+                </StatementGiantText>
+                <p className="statement-paragraph">
+                  I don't wait for permission to learn something new. When I wanted to understand crypto, I built a token launchpad. When I needed an interview prep tool, I built one with AI. Every project started the same way: I identified a problem, managed it from concept to launch, and shipped a real product.
+                </p>
+              </motion.div>
+            </div>
+          </SqueezeSection>
+        </div>
+      </div>
 
       {/* ═══════ PHOTO SECTION 2 — APPROACH ═══════ */}
       <div ref={approachRef} className="approach-photo-scroll-runway">
