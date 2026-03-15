@@ -73,7 +73,7 @@ function toWaterColor(c) {
 
 // ═══════════════════════════════════════════
 // CONTENT STOPS — 5 environmental reveals
-// Timing is relative to remapped scene progress (0–1)
+// NOW OVERLAPPING: each transition bleeds into the next
 // ═══════════════════════════════════════════
 const CONTENT_STOPS = [
   {
@@ -83,25 +83,25 @@ const CONTENT_STOPS = [
     sub: 'Markets, products, teams — I map the terrain before I move.',
   },
   {
-    at: 0.23, duration: 0.16, reveal: 'cloud',
+    at: 0.18, duration: 0.24, reveal: 'cloud',
     label: 'CAPABILITY',
     text: ['I build what others', 'just talk about.'],
     sub: 'From strategy to code to AI — I close the gap between vision and execution.',
   },
   {
-    at: 0.44, duration: 0.12, reveal: 'sunbeam',
+    at: 0.36, duration: 0.18, reveal: 'sunbeam',
     label: 'IDENTITY',
     text: ['Marketing. Product. AI.'],
     sub: 'Three disciplines, one operator.',
   },
   {
-    at: 0.60, duration: 0.16, reveal: 'mist',
+    at: 0.48, duration: 0.20, reveal: 'mist',
     label: 'PROOF',
     text: ['Five products.', 'Zero handoffs.'],
     sub: 'Conceived, built, branded, and shipped by one person.',
   },
   {
-    at: 0.78, duration: 0.14, reveal: 'reflection',
+    at: 0.64, duration: 0.22, reveal: 'reflection',
     label: 'NEXT',
     text: ['The sun sets on', 'the solo chapter.'],
     sub: "I'm looking for a team that values builders.",
@@ -211,31 +211,41 @@ function generateTreeline(seed, count) {
   return trees
 }
 
-// ═══════════════════════════════════════════
-// CLOUD BLOB GENERATION for reveal 2
-// ═══════════════════════════════════════════
 function generateCloudBlobs(textTargets, count) {
   const blobs = []
   for (let i = 0; i < count; i++) {
     const target = textTargets[i % textTargets.length]
     blobs.push({
-      // Natural position: spread across the sky like a cloud bank
       natX: srand(i * 41 + 500) * 1.4 - 0.2,
       natY: srand(i * 47 + 501) * 0.7 + 0.05,
-      // Target position: converges on text pixel
       tgtX: target.x,
       tgtY: target.y,
-      // Properties
       size: 0.6 + srand(i * 53 + 502) * 1.2,
       opacity: 0.12 + srand(i * 59 + 503) * 0.18,
       windPhase: srand(i * 61 + 504) * Math.PI * 2,
       driftDir: srand(i * 67 + 505) > 0.5 ? 1 : -1,
-      // Offset for multi-puff compositing
       puffOffX: (srand(i * 71 + 506) - 0.5) * 0.4,
       puffOffY: (srand(i * 73 + 507) - 0.5) * 0.2,
     })
   }
   return blobs
+}
+
+// Pre-generate ripple patch locations for lake texture
+function generateRipplePatches(count, seed) {
+  const patches = []
+  for (let i = 0; i < count; i++) {
+    patches.push({
+      x: srand(seed + i * 7),
+      y: srand(seed + i * 13) * 0.75 + 0.05,
+      size: 0.02 + srand(seed + i * 19) * 0.04,
+      angle: srand(seed + i * 23) * Math.PI,
+      rippleCount: 2 + Math.floor(srand(seed + i * 29) * 4),
+      phase: srand(seed + i * 31) * Math.PI * 2,
+      speed: 0.8 + srand(seed + i * 37) * 0.8,
+    })
+  }
+  return patches
 }
 
 // ═══════════════════════════════════════════
@@ -288,7 +298,6 @@ function createStarGlow() {
 
 // ═══════════════════════════════════════════
 // REVEAL 1: CONSTELLATION
-// Stars connect to form text in the night sky
 // ═══════════════════════════════════════════
 function drawConstellationReveal(ctx, w, h, revealP, stop, data, sprites) {
   const { points, lines } = data
@@ -301,20 +310,15 @@ function drawConstellationReveal(ctx, w, h, revealP, stop, data, sprites) {
 
   const fade = revealP < 0.12 ? revealP / 0.12
     : revealP > 0.85 ? (1 - revealP) / 0.15 : 1
-
   if (fade < 0.01) return
 
   ctx.save()
   ctx.globalAlpha = fade
 
-  // Phase 1: Stars appear (0 → 0.35) — slower
   const starsP = clamp01(revealP / 0.35)
-  // Phase 2: Lines connect (0.2 → 0.55)
   const linesP = clamp01((revealP - 0.2) / 0.35)
-  // Phase 3: Text glow fills (0.45 → 0.75)
   const glowP = clamp01((revealP - 0.45) / 0.3)
 
-  // Draw connecting lines
   if (linesP > 0) {
     ctx.strokeStyle = rgb([150, 180, 255], linesP * 0.25)
     ctx.lineWidth = 0.8
@@ -329,7 +333,6 @@ function drawConstellationReveal(ctx, w, h, revealP, stop, data, sprites) {
     }
   }
 
-  // Draw constellation stars
   if (starsP > 0) {
     const visibleStars = Math.floor(points.length * starsP)
     for (let i = 0; i < visibleStars; i++) {
@@ -344,7 +347,6 @@ function drawConstellationReveal(ctx, w, h, revealP, stop, data, sprites) {
     ctx.globalAlpha = fade
   }
 
-  // Filled text glow
   if (glowP > 0) {
     const fontSize = Math.min(w * 0.045, 48)
     const lineH = fontSize * 1.3
@@ -382,7 +384,7 @@ function drawConstellationReveal(ctx, w, h, revealP, stop, data, sprites) {
 
 // ═══════════════════════════════════════════
 // REVEAL 2: CLOUD FORMATION
-// Natural clouds drift in, settle as landscape, then morph into text
+// Longer duration — text lingers as the sun rises through it
 // ═══════════════════════════════════════════
 function drawCloudReveal(ctx, w, h, revealP, stop, data, sprites) {
   const horizonY = h * 0.46
@@ -392,26 +394,23 @@ function drawCloudReveal(ctx, w, h, revealP, stop, data, sprites) {
   const blockX = (w - blockW) / 2
   const blockY = horizonY * 0.06
 
-  const fade = revealP < 0.08 ? revealP / 0.08
-    : revealP > 0.85 ? (1 - revealP) / 0.15 : 1
+  const fade = revealP < 0.06 ? revealP / 0.06
+    : revealP > 0.88 ? (1 - revealP) / 0.12 : 1
   if (fade < 0.01) return
 
   ctx.save()
 
-  // Phases: clouds drift in (0-0.3), settle naturally (0.3-0.5),
-  // morph to text positions (0.5-0.75), text clear (0.75-1.0)
-  const driftP = easeOutCubic(clamp01(revealP / 0.30))
-  const morphP = easeInOutCubic(clamp01((revealP - 0.40) / 0.30))
-  const textP = easeOutCubic(clamp01((revealP - 0.60) / 0.20))
-  const disperseP = easeInOutCubic(clamp01((revealP - 0.85) / 0.15))
+  // Extended phases: clouds form (0-0.25), text appears (0.25-0.40),
+  // text LINGERS (0.40-0.75) while sun rises through, then disperses (0.75-1.0)
+  const driftP = easeOutCubic(clamp01(revealP / 0.25))
+  const morphP = easeInOutCubic(clamp01((revealP - 0.15) / 0.20))
+  const textP = easeOutCubic(clamp01((revealP - 0.30) / 0.15))
+  const disperseP = easeInOutCubic(clamp01((revealP - 0.75) / 0.25))
 
-  // Draw cloud blobs — they start as natural clouds, converge to text
   for (const blob of data.blobs) {
-    // Natural cloud position with wind drift
     const wind = (1 - driftP) * 0.3 * blob.driftDir
     const breathe = Math.sin(revealP * 4 + blob.windPhase) * 0.01
 
-    // Lerp from natural to text-target position
     const cx = blockX + lerp(
       (blob.natX + wind + breathe) * blockW,
       blob.tgtX * blockW,
@@ -423,17 +422,12 @@ function drawCloudReveal(ctx, w, h, revealP, stop, data, sprites) {
       morphP
     ) + disperseP * (blob.natY - 0.5) * blockH * 0.4
 
-    // Clouds shrink as they converge (fluffy → tight)
     const size = (35 + blob.size * 30) * (1.4 - morphP * 0.6 + disperseP * 0.4)
     const cloudAlpha = fade * driftP * blob.opacity * (1 - disperseP * 0.8)
-
     if (cloudAlpha < 0.005) continue
 
     ctx.globalAlpha = cloudAlpha
-
-    // Main cloud body (use bank sprite for wider, more natural shapes)
     ctx.drawImage(sprites.cloudBank, cx - size, cy - size * 0.5, size * 2, size)
-    // Overlay puff for volume
     const pSize = size * 0.7
     ctx.drawImage(
       sprites.cloudPuff,
@@ -443,14 +437,13 @@ function drawCloudReveal(ctx, w, h, revealP, stop, data, sprites) {
     )
   }
 
-  // Text emerges from the cloud formation
+  // Text — appears and STAYS for a long time
   if (textP > 0) {
     const fontSize = Math.min(w * 0.042, 44)
     const lineH = fontSize * 1.3
     const textX = w / 2
     const textY = blockY + blockH * 0.25
 
-    // Text with soft cloud-like glow
     ctx.globalAlpha = fade * textP * (1 - disperseP) * 0.9
     ctx.font = `300 ${fontSize}px "Instrument Serif", Georgia, serif`
     ctx.textAlign = 'center'
@@ -463,13 +456,11 @@ function drawCloudReveal(ctx, w, h, revealP, stop, data, sprites) {
       ctx.fillText(line, textX, textY + i * lineH)
     })
 
-    // Label
     ctx.globalAlpha = fade * textP * (1 - disperseP) * 0.55
     ctx.font = `700 ${Math.min(w * 0.012, 11)}px "Inter", sans-serif`
     ctx.fillStyle = rgb([255, 230, 180], 1)
     ctx.fillText(stop.label, textX, textY - fontSize * 0.8)
 
-    // Sub
     ctx.globalAlpha = fade * textP * (1 - disperseP) * 0.5
     ctx.font = `400 ${Math.min(w * 0.016, 15)}px "Crimson Text", Georgia, serif`
     ctx.fillStyle = rgb([255, 245, 225], 1)
@@ -484,7 +475,6 @@ function drawCloudReveal(ctx, w, h, revealP, stop, data, sprites) {
 
 // ═══════════════════════════════════════════
 // REVEAL 3: SUN BEAM
-// Light cone from sun illuminates text carved into mountain
 // ═══════════════════════════════════════════
 function drawSunBeamReveal(ctx, w, h, revealP, stop, sunX, sunY) {
   const horizonY = h * 0.46
@@ -563,9 +553,8 @@ function drawSunBeamReveal(ctx, w, h, revealP, stop, sunX, sunY) {
 }
 
 // ═══════════════════════════════════════════
-// REVEAL 4: MIST / FOG
-// Fog rolls in as natural landscape, then clears to reveal text
-// The fog is already present before the reveal starts
+// REVEAL 4: FOG
+// Fog is already rolling in as landscape → clears to reveal text
 // ═══════════════════════════════════════════
 function drawFogRevealText(ctx, w, h, revealP, stop, fogPatches) {
   const horizonY = h * 0.46
@@ -575,11 +564,8 @@ function drawFogRevealText(ctx, w, h, revealP, stop, fogPatches) {
   const textX = w * 0.5
   const textY = horizonY - fontSize * 0.3
 
-  // Slow reveal: fog takes a long time to clear enough to read the text
-  // revealP 0-0.35: fog is thick, text barely visible
-  // revealP 0.35-0.70: fog drifts apart, text becomes clear
-  // revealP 0.70-1.0: text fully readable, fog thins further, then fades
-  const clearance = easeInOutCubic(clamp01((revealP - 0.10) / 0.55))
+  // Very slow clearance — fog is thick for a long time
+  const clearance = easeInOutCubic(clamp01((revealP - 0.15) / 0.50))
 
   const fade = revealP < 0.06 ? revealP / 0.06
     : revealP > 0.88 ? (1 - revealP) / 0.12 : 1
@@ -588,7 +574,6 @@ function drawFogRevealText(ctx, w, h, revealP, stop, fogPatches) {
   ctx.save()
   ctx.globalAlpha = fade
 
-  // Draw the text underneath (warm golden, at treeline)
   ctx.font = `300 ${fontSize}px "Instrument Serif", Georgia, serif`
   ctx.textAlign = 'center'
   ctx.textBaseline = 'bottom'
@@ -600,13 +585,11 @@ function drawFogRevealText(ctx, w, h, revealP, stop, fogPatches) {
     ctx.fillText(line, textX, textY - (stop.text.length - 1 - i) * lineH)
   })
 
-  // Label
   ctx.globalAlpha = fade * clearance * 0.6
   ctx.font = `700 ${Math.min(w * 0.012, 11)}px "Inter", sans-serif`
   ctx.fillStyle = rgb([255, 210, 120], 1)
   ctx.fillText(stop.label, textX, textY - stop.text.length * lineH - fontSize * 0.4)
 
-  // Sub
   ctx.globalAlpha = fade * clearance * 0.5
   ctx.font = `400 ${Math.min(w * 0.016, 15)}px "Crimson Text", Georgia, serif`
   ctx.textBaseline = 'top'
@@ -616,12 +599,11 @@ function drawFogRevealText(ctx, w, h, revealP, stop, fogPatches) {
   ctx.shadowBlur = 0
   ctx.shadowColor = 'transparent'
 
-  // Dense fog ON TOP of text — drifts outward to reveal
+  // Dense fog ON TOP of text — drifts outward slowly
   const fogDensity = (1 - clearance) * 0.95
   if (fogDensity > 0.02) {
     for (let i = 0; i < fogPatches.length; i++) {
       const p = fogPatches[i]
-      // Fog patches drift outward from text center as clearance increases
       const driftOut = clearance * (0.6 + p.drift * 0.4)
       const dirX = (p.rx - 0.5) * 2
       const dirY = (p.ry - 0.5) * 2
@@ -662,14 +644,12 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites) {
   const fontSize = Math.min(w * 0.05, 52)
   const lineH = fontSize * 1.3
 
-  // ═══ BOLD TEXT ABOVE WATER ═══
   const textX = w / 2
   const textBaseY = horizonY - fontSize * 0.6
 
   ctx.save()
   ctx.globalAlpha = fade * revealEased
 
-  // Label
   ctx.font = `700 ${Math.min(w * 0.012, 11)}px "Inter", sans-serif`
   ctx.textAlign = 'center'
   ctx.textBaseline = 'bottom'
@@ -678,7 +658,6 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites) {
   ctx.fillText(stop.label, textX, textBaseY - stop.text.length * lineH - fontSize * 0.4)
   ctx.letterSpacing = '0'
 
-  // Main text — bold, prominent, like a statement
   ctx.font = `600 ${fontSize}px "Instrument Serif", Georgia, serif`
   ctx.textBaseline = 'bottom'
   ctx.shadowColor = 'rgba(180, 160, 220, 0.5)'
@@ -689,7 +668,6 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites) {
     ctx.fillText(line, textX, textBaseY - (stop.text.length - 1 - i) * lineH)
   })
 
-  // Sub text
   ctx.globalAlpha = fade * revealEased * 0.6
   ctx.shadowBlur = 8
   ctx.font = `400 ${Math.min(w * 0.018, 16)}px "Crimson Text", Georgia, serif`
@@ -721,7 +699,6 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites) {
     offCtx.fillText(line, offW / 2, textYOff + i * lineH)
   })
 
-  // Draw to main canvas: flipped, strip by strip with wave distortion
   ctx.save()
   ctx.beginPath()
   ctx.rect(0, horizonY, w, waterH)
@@ -765,29 +742,181 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites) {
 }
 
 // ═══════════════════════════════════════════
-// MOON — rises as sun sets, illuminates water for reflection reveal
+// CELESTIAL WATER REFLECTION
+// Renders sun or moon reflection as wavy strip distortion
+// ═══════════════════════════════════════════
+function drawCelestialReflection(ctx, w, h, bodyX, bodyR, progress, color, alpha) {
+  const horizonY = h * 0.46
+  const waterH = h - horizonY
+  if (alpha < 0.01) return
+
+  ctx.save()
+  ctx.beginPath()
+  ctx.rect(0, horizonY, w, waterH)
+  ctx.clip()
+
+  // Render the disc to offscreen, then distort strip-by-strip
+  const offH = Math.ceil(bodyR * 2.5)
+  const offW = Math.ceil(bodyR * 2.5)
+
+  // Draw the reflection column using strip-by-strip wave distortion
+  const stripH = 2
+  const columnH = waterH * 0.65
+  const stripCount = Math.ceil(columnH / stripH)
+
+  for (let i = 0; i < stripCount; i++) {
+    const t = i / stripCount
+    const sy = horizonY + t * columnH
+    const depth = t
+
+    // Two wave frequencies
+    const wave1 = Math.sin(depth * 16 + progress * 14) * (1.5 + depth * 12)
+    const wave2 = Math.sin(depth * 8.3 + progress * 9 + 2) * (0.8 + depth * 5)
+    const waveX = wave1 + wave2
+
+    // Fade and narrow with depth
+    const stripAlpha = alpha * (1 - depth * 0.75) * (0.7 + 0.3 * Math.sin(depth * 20 + progress * 12))
+    const stripW = bodyR * (1.8 - depth * 0.8)
+
+    if (stripAlpha < 0.005) continue
+
+    ctx.globalAlpha = stripAlpha
+    ctx.fillStyle = rgb(color, 1)
+    ctx.fillRect(bodyX - stripW / 2 + waveX, sy, stripW, stripH + 0.5)
+  }
+
+  // Bright hotspot at horizon
+  const hotGrad = ctx.createRadialGradient(bodyX, horizonY, 0, bodyX, horizonY + bodyR * 2, bodyR * 3)
+  hotGrad.addColorStop(0, rgb(color, alpha * 0.6))
+  hotGrad.addColorStop(0.3, rgb(color, alpha * 0.2))
+  hotGrad.addColorStop(1, rgb(color, 0))
+  ctx.globalAlpha = 1
+  ctx.fillStyle = hotGrad
+  ctx.fillRect(bodyX - bodyR * 3, horizonY, bodyR * 6, bodyR * 4)
+
+  ctx.restore()
+}
+
+// ═══════════════════════════════════════════
+// LAKE TEXTURE — localized ripple patches, not blanket coverage
+// ═══════════════════════════════════════════
+function drawLakeTexture(ctx, w, h, progress, ripplePatches) {
+  const horizonY = h * 0.46
+  const waterH = h - horizonY
+
+  // Choppiness peaks at midday
+  const dayP = clamp01((progress - 0.14) / 0.66)
+  const choppiness = Math.sin(dayP * Math.PI) * 0.85
+  if (choppiness < 0.03) return
+
+  ctx.save()
+  ctx.beginPath()
+  ctx.rect(0, horizonY, w, waterH)
+  ctx.clip()
+
+  // Draw individual ripple patches at random locations
+  for (const patch of ripplePatches) {
+    const px = patch.x * w
+    const py = horizonY + patch.y * waterH
+    const patchSize = patch.size * w * (0.5 + choppiness * 0.5)
+    const depth = (py - horizonY) / waterH
+    const localChop = choppiness * (0.2 + depth * 0.8)
+
+    if (localChop < 0.05) continue
+
+    // Animate: ripples expand and fade
+    const animPhase = (progress * patch.speed * 12 + patch.phase) % (Math.PI * 2)
+    const rippleAlpha = localChop * 0.06
+
+    ctx.strokeStyle = rgb([255, 255, 255], rippleAlpha)
+    ctx.lineWidth = 0.4 + choppiness * 0.3
+
+    // Draw small elliptical ripple rings
+    for (let r = 0; r < patch.rippleCount; r++) {
+      const ringPhase = (animPhase + r * 1.2) % (Math.PI * 2)
+      const ringExpand = (Math.sin(ringPhase) * 0.5 + 0.5)
+      const ringR = patchSize * (0.3 + ringExpand * 0.7)
+      const ringAlpha = rippleAlpha * (1 - ringExpand) * 0.8
+
+      if (ringAlpha < 0.003) continue
+
+      ctx.globalAlpha = ringAlpha
+      ctx.beginPath()
+      ctx.ellipse(
+        px + Math.sin(ringPhase * 0.7) * patchSize * 0.15,
+        py,
+        ringR,
+        ringR * 0.25,
+        patch.angle,
+        0, Math.PI * 2
+      )
+      ctx.stroke()
+    }
+
+    // Small wave marks (short dashes)
+    if (localChop > 0.25) {
+      const dashAlpha = (localChop - 0.25) * 0.08
+      ctx.globalAlpha = dashAlpha
+      ctx.strokeStyle = rgb([255, 255, 255], 1)
+      ctx.lineWidth = 0.5
+      for (let d = 0; d < 3; d++) {
+        const dx = px + (srand(patch.phase * 10 + d * 7) - 0.5) * patchSize * 2
+        const dy = py + (srand(patch.phase * 10 + d * 13) - 0.5) * patchSize * 0.5
+        const dLen = patchSize * (0.3 + srand(patch.phase * 10 + d * 19) * 0.4)
+        const waveY = Math.sin(dx * 0.03 + progress * 15) * localChop * 1.5
+        ctx.beginPath()
+        ctx.moveTo(dx - dLen / 2, dy + waveY)
+        ctx.lineTo(dx + dLen / 2, dy + waveY + localChop * 0.5)
+        ctx.stroke()
+      }
+    }
+  }
+
+  // Midday glints
+  if (choppiness > 0.4) {
+    const glintIntensity = (choppiness - 0.4) * 1.5
+    for (let i = 0; i < 30; i++) {
+      const phase = progress * 15 + i * 7.3
+      const twinkle = (Math.sin(phase) * 0.5 + 0.5) * (Math.sin(phase * 1.7 + 2) * 0.5 + 0.5)
+      if (twinkle < 0.4) continue
+      const gx = srand(i * 7 + 600 + Math.floor(progress * 8) * 3) * w
+      const gy = horizonY + srand(i * 13 + 601) * waterH * 0.6 + waterH * 0.05
+      const gs = (0.8 + srand(i * 19 + 602) * 1.5) * choppiness
+      ctx.globalAlpha = twinkle * glintIntensity * 0.12
+      ctx.fillStyle = rgb([255, 255, 240], 1)
+      ctx.fillRect(gx, gy, gs * 2, gs * 0.3)
+    }
+  }
+
+  ctx.restore()
+}
+
+// ═══════════════════════════════════════════
+// MOON — rises in the same arc path as the sun
 // ═══════════════════════════════════════════
 function drawMoon(ctx, w, h, progress) {
   const horizonY = h * 0.46
 
-  // Moon rises from ~0.70, fully visible by ~0.78
-  const moonStart = 0.70
+  // Moon rises starting at 0.68, tracking the sun's arc path from the right
+  const moonStart = 0.68
   if (progress < moonStart) return
 
-  const moonP = clamp01((progress - moonStart) / 0.18)
-  const fadeIn = easeOutCubic(clamp01(moonP / 0.35))
+  const moonP = clamp01((progress - moonStart) / 0.20)
+  const fadeIn = easeOutCubic(clamp01(moonP / 0.30))
   if (fadeIn < 0.01) return
 
-  // Moon position: rises from right horizon, arcs up
+  // Moon follows the sun's arc path — rises from the right side (where sun sets)
+  // Sun sets at progress ~0.80, at X position w * (0.15 + 1 * 0.7) = w * 0.85
+  // Moon rises from near that same horizon point
   const moonArc = moonP
-  const moonX = w * (0.72 + moonArc * 0.08)
-  const moonBaseY = horizonY - Math.sin(moonArc * Math.PI * 0.5) * h * 0.28
+  const moonX = w * (0.82 - moonArc * 0.12)
+  const moonBaseY = horizonY - Math.sin(moonArc * Math.PI * 0.4) * h * 0.25
   const moonY = lerp(horizonY, moonBaseY, fadeIn)
   const moonR = Math.min(w, h) * 0.025
 
   ctx.save()
 
-  // Moon glow (large, soft)
+  // Moon glow
   const glowR = moonR * 8
   const mg = ctx.createRadialGradient(moonX, moonY, moonR * 0.5, moonX, moonY, glowR)
   mg.addColorStop(0, rgb([180, 200, 230], fadeIn * 0.12))
@@ -808,7 +937,7 @@ function drawMoon(ctx, w, h, progress) {
   ctx.arc(moonX, moonY, moonR, 0, Math.PI * 2)
   ctx.fill()
 
-  // Subtle crater hints
+  // Crater hints
   ctx.globalAlpha = fadeIn * 0.08
   ctx.fillStyle = rgb([160, 170, 190], 1)
   ctx.beginPath()
@@ -823,96 +952,8 @@ function drawMoon(ctx, w, h, progress) {
 
   ctx.restore()
 
-  // Moon reflection on water — silver column of light
-  const waterH = h - horizonY
-  const moonColW = moonR * 0.8
-  const refAlpha = fadeIn * 0.18
-
-  ctx.save()
-  ctx.beginPath()
-  ctx.rect(0, horizonY, w, waterH)
-  ctx.clip()
-
-  // Soft central column
-  const colGrad = ctx.createLinearGradient(0, horizonY, 0, horizonY + waterH * 0.7)
-  colGrad.addColorStop(0, rgb([180, 200, 230], refAlpha))
-  colGrad.addColorStop(0.3, rgb([160, 180, 215], refAlpha * 0.5))
-  colGrad.addColorStop(0.7, rgb([140, 160, 200], refAlpha * 0.15))
-  colGrad.addColorStop(1, rgb([140, 160, 200], 0))
-  ctx.fillStyle = colGrad
-  ctx.fillRect(moonX - moonColW * 3, horizonY, moonColW * 6, waterH * 0.7)
-
-  // Shimmer strips
-  for (let i = 0; i < 25; i++) {
-    const t = i / 25
-    const sy = horizonY + t * waterH * 0.65
-    const sH = (waterH * 0.65) / 25
-    const wave = Math.sin(t * 12 + progress * 14) * (1 + t * 8)
-    const sW = moonColW * (1 + t * 2)
-    const sAlpha = refAlpha * (1 - t * 0.7)
-    ctx.fillStyle = rgb([200, 215, 240], sAlpha)
-    ctx.fillRect(moonX - sW / 2 + wave, sy, sW, sH + 1)
-  }
-
-  ctx.restore()
-}
-
-// ═══════════════════════════════════════════
-// LAKE TEXTURE — dynamic waves that change with time of day
-// Glass smooth at dawn/dusk, choppy at midday
-// ═══════════════════════════════════════════
-function drawLakeTexture(ctx, w, h, progress) {
-  const horizonY = h * 0.46
-  const waterH = h - horizonY
-
-  // Day cycle: 0 = night, peaks around 0.45 = midday
-  const dayP = clamp01((progress - 0.10) / 0.70)
-  // Choppiness: bell curve peaking at midday
-  const choppiness = Math.sin(dayP * Math.PI) * 0.85
-  if (choppiness < 0.01) return
-
-  ctx.save()
-
-  // Wave lines — batched into single path for performance
-  const spacing = 5 + (1 - choppiness) * 8
-  ctx.beginPath()
-  for (let y = horizonY + 4; y < h; y += spacing) {
-    const depth = (y - horizonY) / waterH
-    const localChop = choppiness * (0.15 + depth * 0.85)
-    const amp1 = localChop * 3
-    const amp2 = localChop * 1.8
-    const freq1 = 0.018 + depth * 0.008
-    const freq2 = 0.007
-
-    for (let x = 0; x <= w; x += 4) {
-      const wave = Math.sin(x * freq1 + y * 0.12 + progress * 18) * amp1
-        + Math.sin(x * freq2 + progress * 10 + y * 0.05) * amp2
-      if (x === 0) ctx.moveTo(x, y + wave)
-      else ctx.lineTo(x, y + wave)
-    }
-  }
-  ctx.strokeStyle = rgb([255, 255, 255], choppiness * 0.03)
-  ctx.lineWidth = 0.4 + choppiness * 0.4
-  ctx.stroke()
-
-  // Glints / sparkles on choppy water (midday sunlight)
-  if (choppiness > 0.35) {
-    const glintIntensity = (choppiness - 0.35) * 1.5
-    const noonBright = Math.sin(dayP * Math.PI)
-    ctx.fillStyle = rgb([255, 255, 240], glintIntensity * noonBright * 0.12)
-    for (let i = 0; i < 50; i++) {
-      const phase = progress * 15 + i * 7.3
-      const twinkle = (Math.sin(phase) * 0.5 + 0.5) * (Math.sin(phase * 1.7 + 2) * 0.5 + 0.5)
-      if (twinkle < 0.3) continue
-      const gx = srand(i * 7 + 600 + Math.floor(progress * 8) * 3) * w
-      const gy = horizonY + srand(i * 13 + 601) * waterH * 0.65 + waterH * 0.04
-      const gs = (1 + srand(i * 19 + 602) * 2) * choppiness
-      ctx.globalAlpha = twinkle * glintIntensity * noonBright * 0.15
-      ctx.fillRect(gx, gy, gs * 2.5, gs * 0.4)
-    }
-  }
-
-  ctx.restore()
+  // Moon reflection — wavy strip distortion (same technique as text reflection)
+  drawCelestialReflection(ctx, w, h, moonX, moonR, progress, [200, 215, 240], fadeIn * 0.18)
 }
 
 // ═══════════════════════════════════════════
@@ -922,10 +963,6 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
   ctx.clearRect(0, 0, w, h)
 
   // ═══════ PROGRESS REMAPPING ═══════
-  // Raw progress: 0 = section top at viewport bottom, 1 = section bottom at viewport top
-  // The section is fully in view (sticky pinned) at raw ~0.125
-  // It starts leaving at raw ~0.875
-  // Remap to 0..1 for the scene so animations only play when visible
   const progress = clamp01((rawProgress - 0.125) / 0.75)
 
   const horizonY = h * 0.46
@@ -949,7 +986,6 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
   ctx.fillRect(0, 0, w, horizonY + 1)
 
   // ═══════ STARS ═══════
-  // Stars stay fully visible through constellation reveal (~0.02 to 0.18)
   const starAlpha =
     progress < 0.12 ? 1 :
     progress < 0.20 ? 1 - clamp01((progress - 0.12) / 0.08) :
@@ -991,7 +1027,7 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
     ctx.fillRect(0, 0, w, h)
   }
 
-  // ═══════ CLOUD REVEAL (dawn) ═══════
+  // ═══════ CLOUD REVEAL (dawn — overlaps with sun) ═══════
   const c1 = CONTENT_STOPS[1]
   const c1p = clamp01((progress - c1.at) / c1.duration)
   if (c1p > 0 && c1p < 1) {
@@ -1007,7 +1043,8 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
     sunX = w * (0.15 + sunArc * 0.7)
     const arcHeight = h * 0.35
     sunY = horizonY - Math.sin(sunArc * Math.PI) * arcHeight
-    const riseP = clamp01((progress - 0.08) / 0.06)
+    // Gradual rise from horizon
+    const riseP = clamp01((progress - 0.14) / 0.08)
     const setP = clamp01((progress - 0.76) / 0.06)
     const verticalOffset = horizonY - sunY
     sunY = horizonY - verticalOffset * easeOutCubic(riseP) * (1 - easeOutCubic(setP))
@@ -1091,7 +1128,7 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
     ctx.lineTo(w, horizonY); ctx.closePath(); ctx.fill()
   }
 
-  // ═══════ SUN BEAM REVEAL (noon) ═══════
+  // ═══════ SUN BEAM REVEAL (overlaps with cloud fade) ═══════
   const c2 = CONTENT_STOPS[2]
   const c2p = clamp01((progress - c2.at) / c2.duration)
   if (c2p > 0 && c2p < 1 && sunVisible) {
@@ -1117,7 +1154,7 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
     ctx.fill()
   }
 
-  // ═══════ FOG REVEAL TEXT (golden hour — before landscape mist draws) ═══════
+  // ═══════ FOG REVEAL TEXT (overlaps with sunbeam fade) ═══════
   const c3 = CONTENT_STOPS[3]
   const c3p = clamp01((progress - c3.at) / c3.duration)
   if (c3p > 0 && c3p < 1) {
@@ -1175,69 +1212,33 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
     ctx.restore()
   }
 
-  // ═══════ MOON (rises as sun sets) ═══════
+  // ═══════ MOON (rises as sun sets — overlaps with fog clearing) ═══════
   drawMoon(ctx, w, h, progress)
 
-  // ═══════ REFLECTION REVEAL (dusk — bold text + water reflection) ═══════
+  // ═══════ REFLECTION REVEAL (overlaps with fog fade) ═══════
   const c4 = CONTENT_STOPS[4]
   const c4p = clamp01((progress - c4.at) / c4.duration)
   if (c4p > 0 && c4p < 1) {
     drawReflectionReveal(ctx, w, h, c4p, c4, sprites)
   }
 
-  // ═══════ SUN REFLECTION ON WATER ═══════
+  // ═══════ SUN REFLECTION ON WATER (wavy strip distortion) ═══════
   if (sunVisible) {
-    const waterH = h - horizonY
     const sunArcP = clamp01((progress - 0.14) / 0.66)
     const noonness = Math.sin(sunArcP * Math.PI)
     const refColor = lerpColor([255, 180, 80], [255, 240, 200], noonness)
-    const colW = sunR * 1.2
-
-    // Central glowing column — wider and brighter at low sun angles
-    const colIntensity = 0.15 + (1 - noonness) * 0.15
-    const centralW = colW * (2 + (1 - noonness) * 2)
-    const colGrad = ctx.createLinearGradient(0, horizonY, 0, horizonY + waterH * 0.85)
-    colGrad.addColorStop(0, rgb(refColor, colIntensity))
-    colGrad.addColorStop(0.3, rgb(refColor, colIntensity * 0.6))
-    colGrad.addColorStop(0.7, rgb(refColor, colIntensity * 0.2))
-    colGrad.addColorStop(1, rgb(refColor, 0))
-    ctx.fillStyle = colGrad
-    ctx.fillRect(sunX - centralW, horizonY, centralW * 2, waterH * 0.85)
-
-    // Broken light strips (shimmer)
-    for (let i = 0; i < 50; i++) {
-      const t = i / 50
-      const stripY = horizonY + t * waterH * 0.85
-      const sH = (waterH * 0.85) / 50
-      const depth = t
-      // Two wave frequencies for more organic movement
-      const waveX1 = Math.sin(t * 14 + progress * 12) * (2 + depth * 14)
-      const waveX2 = Math.sin(t * 7.3 + progress * 8 + 1.5) * (1 + depth * 6)
-      const waveX = waveX1 + waveX2
-      const alpha = 0.30 * (1 - depth * 0.8)
-      const stripW = colW * (1.2 + depth * 2.5 + (1 - noonness) * depth * 2)
-      ctx.fillStyle = rgb(refColor, alpha)
-      ctx.fillRect(sunX - stripW / 2 + waveX, stripY, stripW, sH + 1)
-    }
-
-    // Bright hotspot right at the horizon
-    const hotGrad = ctx.createRadialGradient(sunX, horizonY, 0, sunX, horizonY, sunR * 4)
-    hotGrad.addColorStop(0, rgb([255, 255, 240], 0.25))
-    hotGrad.addColorStop(0.3, rgb(refColor, 0.12))
-    hotGrad.addColorStop(1, rgb(refColor, 0))
-    ctx.fillStyle = hotGrad
-    ctx.fillRect(sunX - sunR * 4, horizonY, sunR * 8, sunR * 4)
+    drawCelestialReflection(ctx, w, h, sunX, sunR, progress, refColor, 0.30)
   }
 
-  // ═══════ LAKE TEXTURE (dynamic waves) ═══════
-  drawLakeTexture(ctx, w, h, progress)
+  // ═══════ LAKE TEXTURE (localized ripple patches) ═══════
+  drawLakeTexture(ctx, w, h, progress, sceneData.ripplePatches)
 
   // ═══════ LANDSCAPE MIST / FOG ═══════
-  // Morning mist (brief, at dawn)
+  // Morning mist
   const morningMist = clamp01((progress - 0.16) / 0.08) * (1 - clamp01((progress - 0.30) / 0.08))
-  // Fog rolls in VERY gradually over a long period before the fog text reveal
-  // Starts as wisps at ~0.38, builds slowly through 0.50, peaks at ~0.64, clears by ~0.76
-  const fogRollIn = clamp01((progress - 0.38) / 0.22) * (1 - clamp01((progress - 0.74) / 0.08))
+  // Fog rolls in VERY gradually: starts as barely-there wisps at 0.32,
+  // builds imperceptibly over 0.30 of progress, peaks around 0.62
+  const fogRollIn = easeInOutCubic(clamp01((progress - 0.32) / 0.30)) * (1 - clamp01((progress - 0.68) / 0.10))
   // Evening mist
   const eveningMist = clamp01((progress - 0.78) / 0.06) * (1 - clamp01((progress - 0.88) / 0.06))
   const mistAlpha = Math.max(morningMist, fogRollIn, eveningMist)
@@ -1256,9 +1257,8 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
       ctx.fillRect(mx + drift - mw, my - mw * 0.3, mw * 2, mw * 0.6)
     }
 
-    // Additional treeline fog — only appears once fogRollIn is well established
-    // Uses easeInOutCubic so it creeps in rather than popping
-    const denseFog = easeInOutCubic(clamp01((fogRollIn - 0.35) / 0.65))
+    // Dense treeline fog — eased in very gradually
+    const denseFog = easeInOutCubic(clamp01((fogRollIn - 0.30) / 0.70))
     if (denseFog > 0.01) {
       for (let i = 0; i < 18; i++) {
         const fx = srand(i * 23 + 700) * w
@@ -1266,7 +1266,7 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
         const fw = (0.06 + srand(i * 37 + 702) * 0.10) * w
         const windDrift = Math.sin(i * 1.7 + progress * 3) * 25
         const fg = ctx.createRadialGradient(fx + windDrift, fy, 0, fx + windDrift, fy, fw)
-        const fAlpha = denseFog * (0.4 + srand(i * 41 + 703) * 0.4)
+        const fAlpha = denseFog * (0.3 + srand(i * 41 + 703) * 0.35)
         fg.addColorStop(0, rgb([200, 195, 180], fAlpha * 0.10))
         fg.addColorStop(0.4, rgb([200, 195, 180], fAlpha * 0.06))
         fg.addColorStop(1, 'rgba(200,195,180,0)')
@@ -1306,7 +1306,6 @@ function HorizonJourney() {
     offset: ['start end', 'end start'],
   })
 
-  // Squeeze: always squeezed (like other NDS squeeze sections)
   const squeezeRef = useRef(null)
   const { scrollYProgress: squeezeProgress } = useScroll({
     target: squeezeRef,
@@ -1317,7 +1316,6 @@ function HorizonJourney() {
   const scale = useSpring(rawScale, { stiffness: 120, damping: 30 })
   const borderRadius = useSpring(rawRadius, { stiffness: 120, damping: 30 })
 
-  // Pre-generate all scene data
   const sceneData = useMemo(() => {
     const stars = generateStars(200)
     const mountains = {
@@ -1336,21 +1334,14 @@ function HorizonJourney() {
       })
     }
 
-    // Text particles for constellation reveal
-    const constellationPoints = sampleTextPixels(
-      CONTENT_STOPS[0].text, 44, 5, 1000
-    )
+    const constellationPoints = sampleTextPixels(CONTENT_STOPS[0].text, 44, 5, 1000)
     const constellationLines = computeConstellationLines(constellationPoints, 0.06, 350)
     const constellation = { points: constellationPoints, lines: constellationLines }
 
-    // Cloud blob targets (coarse text sampling for cloud convergence points)
-    const cloudTargets = sampleTextPixels(
-      CONTENT_STOPS[1].text, 42, 20, 2000
-    )
+    const cloudTargets = sampleTextPixels(CONTENT_STOPS[1].text, 42, 20, 2000)
     const cloudBlobs = generateCloudBlobs(cloudTargets, Math.max(cloudTargets.length, 30))
     const cloud = { blobs: cloudBlobs }
 
-    // Pre-generated fog patch data for the mist reveal
     const fogPatches = []
     for (let i = 0; i < 28; i++) {
       fogPatches.push({
@@ -1362,17 +1353,17 @@ function HorizonJourney() {
       })
     }
 
-    return { stars, mountains, treeline, mist, constellation, cloud, fogPatches }
+    const ripplePatches = generateRipplePatches(40, 900)
+
+    return { stars, mountains, treeline, mist, constellation, cloud, fogPatches, ripplePatches }
   }, [])
 
-  // Scroll listener
   useEffect(() => {
     return scrollYProgress.on('change', (v) => {
       progressRef.current = v
     })
   }, [scrollYProgress])
 
-  // Canvas render loop
   useEffect(() => {
     const canvas = canvasRef.current
     const container = containerRef.current
@@ -1382,7 +1373,6 @@ function HorizonJourney() {
     const dpr = window.devicePixelRatio || 1
     let cw = 0, ch = 0
 
-    // Create sprites
     const cloudPuff = createCloudPuff()
     const cloudBank = createCloudBank()
     const starGlow = createStarGlow()
