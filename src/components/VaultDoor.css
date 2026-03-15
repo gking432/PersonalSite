@@ -1,6 +1,7 @@
 /*
-VAULT DOOR — Canvas-rendered silver vault on warm parchment
-Scroll-driven: dial spins → bolts retract → door swings open → cards reveal
+VAULT DOOR — Full-viewport rectangular steel door
+Canvas-rendered with industrial detail.
+Door swings open to reveal a gallery room of featured work.
 */
 
 .vault-section {
@@ -13,55 +14,16 @@ Scroll-driven: dial spins → bolts retract → door swings open → cards revea
   top: 0;
   width: 100%;
   height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: var(--parchment);
   overflow: hidden;
+  background: var(--parchment);
 }
 
-/* ── HEADER ── */
-.vault-header {
-  position: absolute;
-  top: calc(var(--header-height) + var(--space-lg));
-  left: 0;
-  right: 0;
-  text-align: center;
-  z-index: 10;
-}
-
-.vault-header .label {
-  margin-bottom: var(--space-xs);
-}
-
-.vault-tagline-wrapper {
-  position: relative;
-  min-height: 2em;
-}
-
-.vault-tagline {
-  font-family: var(--font-serif);
-  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
-  font-weight: 400;
-  font-style: italic;
-  color: var(--slate);
-  letter-spacing: -0.01em;
-  margin: 0;
-}
-
-.vault-tagline-after {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-}
-
-/* ── CANVAS ── */
+/* ── CANVAS (full viewport, renders the door) ── */
 .vault-canvas-container {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .vault-canvas-container canvas {
@@ -72,149 +34,197 @@ Scroll-driven: dial spins → bolts retract → door swings open → cards revea
   height: 100%;
 }
 
-/* ── REVEAL CARDS (HTML overlay) ── */
-.vault-cards {
-  position: relative;
-  z-index: 5;
+/* ── GALLERY ROOM (behind the door) ── */
+.vault-gallery {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   display: flex;
-  gap: 20px;
-  max-width: 720px;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(170deg,
+    #141816 0%,
+    #0e110f 40%,
+    #0a0c0b 100%
+  );
+}
+
+.vault-gallery-inner {
+  max-width: 960px;
+  width: 100%;
   padding: 0 var(--gutter);
-  margin-top: 4vh;
 }
 
-.vault-card {
-  flex: 1;
-  min-width: 0;
+/* ── GALLERY HEADER ── */
+.vault-gallery-label {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 234, 0.35);
+  margin-bottom: var(--space-xs);
 }
 
-.vault-card-link {
+.vault-gallery-heading {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: #f4f1ea;
+  margin: 0 0 var(--space-xl) 0;
+}
+
+/* ── GALLERY GRID ── */
+.vault-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.vault-gallery-item {
+  position: relative;
+}
+
+.vault-gallery-link {
   display: flex;
   flex-direction: column;
-  padding: 28px 24px;
-  border: 1px solid rgba(42, 42, 42, 0.08);
-  border-radius: var(--border-radius-md);
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  padding: 32px 28px;
+  border: 1px solid rgba(244, 241, 234, 0.06);
+  border-radius: 8px;
+  background: rgba(244, 241, 234, 0.03);
   text-decoration: none;
   height: 100%;
-  transition: border-color 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-              background 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              background 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.vault-card-link:hover {
-  border-color: rgba(42, 42, 42, 0.15);
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+.vault-gallery-link:hover {
+  border-color: rgba(244, 241, 234, 0.15);
+  background: rgba(244, 241, 234, 0.06);
+  transform: translateY(-6px);
 }
 
-.vault-card-number {
+.vault-gallery-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.vault-gallery-number {
   font-family: var(--font-sans);
   font-size: 0.65rem;
   font-weight: 600;
   letter-spacing: 0.1em;
-  color: var(--warm-gray);
-  margin-bottom: 10px;
+  color: rgba(244, 241, 234, 0.25);
 }
 
-.vault-card-tag {
+.vault-gallery-arrow {
+  font-size: 1rem;
+  color: rgba(244, 241, 234, 0.2);
+  transition: color 0.4s, transform 0.4s;
+}
+
+.vault-gallery-link:hover .vault-gallery-arrow {
+  color: rgba(244, 241, 234, 0.6);
+  transform: translateX(4px);
+}
+
+.vault-gallery-tag {
   font-family: var(--font-sans);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--forest-green);
-  margin-bottom: 8px;
+  color: rgba(244, 241, 234, 0.4);
+  margin-bottom: 10px;
 }
 
-.vault-card-title {
+.vault-gallery-title {
   font-family: var(--font-serif);
-  font-size: 1.15rem;
+  font-size: 1.4rem;
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.02em;
-  color: var(--charcoal);
-  margin: 0 0 10px 0;
+  color: #f4f1ea;
+  margin: 0 0 14px 0;
 }
 
-.vault-card-desc {
+.vault-gallery-desc {
   font-family: var(--font-sans);
-  font-size: 0.78rem;
-  line-height: 1.6;
-  color: var(--slate);
+  font-size: 0.82rem;
+  line-height: 1.65;
+  color: rgba(244, 241, 234, 0.55);
   margin: 0;
-  flex: 1;
 }
 
-.vault-card-arrow {
-  font-size: 0.9rem;
-  color: var(--warm-gray);
-  margin-top: 14px;
-  transition: color 0.3s, transform 0.3s;
-  display: block;
+/* ── Subtle gallery lighting effect ── */
+.vault-gallery::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 40%;
+  background: radial-gradient(ellipse at center top,
+    rgba(244, 241, 234, 0.04) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
 }
 
-.vault-card-link:hover .vault-card-arrow {
-  color: var(--forest-green);
-  transform: translateX(6px);
+.vault-gallery-inner {
+  position: relative;
+  z-index: 1;
 }
 
 /* ═══════════════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .vault-gallery-grid {
+    gap: 18px;
+  }
+
+  .vault-gallery-link {
+    padding: 26px 22px;
+  }
+
+  .vault-gallery-title {
+    font-size: 1.2rem;
+  }
+}
+
 @media (max-width: 768px) {
   .vault-section {
     height: 400vh;
   }
 
-  .vault-cards {
-    flex-direction: column;
-    gap: 12px;
-    max-width: none;
-    margin-top: 8vh;
-  }
-
-  .vault-card-link {
-    padding: 20px 18px;
-    flex-direction: row;
-    align-items: center;
+  .vault-gallery-grid {
+    grid-template-columns: 1fr;
     gap: 14px;
   }
 
-  .vault-card-number {
-    margin-bottom: 0;
-    font-size: 0.75rem;
+  .vault-gallery-link {
+    padding: 22px 20px;
   }
 
-  .vault-card-tag {
-    display: none;
+  .vault-gallery-heading {
+    margin-bottom: var(--space-lg);
   }
 
-  .vault-card-title {
-    margin: 0;
-    font-size: 1rem;
-  }
-
-  .vault-card-desc {
-    display: none;
-  }
-
-  .vault-card-arrow {
-    margin-top: 0;
-    margin-left: auto;
+  .vault-gallery-desc {
+    font-size: 0.78rem;
   }
 }
 
 @media (max-width: 480px) {
   .vault-section {
     height: 350vh;
-  }
-
-  .vault-tagline {
-    font-size: 0.95rem;
-    padding: 0 var(--gutter);
   }
 }
