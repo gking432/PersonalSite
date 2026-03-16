@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
 import SqueezeSection from '../components/SqueezeSection'
@@ -157,8 +157,17 @@ function ProcessStep({ step, scrollYProgress, index, total }) {
   )
 }
 
+const storyParagraphs = [
+  <>I started my career at Sub-Zero Group, Inc., where I rotated through sales operations, product marketing, and dealer sales — learning how premium brands are built and maintained at scale. After that, I did what a lot of marketers talk about but few actually do: I went out on my own. I started a marketing consultancy, working with early-stage companies on branding, digital strategy, and customer acquisition. I sat across the table from founders with ideas and figured out how to make those ideas real. That's when I discovered what I actually cared about: not the title, not being my own boss — but <em>taking things from zero to one</em>.</>,
+  'Running my own shop taught me everything a corporate role never could. I handled strategy, creative, client management, and execution — simultaneously, with no safety net. I learned how to scope work, manage expectations, and deliver under constraints that would make most agency teams blink. More importantly, I learned what happens when you\'re the one responsible for every outcome, not just one piece of the funnel.',
+  'As the marketing landscape evolved, I realized I wanted to get closer to the product side of the work. I didn\'t just want to market things — I wanted to own them end-to-end. So I started doing exactly that. A cryptocurrency token launchpad with full go-to-market strategy. An AI-powered interview prep platform. A cartography print studio. Each one I managed like a product manager would: market research, roadmap, build, launch, and iteration — except I was also the one writing the code, designing the brand, and running the campaigns. Both for clients and on my own dime.',
+  <>That range is the point. I'm a marketing executive who thinks like a product manager. I can build the landing page, write the copy, design the brand, set up the analytics, and launch the campaign — not because I <em>have</em> to, but because understanding every layer makes me better at leading the ones I delegate. AI has been central to how I work. I write about it, I lecture on it, and I have strong opinions on where it's headed. I don't treat it as a buzzword — I use it daily as a force multiplier that fundamentally changes how fast a small team can move.</>,
+  'The through-line of my career has always been the same: take something from zero to one. Whether that\'s a client\'s first website, a product idea that didn\'t exist yesterday, or a brand that needs to find its audience — I\'m at my best when I\'m identifying a problem, building the solution, and shipping it.',
+  'Now I\'m looking for the right team. A company that\'s serious about growth and wants a leader who sits at the intersection of marketing, product, and AI — someone who understands how ideas become products, how products find customers, and how to build momentum without burning budget on guesswork. I\'ve done the solo chapter. I\'m ready to bring everything I\'ve learned to a team that\'s building something worth building.',
+  'Whether that\'s a leadership role, a consulting engagement, or something I haven\'t considered yet — I\'m open to the conversation. I just want to be in the room where things are getting built.',
+]
+
 function About() {
-  const [showFullStory, setShowFullStory] = useState(false)
   const processRef = useRef(null)
   const statementRef = useRef(null)
   const philosophyRef = useRef(null)
@@ -217,64 +226,27 @@ function About() {
                   </motion.span>
                 ))}
               </h1>
-            <motion.p
-              className="about-intro"
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
-            >
-              I started my career at Sub-Zero Group, Inc., where I rotated through sales operations, product marketing, and dealer sales — learning how
-              premium brands are built and maintained at scale. After that, I did what a lot of marketers talk about but few actually do: I went out on
-              my own. I started a marketing consultancy, working with early-stage companies on branding, digital strategy, and customer acquisition. I sat
-              across the table from founders with ideas and figured out how to make those ideas real. That's when I discovered what I actually cared about:
-              not the title, not being my own boss — but <em>taking things from zero to one</em>.
-            </motion.p>
-
-            {showFullStory && (
-              <>
-                <p>
-                  Running my own shop taught me everything a corporate role never could. I handled strategy, creative, client management, and execution —
-                  simultaneously, with no safety net. I learned how to scope work, manage expectations, and deliver under constraints that would make most
-                  agency teams blink. More importantly, I learned what happens when you're the one responsible for every outcome, not just one piece of the funnel.
-                </p>
-                <p>
-                  As the marketing landscape evolved, I realized I wanted to get closer to the product side of the work. I didn't just want to market things — I wanted
-                  to own them end-to-end. So I started doing exactly that. A cryptocurrency token launchpad with full go-to-market strategy. An AI-powered interview
-                  prep platform. A cartography print studio. Each one I managed like a product manager would: market research, roadmap, build, launch, and iteration —
-                  except I was also the one writing the code, designing the brand, and running the campaigns. Both for clients and on my own dime.
-                </p>
-                <p>
-                  That range is the point. I'm a marketing executive who thinks like a product manager. I can build the landing page, write the copy,
-                  design the brand, set up the analytics, and launch the campaign — not because I <em>have</em> to, but because understanding every layer makes me
-                  better at leading the ones I delegate. AI has been central to how I work. I write about it, I lecture on it, and I have strong opinions on where
-                  it's headed. I don't treat it as a buzzword — I use it daily as a force multiplier that fundamentally changes how fast a small team can move.
-                </p>
-                <p>
-                  The through-line of my career has always been the same: take something from zero to one. Whether that's a client's first website, a product idea
-                  that didn't exist yesterday, or a brand that needs to find its audience — I'm at my best when I'm identifying a problem, building the solution,
-                  and shipping it.
-                </p>
-                <p>
-                  Now I'm looking for the right team. A company that's serious about growth and wants a leader who sits at the intersection of marketing, product,
-                  and AI — someone who understands how ideas become products, how products find customers, and how to build momentum without burning budget on
-                  guesswork. I've done the solo chapter. I'm ready to bring everything I've learned to a team that's building something worth building.
-                </p>
-                <p>
-                  Whether that's a leadership role, a consulting engagement, or something I haven't considered yet — I'm open to the conversation.
-                  I just want to be in the room where things are getting built.
-                </p>
-              </>
-            )}
-            <motion.button
-              type="button"
-              className="my-story-toggle"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.8, ease: ndsEase }}
-              onClick={() => setShowFullStory(prev => !prev)}
-            >
-              {showFullStory ? 'Show less' : 'Read more'}
-            </motion.button>
+              <motion.p
+                className="about-hook"
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
+              >
+                Taking things from zero to one — that's always been the job.
+              </motion.p>
+              <motion.a
+                href="#my-story"
+                className="about-read-more"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.8, ease: ndsEase }}
+                onClick={(e) => {
+                  e.preventDefault()
+                  document.getElementById('my-story')?.scrollIntoView({ behavior: 'smooth' })
+                }}
+              >
+                Read the full story
+              </motion.a>
             </div>
             <motion.div
               className="hero-meta"
@@ -300,6 +272,25 @@ function About() {
               </div>
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* ═══════ MY STORY — Editorial long-form ═══════ */}
+      <section className="my-story-section section" id="my-story">
+        <div className="container">
+          <motion.div
+            className="my-story-content"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={staggerContainer}
+          >
+            {storyParagraphs.map((text, i) => (
+              <motion.p key={i} variants={staggerItem}>
+                {text}
+              </motion.p>
+            ))}
+          </motion.div>
         </div>
       </section>
 
