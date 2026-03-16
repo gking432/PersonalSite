@@ -409,6 +409,26 @@ One cohesive piece. Generous whitespace. Parchment base.
   margin-bottom: var(--space-2xl);
 }
 
+.timeline-header .label {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--forest-green);
+  margin-bottom: var(--space-sm);
+}
+
+.timeline-header .section-heading {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5.5vw, 4.5rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--charcoal);
+  margin: 0;
+}
+
 .timeline {
   max-width: 900px;
   margin: 0 auto;
@@ -489,10 +509,6 @@ One cohesive piece. Generous whitespace. Parchment base.
 .cta {
   padding: var(--space-3xl) 0;
   background-color: var(--forest-green);
-  background-image: url('/Photo Sections/6.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
   color: var(--cream);
   text-align: center;
   position: relative;

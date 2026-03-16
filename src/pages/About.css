@@ -430,7 +430,7 @@ Reads like a biography in a private club's member directory
 .philosophy-photo-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.3);
+  background-color: var(--forest-green);
 }
 
 .philosophy-photo-section .container {
@@ -468,9 +468,16 @@ Reads like a biography in a private club's member directory
   transform: translateY(-2px);
 }
 
-/* ═══════ TOOLKIT MARQUEE ═══════ */
+/* ═══════ TOOLKIT MARQUEE — full viewport, no bleed from adjacent sections ═══════ */
 .toolkit-section {
-  padding: var(--space-2xl) 0;
+  height: 100vh;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--header-height) var(--gutter) var(--gutter);
+  box-sizing: border-box;
   overflow: hidden;
 }
 
@@ -490,6 +497,15 @@ Reads like a biography in a private club's member directory
   color: var(--charcoal);
   margin-bottom: var(--space-xl);
   line-height: 1.1;
+}
+
+.toolkit-section .container {
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.toolkit-section .marquee-wrap {
+  width: 100%;
 }
 
 .marquee-wrap {

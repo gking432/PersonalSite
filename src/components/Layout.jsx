@@ -7,10 +7,11 @@ function Layout({ children }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
-  // Close menu on route change + scroll to top
+  // Close menu on route change + instant jump to top
   useEffect(() => {
     setMenuOpen(false)
-    window.scrollTo(0, 0)
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
   }, [location.pathname])
 
   // Navbar solid on scroll

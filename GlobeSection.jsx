@@ -1,4 +1,4 @@
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
+import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion'
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import './GlobeSection.css'
 
@@ -14,7 +14,7 @@ const journeyStops = [
     chapter: "The Beginning",
     story: "Born and raised in small-town Wisconsin. The kind of place where everyone knows your name and nobody locks their doors.",
     stateId: "55",
-    scrollWeight: 1.0, flyRatio: 0.35,
+    scrollWeight: 5.0, flyRatio: 0.5,
   },
   {
     lat: 43.04, lng: -87.91, zoom: 10,
@@ -22,7 +22,7 @@ const journeyStops = [
     chapter: "College",
     story: "Marquette University. Marketing degree, business mindset. Learned how to think strategically and sell an idea.",
     stateId: "55",
-    scrollWeight: 0.9, flyRatio: 0.35,
+    scrollWeight: 1.8, flyRatio: 0.35,
   },
   {
     lat: 43.07, lng: -89.40, zoom: 10,
@@ -30,7 +30,7 @@ const journeyStops = [
     chapter: "First Real Job",
     story: "Sub-Zero Group. Inaugural candidate in their sales rotational program. Learned how enterprise actually works from the inside.",
     stateId: "55",
-    scrollWeight: 0.9, flyRatio: 0.35,
+    scrollWeight: 1.8, flyRatio: 0.35,
   },
   {
     lat: 33.49, lng: -111.93, zoom: 5,
@@ -38,7 +38,7 @@ const journeyStops = [
     chapter: "New Territory",
     story: "Relocated with Sub-Zero to manage dealer networks across the Southwest. First time living somewhere that wasn't Wisconsin.",
     stateId: "04",
-    scrollWeight: 1.6, flyRatio: 0.55,
+    scrollWeight: 3.2, flyRatio: 0.55,
   },
   {
     lat: 32.78, lng: -79.93, zoom: 5,
@@ -46,7 +46,7 @@ const journeyStops = [
     chapter: "Going Independent",
     story: "Started my own marketing consultancy. First taste of building something from nothing. Terrifying and addictive in equal measure.",
     stateId: "45",
-    scrollWeight: 1.6, flyRatio: 0.55,
+    scrollWeight: 3.2, flyRatio: 0.55,
   },
   {
     lat: 39.74, lng: -104.99, zoom: 5,
@@ -54,7 +54,7 @@ const journeyStops = [
     chapter: "Scaling Up",
     story: "Moved the business to Denver. Built products, served clients, shipped fast. Learned what it means to wear every hat.",
     stateId: "08",
-    scrollWeight: 1.5, flyRatio: 0.50,
+    scrollWeight: 3.0, flyRatio: 0.50,
   },
   {
     lat: 43.40, lng: -89.30, zoom: 5,
@@ -62,19 +62,19 @@ const journeyStops = [
     chapter: "Full Circle",
     story: "AI changed everything. The consultancy model got disrupted overnight. Came home to regroup and figure out what's next.",
     stateId: "55",
-    scrollWeight: 1.3, flyRatio: 0.45,
+    scrollWeight: 2.6, flyRatio: 0.45,
   },
 ]
 
 // ═══════════════════════════════════════════
-// SCROLL TIMING
+// SCROLL TIMING — wider ranges = more scroll per phase
 // ═══════════════════════════════════════════
-const INTRO_START = 0.08
-const INTRO_END = 0.18
+const INTRO_START = 0.02
+const INTRO_END = 0.22
 const STOPS_START = INTRO_END
-const STOPS_END = 0.88
+const STOPS_END = 0.778  // Globe journey ends here; outro runway (400vh) follows
 const OUTRO_START = STOPS_END
-const OUTRO_END = 0.96
+const OUTRO_END = 1.0
 const NUM_STOPS = journeyStops.length
 
 // Precompute per-stop scroll breakpoints (distance-aware timing)
@@ -402,7 +402,37 @@ function GlobeSection() {
     offset: ["start end", "end start"]
   })
 
-  const bgOpacity = useTransform(scrollYProgress, [0.04, 0.12, 0.90, 0.98], [0, 1, 1, 0])
+  // Black bg + squeeze only during outro. Outro runway (400vh) creates scroll pause for text animation.
+  const bgOpacity = useTransform(scrollYProgress, [0.778, 0.82, 0.96, 1.0], [0, 1, 1, 0])
+
+  // Squeeze effect for outro: scale + border radius, same as SqueezeSection
+  const outroSqueezeProgress = useTransform(scrollYProgress, [0.778, 1.0], [0, 1])
+  const rawOutroScale = useTransform(outroSqueezeProgress, [0, 1], [1, 0.88])
+  const rawOutroRadius = useTransform(outroSqueezeProgress, [0, 1], [0, 24])
+  const outroScale = useSpring(rawOutroScale, { stiffness: 120, damping: 30 })
+  const outroRadius = useSpring(rawOutroRadius, { stiffness: 120, damping: 30 })
+
+  // Outro overlay: fade in, hold during text animation, fade out
+  const outroOverlayOpacity = useTransform(
+    scrollYProgress,
+    [0.778, 0.82, 0.96, 1.0],
+    [0, 1, 1, 0]
+  )
+  const outroTextOpacity = useTransform(
+    scrollYProgress,
+    [0.78, 0.84, 0.96, 0.99],
+    [0, 1, 1, 0]
+  )
+
+  // Scroll-driven text animations — spread over outro runway so scroll "pauses" while they play
+  const outroLabelY = useTransform(scrollYProgress, [0.78, 0.82], [24, 0])
+  const outroLabelOpacity = useTransform(scrollYProgress, [0.78, 0.82], [0, 1])
+  const outroParagraphY = useTransform(scrollYProgress, [0.82, 0.88], [24, 0])
+  const outroParagraphOpacity = useTransform(scrollYProgress, [0.82, 0.88], [0, 1])
+  // Word-by-word color reveal for "The common thread?"
+  const outroHeadlineColor1 = useTransform(scrollYProgress, [0.79, 0.83], ['rgba(255, 255, 255, 0.35)', 'rgba(255, 255, 255, 1)'])
+  const outroHeadlineColor2 = useTransform(scrollYProgress, [0.81, 0.85], ['rgba(255, 255, 255, 0.35)', 'rgba(255, 255, 255, 1)'])
+  const outroHeadlineColor3 = useTransform(scrollYProgress, [0.83, 0.88], ['rgba(255, 255, 255, 0.35)', 'rgba(255, 255, 255, 1)'])
 
   // ─── LOAD GEOJSON DATA ───
   useEffect(() => {
@@ -703,9 +733,9 @@ function GlobeSection() {
 
   return (
     <section className="globe-section" ref={sectionRef}>
-      <motion.div className="globe-bg" style={{ opacity: bgOpacity }} />
-
       <div className="globe-sticky">
+        <motion.div className="globe-bg" style={{ opacity: bgOpacity }} />
+        <div className="globe-inner">
         {/* Header */}
         <div className="globe-header-container">
           <motion.div
@@ -784,25 +814,43 @@ function GlobeSection() {
           )}
         </AnimatePresence>
 
-        {/* Outro summary */}
-        <AnimatePresence>
-          {activeStop === -2 && (
-            <motion.div
-              className="globe-story-card globe-outro-card"
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.6, ease: ndsEase }}
+        {/* Outro — black squeeze section only when "The common thread?" shows */}
+        <motion.div
+          className="globe-outro-squeeze"
+          style={{
+            opacity: outroOverlayOpacity,
+            scale: outroScale,
+            borderRadius: outroRadius,
+          }}
+          aria-hidden="true"
+        >
+          <motion.div
+            className="globe-outro-content"
+            style={{ opacity: outroTextOpacity }}
+          >
+            <motion.span
+              className="globe-outro-label"
+              style={{ y: outroLabelY, opacity: outroLabelOpacity }}
             >
-              <span className="globe-story-chapter">Seven Cities. One Thread.</span>
-              <h3 className="globe-story-city">The common thread?</h3>
-              <p className="globe-story-text">
-                Every move taught me something new. Every chapter made me more dangerous.
-                Marketing, product, AI — it all compounds.
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              Seven Cities. One Thread.
+            </motion.span>
+            <h3 className="globe-outro-headline">
+              <motion.span style={{ color: outroHeadlineColor1 }}>The</motion.span>
+              {' '}
+              <motion.span style={{ color: outroHeadlineColor2 }}>common</motion.span>
+              {' '}
+              <motion.span style={{ color: outroHeadlineColor3 }}>thread?</motion.span>
+            </h3>
+            <motion.p
+              className="globe-outro-text"
+              style={{ y: outroParagraphY, opacity: outroParagraphOpacity }}
+            >
+              Every move taught me something new. Every chapter made me more dangerous.
+              Marketing, product, AI — it all compounds.
+            </motion.p>
+          </motion.div>
+        </motion.div>
+        </div>
       </div>
     </section>
   )

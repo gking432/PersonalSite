@@ -75,7 +75,7 @@ Prestige portfolio warmth + colors
 /* Base */
 html {
   font-size: 18px;
-  scroll-behavior: smooth;
+  scroll-behavior: auto; /* no smooth scroll — preserves scroll animation surprise on nav */
 }
 
 /* Lock main scroll when modal/overlay is open */

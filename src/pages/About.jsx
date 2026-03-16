@@ -311,7 +311,7 @@ function About() {
             >
               <div className="hero-meta-item">
                 <span className="hero-meta-label">Location</span>
-                <span className="hero-meta-value">Madison, WI</span>
+                <span className="hero-meta-value">Milwaukee, WI</span>
               </div>
               <div className="hero-meta-item">
                 <span className="hero-meta-label">Education</span>
@@ -354,9 +354,6 @@ function About() {
           </SqueezeSection>
         </div>
       </div>
-
-      {/* ═══════ GLOBE — Visual journey through career ═══════ */}
-      <GlobeSection />
 
       {/* ═══════ HOW I WORK — Scroll-driven cylinder picker ═══════ */}
       <section className="how-i-work-scroll" ref={processRef}>
@@ -408,8 +405,11 @@ function About() {
         </div>
       </div>
 
-      {/* ═══════ TOOLKIT MARQUEE ═══════ */}
-      <section className="toolkit-section section">
+      {/* ═══════ GLOBE — Visual journey through career ═══════ */}
+      <GlobeSection />
+
+      {/* ═══════ TOOLKIT MARQUEE — full viewport ═══════ */}
+      <section className="toolkit-section">
         <div className="container">
           <motion.p
             className="label"

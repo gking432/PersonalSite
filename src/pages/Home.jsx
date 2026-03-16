@@ -459,10 +459,26 @@ function Home() {
       {/* ═══════ EXPERIENCE TIMELINE ═══════ */}
       <section className="background">
         <div className="container">
-          <RevealSection className="timeline-header" direction="left">
-            <p className="label">Experience</p>
-            <h2 className="section-heading">Background</h2>
-          </RevealSection>
+          <div className="timeline-header">
+            <motion.p
+              className="label"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, ease: ndsEase }}
+            >
+              Experience
+            </motion.p>
+            <motion.h2
+              className="section-heading"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1, ease: ndsEase }}
+            >
+              Background
+            </motion.h2>
+          </div>
 
           <div className="timeline">
             {[
