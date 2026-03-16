@@ -8,8 +8,24 @@ Reads like a biography in a private club's member directory
   padding-top: 80px;
 }
 
-/* ═══════ HERO / MY STORY ═══════ */
+/* Everything after the sticky hero must stack above it with opaque backgrounds */
+.about > *:not(.about-hero):not(.globe-section) {
+  position: relative;
+  z-index: 1;
+  background-color: var(--parchment);
+}
+
+/* Globe section needs z-index but transparent bg (it uses a fixed dark backdrop) */
+.about > .globe-section {
+  position: relative;
+  z-index: 1;
+}
+
+/* ═══════ HERO ═══════ */
 .about-hero {
+  position: sticky;
+  top: 80px;
+  z-index: 0;
   min-height: 60vh;
   display: flex;
   align-items: flex-start;
@@ -74,39 +90,56 @@ Reads like a biography in a private club's member directory
   border-bottom-color: var(--hunter-green);
 }
 
-/* ═══════ MY STORY — Editorial long-form ═══════ */
+/* ═══════ MY STORY — Full-bleed magazine takeover ═══════ */
 .my-story-section {
-  padding: var(--space-2xl) 0 var(--space-3xl);
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 1;
+  padding: clamp(80px, 12vh, 160px) 0 clamp(100px, 15vh, 200px);
+  background-color: var(--charcoal);
+  color: var(--cream);
+  /* Full bleed — break out of any parent padding */
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+  width: 100vw;
 }
 
 .my-story-header {
   max-width: var(--max-width-text);
-  margin: 0 auto var(--space-xl);
+  margin: 0 auto clamp(48px, 6vh, 80px);
+  padding: 0 var(--space-lg);
+  text-align: center;
 }
 
 .my-story-label {
   font-family: var(--font-sans);
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--slate);
-  margin-bottom: var(--space-sm);
+  color: rgba(244, 241, 234, 0.45);
+  margin-bottom: var(--space-md);
 }
 
 .my-story-headline {
   font-family: var(--font-display);
-  font-size: clamp(3rem, 8vw, 6rem);
+  font-size: clamp(4rem, 12vw, 9rem);
   font-weight: 700;
-  line-height: 0.95;
+  line-height: 0.9;
   letter-spacing: -0.04em;
-  color: var(--charcoal);
+  color: var(--cream);
+}
+
+.my-story-divider {
+  width: 60px;
+  height: 1px;
+  background: rgba(244, 241, 234, 0.2);
+  margin: clamp(32px, 4vh, 56px) auto 0;
 }
 
 .my-story-content {
   max-width: var(--max-width-text);
   margin: 0 auto;
+  padding: 0 var(--space-lg);
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
@@ -115,19 +148,40 @@ Reads like a biography in a private club's member directory
 .my-story-content p {
   font-size: 1.1rem;
   line-height: 1.85;
-  color: var(--slate);
+  color: rgba(244, 241, 234, 0.7);
 }
 
 .my-story-content p:first-child {
   font-family: var(--font-serif);
   font-size: 1.35rem;
   line-height: 1.7;
-  color: var(--charcoal);
+  color: rgba(244, 241, 234, 0.9);
+}
+
+/* Drop cap on the first paragraph */
+.my-story-content p:first-child::first-letter {
+  font-family: var(--font-display);
+  font-size: 4.5rem;
+  float: left;
+  line-height: 0.75;
+  margin-right: 12px;
+  margin-top: 8px;
+  color: var(--cream);
+  font-weight: 700;
 }
 
 .my-story-content p em {
   font-style: italic;
-  color: var(--charcoal);
+  color: rgba(244, 241, 234, 0.9);
+}
+
+/* Short punchy paragraphs get emphasis */
+.my-story-content p.story-emphasis {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  line-height: 1.6;
+  color: var(--cream);
+  font-style: italic;
 }
 
 /* ═══════ HOW I WORK — Scroll-driven cylinder ═══════ */

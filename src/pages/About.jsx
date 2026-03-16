@@ -183,20 +183,20 @@ function About() {
   const statementRef = useRef(null)
   const philosophyRef = useRef(null)
 
-  // Hero fade-out as user scrolls toward My Story
+  // Hero fades out immediately when scrolling begins
   const { scrollYProgress: heroScroll } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"]
   })
-  const heroOpacity = useTransform(heroScroll, [0.5, 0.85], [1, 0])
+  const heroOpacity = useTransform(heroScroll, [0, 0.35], [1, 0])
 
-  // My Story fade-in as hero fades out
+  // My Story fades in as hero disappears
   const storyRef = useRef(null)
   const { scrollYProgress: storyScroll } = useScroll({
     target: storyRef,
-    offset: ["start end", "start 0.3"]
+    offset: ["start end", "start 0.4"]
   })
-  const storyOpacity = useTransform(storyScroll, [0, 1], [0, 1])
+  const storyOpacity = useTransform(storyScroll, [0.3, 1], [0, 1])
 
   const { scrollYProgress: processScroll } = useScroll({
     target: processRef,
@@ -313,6 +313,7 @@ function About() {
           >
             <p className="my-story-label">The Full Story</p>
             <h2 className="my-story-headline">My Story</h2>
+            <div className="my-story-divider" />
           </motion.div>
           <motion.div
             className="my-story-content"
@@ -321,11 +322,19 @@ function About() {
             viewport={{ once: true, margin: "-80px" }}
             variants={staggerContainer}
           >
-            {storyParagraphs.map((text, i) => (
-              <motion.p key={i} variants={staggerItem}>
-                {text}
-              </motion.p>
-            ))}
+            {storyParagraphs.map((text, i) => {
+              // Short punchy lines get emphasis treatment
+              const isEmphasis = text.length < 60
+              return (
+                <motion.p
+                  key={i}
+                  variants={staggerItem}
+                  className={isEmphasis ? 'story-emphasis' : undefined}
+                >
+                  {text}
+                </motion.p>
+              )
+            })}
           </motion.div>
         </div>
       </motion.section>
