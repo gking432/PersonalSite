@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
 import SqueezeSection from '../components/SqueezeSection'
@@ -179,9 +179,39 @@ const storyBlocks = [
 ]
 
 function About() {
+  const storyRunwayRef = useRef(null)
+  const storyContentRef = useRef(null)
   const processRef = useRef(null)
   const statementRef = useRef(null)
   const philosophyRef = useRef(null)
+
+  // Story scroll — content scrolls through pinned squeeze container
+  const { scrollYProgress: storyScroll } = useScroll({
+    target: storyRunwayRef,
+    offset: ["start start", "end end"]
+  })
+
+  const storyContentY = useTransform(storyScroll, (v) => {
+    if (!storyContentRef.current) return 0
+    const contentH = storyContentRef.current.offsetHeight
+    const containerH = window.innerHeight * 0.85
+    return -v * Math.max(0, contentH - containerH)
+  })
+
+  // Dynamically size the scroll runway to match content length
+  useEffect(() => {
+    const update = () => {
+      if (!storyContentRef.current || !storyRunwayRef.current) return
+      const contentH = storyContentRef.current.offsetHeight
+      const viewportH = window.innerHeight
+      const containerH = viewportH * 0.85
+      const travel = Math.max(0, contentH - containerH)
+      storyRunwayRef.current.style.height = `${viewportH + travel}px`
+    }
+    const t = setTimeout(update, 150)
+    window.addEventListener('resize', update)
+    return () => { clearTimeout(t); window.removeEventListener('resize', update) }
+  }, [])
 
   const { scrollYProgress: processScroll } = useScroll({
     target: processRef,
@@ -286,79 +316,41 @@ function About() {
         </div>
       </section>
 
-      {/* ═══════ MY STORY — Centered editorial in squeeze container ═══════ */}
-      <SqueezeSection className="my-story-section" id="my-story">
-        <div className="my-story-inner">
-          <motion.div
-            className="my-story-header"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.7, ease: ndsEase }}
-          >
-            <p className="my-story-label">The Full Story</p>
-            <h2 className="my-story-headline">My Story</h2>
-            <div className="my-story-divider" />
-          </motion.div>
+      {/* ═══════ MY STORY — Scroll-through squeeze container ═══════ */}
+      <div ref={storyRunwayRef} className="story-scroll-runway" id="my-story">
+        <div className="story-sticky-wrapper">
+          <SqueezeSection className="my-story-section">
+            <motion.div
+              className="my-story-inner"
+              ref={storyContentRef}
+              style={{ y: storyContentY }}
+            >
+              <div className="my-story-header">
+                <p className="my-story-label">The Full Story</p>
+                <h2 className="my-story-headline">My Story</h2>
+                <div className="my-story-divider" />
+              </div>
 
-          {storyBlocks.map((block, i) => {
-            if (block.type === 'moment') {
-              return (
-                <motion.p
-                  key={i}
-                  className="story-moment"
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-60px" }}
-                  transition={{ duration: 0.7, ease: ndsEase }}
-                >
-                  {block.text}
-                </motion.p>
-              )
-            }
-            if (block.type === 'pullQuote') {
-              return (
-                <motion.blockquote
-                  key={i}
-                  className="story-pull-quote"
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-60px" }}
-                  transition={{ duration: 0.6, ease: ndsEase }}
-                >
-                  {block.text}
-                </motion.blockquote>
-              )
-            }
-            if (block.type === 'emphasis') {
-              return (
-                <motion.p
-                  key={i}
-                  className="story-emphasis"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-40px" }}
-                  transition={{ duration: 0.5, ease: ndsEase }}
-                >
-                  {block.text}
-                </motion.p>
-              )
-            }
-            return (
-              <motion.p
-                key={i}
-                className={`story-body${block.first ? ' story-first' : ''}`}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.5, ease: ndsEase }}
-              >
-                {block.text}
-              </motion.p>
-            )
-          })}
+              {storyBlocks.map((block, i) => {
+                if (block.type === 'moment') {
+                  return <p key={i} className="story-moment">{block.text}</p>
+                }
+                if (block.type === 'pullQuote') {
+                  return <blockquote key={i} className="story-pull-quote">{block.text}</blockquote>
+                }
+                if (block.type === 'emphasis') {
+                  return <p key={i} className="story-emphasis">{block.text}</p>
+                }
+                return (
+                  <p key={i} className={`story-body${block.first ? ' story-first' : ''}`}>
+                    {block.text}
+                  </p>
+                )
+              })}
+            </motion.div>
+          </SqueezeSection>
         </div>
-      </SqueezeSection>
+      </div>
 
       {/* ═══════ GLOBE — Visual journey through career ═══════ */}
       <GlobeSection />
