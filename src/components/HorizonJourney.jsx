@@ -742,6 +742,59 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites, time) {
 }
 
 // ═══════════════════════════════════════════
+// GENERIC TEXT WATER REFLECTION
+// Draws wavy water reflection for any text content
+// ═══════════════════════════════════════════
+function drawTextWaterReflection(ctx, w, h, textLines, fontSize, alpha, color, sprites, time) {
+  if (alpha < 0.01) return
+  const horizonY = h * 0.46
+  const waterH = h - horizonY
+  const lineH = fontSize * 1.3
+
+  const offscreen = sprites.reflectionCanvas
+  const offCtx = sprites.reflectionCtx
+  const offW = Math.min(w, 900)
+  const offH = fontSize * (textLines.length + 1) * 1.5
+
+  offscreen.width = offW
+  offscreen.height = offH
+  offCtx.clearRect(0, 0, offW, offH)
+
+  offCtx.font = `300 ${fontSize}px "Instrument Serif", Georgia, serif`
+  offCtx.textAlign = 'center'
+  offCtx.textBaseline = 'top'
+  offCtx.fillStyle = rgb(color, 0.75)
+
+  const textYOff = fontSize * 0.5
+  textLines.forEach((line, i) => {
+    offCtx.fillText(line, offW / 2, textYOff + i * lineH)
+  })
+
+  ctx.save()
+  ctx.beginPath()
+  ctx.rect(0, horizonY, w, waterH)
+  ctx.clip()
+
+  const destX = (w - offW) / 2
+  const destY = horizonY + waterH * 0.05
+  const stripH = 2
+
+  ctx.globalAlpha = alpha * 0.35
+
+  for (let y = 0; y < offH; y += stripH) {
+    const waveOffset = Math.sin(y * 0.08 + time * 1.6) * (3 + y * 0.05)
+    const srcY = offH - y - stripH
+    ctx.drawImage(
+      offscreen,
+      0, srcY, offW, stripH,
+      destX + waveOffset, destY + y, offW, stripH
+    )
+  }
+
+  ctx.restore()
+}
+
+// ═══════════════════════════════════════════
 // CELESTIAL WATER REFLECTION
 // Renders disc + glow to offscreen canvas, flips and distorts
 // strip-by-strip — same technique as the text reflection
@@ -1290,6 +1343,55 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
     ctx.fillStyle = rgb([6, 14, 10], 1)
     ctx.fill()
     ctx.restore()
+  }
+
+  // ═══════ TEXT WATER REFLECTIONS (all active stops) ═══════
+  {
+    const refColors = [
+      [130, 155, 210],  // constellation — cool night blue
+      [185, 165, 145],  // cloud — warm dawn
+      [200, 180, 130],  // sunbeam — golden
+      [195, 175, 130],  // fog — amber
+    ]
+    const refFontSizes = [
+      Math.min(w * 0.045, 48),
+      Math.min(w * 0.042, 44),
+      Math.min(w * 0.05, 52),
+      Math.min(w * 0.048, 50),
+    ]
+
+    for (let i = 0; i < 4; i++) {
+      const stop = CONTENT_STOPS[i]
+      const sp = clamp01((progress - stop.at) / stop.duration)
+      if (sp <= 0 || sp >= 1) continue
+
+      let alpha = 0
+
+      if (i === 0) {
+        const fade = sp < 0.12 ? sp / 0.12 : sp > 0.85 ? (1 - sp) / 0.15 : 1
+        const glowP = clamp01((sp - 0.45) / 0.3)
+        alpha = fade * glowP * 0.9
+      } else if (i === 1) {
+        const fade = sp < 0.06 ? sp / 0.06 : sp > 0.88 ? (1 - sp) / 0.12 : 1
+        const textP = easeOutCubic(clamp01((sp - 0.30) / 0.15))
+        const disperseP = easeInOutCubic(clamp01((sp - 0.75) / 0.25))
+        alpha = fade * textP * (1 - disperseP) * 0.9
+      } else if (i === 2) {
+        const fade = sp < 0.1 ? sp / 0.1 : sp > 0.85 ? (1 - sp) / 0.15 : 1
+        alpha = fade
+      } else if (i === 3) {
+        const fade = sp < 0.06 ? sp / 0.06 : sp > 0.88 ? (1 - sp) / 0.12 : 1
+        const clearance = easeInOutCubic(clamp01((sp - 0.15) / 0.50))
+        alpha = fade * clearance
+      }
+
+      if (alpha < 0.01) continue
+
+      drawTextWaterReflection(
+        ctx, w, h, stop.text, refFontSizes[i], alpha,
+        refColors[i], sprites, time
+      )
+    }
   }
 
   // ═══════ MOON (rises as sun sets — keeps moving as section scrolls away) ═══════
