@@ -14,7 +14,7 @@ const journeyStops = [
     chapter: "The Beginning",
     story: "Born and raised in small-town Wisconsin. The kind of place where everyone knows your name and nobody locks their doors.",
     stateId: "55",
-    scrollWeight: 0.8, flyRatio: 0.2,
+    scrollWeight: 1.0, flyRatio: 0.35,
   },
   {
     lat: 43.04, lng: -87.91, zoom: 10,
@@ -22,7 +22,7 @@ const journeyStops = [
     chapter: "College",
     story: "Marquette University. Marketing degree, business mindset. Learned how to think strategically and sell an idea.",
     stateId: "55",
-    scrollWeight: 0.7, flyRatio: 0.15,
+    scrollWeight: 0.9, flyRatio: 0.35,
   },
   {
     lat: 43.07, lng: -89.40, zoom: 10,
@@ -30,7 +30,7 @@ const journeyStops = [
     chapter: "First Real Job",
     story: "Sub-Zero Group. Inaugural candidate in their sales rotational program. Learned how enterprise actually works from the inside.",
     stateId: "55",
-    scrollWeight: 0.7, flyRatio: 0.15,
+    scrollWeight: 0.9, flyRatio: 0.35,
   },
   {
     lat: 33.49, lng: -111.93, zoom: 5,
@@ -38,7 +38,7 @@ const journeyStops = [
     chapter: "New Territory",
     story: "Relocated with Sub-Zero to manage dealer networks across the Southwest. First time living somewhere that wasn't Wisconsin.",
     stateId: "04",
-    scrollWeight: 1.4, flyRatio: 0.5,
+    scrollWeight: 1.6, flyRatio: 0.55,
   },
   {
     lat: 32.78, lng: -79.93, zoom: 5,
@@ -46,7 +46,7 @@ const journeyStops = [
     chapter: "Going Independent",
     story: "Started my own marketing consultancy. First taste of building something from nothing. Terrifying and addictive in equal measure.",
     stateId: "45",
-    scrollWeight: 1.4, flyRatio: 0.5,
+    scrollWeight: 1.6, flyRatio: 0.55,
   },
   {
     lat: 39.74, lng: -104.99, zoom: 5,
@@ -54,7 +54,7 @@ const journeyStops = [
     chapter: "Scaling Up",
     story: "Moved the business to Denver. Built products, served clients, shipped fast. Learned what it means to wear every hat.",
     stateId: "08",
-    scrollWeight: 1.3, flyRatio: 0.45,
+    scrollWeight: 1.5, flyRatio: 0.50,
   },
   {
     lat: 43.40, lng: -89.30, zoom: 5,
@@ -62,7 +62,7 @@ const journeyStops = [
     chapter: "Full Circle",
     story: "AI changed everything. The consultancy model got disrupted overnight. Came home to regroup and figure out what's next.",
     stateId: "55",
-    scrollWeight: 1.1, flyRatio: 0.4,
+    scrollWeight: 1.3, flyRatio: 0.45,
   },
 ]
 
@@ -342,8 +342,8 @@ function drawPin(ctx, lat, lng, cLat, cLng, R, cx, cy, opts = {}) {
 
   if (glow) {
     const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, size * 4)
-    g.addColorStop(0, 'rgba(244, 241, 234, 0.35)')
-    g.addColorStop(1, 'rgba(244, 241, 234, 0)')
+    g.addColorStop(0, 'rgba(26, 58, 46, 0.3)')
+    g.addColorStop(1, 'rgba(26, 58, 46, 0)')
     ctx.fillStyle = g
     ctx.beginPath()
     ctx.arc(sx, sy, size * 4, 0, Math.PI * 2)
@@ -351,14 +351,14 @@ function drawPin(ctx, lat, lng, cLat, cLng, R, cx, cy, opts = {}) {
   }
 
   // Outer ring
-  ctx.strokeStyle = visited ? 'rgba(244, 241, 234, 0.5)' : 'rgba(244, 241, 234, 0.9)'
+  ctx.strokeStyle = visited ? 'rgba(0, 0, 0, 0.3)' : 'rgba(26, 58, 46, 0.9)'
   ctx.lineWidth = visited ? 1.5 : 2
   ctx.beginPath()
   ctx.arc(sx, sy, visited ? size * 0.7 : size, 0, Math.PI * 2)
   ctx.stroke()
 
   // Inner dot
-  ctx.fillStyle = visited ? 'rgba(244, 241, 234, 0.4)' : 'rgba(244, 241, 234, 0.95)'
+  ctx.fillStyle = visited ? 'rgba(0, 0, 0, 0.25)' : 'rgba(26, 58, 46, 0.9)'
   ctx.beginPath()
   ctx.arc(sx, sy, visited ? size * 0.3 : size * 0.45, 0, Math.PI * 2)
   ctx.fill()
@@ -485,12 +485,11 @@ function GlobeSection() {
       ctx.clearRect(0, 0, w, h)
 
       // ── ATMOSPHERIC GLOW ──
-      // Only draw when globe edge is visible
       if (radius < Math.max(w, h) * 1.2) {
         const gg = ctx.createRadialGradient(cx, cy, radius * 0.85, cx, cy, radius * 1.2)
-        gg.addColorStop(0, 'rgba(26, 58, 46, 0.25)')
-        gg.addColorStop(0.5, 'rgba(26, 58, 46, 0.08)')
-        gg.addColorStop(1, 'rgba(26, 58, 46, 0)')
+        gg.addColorStop(0, 'rgba(0, 0, 0, 0.04)')
+        gg.addColorStop(0.5, 'rgba(0, 0, 0, 0.015)')
+        gg.addColorStop(1, 'rgba(0, 0, 0, 0)')
         ctx.fillStyle = gg
         ctx.beginPath()
         ctx.arc(cx, cy, radius * 1.2, 0, Math.PI * 2)
@@ -499,9 +498,9 @@ function GlobeSection() {
 
       // ── GLOBE BODY ──
       const bg = ctx.createRadialGradient(cx - radius * 0.2, cy - radius * 0.2, 0, cx, cy, radius)
-      bg.addColorStop(0, 'rgba(40, 45, 42, 0.5)')
-      bg.addColorStop(0.6, 'rgba(25, 28, 26, 0.55)')
-      bg.addColorStop(1, 'rgba(12, 14, 13, 0.6)')
+      bg.addColorStop(0, 'rgba(245, 245, 242, 1)')
+      bg.addColorStop(0.6, 'rgba(235, 235, 230, 1)')
+      bg.addColorStop(1, 'rgba(225, 225, 220, 1)')
       ctx.fillStyle = bg
       ctx.beginPath()
       ctx.arc(cx, cy, radius, 0, Math.PI * 2)
@@ -509,7 +508,7 @@ function GlobeSection() {
 
       // ── GLOBE RIM ──
       if (radius < Math.max(w, h) * 1.2) {
-        ctx.strokeStyle = 'rgba(244, 241, 234, 0.07)'
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)'
         ctx.lineWidth = 1.5
         ctx.beginPath()
         ctx.arc(cx, cy, radius, 0, Math.PI * 2)
@@ -523,8 +522,8 @@ function GlobeSection() {
       ctx.clip()
 
       // ── GRID LINES ──
-      const gridAlpha = cam.zoom > 4 ? 0.015 : 0.03
-      ctx.strokeStyle = `rgba(244, 241, 234, ${gridAlpha})`
+      const gridAlpha = cam.zoom > 4 ? 0.04 : 0.06
+      ctx.strokeStyle = `rgba(0, 0, 0, ${gridAlpha})`
       ctx.lineWidth = 0.5
 
       const gridStep = cam.zoom > 3 ? 10 : 20
@@ -561,8 +560,8 @@ function GlobeSection() {
 
       if (world) {
         drawGeoFeatures(ctx, world, cLat, cLng, radius, cx, cy, {
-          fill: 'rgba(244, 241, 234, 0.06)',
-          stroke: 'rgba(244, 241, 234, 0.12)',
+          fill: 'rgba(0, 0, 0, 0.03)',
+          stroke: 'rgba(0, 0, 0, 0.10)',
           lineWidth: cam.zoom > 3 ? 0.5 : 0.8,
         })
       }
@@ -571,18 +570,18 @@ function GlobeSection() {
       if (states && cam.zoom > 2) {
         const stateAlpha = Math.min(1, (cam.zoom - 2) / 2)
         drawGeoFeatures(ctx, states, cLat, cLng, radius, cx, cy, {
-          fill: `rgba(244, 241, 234, ${0.03 * stateAlpha})`,
-          stroke: `rgba(244, 241, 234, ${0.15 * stateAlpha})`,
+          fill: `rgba(0, 0, 0, ${0.02 * stateAlpha})`,
+          stroke: `rgba(0, 0, 0, ${0.12 * stateAlpha})`,
           lineWidth: 0.6,
           highlightId: currentStateId,
-          highlightFill: `rgba(26, 58, 46, ${0.35 * stateAlpha})`,
-          highlightStroke: `rgba(244, 241, 234, ${0.4 * stateAlpha})`,
+          highlightFill: `rgba(26, 58, 46, ${0.12 * stateAlpha})`,
+          highlightStroke: `rgba(26, 58, 46, ${0.35 * stateAlpha})`,
         })
       }
 
       // ── LAND DOTS (texture layer) ──
       const dotR = Math.max(1, radius / 220)
-      const dotAlpha = world ? 0.25 : 0.5 // Dimmer when outlines present
+      const dotAlpha = world ? 0.15 : 0.3
       for (const pt of landPoints) {
         const { x, y, visible } = projectPoint(pt.lat, pt.lng, cLat, cLng, radius)
         if (!visible) continue
@@ -591,39 +590,80 @@ function GlobeSection() {
         const dist = Math.sqrt(x * x + y * y) / radius
         const a = dotAlpha * Math.max(0, 1 - dist ** 3 * 1.2)
         if (a < 0.01) continue
-        ctx.fillStyle = `rgba(244, 241, 234, ${a})`
+        ctx.fillStyle = `rgba(0, 0, 0, ${a})`
         ctx.beginPath()
         ctx.arc(sx, sy, dotR, 0, Math.PI * 2)
         ctx.fill()
       }
 
-      // ── JOURNEY PATH (connecting visited stops) ──
-      const visitedCount = cam.activeStop === -2 ? NUM_STOPS :
-                           cam.activeStop >= 0 ? cam.activeStop + 1 : 0
+      // ── JOURNEY PATH (persistent lines that animate as you scroll) ──
+      const scrollPhase = getScrollPhase(p)
 
-      if (visitedCount > 1) {
-        ctx.strokeStyle = 'rgba(244, 241, 234, 0.2)'
+      // Determine how many complete segments + partial progress on current
+      let completedSegments = 0
+      let partialT = 0  // 0–1 progress on the segment being drawn
+      if (scrollPhase.phase === 'fly' && scrollPhase.stopIndex > 0) {
+        completedSegments = scrollPhase.stopIndex - 1
+        partialT = easeInOutQuart(scrollPhase.t)
+      } else if (scrollPhase.phase === 'fly' && scrollPhase.stopIndex === 0) {
+        completedSegments = 0
+        partialT = 0
+      } else if (scrollPhase.phase === 'dwell' && scrollPhase.stopIndex >= 0) {
+        completedSegments = scrollPhase.stopIndex
+        partialT = 0
+      } else if (scrollPhase.phase === 'outro' || scrollPhase.phase === 'done') {
+        completedSegments = NUM_STOPS - 1
+        partialT = 0
+      }
+
+      // Draw completed segments (solid lines)
+      if (completedSegments > 0) {
+        ctx.strokeStyle = 'rgba(26, 58, 46, 0.25)'
         ctx.lineWidth = 1.5
-        ctx.setLineDash([6, 4])
-        ctx.beginPath()
-        let pathStarted = false
-        for (let i = 0; i < visitedCount; i++) {
-          const s = journeyStops[i]
-          const { x, y, visible } = projectPoint(s.lat, s.lng, cLat, cLng, radius)
-          if (visible) {
-            const sx = cx + x, sy = cy - y
-            if (!pathStarted) { ctx.moveTo(sx, sy); pathStarted = true }
-            else ctx.lineTo(sx, sy)
-          } else pathStarted = false
-        }
-        ctx.stroke()
         ctx.setLineDash([])
+        for (let i = 0; i < completedSegments; i++) {
+          const from = journeyStops[i]
+          const to = journeyStops[i + 1]
+          const p1 = projectPoint(from.lat, from.lng, cLat, cLng, radius)
+          const p2 = projectPoint(to.lat, to.lng, cLat, cLng, radius)
+          if (p1.visible && p2.visible) {
+            ctx.beginPath()
+            ctx.moveTo(cx + p1.x, cy - p1.y)
+            ctx.lineTo(cx + p2.x, cy - p2.y)
+            ctx.stroke()
+          }
+        }
+      }
+
+      // Draw the actively animating segment (growing line)
+      if (partialT > 0 && scrollPhase.phase === 'fly' && scrollPhase.stopIndex > 0) {
+        const fromIdx = scrollPhase.stopIndex - 1
+        const toIdx = scrollPhase.stopIndex
+        const from = journeyStops[fromIdx]
+        const to = journeyStops[toIdx]
+        // Interpolate lat/lng along the segment
+        const midLat = from.lat + (to.lat - from.lat) * partialT
+        const midLng = from.lng + (to.lng - from.lng) * partialT
+        const p1 = projectPoint(from.lat, from.lng, cLat, cLng, radius)
+        const p2 = projectPoint(midLat, midLng, cLat, cLng, radius)
+        if (p1.visible && p2.visible) {
+          ctx.strokeStyle = 'rgba(26, 58, 46, 0.3)'
+          ctx.lineWidth = 1.5
+          ctx.setLineDash([])
+          ctx.beginPath()
+          ctx.moveTo(cx + p1.x, cy - p1.y)
+          ctx.lineTo(cx + p2.x, cy - p2.y)
+          ctx.stroke()
+        }
       }
 
       // ── PINS ──
+      const visitedCount = cam.activeStop === -2 ? NUM_STOPS :
+                           cam.activeStop >= 0 ? cam.activeStop + 1 : 0
+
       // Visited stops: small, dimmed
       for (let i = 0; i < visitedCount; i++) {
-        if (i === cam.activeStop) continue // Draw active one last (on top)
+        if (i === cam.activeStop) continue
         const s = journeyStops[i]
         drawPin(ctx, s.lat, s.lng, cLat, cLng, radius, cx, cy, {
           size: 5, visited: true,
