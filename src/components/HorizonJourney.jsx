@@ -111,59 +111,66 @@ const CONTENT_STOPS = [
 // ═══════════════════════════════════════════
 // TEXT PARTICLE SAMPLING
 // ═══════════════════════════════════════════
-function sampleTextPixels(lines, fontSize, sampleStep, seed) {
-  const canvas = document.createElement('canvas')
-  const lineHeight = fontSize * 1.25
-  const padding = 10
-  canvas.width = 600
-  canvas.height = lineHeight * lines.length + padding * 2
-  const ctx = canvas.getContext('2d')
+// 3-4 simple constellations that span behind the text area
+// Each is defined in normalized coords (0–1) relative to the text block
+function generateConstellations(seed) {
+  const constellations = [
+    // Upper-left: a gentle arc (like Cassiopeia)
+    {
+      stars: [
+        { x: 0.08, y: 0.15 }, { x: 0.16, y: 0.08 }, { x: 0.26, y: 0.12 },
+        { x: 0.34, y: 0.05 }, { x: 0.42, y: 0.10 },
+      ],
+      edges: [[0,1],[1,2],[2,3],[3,4]],
+    },
+    // Center-right: a kite / diamond shape
+    {
+      stars: [
+        { x: 0.62, y: 0.10 }, { x: 0.72, y: 0.25 }, { x: 0.62, y: 0.45 },
+        { x: 0.52, y: 0.25 }, { x: 0.78, y: 0.08 },
+      ],
+      edges: [[0,1],[1,2],[2,3],[3,0],[0,4]],
+    },
+    // Lower-left: a small triangle with tail
+    {
+      stars: [
+        { x: 0.12, y: 0.55 }, { x: 0.22, y: 0.48 }, { x: 0.20, y: 0.65 },
+        { x: 0.30, y: 0.72 }, { x: 0.06, y: 0.70 },
+      ],
+      edges: [[0,1],[1,2],[2,0],[2,3],[0,4]],
+    },
+    // Lower-right: a zigzag line (like part of Orion's belt extended)
+    {
+      stars: [
+        { x: 0.58, y: 0.60 }, { x: 0.68, y: 0.55 }, { x: 0.76, y: 0.65 },
+        { x: 0.85, y: 0.58 }, { x: 0.92, y: 0.68 }, { x: 0.88, y: 0.78 },
+      ],
+      edges: [[0,1],[1,2],[2,3],[3,4],[4,5]],
+    },
+  ]
 
-  ctx.font = `300 ${fontSize}px Georgia, serif`
-  ctx.fillStyle = 'white'
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'top'
+  // Flatten into the points/lines format expected by the draw function
+  const points = []
+  const lines = []
+  let offset = 0
 
-  lines.forEach((line, i) => {
-    ctx.fillText(line, canvas.width / 2, padding + i * lineHeight)
+  constellations.forEach((c, ci) => {
+    c.stars.forEach((s, si) => {
+      points.push({
+        x: s.x,
+        y: s.y,
+        size: 0.8 + srand(seed + ci * 100 + si * 7) * 1.2,
+        delay: ci * 0.08 + srand(seed + ci * 50 + si * 13) * 0.15,
+        constellation: ci,
+      })
+    })
+    c.edges.forEach(([a, b]) => {
+      lines.push([offset + a, offset + b])
+    })
+    offset += c.stars.length
   })
 
-  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-  const points = []
-  let idx = 0
-
-  for (let y = 0; y < canvas.height; y += sampleStep) {
-    for (let x = 0; x < canvas.width; x += sampleStep) {
-      if (imageData.data[(y * canvas.width + x) * 4 + 3] > 128) {
-        points.push({
-          x: x / canvas.width,
-          y: y / canvas.height,
-          sx: srand(seed + idx * 7) * 0.8 + 0.1,
-          sy: srand(seed + idx * 13) * 0.35 + 0.05,
-          size: 0.5 + srand(seed + idx * 19) * 1.5,
-          delay: srand(seed + idx * 29) * 0.3,
-        })
-        idx++
-      }
-    }
-  }
-
-  return points
-}
-
-function computeConstellationLines(points, maxDist, maxLines) {
-  const lines = []
-  for (let i = 0; i < points.length && lines.length < maxLines; i++) {
-    for (let j = i + 1; j < points.length && lines.length < maxLines; j++) {
-      const dx = points[i].x - points[j].x
-      const dy = points[i].y - points[j].y
-      const dist = Math.sqrt(dx * dx + dy * dy)
-      if (dist < maxDist && dist > maxDist * 0.3) {
-        lines.push([i, j])
-      }
-    }
-  }
-  return lines
+  return { points, lines, count: constellations.length }
 }
 
 // ═══════════════════════════════════════════
@@ -303,29 +310,33 @@ function drawConstellationReveal(ctx, w, h, revealP, stop, data, sprites) {
   const { points, lines } = data
   const horizonY = h * 0.46
 
-  const blockW = w * 0.65
-  const blockH = horizonY * 0.6
+  const blockW = w * 0.75
+  const blockH = horizonY * 0.7
   const blockX = (w - blockW) / 2
-  const blockY = horizonY * 0.12
+  const blockY = horizonY * 0.08
 
   const fade = revealP < 0.12 ? revealP / 0.12
     : revealP > 0.85 ? (1 - revealP) / 0.15 : 1
   if (fade < 0.01) return
 
   ctx.save()
-  ctx.globalAlpha = fade
 
-  const starsP = clamp01(revealP / 0.35)
-  const linesP = clamp01((revealP - 0.2) / 0.35)
+  // Stagger: constellations appear one by one over the first 50% of the reveal
+  const starsP = clamp01(revealP / 0.50)
+  const linesP = clamp01((revealP - 0.15) / 0.40)
   const glowP = clamp01((revealP - 0.45) / 0.3)
 
+  // Draw constellation lines
   if (linesP > 0) {
-    ctx.strokeStyle = rgb([150, 180, 255], linesP * 0.25)
-    ctx.lineWidth = 0.8
-    const visibleLines = Math.floor(lines.length * linesP)
-    for (let i = 0; i < visibleLines; i++) {
+    ctx.lineWidth = 1
+    for (let i = 0; i < lines.length; i++) {
       const [a, b] = lines[i]
       const pa = points[a], pb = points[b]
+      // Stagger by constellation group
+      const groupDelay = pa.constellation * 0.12
+      const lineAlpha = clamp01((linesP - groupDelay) / 0.25)
+      if (lineAlpha <= 0) continue
+      ctx.strokeStyle = rgb([150, 180, 255], fade * lineAlpha * 0.3)
       ctx.beginPath()
       ctx.moveTo(blockX + pa.x * blockW, blockY + pa.y * blockH)
       ctx.lineTo(blockX + pb.x * blockW, blockY + pb.y * blockH)
@@ -333,29 +344,32 @@ function drawConstellationReveal(ctx, w, h, revealP, stop, data, sprites) {
     }
   }
 
+  // Draw stars
   if (starsP > 0) {
-    const visibleStars = Math.floor(points.length * starsP)
-    for (let i = 0; i < visibleStars; i++) {
+    for (let i = 0; i < points.length; i++) {
       const p = points[i]
+      const starAppear = clamp01((starsP - p.delay) / 0.2)
+      if (starAppear <= 0) continue
       const px = blockX + p.x * blockW
       const py = blockY + p.y * blockH
-      const twinkle = 0.6 + 0.4 * Math.sin(revealP * 30 + i * 2.5)
-      const s = (p.size + 1) * twinkle * 3
-      ctx.globalAlpha = fade * twinkle
+      const twinkle = 0.7 + 0.3 * Math.sin(revealP * 25 + i * 3.1)
+      const s = (p.size + 0.5) * twinkle * 2.5
+      ctx.globalAlpha = fade * starAppear * twinkle
       ctx.drawImage(sprites.starGlow, px - s, py - s, s * 2, s * 2)
     }
-    ctx.globalAlpha = fade
   }
 
+  // Draw text over constellations
   if (glowP > 0) {
     const fontSize = Math.min(w * 0.045, 48)
     const lineH = fontSize * 1.3
+    ctx.globalAlpha = 1
     ctx.font = `300 ${fontSize}px "Instrument Serif", Georgia, serif`
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
     ctx.shadowColor = 'rgba(150, 180, 255, 0.8)'
     ctx.shadowBlur = 20 * glowP
-    ctx.fillStyle = rgb([200, 220, 255], glowP * 0.9)
+    ctx.fillStyle = rgb([200, 220, 255], fade * glowP * 0.9)
 
     const textX = w / 2
     const textY = blockY + blockH * 0.3
@@ -366,13 +380,13 @@ function drawConstellationReveal(ctx, w, h, revealP, stop, data, sprites) {
     ctx.shadowBlur = 10 * glowP
     ctx.font = `700 ${Math.min(w * 0.012, 11)}px "Inter", sans-serif`
     ctx.letterSpacing = '0.2em'
-    ctx.fillStyle = rgb([150, 180, 255], glowP * 0.6)
+    ctx.fillStyle = rgb([150, 180, 255], fade * glowP * 0.6)
     ctx.fillText(stop.label, textX, textY - fontSize * 0.8)
     ctx.letterSpacing = '0'
 
     ctx.shadowBlur = 8 * glowP
     ctx.font = `400 ${Math.min(w * 0.016, 15)}px "Crimson Text", Georgia, serif`
-    ctx.fillStyle = rgb([180, 200, 240], glowP * 0.6)
+    ctx.fillStyle = rgb([180, 200, 240], fade * glowP * 0.6)
     ctx.fillText(stop.sub, textX, textY + stop.text.length * lineH + fontSize * 0.5)
 
     ctx.shadowBlur = 0
@@ -1604,9 +1618,7 @@ function HorizonJourney() {
       })
     }
 
-    const constellationPoints = sampleTextPixels(CONTENT_STOPS[0].text, 44, 5, 1000)
-    const constellationLines = computeConstellationLines(constellationPoints, 0.06, 350)
-    const constellation = { points: constellationPoints, lines: constellationLines }
+    const constellation = generateConstellations(1000)
 
     const cloudTargets = sampleTextPixels(CONTENT_STOPS[1].text, 42, 20, 2000)
     const cloudBlobs = generateCloudBlobs(cloudTargets, Math.max(cloudTargets.length, 30))
