@@ -423,7 +423,7 @@ function About() {
                 style={{ y: philosophyY }}
               >
                 <p className="statement-subtitle">Ask AI</p>
-                <StatementGiantText scrollYProgress={philosophyTextScroll} lineBreakAfter={3}>
+                <StatementGiantText scrollYProgress={philosophyTextScroll} lineBreakAfter={2}>
                   Don't take my word for it.
                 </StatementGiantText>
                 <p className="statement-paragraph">
