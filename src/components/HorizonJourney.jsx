@@ -173,6 +173,47 @@ function generateConstellations(seed) {
   return { points, lines, count: constellations.length }
 }
 
+// Sample text pixels — still used for cloud particle targets
+function sampleTextPixels(lines, fontSize, sampleStep, seed) {
+  const canvas = document.createElement('canvas')
+  const lineHeight = fontSize * 1.25
+  const padding = 10
+  canvas.width = 600
+  canvas.height = lineHeight * lines.length + padding * 2
+  const ctx = canvas.getContext('2d')
+
+  ctx.font = `300 ${fontSize}px Georgia, serif`
+  ctx.fillStyle = 'white'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'top'
+
+  lines.forEach((line, i) => {
+    ctx.fillText(line, canvas.width / 2, padding + i * lineHeight)
+  })
+
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+  const points = []
+  let idx = 0
+
+  for (let y = 0; y < canvas.height; y += sampleStep) {
+    for (let x = 0; x < canvas.width; x += sampleStep) {
+      if (imageData.data[(y * canvas.width + x) * 4 + 3] > 128) {
+        points.push({
+          x: x / canvas.width,
+          y: y / canvas.height,
+          sx: srand(seed + idx * 7) * 0.8 + 0.1,
+          sy: srand(seed + idx * 13) * 0.35 + 0.05,
+          size: 0.5 + srand(seed + idx * 19) * 1.5,
+          delay: srand(seed + idx * 29) * 0.3,
+        })
+        idx++
+      }
+    }
+  }
+
+  return points
+}
+
 // ═══════════════════════════════════════════
 // SCENE GENERATION
 // ═══════════════════════════════════════════
