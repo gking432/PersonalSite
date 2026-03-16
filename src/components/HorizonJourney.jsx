@@ -476,8 +476,9 @@ function drawCloudReveal(ctx, w, h, revealP, stop, data, sprites) {
 // ═══════════════════════════════════════════
 // REVEAL 3: SUN BEAM
 // ═══════════════════════════════════════════
-function drawSunBeamReveal(ctx, w, h, revealP, stop, sunX, sunY) {
+function drawSunBeamReveal(ctx, w, h, revealP, stop, sunX, sunY, sprites, time) {
   const horizonY = h * 0.46
+  const waterH = h - horizonY
 
   const fade = revealP < 0.1 ? revealP / 0.1
     : revealP > 0.85 ? (1 - revealP) / 0.15 : 1
@@ -550,6 +551,66 @@ function drawSunBeamReveal(ctx, w, h, revealP, stop, sunX, sunY) {
   ctx.shadowBlur = 0
   ctx.shadowColor = 'transparent'
   ctx.restore()
+
+  // ═══ WATER REFLECTION — same sunbeam sweep clip ═══
+  if (sprites && time !== undefined) {
+    const beamRevealAlpha = fade * easeOutCubic(clamp01(revealP / 0.7))
+    if (beamRevealAlpha < 0.01) return
+
+    const offscreen = sprites.reflectionCanvas
+    const offCtx = sprites.reflectionCtx
+    const offW = Math.min(w, 900)
+    const offH = fontSize * (stop.text.length + 1) * 1.5
+
+    offscreen.width = offW
+    offscreen.height = offH
+    offCtx.clearRect(0, 0, offW, offH)
+
+    offCtx.font = `300 ${fontSize}px "Instrument Serif", Georgia, serif`
+    offCtx.textAlign = 'center'
+    offCtx.textBaseline = 'top'
+    offCtx.fillStyle = rgb([200, 180, 130], 0.75)
+
+    const textYOff = fontSize * 0.5
+    stop.text.forEach((line, i) => {
+      offCtx.fillText(line, offW / 2, textYOff + i * lineH)
+    })
+
+    ctx.save()
+
+    // Clip to water area
+    ctx.beginPath()
+    ctx.rect(0, horizonY, w, waterH)
+    ctx.clip()
+
+    // Clip to mirrored beam sweep — fan from horizon intersection downward
+    const beamMargin = 20
+    ctx.beginPath()
+    ctx.moveTo(beamLeft - beamMargin, horizonY)
+    ctx.lineTo(beamRight + beamMargin, horizonY)
+    ctx.lineTo(beamRight + beamMargin + waterH * 0.3, h)
+    ctx.lineTo(beamLeft - beamMargin - waterH * 0.3, h)
+    ctx.closePath()
+    ctx.clip()
+
+    const destX = (w - offW) / 2
+    const destY = horizonY + waterH * 0.05
+    const stripH = 2
+
+    ctx.globalAlpha = beamRevealAlpha * 0.35
+
+    for (let y = 0; y < offH; y += stripH) {
+      const waveOffset = Math.sin(y * 0.08 + time * 1.6) * (3 + y * 0.05)
+      const srcY = offH - y - stripH
+      ctx.drawImage(
+        offscreen,
+        0, srcY, offW, stripH,
+        destX + waveOffset, destY + y, offW, stripH
+      )
+    }
+
+    ctx.restore()
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -1265,7 +1326,7 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
   const c2 = CONTENT_STOPS[2]
   const c2p = clamp01((progress - c2.at) / c2.duration)
   if (c2p > 0 && c2p < 1 && sunVisible) {
-    drawSunBeamReveal(ctx, w, h, c2p, c2, sunX, sunY)
+    drawSunBeamReveal(ctx, w, h, c2p, c2, sunX, sunY, sprites, time)
   }
 
   // ═══════ TREELINE ═══════
@@ -1361,6 +1422,10 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
     ]
 
     for (let i = 0; i < 4; i++) {
+      // Skip i === 2 (sunbeam) — its reflection is drawn inside drawSunBeamReveal
+      // with the matching beam sweep clip
+      if (i === 2) continue
+
       const stop = CONTENT_STOPS[i]
       const sp = clamp01((progress - stop.at) / stop.duration)
       if (sp <= 0 || sp >= 1) continue
@@ -1376,10 +1441,6 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
         const textP = easeOutCubic(clamp01((sp - 0.30) / 0.15))
         const disperseP = easeInOutCubic(clamp01((sp - 0.75) / 0.25))
         alpha = fade * textP * (1 - disperseP) * 0.9
-      } else if (i === 2) {
-        const fade = sp < 0.1 ? sp / 0.1 : sp > 0.85 ? (1 - sp) / 0.15 : 1
-        const beamReveal = easeOutCubic(clamp01(sp / 0.7))
-        alpha = fade * beamReveal
       } else if (i === 3) {
         const fade = sp < 0.06 ? sp / 0.06 : sp > 0.88 ? (1 - sp) / 0.12 : 1
         const clearance = easeInOutCubic(clamp01((sp - 0.15) / 0.50))
