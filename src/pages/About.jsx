@@ -286,8 +286,8 @@ function About() {
         </div>
       </section>
 
-      {/* ═══════ MY STORY — Centered editorial ═══════ */}
-      <section className="my-story-section" id="my-story">
+      {/* ═══════ MY STORY — Centered editorial in squeeze container ═══════ */}
+      <SqueezeSection className="my-story-section" id="my-story">
         <div className="my-story-inner">
           <motion.div
             className="my-story-header"
@@ -358,7 +358,7 @@ function About() {
             )
           })}
         </div>
-      </section>
+      </SqueezeSection>
 
       {/* ═══════ GLOBE — Visual journey through career ═══════ */}
       <GlobeSection />
