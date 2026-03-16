@@ -74,23 +74,13 @@ Reads like a biography in a private club's member directory
   border-bottom-color: var(--hunter-green);
 }
 
-/* ═══════ MY STORY — Full-bleed magazine takeover ═══════ */
+/* ═══════ MY STORY — Editorial long-form ═══════ */
 .my-story-section {
-  position: relative;
-  padding: clamp(80px, 12vh, 160px) 0 clamp(100px, 15vh, 200px);
-  background-color: var(--charcoal);
-  color: var(--cream);
-  /* Full bleed — break out of any parent padding */
-  margin-left: calc(-50vw + 50%);
-  margin-right: calc(-50vw + 50%);
-  width: 100vw;
+  padding: var(--space-3xl) 0;
 }
 
 .my-story-header {
-  max-width: var(--max-width-text);
-  margin: 0 auto clamp(48px, 6vh, 80px);
-  padding: 0 var(--space-lg);
-  text-align: center;
+  margin-bottom: var(--space-xl);
 }
 
 .my-story-label {
@@ -99,46 +89,43 @@ Reads like a biography in a private club's member directory
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(244, 241, 234, 0.45);
-  margin-bottom: var(--space-md);
+  color: var(--warm-gray);
+  margin-bottom: var(--space-sm);
 }
 
 .my-story-headline {
-  font-family: var(--font-display);
-  font-size: clamp(4rem, 12vw, 9rem);
-  font-weight: 700;
-  line-height: 0.9;
-  letter-spacing: -0.04em;
-  color: var(--cream);
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--charcoal);
 }
 
 .my-story-divider {
   width: 60px;
   height: 1px;
-  background: rgba(244, 241, 234, 0.2);
-  margin: clamp(32px, 4vh, 56px) auto 0;
+  background: rgba(0, 0, 0, 0.12);
+  margin-top: var(--space-lg);
 }
 
 .my-story-content {
   max-width: var(--max-width-text);
-  margin: 0 auto;
-  padding: 0 var(--space-lg);
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
 }
 
 .my-story-content p {
-  font-size: 1.1rem;
-  line-height: 1.85;
-  color: rgba(244, 241, 234, 0.85);
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--slate);
 }
 
 .my-story-content p:first-child {
   font-family: var(--font-serif);
-  font-size: 1.35rem;
+  font-size: 1.3rem;
   line-height: 1.7;
-  color: var(--cream);
+  color: var(--charcoal);
 }
 
 /* Drop cap on the first paragraph */
@@ -149,21 +136,21 @@ Reads like a biography in a private club's member directory
   line-height: 0.75;
   margin-right: 12px;
   margin-top: 8px;
-  color: var(--cream);
+  color: var(--charcoal);
   font-weight: 700;
 }
 
 .my-story-content p em {
   font-style: italic;
-  color: rgba(244, 241, 234, 0.9);
+  color: var(--charcoal);
 }
 
 /* Short punchy paragraphs get emphasis */
 .my-story-content p.story-emphasis {
   font-family: var(--font-serif);
-  font-size: 1.4rem;
+  font-size: 1.35rem;
   line-height: 1.6;
-  color: var(--cream);
+  color: var(--charcoal);
   font-style: italic;
 }
 
