@@ -80,6 +80,30 @@ Reads like a biography in a private club's member directory
   border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
+.my-story-header {
+  max-width: var(--max-width-text);
+  margin: 0 auto var(--space-xl);
+}
+
+.my-story-label {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin-bottom: var(--space-sm);
+}
+
+.my-story-headline {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  color: var(--charcoal);
+}
+
 .my-story-content {
   max-width: var(--max-width-text);
   margin: 0 auto;

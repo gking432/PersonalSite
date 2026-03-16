@@ -178,9 +178,25 @@ const storyParagraphs = [
 ]
 
 function About() {
+  const heroRef = useRef(null)
   const processRef = useRef(null)
   const statementRef = useRef(null)
   const philosophyRef = useRef(null)
+
+  // Hero fade-out as user scrolls toward My Story
+  const { scrollYProgress: heroScroll } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"]
+  })
+  const heroOpacity = useTransform(heroScroll, [0.5, 0.85], [1, 0])
+
+  // My Story fade-in as hero fades out
+  const storyRef = useRef(null)
+  const { scrollYProgress: storyScroll } = useScroll({
+    target: storyRef,
+    offset: ["start end", "start 0.3"]
+  })
+  const storyOpacity = useTransform(storyScroll, [0, 1], [0, 1])
 
   const { scrollYProgress: processScroll } = useScroll({
     target: processRef,
@@ -211,7 +227,7 @@ function About() {
   return (
     <PageTransition>
     <div className="about">
-      <section className="about-hero section">
+      <motion.section className="about-hero section" ref={heroRef} style={{ opacity: heroOpacity }}>
         <div className="container">
           <div className="hero-split">
             <div className="hero-split-left">
@@ -221,10 +237,10 @@ function About() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: ndsEase }}
               >
-                About
+                Introduction
               </motion.p>
               <h1>
-                {'My Story'.split('').map((char, i) => (
+                {'About Me'.split('').map((char, i) => (
                   <motion.span
                     key={i}
                     style={{ display: 'inline-block' }}
@@ -283,11 +299,21 @@ function About() {
             </motion.div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ═══════ MY STORY — Editorial long-form ═══════ */}
-      <section className="my-story-section section" id="my-story">
+      <motion.section className="my-story-section section" id="my-story" ref={storyRef} style={{ opacity: storyOpacity }}>
         <div className="container">
+          <motion.div
+            className="my-story-header"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.7, ease: ndsEase }}
+          >
+            <p className="my-story-label">The Full Story</p>
+            <h2 className="my-story-headline">My Story</h2>
+          </motion.div>
           <motion.div
             className="my-story-content"
             initial="hidden"
@@ -302,7 +328,7 @@ function About() {
             ))}
           </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ═══════ GLOBE — Visual journey through career ═══════ */}
       <GlobeSection />
