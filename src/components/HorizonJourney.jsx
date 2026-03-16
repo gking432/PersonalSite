@@ -1378,7 +1378,8 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
         alpha = fade * textP * (1 - disperseP) * 0.9
       } else if (i === 2) {
         const fade = sp < 0.1 ? sp / 0.1 : sp > 0.85 ? (1 - sp) / 0.15 : 1
-        alpha = fade
+        const beamReveal = easeOutCubic(clamp01(sp / 0.7))
+        alpha = fade * beamReveal
       } else if (i === 3) {
         const fade = sp < 0.06 ? sp / 0.06 : sp > 0.88 ? (1 - sp) / 0.12 : 1
         const clearance = easeInOutCubic(clamp01((sp - 0.15) / 0.50))
