@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from 'react'
+import { useRef, useEffect } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
 import SqueezeSection from '../components/SqueezeSection'
@@ -178,117 +178,6 @@ const storyBlocks = [
   { text: 'I\'m looking for a team that values strategic thinking, bias toward action, and the ambition to build something that matters. If that sounds like your team, I\'d love to hear from you.' },
 ]
 
-// Timeline milestones — positioned as fraction of story scroll (0–1)
-const MILESTONES = [
-  { at: 0.0,  label: 'Sub-Zero Group', year: '2019' },
-  { at: 0.18, label: 'Going Solo', year: '2021' },
-  { at: 0.38, label: 'Agency Growth', year: '2022' },
-  { at: 0.55, label: 'AI Disruption', year: '2023' },
-  { at: 0.80, label: 'Builder Era', year: '2024' },
-  { at: 1.0,  label: 'What\'s Next', year: '—' },
-]
-
-function drawTimeline(ctx, w, h, progress, time) {
-  ctx.clearRect(0, 0, w, h)
-
-  const padTop = h * 0.08
-  const padBot = h * 0.08
-  const trackH = h - padTop - padBot
-  const trackX = w * 0.5
-
-  // ── Drawn path (vertical line that extends with scroll) ──
-  const drawnY = padTop + trackH * progress
-
-  // Faint full track
-  ctx.strokeStyle = 'rgba(244, 241, 234, 0.06)'
-  ctx.lineWidth = 1
-  ctx.beginPath()
-  ctx.moveTo(trackX, padTop)
-  ctx.lineTo(trackX, padTop + trackH)
-  ctx.stroke()
-
-  // Active drawn line — glowing
-  if (progress > 0.001) {
-    // Glow layer
-    ctx.strokeStyle = 'rgba(244, 241, 234, 0.12)'
-    ctx.lineWidth = 6
-    ctx.beginPath()
-    ctx.moveTo(trackX, padTop)
-    ctx.lineTo(trackX, drawnY)
-    ctx.stroke()
-
-    // Core line
-    ctx.strokeStyle = 'rgba(244, 241, 234, 0.35)'
-    ctx.lineWidth = 1.5
-    ctx.beginPath()
-    ctx.moveTo(trackX, padTop)
-    ctx.lineTo(trackX, drawnY)
-    ctx.stroke()
-  }
-
-  // ── Milestones ──
-  for (let i = 0; i < MILESTONES.length; i++) {
-    const m = MILESTONES[i]
-    const my = padTop + trackH * m.at
-    const reached = progress >= m.at - 0.01
-    const isActive = reached && (i === MILESTONES.length - 1 || progress < MILESTONES[i + 1].at - 0.01)
-
-    // Node
-    const baseR = 3
-    const pulseR = isActive ? baseR + Math.sin(time * 3) * 1.5 + 1.5 : 0
-    const nodeR = baseR + pulseR
-
-    if (reached) {
-      // Glow
-      if (isActive) {
-        const glow = ctx.createRadialGradient(trackX, my, 0, trackX, my, nodeR * 6)
-        glow.addColorStop(0, 'rgba(244, 241, 234, 0.15)')
-        glow.addColorStop(0.5, 'rgba(244, 241, 234, 0.04)')
-        glow.addColorStop(1, 'rgba(244, 241, 234, 0)')
-        ctx.fillStyle = glow
-        ctx.fillRect(trackX - nodeR * 6, my - nodeR * 6, nodeR * 12, nodeR * 12)
-      }
-
-      // Filled node
-      ctx.beginPath()
-      ctx.arc(trackX, my, nodeR, 0, Math.PI * 2)
-      ctx.fillStyle = isActive ? 'rgba(244, 241, 234, 0.9)' : 'rgba(244, 241, 234, 0.4)'
-      ctx.fill()
-    } else {
-      // Empty node
-      ctx.beginPath()
-      ctx.arc(trackX, my, baseR, 0, Math.PI * 2)
-      ctx.strokeStyle = 'rgba(244, 241, 234, 0.12)'
-      ctx.lineWidth = 1
-      ctx.stroke()
-    }
-
-    // Label + year
-    const labelAlpha = isActive ? 0.9 : reached ? 0.35 : 0.1
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'bottom'
-
-    ctx.font = `600 ${Math.min(w * 0.08, 11)}px "Inter", -apple-system, sans-serif`
-    ctx.letterSpacing = '0.08em'
-    ctx.fillStyle = `rgba(244, 241, 234, ${labelAlpha * 0.5})`
-    ctx.fillText(m.year, trackX, my - nodeR - 14)
-    ctx.letterSpacing = '0'
-
-    ctx.font = `500 ${Math.min(w * 0.1, 13)}px "Inter", -apple-system, sans-serif`
-    ctx.fillStyle = `rgba(244, 241, 234, ${labelAlpha})`
-    ctx.fillText(m.label, trackX, my - nodeR - 2)
-  }
-
-  // ── Scroll indicator dot (current position) ──
-  if (progress > 0.01 && progress < 0.99) {
-    const dotR = 2 + Math.sin(time * 4) * 0.5
-    ctx.beginPath()
-    ctx.arc(trackX, drawnY, dotR, 0, Math.PI * 2)
-    ctx.fillStyle = 'rgba(244, 241, 234, 0.7)'
-    ctx.fill()
-  }
-}
-
 function renderStoryText(text, highlight) {
   if (!highlight) return text
   const match = text.match(/^(.*?)\{(.*?)\}(.*)$/s)
@@ -306,10 +195,6 @@ function renderStoryText(text, highlight) {
 function About() {
   const storyRunwayRef = useRef(null)
   const storyContentRef = useRef(null)
-  const timelineCanvasRef = useRef(null)
-  const timelineContainerRef = useRef(null)
-  const storyProgressRef = useRef(0)
-  const timelineAnimRef = useRef(null)
   const processRef = useRef(null)
   const statementRef = useRef(null)
   const philosophyRef = useRef(null)
@@ -322,7 +207,6 @@ function About() {
 
   const storyContentY = useTransform(storyScroll, (v) => {
     if (!storyContentRef.current) return 0
-    storyProgressRef.current = v
     const contentH = storyContentRef.current.offsetHeight
     const containerH = window.innerHeight * 0.85
     return -v * Math.max(0, contentH - containerH)
@@ -341,43 +225,6 @@ function About() {
     const t = setTimeout(update, 150)
     window.addEventListener('resize', update)
     return () => { clearTimeout(t); window.removeEventListener('resize', update) }
-  }, [])
-
-  // Timeline canvas animation loop — runs continuously for node pulse
-  useEffect(() => {
-    const canvas = timelineCanvasRef.current
-    const container = timelineContainerRef.current
-    if (!canvas || !container) return
-
-    const ctx = canvas.getContext('2d')
-    const dpr = window.devicePixelRatio || 1
-
-    function resize() {
-      const cw = container.clientWidth
-      const ch = container.clientHeight
-      canvas.width = cw * dpr
-      canvas.height = ch * dpr
-      canvas.style.width = cw + 'px'
-      canvas.style.height = ch + 'px'
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-    }
-
-    resize()
-    window.addEventListener('resize', resize)
-
-    function render() {
-      const cw = container.clientWidth
-      const ch = container.clientHeight
-      const time = performance.now() * 0.001
-      drawTimeline(ctx, cw, ch, storyProgressRef.current, time)
-      timelineAnimRef.current = requestAnimationFrame(render)
-    }
-    render()
-
-    return () => {
-      window.removeEventListener('resize', resize)
-      if (timelineAnimRef.current) cancelAnimationFrame(timelineAnimRef.current)
-    }
   }, [])
 
   const { scrollYProgress: processScroll } = useScroll({
@@ -483,37 +330,27 @@ function About() {
         </div>
       </section>
 
-      {/* ═══════ MY STORY — Two-column scroll-through squeeze ═══════ */}
+      {/* ═══════ MY STORY — Scroll-through squeeze container ═══════ */}
       <div ref={storyRunwayRef} className="story-scroll-runway" id="my-story">
         <div className="story-sticky-wrapper">
           <SqueezeSection className="my-story-section">
-            <div className="my-story-columns">
-              {/* Left — scrolling text */}
-              <div className="my-story-text-col">
-                <motion.div
-                  className="my-story-inner"
-                  ref={storyContentRef}
-                  style={{ y: storyContentY }}
-                >
-                  <div className="my-story-header">
-                    <p className="my-story-label">The Full Story</p>
-                    <h2 className="my-story-headline">My Story</h2>
-                    <div className="my-story-divider" />
-                  </div>
-
-                  {storyBlocks.map((block, i) => (
-                    <p key={i} className={`story-body${block.first ? ' story-first' : ''}`}>
-                      {renderStoryText(block.text, block.highlight)}
-                    </p>
-                  ))}
-                </motion.div>
+            <motion.div
+              className="my-story-inner"
+              ref={storyContentRef}
+              style={{ y: storyContentY }}
+            >
+              <div className="my-story-header">
+                <p className="my-story-label">The Full Story</p>
+                <h2 className="my-story-headline">My Story</h2>
+                <div className="my-story-divider" />
               </div>
 
-              {/* Right — timeline canvas */}
-              <div className="my-story-timeline-col" ref={timelineContainerRef}>
-                <canvas ref={timelineCanvasRef} className="story-timeline-canvas" />
-              </div>
-            </div>
+              {storyBlocks.map((block, i) => (
+                <p key={i} className={`story-body${block.first ? ' story-first' : ''}`}>
+                  {renderStoryText(block.text, block.highlight)}
+                </p>
+              ))}
+            </motion.div>
           </SqueezeSection>
         </div>
       </div>

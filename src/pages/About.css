@@ -105,43 +105,19 @@ Reads like a biography in a private club's member directory
   overflow: hidden;
   background-color: #2c2825;
   padding: 0;
-}
-
-.my-story-columns {
   display: flex;
-  width: 100%;
-  height: 100%;
-}
-
-.my-story-text-col {
-  flex: 1 1 65%;
-  overflow: hidden;
-  position: relative;
-}
-
-.my-story-timeline-col {
-  flex: 0 0 180px;
-  position: relative;
-  border-left: 1px solid rgba(244, 241, 234, 0.04);
-}
-
-.story-timeline-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  align-items: flex-start;
 }
 
 .my-story-inner {
-  max-width: 620px;
+  max-width: 720px;
   margin: 0 auto;
-  padding: var(--space-2xl) var(--space-xl) var(--space-3xl) var(--space-lg);
+  padding: var(--space-2xl) var(--space-lg) var(--space-3xl);
   will-change: transform;
 }
 
 .my-story-header {
-  text-align: left;
+  text-align: center;
   margin-bottom: var(--space-2xl);
 }
 
@@ -167,7 +143,7 @@ Reads like a biography in a private club's member directory
   width: 60px;
   height: 1px;
   background: rgba(244, 241, 234, 0.15);
-  margin: var(--space-lg) 0 0;
+  margin: var(--space-lg) auto 0;
 }
 
 /* Body paragraphs — light text on dark */
@@ -642,26 +618,6 @@ Reads like a biography in a private club's member directory
   .process-number {
     min-width: auto;
     font-size: clamp(3rem, 12vw, 4rem);
-  }
-
-  .my-story-timeline-col {
-    display: none;
-  }
-
-  .my-story-text-col {
-    flex: 1 1 100%;
-  }
-
-  .my-story-inner {
-    padding: var(--space-xl) var(--space-md) var(--space-2xl);
-  }
-
-  .my-story-header {
-    text-align: center;
-  }
-
-  .my-story-divider {
-    margin: var(--space-lg) auto 0;
   }
 
   .statement-section {
