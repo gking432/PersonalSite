@@ -882,7 +882,7 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites, time) {
 // GENERIC TEXT WATER REFLECTION
 // Draws wavy water reflection for any text content
 // ═══════════════════════════════════════════
-function drawTextWaterReflection(ctx, w, h, textLines, fontSize, alpha, color, sprites, time, clipLeftEdge) {
+function drawTextWaterReflection(ctx, w, h, textLines, fontSize, alpha, color, sprites, time, clipOpts) {
   if (alpha < 0.01) return
   const horizonY = h * 0.46
   const waterH = h - horizonY
@@ -908,12 +908,30 @@ function drawTextWaterReflection(ctx, w, h, textLines, fontSize, alpha, color, s
   })
 
   ctx.save()
+
+  // Build clip path that excludes incoming reveal regions
   ctx.beginPath()
-  // If clipLeftEdge is set, only draw to the RIGHT of that x position
-  const clipX = clipLeftEdge != null ? clipLeftEdge : 0
-  const clipW = clipLeftEdge != null ? w - clipLeftEdge : w
-  ctx.rect(clipX, horizonY, clipW, waterH)
-  ctx.clip()
+  if (clipOpts) {
+    if (clipOpts.leftEdge != null) {
+      // Horizontal sweep wipe — only show to the RIGHT of the edge
+      ctx.rect(clipOpts.leftEdge, horizonY, w - clipOpts.leftEdge, waterH)
+    } else if (clipOpts.beamExclude) {
+      // Beam exclusion — show everything EXCEPT the beam trapezoid
+      // Draw outer rect clockwise, then beam trapezoid counter-clockwise (hole)
+      const b = clipOpts.beamExclude
+      ctx.rect(0, horizonY, w, waterH)
+      ctx.moveTo(b.topRight, horizonY)
+      ctx.lineTo(b.topLeft, horizonY)
+      ctx.lineTo(b.bottomLeft, horizonY + waterH)
+      ctx.lineTo(b.bottomRight, horizonY + waterH)
+      ctx.closePath()
+    } else {
+      ctx.rect(0, horizonY, w, waterH)
+    }
+  } else {
+    ctx.rect(0, horizonY, w, waterH)
+  }
+  ctx.clip('evenodd')
 
   const destX = (w - offW) / 2
   const destY = horizonY + waterH * 0.05
@@ -1503,9 +1521,29 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
     // Compute reflection reveal sweep edge so old reflections clip against it
     const c4Early = CONTENT_STOPS[4]
     const c4pEarly = clamp01((progress - c4Early.at) / c4Early.duration)
-    const sweepEdge = c4pEarly > 0
+    const reflSweepEdge = c4pEarly > 0
       ? easeInOutCubic(clamp01(c4pEarly < 0.5 ? c4pEarly / 0.5 : 1)) * w
       : null
+
+    // Compute sunbeam beam geometry so overlapping reflections clip outside it
+    const sbStopEarly = CONTENT_STOPS[2]
+    const sbPEarly = clamp01((progress - sbStopEarly.at) / sbStopEarly.duration)
+    const beamMargin = 20
+    let beamExclude = null
+    if (sbPEarly > 0 && sbPEarly < 1) {
+      const textX = w * 0.5
+      const beamWidth = w * 0.35 * easeOutCubic(clamp01(sbPEarly / 0.7))
+      const beamLeft = textX - w * 0.2
+      const beamRight = beamLeft + beamWidth
+      const horizonY = h * 0.46
+      const waterH = h - horizonY
+      beamExclude = {
+        topLeft: beamLeft - beamMargin,
+        topRight: beamRight + beamMargin,
+        bottomLeft: beamLeft - beamMargin - waterH * 0.3,
+        bottomRight: beamRight + beamMargin + waterH * 0.3,
+      }
+    }
 
     for (let i = 0; i < 4; i++) {
       // Skip i === 2 (sunbeam) — its reflection is drawn inside drawSunBeamReveal
@@ -1535,10 +1573,18 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
 
       if (alpha < 0.01) continue
 
-      // Old reflections clip to the right of the sweep edge
+      // Determine clip: beam exclusion for stops overlapping sunbeam,
+      // sweep edge for stops overlapping reflection reveal
+      let clipOpts = null
+      if (reflSweepEdge != null) {
+        clipOpts = { leftEdge: reflSweepEdge }
+      } else if (beamExclude && (i === 0 || i === 1)) {
+        clipOpts = { beamExclude }
+      }
+
       drawTextWaterReflection(
         ctx, w, h, stop.text, refFontSizes[i], alpha,
-        refColors[i], sprites, time, sweepEdge
+        refColors[i], sprites, time, clipOpts
       )
     }
 
