@@ -882,7 +882,7 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites, time) {
 // GENERIC TEXT WATER REFLECTION
 // Draws wavy water reflection for any text content
 // ═══════════════════════════════════════════
-function drawTextWaterReflection(ctx, w, h, textLines, fontSize, alpha, color, sprites, time, clipOpts) {
+function drawTextWaterReflection(ctx, w, h, textLines, fontSize, alpha, color, sprites, time, sweepClipX) {
   if (alpha < 0.01) return
   const horizonY = h * 0.46
   const waterH = h - horizonY
@@ -908,30 +908,14 @@ function drawTextWaterReflection(ctx, w, h, textLines, fontSize, alpha, color, s
   })
 
   ctx.save()
-
-  // Build clip path that excludes incoming reveal regions
   ctx.beginPath()
-  if (clipOpts) {
-    if (clipOpts.leftEdge != null) {
-      // Horizontal sweep wipe — only show to the RIGHT of the edge
-      ctx.rect(clipOpts.leftEdge, horizonY, w - clipOpts.leftEdge, waterH)
-    } else if (clipOpts.beamExclude) {
-      // Beam exclusion — show everything EXCEPT the beam trapezoid
-      // Draw outer rect clockwise, then beam trapezoid counter-clockwise (hole)
-      const b = clipOpts.beamExclude
-      ctx.rect(0, horizonY, w, waterH)
-      ctx.moveTo(b.topRight, horizonY)
-      ctx.lineTo(b.topLeft, horizonY)
-      ctx.lineTo(b.bottomLeft, horizonY + waterH)
-      ctx.lineTo(b.bottomRight, horizonY + waterH)
-      ctx.closePath()
-    } else {
-      ctx.rect(0, horizonY, w, waterH)
-    }
+  if (sweepClipX != null && sweepClipX > 0) {
+    // Only draw to the RIGHT of the sweep edge — new text claims the left
+    ctx.rect(sweepClipX, horizonY, w - sweepClipX, waterH)
   } else {
     ctx.rect(0, horizonY, w, waterH)
   }
-  ctx.clip('evenodd')
+  ctx.clip()
 
   const destX = (w - offW) / 2
   const destY = horizonY + waterH * 0.05
@@ -1518,31 +1502,23 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
       Math.min(w * 0.048, 50),
     ]
 
-    // Compute reflection reveal sweep edge so old reflections clip against it
+    // Compute sweep edges from incoming reveals so old reflections wipe out
+    // Reflection reveal (stop 4): left-to-right sweep
     const c4Early = CONTENT_STOPS[4]
     const c4pEarly = clamp01((progress - c4Early.at) / c4Early.duration)
-    const reflSweepEdge = c4pEarly > 0
+    const reflSweepX = c4pEarly > 0
       ? easeInOutCubic(clamp01(c4pEarly < 0.5 ? c4pEarly / 0.5 : 1)) * w
-      : null
+      : 0
 
-    // Compute sunbeam beam geometry so overlapping reflections clip outside it
+    // Sunbeam (stop 2): beam sweeps from left — use full beam width as wipe edge
+    // The beam covers from beamLeft to beamRight; old reflections clip to the RIGHT of beamRight
     const sbStopEarly = CONTENT_STOPS[2]
     const sbPEarly = clamp01((progress - sbStopEarly.at) / sbStopEarly.duration)
-    const beamMargin = 20
-    let beamExclude = null
+    let beamSweepX = 0
     if (sbPEarly > 0 && sbPEarly < 1) {
-      const textX = w * 0.5
       const beamWidth = w * 0.35 * easeOutCubic(clamp01(sbPEarly / 0.7))
-      const beamLeft = textX - w * 0.2
-      const beamRight = beamLeft + beamWidth
-      const horizonY = h * 0.46
-      const waterH = h - horizonY
-      beamExclude = {
-        topLeft: beamLeft - beamMargin,
-        topRight: beamRight + beamMargin,
-        bottomLeft: beamLeft - beamMargin - waterH * 0.3,
-        bottomRight: beamRight + beamMargin + waterH * 0.3,
-      }
+      const beamLeft = w * 0.5 - w * 0.2
+      beamSweepX = beamLeft + beamWidth + 20  // +margin to match beam clip
     }
 
     for (let i = 0; i < 4; i++) {
@@ -1573,18 +1549,17 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
 
       if (alpha < 0.01) continue
 
-      // Determine clip: beam exclusion for stops overlapping sunbeam,
-      // sweep edge for stops overlapping reflection reveal
-      let clipOpts = null
-      if (reflSweepEdge != null) {
-        clipOpts = { leftEdge: reflSweepEdge }
-      } else if (beamExclude && (i === 0 || i === 1)) {
-        clipOpts = { beamExclude }
+      // Pick the active sweep edge that should push this reflection out
+      let sweepClipX = null
+      if (reflSweepX > 0) {
+        sweepClipX = reflSweepX
+      } else if (beamSweepX > 0 && (i === 0 || i === 1)) {
+        sweepClipX = beamSweepX
       }
 
       drawTextWaterReflection(
         ctx, w, h, stop.text, refFontSizes[i], alpha,
-        refColors[i], sprites, time, clipOpts
+        refColors[i], sprites, time, sweepClipX
       )
     }
 
