@@ -1490,6 +1490,13 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
       Math.min(w * 0.048, 50),
     ]
 
+    // Compute reflection reveal progress early so old reflections can fade out
+    const c4Early = CONTENT_STOPS[4]
+    const c4pEarly = clamp01((progress - c4Early.at) / c4Early.duration)
+    const reflRevealFade = c4pEarly > 0
+      ? easeInOutCubic(clamp01(c4pEarly < 0.5 ? c4pEarly / 0.5 : 1))
+      : 0
+
     for (let i = 0; i < 4; i++) {
       // Skip i === 2 (sunbeam) — its reflection is drawn inside drawSunBeamReveal
       // with the matching beam sweep clip
@@ -1515,6 +1522,9 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
         const clearance = easeInOutCubic(clamp01((sp - 0.15) / 0.50))
         alpha = fade * clearance
       }
+
+      // Fade out old reflections as the reflection reveal sweeps in
+      alpha *= (1 - reflRevealFade)
 
       if (alpha < 0.01) continue
 
