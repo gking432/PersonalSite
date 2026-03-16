@@ -78,6 +78,7 @@ Reads like a biography in a private club's member directory
 .story-scroll-runway {
   position: relative;
   min-height: 300vh; /* fallback before JS measurement */
+  margin-top: var(--space-3xl);
 }
 
 .story-sticky-wrapper {
@@ -172,7 +173,7 @@ Reads like a biography in a private club's member directory
   font-weight: 700;
 }
 
-/* Pull quotes — break out wider */
+/* Pull quotes — inline large italic, flows with body text */
 .story-pull-quote {
   font-family: var(--font-serif);
   font-size: clamp(1.6rem, 3.5vw, 2.4rem);
@@ -180,15 +181,10 @@ Reads like a biography in a private club's member directory
   font-style: italic;
   line-height: 1.3;
   color: var(--cream);
-  text-align: center;
-  padding: var(--space-xl) 0;
-  margin: var(--space-lg) calc(-1 * var(--space-xl));
-  border-top: 1px solid rgba(244, 241, 234, 0.1);
-  border-bottom: 1px solid rgba(244, 241, 234, 0.1);
-  position: relative;
+  margin-bottom: var(--space-md);
 }
 
-/* Moment — giant display text, full stop */
+/* Moment — inline giant display text, flows with body text */
 .story-moment {
   font-family: var(--font-display);
   font-size: clamp(2.5rem, 7vw, 5rem);
@@ -196,9 +192,7 @@ Reads like a biography in a private club's member directory
   line-height: 1.05;
   letter-spacing: -0.03em;
   color: var(--cream);
-  text-align: center;
-  padding: var(--space-xl) 0;
-  margin: var(--space-lg) calc(-1 * var(--space-xl));
+  margin-bottom: var(--space-md);
 }
 
 /* Emphasis — italic serif, slightly larger */
