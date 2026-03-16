@@ -178,25 +178,9 @@ const storyParagraphs = [
 ]
 
 function About() {
-  const heroRef = useRef(null)
   const processRef = useRef(null)
   const statementRef = useRef(null)
   const philosophyRef = useRef(null)
-
-  // Hero fades out immediately when scrolling begins
-  const { scrollYProgress: heroScroll } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"]
-  })
-  const heroOpacity = useTransform(heroScroll, [0, 0.35], [1, 0])
-
-  // My Story fades in as hero disappears
-  const storyRef = useRef(null)
-  const { scrollYProgress: storyScroll } = useScroll({
-    target: storyRef,
-    offset: ["start end", "start 0.4"]
-  })
-  const storyOpacity = useTransform(storyScroll, [0.3, 1], [0, 1])
 
   const { scrollYProgress: processScroll } = useScroll({
     target: processRef,
@@ -227,7 +211,7 @@ function About() {
   return (
     <PageTransition>
     <div className="about">
-      <motion.section className="about-hero section" ref={heroRef} style={{ opacity: heroOpacity }}>
+      <section className="about-hero section">
         <div className="container">
           <div className="hero-split">
             <div className="hero-split-left">
@@ -299,10 +283,10 @@ function About() {
             </motion.div>
           </div>
         </div>
-      </motion.section>
+      </section>
 
       {/* ═══════ MY STORY — Editorial long-form ═══════ */}
-      <motion.section className="my-story-section section" id="my-story" ref={storyRef} style={{ opacity: storyOpacity }}>
+      <section className="my-story-section section" id="my-story">
         <div className="container">
           <motion.div
             className="my-story-header"
@@ -337,7 +321,7 @@ function About() {
             })}
           </motion.div>
         </div>
-      </motion.section>
+      </section>
 
       {/* ═══════ GLOBE — Visual journey through career ═══════ */}
       <GlobeSection />

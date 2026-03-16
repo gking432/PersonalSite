@@ -8,24 +8,8 @@ Reads like a biography in a private club's member directory
   padding-top: 80px;
 }
 
-/* Everything after the sticky hero must stack above it with opaque backgrounds */
-.about > *:not(.about-hero):not(.globe-section) {
-  position: relative;
-  z-index: 1;
-  background-color: var(--parchment);
-}
-
-/* Globe section needs z-index but transparent bg (it uses a fixed dark backdrop) */
-.about > .globe-section {
-  position: relative;
-  z-index: 1;
-}
-
 /* ═══════ HERO ═══════ */
 .about-hero {
-  position: sticky;
-  top: 80px;
-  z-index: 0;
   min-height: 60vh;
   display: flex;
   align-items: flex-start;
@@ -93,7 +77,6 @@ Reads like a biography in a private club's member directory
 /* ═══════ MY STORY — Full-bleed magazine takeover ═══════ */
 .my-story-section {
   position: relative;
-  z-index: 1;
   padding: clamp(80px, 12vh, 160px) 0 clamp(100px, 15vh, 200px);
   background-color: var(--charcoal);
   color: var(--cream);
@@ -148,14 +131,14 @@ Reads like a biography in a private club's member directory
 .my-story-content p {
   font-size: 1.1rem;
   line-height: 1.85;
-  color: rgba(244, 241, 234, 0.7);
+  color: rgba(244, 241, 234, 0.85);
 }
 
 .my-story-content p:first-child {
   font-family: var(--font-serif);
   font-size: 1.35rem;
   line-height: 1.7;
-  color: rgba(244, 241, 234, 0.9);
+  color: var(--cream);
 }
 
 /* Drop cap on the first paragraph */
