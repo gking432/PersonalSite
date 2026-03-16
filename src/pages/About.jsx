@@ -1,5 +1,5 @@
-import { useRef } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { useRef, useState, useCallback } from 'react'
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
 import SqueezeSection from '../components/SqueezeSection'
 import GlobeSection from '../../GlobeSection'
@@ -157,30 +157,63 @@ function ProcessStep({ step, scrollYProgress, index, total }) {
   )
 }
 
-const storyParagraphs = [
+// Intro paragraphs — always visible below the hero
+const storyIntro = [
   'I started my career with Sub-Zero Group, Inc. in a rotating program that took me through sales operations, product marketing, product launch, and external dealer sales. It was a masterclass in how premium brands are built and maintained at scale. I saw firsthand how product ideas sweep through markets, how distribution works on a national level, and how marketing, sales, and product must align for a brand to thrive.',
   'Working inside a company functioning at the highest level gave me an appreciation for the operational side of growth; how strategy translates into real revenue through sales teams, distribution networks, and a disciplined brand/product relationship.',
-  'As the rotational program came to an end, I decided to take a risk and bet on myself.',
-  'I started doing freelance marketing work, which turned into a small but legitimate agency. I found myself sitting across the table from aspiring entrepreneurs, trying to figure out how to bring their ideas to life. We\'d talk branding, campaigns, websites, and customer acquisition, always eager to start something new.',
-  'That was the first time I realized what kind of work I actually love.',
-  'It wasn\'t the deliverables. It wasn\'t being my own boss. It was building.',
-  'The brainstorming sessions, the strategy pivots, and the moment a client saw their idea start to take shape made all the late nights, repetitive designs, and cold calls worth it. I love taking something from zero to one.',
-  'Running my agency forced me to learn the full stack of marketing in a way traditional roles rarely require. Operating in that world gave me strong instincts about what actually drives growth and what is just noise.',
-  'Then AI arrived.',
-  'As more AI tools became widely available and dramatically cheaper, it initially felt like a gift to the industry.',
-  'For me, it was the opposite.',
-  'Almost overnight, what had been a marketing business became a sales operation for AI tools. Anybody could generate basic websites, good-enough copy, and sloppy (but cheap) creative in a matter of minutes. I was now in a race with other agencies to the lowest price, and the margins on my core offerings dropped by more than 80%. This wasn\'t a winning strategy long-term as AI was changing the economics and behaviors of the entire industry faster than I was able to adapt.',
-  'This led me to a new way of thinking about modern marketing: in a world where AI makes everyone fast, quality becomes the real lever. The winners won\'t be those producing the most content or running the most campaigns. The winners will possess the judgment to know what\'s worth building and have the ability to execute above the noise.',
-  'So I went deep into AI, aiming to understand the ecosystem behind this new tech. Large language models, data infrastructure, emerging companies, the economics of compute, energy consumption, the adoption cycle, psychological side effects, and political concerns were all areas I wanted to explore.',
-  'I wrote research papers, articles, and lectures on these topics. More importantly, I started building with the use of AI. I created a cartography print studio, a cryptocurrency launchpad, and an AI-powered interview platform. I treated each project like a product with hours of market research, positioning, brand development, product design, and a launch strategy.',
-  'Today, AI is part of how I operate. I use it daily, write about it, speak on it, and build with it. However, the core of what I do hasn\'t changed. I take ideas from zero to one and figure out how to get them in front of people. I can build the landing page, write the positioning, design the brand, structure the campaign, and set up the analytics. I don\'t need to do it all myself (I\'d prefer not to), but understanding every layer makes me better at leading the people responsible for them.',
-  'I\'m looking for a team that values strategic thinking, bias toward action, and the ambition to build something that matters. If that sounds like your team, I\'d love to hear from you.',
+]
+
+// Chapters — revealed on expand
+const storyChapters = [
+  {
+    pullQuote: 'I decided to take a risk and bet on myself.',
+    paragraphs: [
+      'As the rotational program came to an end, I decided to take a risk and bet on myself.',
+      'I started doing freelance marketing work, which turned into a small but legitimate agency. I found myself sitting across the table from aspiring entrepreneurs, trying to figure out how to bring their ideas to life. We\'d talk branding, campaigns, websites, and customer acquisition, always eager to start something new.',
+      'That was the first time I realized what kind of work I actually love.',
+      'It wasn\'t the deliverables. It wasn\'t being my own boss. It was building.',
+      'The brainstorming sessions, the strategy pivots, and the moment a client saw their idea start to take shape made all the late nights, repetitive designs, and cold calls worth it. I love taking something from zero to one.',
+      'Running my agency forced me to learn the full stack of marketing in a way traditional roles rarely require. Operating in that world gave me strong instincts about what actually drives growth and what is just noise.',
+    ],
+  },
+  {
+    pullQuote: 'Then AI arrived.',
+    paragraphs: [
+      'Then AI arrived.',
+      'As more AI tools became widely available and dramatically cheaper, it initially felt like a gift to the industry.',
+      'For me, it was the opposite.',
+      'Almost overnight, what had been a marketing business became a sales operation for AI tools. Anybody could generate basic websites, good-enough copy, and sloppy (but cheap) creative in a matter of minutes. I was now in a race with other agencies to the lowest price, and the margins on my core offerings dropped by more than 80%. This wasn\'t a winning strategy long-term as AI was changing the economics and behaviors of the entire industry faster than I was able to adapt.',
+      'This led me to a new way of thinking about modern marketing: in a world where AI makes everyone fast, quality becomes the real lever. The winners won\'t be those producing the most content or running the most campaigns. The winners will possess the judgment to know what\'s worth building and have the ability to execute above the noise.',
+    ],
+  },
+  {
+    pullQuote: 'I take ideas from zero to one.',
+    paragraphs: [
+      'So I went deep into AI, aiming to understand the ecosystem behind this new tech. Large language models, data infrastructure, emerging companies, the economics of compute, energy consumption, the adoption cycle, psychological side effects, and political concerns were all areas I wanted to explore.',
+      'I wrote research papers, articles, and lectures on these topics. More importantly, I started building with the use of AI. I created a cartography print studio, a cryptocurrency launchpad, and an AI-powered interview platform. I treated each project like a product with hours of market research, positioning, brand development, product design, and a launch strategy.',
+      'Today, AI is part of how I operate. I use it daily, write about it, speak on it, and build with it. However, the core of what I do hasn\'t changed. I take ideas from zero to one and figure out how to get them in front of people. I can build the landing page, write the positioning, design the brand, structure the campaign, and set up the analytics. I don\'t need to do it all myself (I\'d prefer not to), but understanding every layer makes me better at leading the people responsible for them.',
+      'I\'m looking for a team that values strategic thinking, bias toward action, and the ambition to build something that matters. If that sounds like your team, I\'d love to hear from you.',
+    ],
+  },
 ]
 
 function About() {
+  const [storyOpen, setStoryOpen] = useState(false)
+  const storyContentRef = useRef(null)
   const processRef = useRef(null)
   const statementRef = useRef(null)
   const philosophyRef = useRef(null)
+
+  const toggleStory = useCallback(() => {
+    if (storyOpen) {
+      // Collapsing — scroll back to the story section top
+      document.getElementById('my-story')?.scrollIntoView({ behavior: 'smooth' })
+      // Small delay so the scroll starts before content collapses
+      setTimeout(() => setStoryOpen(false), 300)
+    } else {
+      setStoryOpen(true)
+    }
+  }, [storyOpen])
 
   const { scrollYProgress: processScroll } = useScroll({
     target: processRef,
@@ -210,7 +243,7 @@ function About() {
 
   return (
     <PageTransition>
-    <div className="about">
+    <div className={`about${storyOpen ? ' story-reading' : ''}`}>
       <section className="about-hero section">
         <div className="container">
           <div className="hero-split">
@@ -244,19 +277,20 @@ function About() {
               >
                 My career has lived at the intersection of marketing, product, and emerging technology.
               </motion.p>
-              <motion.a
-                href="#my-story"
+              <motion.button
                 className="about-read-more"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.8, ease: ndsEase }}
-                onClick={(e) => {
-                  e.preventDefault()
-                  document.getElementById('my-story')?.scrollIntoView({ behavior: 'smooth' })
+                onClick={() => {
+                  setStoryOpen(true)
+                  setTimeout(() => {
+                    document.getElementById('my-story')?.scrollIntoView({ behavior: 'smooth' })
+                  }, 100)
                 }}
               >
                 Read the full story
-              </motion.a>
+              </motion.button>
             </div>
             <motion.div
               className="hero-meta"
@@ -285,8 +319,8 @@ function About() {
         </div>
       </section>
 
-      {/* ═══════ MY STORY — Editorial long-form ═══════ */}
-      <section className="my-story-section section" id="my-story">
+      {/* ═══════ MY STORY — Progressive disclosure ═══════ */}
+      <section className={`my-story-section section${storyOpen ? ' my-story-open' : ''}`} id="my-story">
         <div className="container">
           <motion.div
             className="my-story-header"
@@ -299,6 +333,8 @@ function About() {
             <h2 className="my-story-headline">My Story</h2>
             <div className="my-story-divider" />
           </motion.div>
+
+          {/* Intro — always visible */}
           <motion.div
             className="my-story-content"
             initial="hidden"
@@ -306,20 +342,74 @@ function About() {
             viewport={{ once: true, margin: "-80px" }}
             variants={staggerContainer}
           >
-            {storyParagraphs.map((text, i) => {
-              // Short punchy lines get emphasis treatment
-              const isEmphasis = text.length < 60
-              return (
-                <motion.p
-                  key={i}
-                  variants={staggerItem}
-                  className={isEmphasis ? 'story-emphasis' : undefined}
-                >
-                  {text}
-                </motion.p>
-              )
-            })}
+            {storyIntro.map((text, i) => (
+              <motion.p key={i} variants={staggerItem}>
+                {text}
+              </motion.p>
+            ))}
           </motion.div>
+
+          {/* Expand / Collapse toggle */}
+          <motion.button
+            className="story-toggle"
+            onClick={toggleStory}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3, ease: ndsEase }}
+          >
+            {storyOpen ? 'Close story' : 'Read the full story'}
+          </motion.button>
+
+          {/* Expanded chapters */}
+          <AnimatePresence>
+            {storyOpen && (
+              <motion.div
+                className="my-story-expanded"
+                ref={storyContentRef}
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.6, ease: ndsEase }}
+              >
+                {storyChapters.map((chapter, ci) => (
+                  <div className="story-chapter" key={ci}>
+                    <motion.blockquote
+                      className="story-pull-quote"
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: "-60px" }}
+                      transition={{ duration: 0.6, ease: ndsEase }}
+                    >
+                      {chapter.pullQuote}
+                    </motion.blockquote>
+                    <div className="story-chapter-body">
+                      {chapter.paragraphs.map((text, pi) => {
+                        const isEmphasis = text.length < 60
+                        return (
+                          <motion.p
+                            key={pi}
+                            className={isEmphasis ? 'story-emphasis' : undefined}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-40px" }}
+                            transition={{ duration: 0.5, delay: pi * 0.05, ease: ndsEase }}
+                          >
+                            {text}
+                          </motion.p>
+                        )
+                      })}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Bottom collapse */}
+                <button className="story-toggle story-toggle-bottom" onClick={toggleStory}>
+                  Close story
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </section>
 

@@ -56,6 +56,10 @@ Reads like a biography in a private club's member directory
 .about-read-more {
   display: inline-block;
   margin-top: var(--space-md);
+  padding: 0;
+  padding-bottom: 2px;
+  background: none;
+  border: none;
   font-family: var(--font-sans);
   font-size: 0.85rem;
   font-weight: 600;
@@ -64,7 +68,7 @@ Reads like a biography in a private club's member directory
   color: var(--forest-green);
   text-decoration: none;
   border-bottom: 1px solid var(--forest-green);
-  padding-bottom: 2px;
+  cursor: pointer;
   transition: color var(--duration-base) var(--ease-out),
               border-color var(--duration-base) var(--ease-out);
 }
@@ -74,9 +78,31 @@ Reads like a biography in a private club's member directory
   border-bottom-color: var(--hunter-green);
 }
 
-/* ═══════ MY STORY — Editorial long-form ═══════ */
+/* ═══════ HERO FADE — when story is open ═══════ */
+.about-hero {
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.story-reading .about-hero {
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+  height: 0;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* ═══════ MY STORY — Progressive disclosure ═══════ */
 .my-story-section {
-  padding: var(--space-3xl) 0;
+  padding: var(--space-2xl) 0 var(--space-3xl);
+  transition: padding 0.5s ease;
+}
+
+/* When open, add top padding so it breathes after hero disappears */
+.my-story-section.my-story-open {
+  padding-top: var(--space-3xl);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .my-story-header {
@@ -108,6 +134,7 @@ Reads like a biography in a private club's member directory
   margin-top: var(--space-lg);
 }
 
+/* Intro paragraphs */
 .my-story-content {
   max-width: var(--max-width-text);
   display: flex;
@@ -128,7 +155,7 @@ Reads like a biography in a private club's member directory
   color: var(--charcoal);
 }
 
-/* Drop cap on the first paragraph */
+/* Drop cap on intro first paragraph */
 .my-story-content p:first-child::first-letter {
   font-family: var(--font-display);
   font-size: 4.5rem;
@@ -140,15 +167,78 @@ Reads like a biography in a private club's member directory
   font-weight: 700;
 }
 
-.my-story-content p em {
-  font-style: italic;
-  color: var(--charcoal);
+/* ═══════ READ MORE / COLLAPSE TOGGLE ═══════ */
+.story-toggle {
+  display: inline-block;
+  margin-top: var(--space-lg);
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--forest-green);
+  cursor: pointer;
+  border-bottom: 1px solid var(--forest-green);
+  padding-bottom: 2px;
+  transition: color var(--duration-base) var(--ease-out),
+              border-color var(--duration-base) var(--ease-out);
 }
 
-/* Short punchy paragraphs get emphasis */
-.my-story-content p.story-emphasis {
+.story-toggle:hover {
+  color: var(--hunter-green);
+  border-bottom-color: var(--hunter-green);
+}
+
+.story-toggle-bottom {
+  margin-top: var(--space-2xl);
+}
+
+/* ═══════ EXPANDED STORY — chapters + pull quotes ═══════ */
+.my-story-expanded {
+  overflow: hidden;
+}
+
+.story-chapter {
+  max-width: var(--max-width-text);
+}
+
+.story-chapter:first-child {
+  margin-top: var(--space-xl);
+}
+
+/* Pull quote between chapters */
+.story-pull-quote {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--charcoal);
+  padding: var(--space-xl) 0;
+  margin: var(--space-lg) 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+/* Chapter body paragraphs */
+.story-chapter-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.story-chapter-body p {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--slate);
+}
+
+.story-chapter-body p.story-emphasis {
   font-family: var(--font-serif);
-  font-size: 1.35rem;
+  font-size: 1.3rem;
   line-height: 1.6;
   color: var(--charcoal);
   font-style: italic;
