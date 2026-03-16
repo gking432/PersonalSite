@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
 import './SqueezeSection.css'
 
-export default function SqueezeSection({ children, className }) {
+export default function SqueezeSection({ children, className, id }) {
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -14,7 +14,7 @@ export default function SqueezeSection({ children, className }) {
   const borderRadius = useSpring(rawRadius, { stiffness: 120, damping: 30 })
 
   return (
-    <div ref={ref} className="squeeze-wrapper">
+    <div ref={ref} className="squeeze-wrapper" id={id}>
       <motion.div
         className={`squeeze-inner ${className || ''}`}
         style={{ scale, borderRadius }}

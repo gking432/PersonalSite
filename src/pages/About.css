@@ -8,7 +8,7 @@ Reads like a biography in a private club's member directory
   padding-top: 80px;
 }
 
-/* ═══════ HERO / MY STORY ═══════ */
+/* ═══════ HERO ═══════ */
 .about-hero {
   min-height: 60vh;
   display: flex;
@@ -45,52 +45,164 @@ Reads like a biography in a private club's member directory
   margin-bottom: var(--space-md);
 }
 
-.about-tagline {
-  margin-bottom: var(--space-sm);
-  text-transform: none;
-}
-
-.about-hero .about-intro {
-  font-size: clamp(1.15rem, 2.5vw, 1.35rem);
-  line-height: 1.7;
-  color: var(--slate);
-  max-width: 100%;
-  margin-bottom: var(--space-lg);
-}
-
-.about-hero .hero-split-left p:not(.label):not(.about-intro) {
+.about-hook {
   font-family: var(--font-serif);
-  font-size: 0.875rem;
-  line-height: 1.6;
-  color: var(--charcoal);
-  max-width: 100%;
-  margin-bottom: var(--space-md);
+  font-size: clamp(1.25rem, 2.5vw, 1.6rem);
+  line-height: 1.5;
+  color: var(--slate);
+  max-width: 520px;
 }
 
-.my-story-cut {
-  font-weight: 600;
-  font-style: italic;
-  color: var(--charcoal);
-}
-
-.my-story-toggle {
-  margin-top: var(--space-sm);
-  padding: 0;
-  background: none;
-  border: none;
+.about-read-more {
+  display: inline-block;
+  margin-top: var(--space-md);
   font-family: var(--font-sans);
   font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--forest-green);
-  cursor: pointer;
+  text-decoration: none;
   border-bottom: 1px solid var(--forest-green);
+  padding-bottom: 2px;
+  transition: color var(--duration-base) var(--ease-out),
+              border-color var(--duration-base) var(--ease-out);
 }
 
-.my-story-toggle:hover {
+.about-read-more:hover {
   color: var(--hunter-green);
   border-bottom-color: var(--hunter-green);
+}
+
+/* ═══════ MY STORY — Scroll-through squeeze ═══════ */
+.story-scroll-runway {
+  position: relative;
+  min-height: 300vh; /* fallback before JS measurement */
+  margin-top: var(--space-3xl);
+}
+
+.story-sticky-wrapper {
+  position: sticky;
+  top: var(--header-height);
+  height: calc(100vh - var(--header-height));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.story-sticky-wrapper .squeeze-wrapper {
+  width: 100%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.my-story-section {
+  width: 100%;
+  height: 85vh;
+  max-height: 85vh;
+  overflow: hidden;
+  background-color: #2c2825;
+  padding: 0;
+  display: flex;
+  align-items: flex-start;
+}
+
+.my-story-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-2xl) var(--space-lg) var(--space-3xl);
+  will-change: transform;
+}
+
+.my-story-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+}
+
+.my-story-label {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 234, 0.45);
+  margin-bottom: var(--space-sm);
+}
+
+.my-story-headline {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--cream);
+}
+
+.my-story-divider {
+  width: 60px;
+  height: 1px;
+  background: rgba(244, 241, 234, 0.15);
+  margin: var(--space-lg) auto 0;
+}
+
+/* Body paragraphs — light text on dark */
+.story-body {
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: rgba(244, 241, 234, 0.75);
+  margin-bottom: var(--space-md);
+}
+
+/* First paragraph — serif, larger, drop cap */
+.story-body.story-first {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  line-height: 1.7;
+  color: rgba(244, 241, 234, 0.9);
+}
+
+.story-body.story-first::first-letter {
+  font-family: var(--font-display);
+  font-size: 4.5rem;
+  float: left;
+  line-height: 0.75;
+  margin-right: 12px;
+  margin-top: 8px;
+  color: var(--cream);
+  font-weight: 700;
+}
+
+/* Inline highlights — big text exactly where it appears in the story */
+.story-inline-pullQuote {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.3;
+  color: var(--cream);
+  margin: var(--space-sm) 0;
+}
+
+.story-inline-moment {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--cream);
+  margin: var(--space-sm) 0;
+}
+
+.story-inline-emphasis {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: clamp(1.15rem, 2vw, 1.4rem);
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--cream);
 }
 
 /* ═══════ HOW I WORK — Scroll-driven cylinder ═══════ */
