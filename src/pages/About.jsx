@@ -159,24 +159,38 @@ function ProcessStep({ step, scrollYProgress, index, total }) {
 
 // Story content — each item is either a paragraph, a pullQuote (breakout), or a moment (big display text)
 const storyBlocks = [
-  { type: 'p', text: 'I started my career with Sub-Zero Group, Inc. in a rotating program that took me through sales operations, product marketing, product launch, and external dealer sales. It was a masterclass in how premium brands are built and maintained at scale. I saw firsthand how product ideas sweep through markets, how distribution works on a national level, and how marketing, sales, and product must align for a brand to thrive.', first: true },
-  { type: 'p', text: 'Working inside a company functioning at the highest level gave me an appreciation for the operational side of growth; how strategy translates into real revenue through sales teams, distribution networks, and a disciplined brand/product relationship.' },
-  { type: 'pullQuote', text: 'I decided to take a risk and bet on myself.' },
-  { type: 'p', text: 'I started doing freelance marketing work, which turned into a small but legitimate agency. I found myself sitting across the table from aspiring entrepreneurs, trying to figure out how to bring their ideas to life. We\'d talk branding, campaigns, websites, and customer acquisition, always eager to start something new.' },
-  { type: 'moment', text: 'It was building.' },
-  { type: 'p', text: 'The brainstorming sessions, the strategy pivots, and the moment a client saw their idea start to take shape made all the late nights, repetitive designs, and cold calls worth it. I love taking something from zero to one.' },
-  { type: 'p', text: 'Running my agency forced me to learn the full stack of marketing in a way traditional roles rarely require. Operating in that world gave me strong instincts about what actually drives growth and what is just noise.' },
-  { type: 'moment', text: 'Then AI arrived.' },
-  { type: 'p', text: 'As more AI tools became widely available and dramatically cheaper, it initially felt like a gift to the industry.' },
-  { type: 'emphasis', text: 'For me, it was the opposite.' },
-  { type: 'p', text: 'Almost overnight, what had been a marketing business became a sales operation for AI tools. Anybody could generate basic websites, good-enough copy, and sloppy (but cheap) creative in a matter of minutes. I was now in a race with other agencies to the lowest price, and the margins on my core offerings dropped by more than 80%. This wasn\'t a winning strategy long-term as AI was changing the economics and behaviors of the entire industry faster than I was able to adapt.' },
-  { type: 'pullQuote', text: 'In a world where AI makes everyone fast, quality becomes the real lever.' },
-  { type: 'p', text: 'The winners won\'t be those producing the most content or running the most campaigns. The winners will possess the judgment to know what\'s worth building and have the ability to execute above the noise.' },
-  { type: 'p', text: 'So I went deep into AI, aiming to understand the ecosystem behind this new tech. Large language models, data infrastructure, emerging companies, the economics of compute, energy consumption, the adoption cycle, psychological side effects, and political concerns were all areas I wanted to explore.' },
-  { type: 'p', text: 'I wrote research papers, articles, and lectures on these topics. More importantly, I started building with the use of AI. I created a cartography print studio, a cryptocurrency launchpad, and an AI-powered interview platform. I treated each project like a product with hours of market research, positioning, brand development, product design, and a launch strategy.' },
-  { type: 'p', text: 'Today, AI is part of how I operate. I use it daily, write about it, speak on it, and build with it. However, the core of what I do hasn\'t changed. I take ideas from zero to one and figure out how to get them in front of people. I can build the landing page, write the positioning, design the brand, structure the campaign, and set up the analytics. I don\'t need to do it all myself (I\'d prefer not to), but understanding every layer makes me better at leading the people responsible for them.' },
-  { type: 'p', text: 'I\'m looking for a team that values strategic thinking, bias toward action, and the ambition to build something that matters. If that sounds like your team, I\'d love to hear from you.' },
+  { text: 'I started my career with Sub-Zero Group, Inc. in a rotating program that took me through sales operations, product marketing, product launch, and external dealer sales. It was a masterclass in how premium brands are built and maintained at scale. I saw firsthand how product ideas sweep through markets, how distribution works on a national level, and how marketing, sales, and product must align for a brand to thrive.', first: true },
+  { text: 'Working inside a company functioning at the highest level gave me an appreciation for the operational side of growth; how strategy translates into real revenue through sales teams, distribution networks, and a disciplined brand/product relationship.' },
+  { text: 'As the rotational program came to an end, {I decided to take a risk and bet on myself.}', highlight: 'pullQuote' },
+  { text: 'I started doing freelance marketing work, which turned into a small but legitimate agency. I found myself sitting across the table from aspiring entrepreneurs, trying to figure out how to bring their ideas to life. We\'d talk branding, campaigns, websites, and customer acquisition, always eager to start something new.' },
+  { text: 'That was the first time I realized what kind of work I actually love.' },
+  { text: 'It wasn\'t the deliverables. It wasn\'t being my own boss. {It was building.}', highlight: 'moment' },
+  { text: 'The brainstorming sessions, the strategy pivots, and the moment a client saw their idea start to take shape made all the late nights, repetitive designs, and cold calls worth it. I love taking something from zero to one.' },
+  { text: 'Running my agency forced me to learn the full stack of marketing in a way traditional roles rarely require. Operating in that world gave me strong instincts about what actually drives growth and what is just noise.' },
+  { text: '{Then AI arrived.}', highlight: 'moment' },
+  { text: 'As more AI tools became widely available and dramatically cheaper, it initially felt like a gift to the industry.' },
+  { text: '{For me, it was the opposite.}', highlight: 'emphasis' },
+  { text: 'Almost overnight, what had been a marketing business became a sales operation for AI tools. Anybody could generate basic websites, good-enough copy, and sloppy (but cheap) creative in a matter of minutes. I was now in a race with other agencies to the lowest price, and the margins on my core offerings dropped by more than 80%. This wasn\'t a winning strategy long-term as AI was changing the economics and behaviors of the entire industry faster than I was able to adapt.' },
+  { text: 'This led me to a new way of thinking about modern marketing: {in a world where AI makes everyone fast, quality becomes the real lever.} The winners won\'t be those producing the most content or running the most campaigns. The winners will possess the judgment to know what\'s worth building and have the ability to execute above the noise.', highlight: 'pullQuote' },
+  { text: 'So I went deep into AI, aiming to understand the ecosystem behind this new tech. Large language models, data infrastructure, emerging companies, the economics of compute, energy consumption, the adoption cycle, psychological side effects, and political concerns were all areas I wanted to explore.' },
+  { text: 'I wrote research papers, articles, and lectures on these topics. More importantly, I started building with the use of AI. I created a cartography print studio, a cryptocurrency launchpad, and an AI-powered interview platform. I treated each project like a product with hours of market research, positioning, brand development, product design, and a launch strategy.' },
+  { text: 'Today, AI is part of how I operate. I use it daily, write about it, speak on it, and build with it. However, the core of what I do hasn\'t changed. I take ideas from zero to one and figure out how to get them in front of people. I can build the landing page, write the positioning, design the brand, structure the campaign, and set up the analytics. I don\'t need to do it all myself (I\'d prefer not to), but understanding every layer makes me better at leading the people responsible for them.' },
+  { text: 'I\'m looking for a team that values strategic thinking, bias toward action, and the ambition to build something that matters. If that sounds like your team, I\'d love to hear from you.' },
 ]
+
+function renderStoryText(text, highlight) {
+  if (!highlight) return text
+  const match = text.match(/^(.*?)\{(.*?)\}(.*)$/s)
+  if (!match) return text
+  const [, before, highlighted, after] = match
+  return (
+    <>
+      {before && <span>{before}</span>}
+      <span className={`story-inline-${highlight}`}>{highlighted}</span>
+      {after && <span>{after}</span>}
+    </>
+  )
+}
 
 function About() {
   const storyRunwayRef = useRef(null)
@@ -331,22 +345,11 @@ function About() {
                 <div className="my-story-divider" />
               </div>
 
-              {storyBlocks.map((block, i) => {
-                if (block.type === 'moment') {
-                  return <p key={i} className="story-moment">{block.text}</p>
-                }
-                if (block.type === 'pullQuote') {
-                  return <blockquote key={i} className="story-pull-quote">{block.text}</blockquote>
-                }
-                if (block.type === 'emphasis') {
-                  return <p key={i} className="story-emphasis">{block.text}</p>
-                }
-                return (
-                  <p key={i} className={`story-body${block.first ? ' story-first' : ''}`}>
-                    {block.text}
-                  </p>
-                )
-              })}
+              {storyBlocks.map((block, i) => (
+                <p key={i} className={`story-body${block.first ? ' story-first' : ''}`}>
+                  {renderStoryText(block.text, block.highlight)}
+                </p>
+              ))}
             </motion.div>
           </SqueezeSection>
         </div>
