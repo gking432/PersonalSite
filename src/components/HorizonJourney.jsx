@@ -770,15 +770,22 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites, time) {
     : revealP > 0.82 ? (1 - revealP) / 0.18 : 1
   if (fade < 0.01) return
 
-  const revealEased = easeInOutCubic(clamp01(revealP < 0.5 ? revealP / 0.5 : 1))
+  // Horizontal sweep edge: 0 = left edge, w = right edge
+  const sweepP = easeInOutCubic(clamp01(revealP < 0.5 ? revealP / 0.5 : 1))
+  const sweepX = sweepP * w
+
   const fontSize = Math.min(w * 0.05, 52)
   const lineH = fontSize * 1.3
 
   const textX = w / 2
   const textBaseY = horizonY - fontSize * 0.6
 
+  // Draw above-water text clipped to swept region
   ctx.save()
-  ctx.globalAlpha = fade * revealEased
+  ctx.beginPath()
+  ctx.rect(0, 0, sweepX, horizonY)
+  ctx.clip()
+  ctx.globalAlpha = fade
 
   ctx.font = `700 ${Math.min(w * 0.012, 11)}px "Inter", sans-serif`
   ctx.textAlign = 'center'
@@ -798,7 +805,7 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites, time) {
     ctx.fillText(line, textX, textBaseY - (stop.text.length - 1 - i) * lineH)
   })
 
-  ctx.globalAlpha = fade * revealEased * 0.6
+  ctx.globalAlpha = fade * 0.6
   ctx.shadowBlur = 8
   ctx.font = `400 ${Math.min(w * 0.018, 16)}px "Crimson Text", Georgia, serif`
   ctx.textBaseline = 'top'
@@ -809,7 +816,7 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites, time) {
   ctx.shadowColor = 'transparent'
   ctx.restore()
 
-  // ═══ WAVY REFLECTION IN WATER ═══
+  // ═══ WAVY REFLECTION IN WATER (clipped to sweep edge) ═══
   const offscreen = sprites.reflectionCanvas
   const offCtx = sprites.reflectionCtx
   const offW = Math.min(w, 900)
@@ -831,14 +838,14 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites, time) {
 
   ctx.save()
   ctx.beginPath()
-  ctx.rect(0, horizonY, w, waterH)
+  ctx.rect(0, horizonY, sweepX, waterH)
   ctx.clip()
 
   const destX = (w - offW) / 2
   const destY = horizonY + waterH * 0.05
   const stripH = 2
 
-  ctx.globalAlpha = fade * revealEased * 0.45
+  ctx.globalAlpha = fade * 0.45
 
   for (let y = 0; y < offH; y += stripH) {
     const waveOffset = Math.sin(y * 0.08 + time * 1.6) * (3 + y * 0.05)
@@ -875,7 +882,7 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites, time) {
 // GENERIC TEXT WATER REFLECTION
 // Draws wavy water reflection for any text content
 // ═══════════════════════════════════════════
-function drawTextWaterReflection(ctx, w, h, textLines, fontSize, alpha, color, sprites, time) {
+function drawTextWaterReflection(ctx, w, h, textLines, fontSize, alpha, color, sprites, time, clipLeftEdge) {
   if (alpha < 0.01) return
   const horizonY = h * 0.46
   const waterH = h - horizonY
@@ -902,7 +909,10 @@ function drawTextWaterReflection(ctx, w, h, textLines, fontSize, alpha, color, s
 
   ctx.save()
   ctx.beginPath()
-  ctx.rect(0, horizonY, w, waterH)
+  // If clipLeftEdge is set, only draw to the RIGHT of that x position
+  const clipX = clipLeftEdge != null ? clipLeftEdge : 0
+  const clipW = clipLeftEdge != null ? w - clipLeftEdge : w
+  ctx.rect(clipX, horizonY, clipW, waterH)
   ctx.clip()
 
   const destX = (w - offW) / 2
@@ -1490,12 +1500,12 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
       Math.min(w * 0.048, 50),
     ]
 
-    // Compute reflection reveal progress early so old reflections can fade out
+    // Compute reflection reveal sweep edge so old reflections clip against it
     const c4Early = CONTENT_STOPS[4]
     const c4pEarly = clamp01((progress - c4Early.at) / c4Early.duration)
-    const reflRevealFade = c4pEarly > 0
-      ? easeInOutCubic(clamp01(c4pEarly < 0.5 ? c4pEarly / 0.5 : 1))
-      : 0
+    const sweepEdge = c4pEarly > 0
+      ? easeInOutCubic(clamp01(c4pEarly < 0.5 ? c4pEarly / 0.5 : 1)) * w
+      : null
 
     for (let i = 0; i < 4; i++) {
       // Skip i === 2 (sunbeam) — its reflection is drawn inside drawSunBeamReveal
@@ -1523,14 +1533,12 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
         alpha = fade * clearance
       }
 
-      // Fade out old reflections as the reflection reveal sweeps in
-      alpha *= (1 - reflRevealFade)
-
       if (alpha < 0.01) continue
 
+      // Old reflections clip to the right of the sweep edge
       drawTextWaterReflection(
         ctx, w, h, stop.text, refFontSizes[i], alpha,
-        refColors[i], sprites, time
+        refColors[i], sprites, time, sweepEdge
       )
     }
 
