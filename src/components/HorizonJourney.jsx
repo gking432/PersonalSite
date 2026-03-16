@@ -476,9 +476,8 @@ function drawCloudReveal(ctx, w, h, revealP, stop, data, sprites) {
 // ═══════════════════════════════════════════
 // REVEAL 3: SUN BEAM
 // ═══════════════════════════════════════════
-function drawSunBeamReveal(ctx, w, h, revealP, stop, sunX, sunY, sprites, time) {
+function drawSunBeamReveal(ctx, w, h, revealP, stop, sunX, sunY) {
   const horizonY = h * 0.46
-  const waterH = h - horizonY
 
   const fade = revealP < 0.1 ? revealP / 0.1
     : revealP > 0.85 ? (1 - revealP) / 0.15 : 1
@@ -551,66 +550,81 @@ function drawSunBeamReveal(ctx, w, h, revealP, stop, sunX, sunY, sprites, time) 
   ctx.shadowBlur = 0
   ctx.shadowColor = 'transparent'
   ctx.restore()
+}
 
-  // ═══ WATER REFLECTION — same sunbeam sweep clip ═══
-  if (sprites && time !== undefined) {
-    const beamRevealAlpha = fade * easeOutCubic(clamp01(revealP / 0.7))
-    if (beamRevealAlpha < 0.01) return
+// Sunbeam text water reflection — called separately after water is drawn
+function drawSunBeamWaterReflection(ctx, w, h, revealP, stop, sunX, sunY, sprites, time) {
+  const horizonY = h * 0.46
+  const waterH = h - horizonY
 
-    const offscreen = sprites.reflectionCanvas
-    const offCtx = sprites.reflectionCtx
-    const offW = Math.min(w, 900)
-    const offH = fontSize * (stop.text.length + 1) * 1.5
+  const fade = revealP < 0.1 ? revealP / 0.1
+    : revealP > 0.85 ? (1 - revealP) / 0.15 : 1
+  if (fade < 0.01) return
 
-    offscreen.width = offW
-    offscreen.height = offH
-    offCtx.clearRect(0, 0, offW, offH)
+  const fontSize = Math.min(w * 0.05, 52)
+  const lineH = fontSize * 1.3
+  const textX = w * 0.5
 
-    offCtx.font = `300 ${fontSize}px "Instrument Serif", Georgia, serif`
-    offCtx.textAlign = 'center'
-    offCtx.textBaseline = 'top'
-    offCtx.fillStyle = rgb([200, 180, 130], 0.75)
+  const beamWidth = w * 0.35 * easeOutCubic(clamp01(revealP / 0.7))
+  const beamLeft = textX - w * 0.2
+  const beamRight = beamLeft + beamWidth
 
-    const textYOff = fontSize * 0.5
-    stop.text.forEach((line, i) => {
-      offCtx.fillText(line, offW / 2, textYOff + i * lineH)
-    })
+  const beamRevealAlpha = fade * easeOutCubic(clamp01(revealP / 0.7))
+  if (beamRevealAlpha < 0.01) return
 
-    ctx.save()
+  const offscreen = sprites.reflectionCanvas
+  const offCtx = sprites.reflectionCtx
+  const offW = Math.min(w, 900)
+  const offH = fontSize * (stop.text.length + 1) * 1.5
 
-    // Clip to water area
-    ctx.beginPath()
-    ctx.rect(0, horizonY, w, waterH)
-    ctx.clip()
+  offscreen.width = offW
+  offscreen.height = offH
+  offCtx.clearRect(0, 0, offW, offH)
 
-    // Clip to mirrored beam sweep — fan from horizon intersection downward
-    const beamMargin = 20
-    ctx.beginPath()
-    ctx.moveTo(beamLeft - beamMargin, horizonY)
-    ctx.lineTo(beamRight + beamMargin, horizonY)
-    ctx.lineTo(beamRight + beamMargin + waterH * 0.3, h)
-    ctx.lineTo(beamLeft - beamMargin - waterH * 0.3, h)
-    ctx.closePath()
-    ctx.clip()
+  offCtx.font = `300 ${fontSize}px "Instrument Serif", Georgia, serif`
+  offCtx.textAlign = 'center'
+  offCtx.textBaseline = 'top'
+  offCtx.fillStyle = rgb([200, 180, 130], 0.75)
 
-    const destX = (w - offW) / 2
-    const destY = horizonY + waterH * 0.05
-    const stripH = 2
+  const textYOff = fontSize * 0.5
+  stop.text.forEach((line, i) => {
+    offCtx.fillText(line, offW / 2, textYOff + i * lineH)
+  })
 
-    ctx.globalAlpha = beamRevealAlpha * 0.35
+  ctx.save()
 
-    for (let y = 0; y < offH; y += stripH) {
-      const waveOffset = Math.sin(y * 0.08 + time * 1.6) * (3 + y * 0.05)
-      const srcY = offH - y - stripH
-      ctx.drawImage(
-        offscreen,
-        0, srcY, offW, stripH,
-        destX + waveOffset, destY + y, offW, stripH
-      )
-    }
+  // Clip to water area
+  ctx.beginPath()
+  ctx.rect(0, horizonY, w, waterH)
+  ctx.clip()
 
-    ctx.restore()
+  // Clip to mirrored beam sweep — fan from horizon intersection downward
+  const beamMargin = 20
+  ctx.beginPath()
+  ctx.moveTo(beamLeft - beamMargin, horizonY)
+  ctx.lineTo(beamRight + beamMargin, horizonY)
+  ctx.lineTo(beamRight + beamMargin + waterH * 0.3, h)
+  ctx.lineTo(beamLeft - beamMargin - waterH * 0.3, h)
+  ctx.closePath()
+  ctx.clip()
+
+  const destX = (w - offW) / 2
+  const destY = horizonY + waterH * 0.05
+  const stripH = 2
+
+  ctx.globalAlpha = beamRevealAlpha * 0.35
+
+  for (let y = 0; y < offH; y += stripH) {
+    const waveOffset = Math.sin(y * 0.08 + time * 1.6) * (3 + y * 0.05)
+    const srcY = offH - y - stripH
+    ctx.drawImage(
+      offscreen,
+      0, srcY, offW, stripH,
+      destX + waveOffset, destY + y, offW, stripH
+    )
   }
+
+  ctx.restore()
 }
 
 // ═══════════════════════════════════════════
@@ -1326,7 +1340,7 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
   const c2 = CONTENT_STOPS[2]
   const c2p = clamp01((progress - c2.at) / c2.duration)
   if (c2p > 0 && c2p < 1 && sunVisible) {
-    drawSunBeamReveal(ctx, w, h, c2p, c2, sunX, sunY, sprites, time)
+    drawSunBeamReveal(ctx, w, h, c2p, c2, sunX, sunY)
   }
 
   // ═══════ TREELINE ═══════
@@ -1453,6 +1467,13 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
         ctx, w, h, stop.text, refFontSizes[i], alpha,
         refColors[i], sprites, time
       )
+    }
+
+    // Sunbeam text reflection — drawn here (after water) with beam sweep clip
+    const sbStop = CONTENT_STOPS[2]
+    const sbP = clamp01((progress - sbStop.at) / sbStop.duration)
+    if (sbP > 0 && sbP < 1 && sunVisible) {
+      drawSunBeamWaterReflection(ctx, w, h, sbP, sbStop, sunX, sunY, sprites, time)
     }
   }
 
