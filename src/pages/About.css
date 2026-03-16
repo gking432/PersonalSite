@@ -56,10 +56,6 @@ Reads like a biography in a private club's member directory
 .about-read-more {
   display: inline-block;
   margin-top: var(--space-md);
-  padding: 0;
-  padding-bottom: 2px;
-  background: none;
-  border: none;
   font-family: var(--font-sans);
   font-size: 0.85rem;
   font-weight: 600;
@@ -68,7 +64,7 @@ Reads like a biography in a private club's member directory
   color: var(--forest-green);
   text-decoration: none;
   border-bottom: 1px solid var(--forest-green);
-  cursor: pointer;
+  padding-bottom: 2px;
   transition: color var(--duration-base) var(--ease-out),
               border-color var(--duration-base) var(--ease-out);
 }
@@ -78,35 +74,21 @@ Reads like a biography in a private club's member directory
   border-bottom-color: var(--hunter-green);
 }
 
-/* ═══════ HERO FADE — when story is open ═══════ */
-.about-hero {
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
-.story-reading .about-hero {
-  opacity: 0;
-  transform: translateY(-20px);
-  pointer-events: none;
-  height: 0;
-  min-height: 0;
-  padding: 0;
-  overflow: hidden;
-}
-
-/* ═══════ MY STORY — Progressive disclosure ═══════ */
+/* ═══════ MY STORY — Centered editorial ═══════ */
 .my-story-section {
-  padding: var(--space-2xl) 0 var(--space-3xl);
-  transition: padding 0.5s ease;
+  padding: var(--space-3xl) 0;
+  background: linear-gradient(180deg, var(--parchment) 0%, #ece8e0 100%);
 }
 
-/* When open, add top padding so it breathes after hero disappears */
-.my-story-section.my-story-open {
-  padding-top: var(--space-3xl);
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+.my-story-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
 }
 
 .my-story-header {
-  margin-bottom: var(--space-xl);
+  text-align: center;
+  margin-bottom: var(--space-2xl);
 }
 
 .my-story-label {
@@ -121,7 +103,7 @@ Reads like a biography in a private club's member directory
 
 .my-story-headline {
   font-family: var(--font-serif);
-  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-size: clamp(2.5rem, 6vw, 4rem);
   font-weight: 400;
   line-height: 1.1;
   color: var(--charcoal);
@@ -130,33 +112,27 @@ Reads like a biography in a private club's member directory
 .my-story-divider {
   width: 60px;
   height: 1px;
-  background: rgba(0, 0, 0, 0.12);
-  margin-top: var(--space-lg);
+  background: rgba(0, 0, 0, 0.15);
+  margin: var(--space-lg) auto 0;
 }
 
-/* Intro paragraphs */
-.my-story-content {
-  max-width: var(--max-width-text);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-}
-
-.my-story-content p {
+/* Body paragraphs */
+.story-body {
   font-size: 1.05rem;
-  line-height: 1.8;
+  line-height: 1.85;
   color: var(--slate);
+  margin-bottom: var(--space-md);
 }
 
-.my-story-content p:first-child {
+/* First paragraph — serif, larger, drop cap */
+.story-body.story-first {
   font-family: var(--font-serif);
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   line-height: 1.7;
   color: var(--charcoal);
 }
 
-/* Drop cap on intro first paragraph */
-.my-story-content p:first-child::first-letter {
+.story-body.story-first::first-letter {
   font-family: var(--font-display);
   font-size: 4.5rem;
   float: left;
@@ -167,81 +143,43 @@ Reads like a biography in a private club's member directory
   font-weight: 700;
 }
 
-/* ═══════ READ MORE / COLLAPSE TOGGLE ═══════ */
-.story-toggle {
-  display: inline-block;
-  margin-top: var(--space-lg);
-  padding: 0;
-  background: none;
-  border: none;
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--forest-green);
-  cursor: pointer;
-  border-bottom: 1px solid var(--forest-green);
-  padding-bottom: 2px;
-  transition: color var(--duration-base) var(--ease-out),
-              border-color var(--duration-base) var(--ease-out);
-}
-
-.story-toggle:hover {
-  color: var(--hunter-green);
-  border-bottom-color: var(--hunter-green);
-}
-
-.story-toggle-bottom {
-  margin-top: var(--space-2xl);
-}
-
-/* ═══════ EXPANDED STORY — chapters + pull quotes ═══════ */
-.my-story-expanded {
-  overflow: hidden;
-}
-
-.story-chapter {
-  max-width: var(--max-width-text);
-}
-
-.story-chapter:first-child {
-  margin-top: var(--space-xl);
-}
-
-/* Pull quote between chapters */
+/* Pull quotes — break out wider */
 .story-pull-quote {
-  font-family: var(--font-display);
-  font-size: clamp(1.8rem, 4vw, 2.8rem);
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.3;
   color: var(--charcoal);
+  text-align: center;
   padding: var(--space-xl) 0;
-  margin: var(--space-lg) 0;
+  margin: var(--space-lg) calc(-1 * var(--space-xl));
   border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   position: relative;
 }
 
-/* Chapter body paragraphs */
-.story-chapter-body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
+/* Moment — giant display text, full stop */
+.story-moment {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--charcoal);
+  text-align: center;
+  padding: var(--space-xl) 0;
+  margin: var(--space-lg) calc(-1 * var(--space-xl));
 }
 
-.story-chapter-body p {
-  font-size: 1.05rem;
-  line-height: 1.8;
-  color: var(--slate);
-}
-
-.story-chapter-body p.story-emphasis {
+/* Emphasis — italic serif, slightly larger */
+.story-emphasis {
   font-family: var(--font-serif);
   font-size: 1.3rem;
   line-height: 1.6;
   color: var(--charcoal);
   font-style: italic;
+  margin-bottom: var(--space-md);
 }
 
 /* ═══════ HOW I WORK — Scroll-driven cylinder ═══════ */
@@ -654,6 +592,12 @@ Reads like a biography in a private club's member directory
   .process-number {
     min-width: auto;
     font-size: clamp(3rem, 12vw, 4rem);
+  }
+
+  .story-pull-quote,
+  .story-moment {
+    margin-left: 0;
+    margin-right: 0;
   }
 
   .statement-section {
