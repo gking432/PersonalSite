@@ -489,6 +489,10 @@ One cohesive piece. Generous whitespace. Parchment base.
 .cta {
   padding: var(--space-3xl) 0;
   background-color: var(--forest-green);
+  background-image: url('/Photo Sections/6.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   color: var(--cream);
   text-align: center;
   position: relative;

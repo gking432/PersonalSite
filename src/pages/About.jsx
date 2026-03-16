@@ -261,10 +261,10 @@ function About() {
           <div className="hero-split">
             <div className="hero-split-left">
               <motion.p
-                className="label"
+                className="label about-tagline"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: ndsEase }}
+                transition={{ duration: 0.5, delay: 0.1, ease: ndsEase }}
               >
                 Introduction
               </motion.p>
@@ -275,7 +275,7 @@ function About() {
                     style={{ display: 'inline-block' }}
                     initial={{ opacity: 0, y: 60 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 0.1 + i * 0.05, ease: ndsEase }}
+                    transition={{ duration: 0.7, delay: 0.2 + i * 0.05, ease: ndsEase }}
                   >
                     {char}
                   </motion.span>
@@ -456,7 +456,7 @@ function About() {
                 style={{ y: philosophyY }}
               >
                 <p className="statement-subtitle">Ask AI</p>
-                <StatementGiantText scrollYProgress={philosophyTextScroll} lineBreakAfter={3}>
+                <StatementGiantText scrollYProgress={philosophyTextScroll} lineBreakAfter={2}>
                   Don't take my word for it.
                 </StatementGiantText>
                 <p className="statement-paragraph">

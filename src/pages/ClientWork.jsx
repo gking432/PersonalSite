@@ -19,6 +19,7 @@ const clientProjects = [
     name: 'PetUnis',
     type: 'Brand Design & eCommerce',
     shortDesc: 'NFL-inspired dog uniforms. Full brand identity, product design, and eCommerce buildout across all 32 teams.',
+    about: 'A full-stack brand and eCommerce build from zero. Logo, identity system, 32 team designs, storefront, and ad creative — all built for print-on-demand. One of my most complete end-to-end projects.',
     featured: true,
     description: 'Create a complete brand identity and eCommerce presence for a print-on-demand dog apparel line featuring NFL team-inspired designs across all 32 franchises.',
     brief: 'Build a cohesive brand from scratch — logo, identity system, product designs for all 32 NFL teams, and a full eCommerce storefront ready for print-on-demand fulfillment.',
@@ -56,7 +57,6 @@ const clientProjects = [
       {
         id: 'merchandising',
         label: 'Merchandising',
-        heroImage: '/images/petunis-merchandising-hero.png',
         teamsImagesFolder: 'petunis-teams',
         designFilesFolder: 'petunis-designfiles',
         items: [
@@ -77,6 +77,7 @@ const clientProjects = [
     name: 'WeatherFixers.com',
     type: 'Lead Aggregation Website',
     shortDesc: 'Lead aggregation website for storm damage professionals. Website design, digital ads, and direct mail postcards.',
+    about: 'Lead-gen site for storm damage contractors. Website, digital ads, and direct mail postcards — designed to capture and qualify leads in geographic areas hit by severe weather.',
     description: 'Designed a lead aggregation website that connects storm damage contractors with homeowners in affected areas. Created the website, digital advertisements, and direct door mailing postcards.',
     brief: 'Build a lead aggregation website for storm damage pros. Design the site, run digital ad campaigns, and create direct mail postcards for door-to-door outreach.',
     strategy: 'Designed the website to capture and qualify leads for storm damage contractors. Created targeted digital ad campaigns and direct mail postcards for geographic areas hit by severe weather.',
@@ -376,7 +377,7 @@ function MerchandisingTabs({ mod }) {
               transition={{ duration: 0.25, ease: ndsEase }}
             >
               <div className="client-module-teams-grid">
-                {petunisTeams.map((filename) => (
+                {petunisTeams.filter((f) => !f.startsWith('For People/')).map((filename) => (
                   <img
                     key={filename}
                     src={`/pdfs/${mod.teamsImagesFolder}/${filename.split('/').map(encodeURIComponent).join('/')}`}
@@ -459,10 +460,41 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
   const isAlt = index % 2 !== 0
   const number = String(index + 1).padStart(2, '0')
   const sectionRef = useRef(null)
+  const numberRef = useRef(null)
   const [expandedModules, setExpandedModules] = useState({})
+  const moduleRefs = useRef({})
+  const moduleButtonRefs = useRef({})
 
   const toggleModule = (modId) => {
-    setExpandedModules(prev => ({ ...prev, [modId]: !prev[modId] }))
+    const wasExpanded = expandedModules[modId]
+    
+    // If opening a new module, close all others first
+    if (!wasExpanded) {
+      setExpandedModules({ [modId]: true })
+      
+      // Wait for DOM to update and animations to settle before scrolling
+      // Use requestAnimationFrame to ensure layout has updated
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            const buttonRef = moduleButtonRefs.current[modId]
+            if (buttonRef) {
+              const headerHeight = 80 // --header-height from CSS
+              const buttonPosition = buttonRef.getBoundingClientRect().top + window.pageYOffset
+              const offsetPosition = buttonPosition - headerHeight
+              
+              window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+              })
+            }
+          }, 450) // Wait for module close animation (400ms) + buffer
+        })
+      })
+    } else {
+      // Closing the module
+      setExpandedModules(prev => ({ ...prev, [modId]: false }))
+    }
   }
 
   const handleToggle = () => {
@@ -475,30 +507,91 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
     } else {
       onToggle(project.id)
       setTimeout(() => {
-        sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        numberRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }, 100)
     }
   }
 
   const content = (
-    <div className="container" ref={sectionRef}>
-      {/* Header — always visible */}
+    <div className={`container ${isExpanded ? 'client-expand-viewport' : ''}`} ref={sectionRef}>
+      {/* Header — always visible; when expanded, About on right */}
       <motion.div
-        className="client-feature-header"
+        className={`client-feature-header ${isExpanded ? 'client-feature-header-with-about' : ''}`}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         variants={staggerContainer}
       >
-        <motion.span className="client-feature-number" variants={fadeUp}>
-          {number}
-        </motion.span>
-        <motion.h2 className="client-feature-name" variants={fadeUp}>
-          {project.name}
-        </motion.h2>
-        <motion.p className="client-feature-tagline" variants={fadeUp}>
-          {project.type} · {project.year}
-        </motion.p>
+        {isExpanded ? (
+          <>
+            <motion.span
+              ref={numberRef}
+              className="client-feature-number client-feature-number-full"
+              variants={fadeUp}
+              animate="visible"
+              initial="hidden"
+            >
+              {number}
+            </motion.span>
+            <div className="client-feature-header-left">
+              <motion.h2
+                className="client-feature-name"
+                variants={fadeUp}
+                animate="visible"
+                initial="hidden"
+              >
+                {project.name}
+              </motion.h2>
+              <motion.p
+                className="client-feature-tagline"
+                variants={fadeUp}
+                animate="visible"
+                initial="hidden"
+              >
+                {project.type} · {project.year}
+              </motion.p>
+            </div>
+            {(project.about || project.shortDesc) && (
+              <motion.div
+                className="client-feature-header-about"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: 0.2, ease: ndsEase }}
+              >
+                <span className="client-feature-header-about-label">About this project</span>
+                <p>{project.about || project.shortDesc}</p>
+              </motion.div>
+            )}
+          </>
+        ) : (
+          <div className="client-feature-header-left">
+            <motion.span
+              ref={numberRef}
+              className="client-feature-number"
+              variants={fadeUp}
+              animate="visible"
+              initial="hidden"
+            >
+              {number}
+            </motion.span>
+            <motion.h2
+              className="client-feature-name"
+              variants={fadeUp}
+              animate="visible"
+              initial="hidden"
+            >
+              {project.name}
+            </motion.h2>
+            <motion.p
+              className="client-feature-tagline"
+              variants={fadeUp}
+              animate="visible"
+              initial="hidden"
+            >
+              {project.type} · {project.year}
+            </motion.p>
+          </div>
+        )}
       </motion.div>
 
       {/* Body — swaps between default and expanded */}
@@ -569,44 +662,7 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.4, ease: ndsEase }}
           >
-            {/* Project heading */}
-            <div className="client-expand-heading">
-              <h3 className="client-expand-title">{project.name}</h3>
-              <p className="client-expand-subtitle">{project.type} · {project.year}</p>
-            </div>
-
-            {/* Brief / Strategy / Scope — 3-column */}
-            <div className="client-expand-meta">
-              <motion.div
-                className="client-expand-meta-item"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.05, ease: ndsEase }}
-              >
-                <span className="client-expand-meta-label">The Brief</span>
-                <p>{project.brief}</p>
-              </motion.div>
-              <motion.div
-                className="client-expand-meta-item"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1, ease: ndsEase }}
-              >
-                <span className="client-expand-meta-label">Strategy</span>
-                <p>{project.strategy}</p>
-              </motion.div>
-              <motion.div
-                className="client-expand-meta-item"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.15, ease: ndsEase }}
-              >
-                <span className="client-expand-meta-label">Scope</span>
-                <p>{project.scope}</p>
-              </motion.div>
-            </div>
-
-            {/* Modules — expandable subsections */}
+            {/* Modules — expandable subsections (lead with the work) */}
             <div className="client-expand-modules">
               <span className="client-expand-section-label">What I Built</span>
 
@@ -616,12 +672,14 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
                 return (
                   <motion.div
                     key={mod.id}
+                    ref={(el) => { if (el) moduleRefs.current[mod.id] = el }}
                     className="client-module-section"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.2 + mi * 0.06, ease: ndsEase }}
                   >
                     <button
+                      ref={(el) => { if (el) moduleButtonRefs.current[mod.id] = el }}
                       className={`client-module-row ${modExpanded ? 'active' : ''}`}
                       onClick={() => toggleModule(mod.id)}
                     >
@@ -647,6 +705,20 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
                           transition={{ duration: 0.4, ease: ndsEase }}
                         >
                           <div className="client-module-content-inner">
+                            {/* Website iframe */}
+                            {mod.websiteUrl && (
+                              <div className="client-module-iframe-container">
+                                <div className={`client-module-iframe-bar client-module-iframe-bar-${project.id === 'weatherfixers' ? 'weatherfixers' : 'petunis'}`}></div>
+                                <div className="client-module-iframe-wrap">
+                                  <iframe
+                                    src={mod.websiteUrl}
+                                    title={`${project.name} — ${mod.label}`}
+                                    className="client-module-iframe"
+                                  />
+                                </div>
+                              </div>
+                            )}
+
                             {/* Deliverables list */}
                             <div className="client-module-deliverables">
                               {mod.items.map((item, i) => (
@@ -656,17 +728,6 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
                                 </div>
                               ))}
                             </div>
-
-                            {/* Website iframe */}
-                            {mod.websiteUrl && (
-                              <div className="client-module-iframe-wrap">
-                                <iframe
-                                  src={mod.websiteUrl}
-                                  title={`${project.name} — ${mod.label}`}
-                                  className="client-module-iframe"
-                                />
-                              </div>
-                            )}
 
                             {/* Hero image */}
                             {mod.heroImage && (
@@ -718,6 +779,37 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
                   </motion.div>
                 )
               })}
+            </div>
+
+            {/* Brief / Strategy / Scope — below the work */}
+            <div className="client-expand-meta">
+              <motion.div
+                className="client-expand-meta-item"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.05, ease: ndsEase }}
+              >
+                <span className="client-expand-meta-label">The Brief</span>
+                <p>{project.brief}</p>
+              </motion.div>
+              <motion.div
+                className="client-expand-meta-item"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1, ease: ndsEase }}
+              >
+                <span className="client-expand-meta-label">Strategy</span>
+                <p>{project.strategy}</p>
+              </motion.div>
+              <motion.div
+                className="client-expand-meta-item"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.15, ease: ndsEase }}
+              >
+                <span className="client-expand-meta-label">Scope</span>
+                <p>{project.scope}</p>
+              </motion.div>
             </div>
 
             {/* Close button */}

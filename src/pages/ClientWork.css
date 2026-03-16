@@ -57,10 +57,10 @@ No modals. Progressive disclosure on-page.
   padding: var(--space-3xl) 0;
 }
 
-/* Header */
+/* Header — fills remaining space when expanded */
 .client-feature-number {
   font-family: var(--font-display);
-  font-size: clamp(5rem, 14vw, 12rem);
+  font-size: clamp(4rem, 12vw, 9rem);
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.04em;
@@ -71,7 +71,7 @@ No modals. Progressive disclosure on-page.
 
 .client-feature-name {
   font-family: var(--font-serif);
-  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-size: clamp(2.25rem, 5.5vw, 4rem);
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: -0.02em;
@@ -86,6 +86,74 @@ No modals. Progressive disclosure on-page.
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--warm-gray);
+}
+
+/* Viewport-fill layout when expanded — header grows, modules at bottom */
+.client-expand-viewport {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Snap scroll targets the number — position it fully below the header */
+.client-expand-viewport .client-feature-number {
+  scroll-margin-top: calc(var(--header-height) + 40px);
+}
+
+.client-expand-viewport .client-feature-header {
+  flex: 1;
+}
+
+.client-expand-viewport .client-feature-header-with-about {
+  align-content: center;
+}
+
+.client-expand-viewport .client-expand {
+  flex-shrink: 0;
+}
+
+/* Header with About — when expanded: number full-width, then name+about side by side */
+.client-feature-header-with-about {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+.client-feature-header-with-about .client-feature-number-full {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+
+.client-feature-header-with-about .client-feature-header-left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.client-feature-header-with-about .client-feature-header-about {
+  grid-column: 2;
+  grid-row: 2;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.client-feature-header-about-label {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.client-feature-header-about p {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--slate);
+  margin: 0;
 }
 
 /* Body — preview on left, details on right */
@@ -259,7 +327,10 @@ No modals. Progressive disclosure on-page.
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-lg);
+  margin-top: var(--space-2xl);
   margin-bottom: var(--space-xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--gray-200);
 }
 
 .client-expand-meta-item {
@@ -291,6 +362,30 @@ No modals. Progressive disclosure on-page.
 /* ==========================================
    IFRAME — Website preview inside module
    ========================================== */
+.client-module-iframe-container {
+  position: relative;
+}
+
+.client-module-iframe-bar {
+  position: absolute;
+  top: 0;
+  left: -1px;
+  right: -1px;
+  width: calc(100% + 2px);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.client-module-iframe-bar-petunis {
+  height: 62px;
+  background-color: var(--parchment);
+}
+
+.client-module-iframe-bar-weatherfixers {
+  height: 32px;
+  background-color: var(--cream);
+}
+
 .client-module-iframe-wrap {
   border: 1px solid rgba(0, 0, 0, 0.08);
   overflow: hidden;
@@ -304,24 +399,25 @@ No modals. Progressive disclosure on-page.
   border: none;
   background: white;
   display: block;
+  overflow-x: hidden;
 }
 
 /* ==========================================
    MODULES — Expandable Subsections
    ========================================== */
 .client-expand-modules {
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-lg);
 }
 
 .client-expand-section-label {
   font-family: var(--font-sans);
-  font-size: 0.75rem;
+  font-size: clamp(0.65rem, 1.2vw, 0.75rem);
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--warm-gray);
   display: block;
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-sm);
 }
 
 /* Module row — the clickable header */
@@ -629,6 +725,10 @@ No modals. Progressive disclosure on-page.
    RESPONSIVE
    ========================================== */
 @media (max-width: 1024px) {
+  .client-feature-header-with-about {
+    grid-template-columns: 1fr;
+  }
+
   .client-feature-body {
     grid-template-columns: 1fr;
     gap: var(--space-lg);
@@ -673,7 +773,11 @@ No modals. Progressive disclosure on-page.
   }
 
   .client-feature-number {
-    font-size: clamp(4rem, 20vw, 8rem);
+    font-size: clamp(3rem, 15vw, 6rem);
+  }
+
+  .client-feature-name {
+    font-size: clamp(1.75rem, 6vw, 3rem);
   }
 
   .client-feature-preview {
