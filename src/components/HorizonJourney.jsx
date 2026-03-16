@@ -632,7 +632,7 @@ function drawFogRevealText(ctx, w, h, revealP, stop, fogPatches) {
 // REVEAL 5: REFLECTION
 // Bold text above water + wavy reflection below
 // ═══════════════════════════════════════════
-function drawReflectionReveal(ctx, w, h, revealP, stop, sprites) {
+function drawReflectionReveal(ctx, w, h, revealP, stop, sprites, time) {
   const horizonY = h * 0.46
   const waterH = h - horizonY
 
@@ -711,7 +711,7 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites) {
   ctx.globalAlpha = fade * revealEased * 0.45
 
   for (let y = 0; y < offH; y += stripH) {
-    const waveOffset = Math.sin(y * 0.08 + revealP * 12) * (3 + y * 0.05)
+    const waveOffset = Math.sin(y * 0.08 + time * 1.6) * (3 + y * 0.05)
     const srcY = offH - y - stripH
     ctx.drawImage(
       offscreen,
@@ -724,7 +724,7 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites) {
   const rippleCX = w / 2
   const rippleCY = destY + offH / 2
   for (let ring = 0; ring < 5; ring++) {
-    const ringP = (revealP * 3 + ring * 0.2) % 1
+    const ringP = (time * 0.4 + ring * 0.2) % 1
     const ringR = ringP * Math.min(w, h) * 0.2
     const ringA = fade * (1 - ringP) * 0.08
 
@@ -746,7 +746,7 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites) {
 // Renders disc + glow to offscreen canvas, flips and distorts
 // strip-by-strip — same technique as the text reflection
 // ═══════════════════════════════════════════
-function drawCelestialReflection(ctx, w, h, bodyX, bodyY, bodyR, progress, color, alpha, sprites) {
+function drawCelestialReflection(ctx, w, h, bodyX, bodyY, bodyR, time, color, alpha, sprites) {
   const horizonY = h * 0.46
   const waterH = h - horizonY
   if (alpha < 0.01) return
@@ -810,9 +810,9 @@ function drawCelestialReflection(ctx, w, h, bodyX, bodyY, bodyR, progress, color
     // Keeps the general form recognizable while shimmering actively
     const waveAmp = Math.max(0, distFromHorizon) * 5 + 1.5
     const waveOffset =
-      Math.sin(y * 0.12 + progress * 28) * waveAmp
-      + Math.sin(y * 0.07 + progress * 22 + 1.5) * waveAmp * 0.6
-      + Math.sin(y * 0.20 + progress * 35 + 3.0) * waveAmp * 0.3
+      Math.sin(y * 0.12 + time * 1.8) * waveAmp
+      + Math.sin(y * 0.07 + time * 1.4 + 1.5) * waveAmp * 0.6
+      + Math.sin(y * 0.20 + time * 2.2 + 3.0) * waveAmp * 0.3
 
     // Source from bottom-up (flip)
     const srcY = offH - y - stripH
@@ -834,11 +834,11 @@ function drawCelestialReflection(ctx, w, h, bodyX, bodyY, bodyR, progress, color
 // ═══════════════════════════════════════════
 // LAKE TEXTURE — localized ripple patches, not blanket coverage
 // ═══════════════════════════════════════════
-function drawLakeTexture(ctx, w, h, progress, ripplePatches) {
+function drawLakeTexture(ctx, w, h, progress, ripplePatches, time) {
   const horizonY = h * 0.46
   const waterH = h - horizonY
 
-  // Choppiness peaks at midday
+  // Choppiness peaks at midday (still scroll-driven)
   const dayP = clamp01((progress - 0.14) / 0.66)
   const choppiness = Math.sin(dayP * Math.PI) * 0.85
   if (choppiness < 0.03) return
@@ -858,8 +858,8 @@ function drawLakeTexture(ctx, w, h, progress, ripplePatches) {
 
     if (localChop < 0.05) continue
 
-    // Animate: ripples expand and fade
-    const animPhase = (progress * patch.speed * 12 + patch.phase) % (Math.PI * 2)
+    // Animate: ripples expand and fade — time-driven for constant motion
+    const animPhase = (time * patch.speed * 1.5 + patch.phase) % (Math.PI * 2)
     const rippleAlpha = localChop * 0.06
 
     ctx.strokeStyle = rgb([255, 255, 255], rippleAlpha)
@@ -897,7 +897,7 @@ function drawLakeTexture(ctx, w, h, progress, ripplePatches) {
         const dx = px + (srand(patch.phase * 10 + d * 7) - 0.5) * patchSize * 2
         const dy = py + (srand(patch.phase * 10 + d * 13) - 0.5) * patchSize * 0.5
         const dLen = patchSize * (0.3 + srand(patch.phase * 10 + d * 19) * 0.4)
-        const waveY = Math.sin(dx * 0.03 + progress * 15) * localChop * 1.5
+        const waveY = Math.sin(dx * 0.03 + time * 2.0) * localChop * 1.5
         ctx.beginPath()
         ctx.moveTo(dx - dLen / 2, dy + waveY)
         ctx.lineTo(dx + dLen / 2, dy + waveY + localChop * 0.5)
@@ -910,10 +910,10 @@ function drawLakeTexture(ctx, w, h, progress, ripplePatches) {
   if (choppiness > 0.4) {
     const glintIntensity = (choppiness - 0.4) * 1.5
     for (let i = 0; i < 30; i++) {
-      const phase = progress * 15 + i * 7.3
+      const phase = time * 2.0 + i * 7.3
       const twinkle = (Math.sin(phase) * 0.5 + 0.5) * (Math.sin(phase * 1.7 + 2) * 0.5 + 0.5)
       if (twinkle < 0.4) continue
-      const gx = srand(i * 7 + 600 + Math.floor(progress * 8) * 3) * w
+      const gx = srand(i * 7 + 600 + Math.floor(time * 0.8) * 3) * w
       const gy = horizonY + srand(i * 13 + 601) * waterH * 0.6 + waterH * 0.05
       const gs = (0.8 + srand(i * 19 + 602) * 1.5) * choppiness
       ctx.globalAlpha = twinkle * glintIntensity * 0.12
@@ -928,7 +928,7 @@ function drawLakeTexture(ctx, w, h, progress, ripplePatches) {
 // ═══════════════════════════════════════════
 // MOON — rises in the same arc path as the sun
 // ═══════════════════════════════════════════
-function drawMoon(ctx, w, h, progress, rawProgress, sprites) {
+function drawMoon(ctx, w, h, progress, rawProgress, sprites, time) {
   const horizonY = h * 0.46
 
   // Moon rises starting at progress 0.68
@@ -1015,7 +1015,7 @@ function drawMoon(ctx, w, h, progress, rawProgress, sprites) {
 
     const shimmerCount = 20
     for (let i = 0; i < shimmerCount; i++) {
-      const phase = progress * 20 + i * 5.7
+      const phase = time * 2.5 + i * 5.7
       const twinkle = (Math.sin(phase) * 0.5 + 0.5) * (Math.sin(phase * 2.3 + 1) * 0.5 + 0.5)
       if (twinkle < 0.25) continue
 
@@ -1033,13 +1033,13 @@ function drawMoon(ctx, w, h, progress, rawProgress, sprites) {
   }
 
   // Moon reflection — rendered to offscreen, flipped with wave distortion
-  drawCelestialReflection(ctx, w, h, moonX, moonY, moonR, progress, [200, 215, 240], fadeIn * 0.18, sprites)
+  drawCelestialReflection(ctx, w, h, moonX, moonY, moonR, time, [200, 215, 240], fadeIn * 0.18, sprites)
 }
 
 // ═══════════════════════════════════════════
 // MAIN DRAW FUNCTION
 // ═══════════════════════════════════════════
-function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
+function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
   ctx.clearRect(0, 0, w, h)
 
   // ═══════ PROGRESS REMAPPING ═══════
@@ -1293,13 +1293,13 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
   }
 
   // ═══════ MOON (rises as sun sets — keeps moving as section scrolls away) ═══════
-  drawMoon(ctx, w, h, progress, rawProgress, sprites)
+  drawMoon(ctx, w, h, progress, rawProgress, sprites, time)
 
   // ═══════ REFLECTION REVEAL (overlaps with fog fade) ═══════
   const c4 = CONTENT_STOPS[4]
   const c4p = clamp01((progress - c4.at) / c4.duration)
   if (c4p > 0 && c4p < 1) {
-    drawReflectionReveal(ctx, w, h, c4p, c4, sprites)
+    drawReflectionReveal(ctx, w, h, c4p, c4, sprites, time)
   }
 
   // ═══════ SUN REFLECTION ON WATER (wavy strip distortion) ═══════
@@ -1307,11 +1307,11 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites) {
     const sunArcP = clamp01((progress - 0.14) / 0.66)
     const noonness = Math.sin(sunArcP * Math.PI)
     const refColor = lerpColor([255, 180, 80], [255, 240, 200], noonness)
-    drawCelestialReflection(ctx, w, h, sunX, sunY, sunR, progress, refColor, 0.30, sprites)
+    drawCelestialReflection(ctx, w, h, sunX, sunY, sunR, time, refColor, 0.30, sprites)
   }
 
   // ═══════ LAKE TEXTURE (localized ripple patches) ═══════
-  drawLakeTexture(ctx, w, h, progress, sceneData.ripplePatches)
+  drawLakeTexture(ctx, w, h, progress, sceneData.ripplePatches, time)
 
   // ═══════ LANDSCAPE MIST / FOG ═══════
   // Morning mist
@@ -1479,7 +1479,8 @@ function HorizonJourney() {
     window.addEventListener('resize', resize)
 
     function render() {
-      drawHorizon(ctx, cw, ch, progressRef.current, sceneData, sprites)
+      const time = performance.now() * 0.001 // seconds, for continuous water shimmer
+      drawHorizon(ctx, cw, ch, progressRef.current, sceneData, sprites, time)
       animFrameRef.current = requestAnimationFrame(render)
     }
     render()
