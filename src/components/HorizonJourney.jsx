@@ -111,43 +111,46 @@ const CONTENT_STOPS = [
 // ═══════════════════════════════════════════
 // TEXT PARTICLE SAMPLING
 // ═══════════════════════════════════════════
-// 3-4 simple constellations that span behind the text area
+// 2-3 compact constellations centered directly behind the text area
 // Each is defined in normalized coords (0–1) relative to the text block
 function generateConstellations(seed) {
   const constellations = [
-    // Upper-left: a gentle arc (like Cassiopeia)
+    // Center-left: angular shape like Cassiopeia, behind "Every system has"
     {
       stars: [
-        { x: 0.08, y: 0.15 }, { x: 0.16, y: 0.08 }, { x: 0.26, y: 0.12 },
-        { x: 0.34, y: 0.05 }, { x: 0.42, y: 0.10 },
+        { x: 0.18, y: 0.22 }, { x: 0.28, y: 0.15 }, { x: 0.38, y: 0.24 },
+        { x: 0.48, y: 0.16 }, { x: 0.55, y: 0.28 },
       ],
       edges: [[0,1],[1,2],[2,3],[3,4]],
     },
-    // Center-right: a kite / diamond shape
+    // Center-right: a kite shape, behind "a pattern. I find it."
     {
       stars: [
-        { x: 0.62, y: 0.10 }, { x: 0.72, y: 0.25 }, { x: 0.62, y: 0.45 },
-        { x: 0.52, y: 0.25 }, { x: 0.78, y: 0.08 },
+        { x: 0.50, y: 0.42 }, { x: 0.62, y: 0.52 }, { x: 0.50, y: 0.68 },
+        { x: 0.38, y: 0.52 }, { x: 0.68, y: 0.38 },
       ],
       edges: [[0,1],[1,2],[2,3],[3,0],[0,4]],
     },
-    // Lower-left: a small triangle with tail
+    // Spanning bridge between upper-left and center — behind the gap
     {
       stars: [
-        { x: 0.12, y: 0.55 }, { x: 0.22, y: 0.48 }, { x: 0.20, y: 0.65 },
-        { x: 0.30, y: 0.72 }, { x: 0.06, y: 0.70 },
+        { x: 0.30, y: 0.35 }, { x: 0.42, y: 0.38 }, { x: 0.56, y: 0.34 },
+        { x: 0.72, y: 0.30 },
       ],
-      edges: [[0,1],[1,2],[2,0],[2,3],[0,4]],
-    },
-    // Lower-right: a zigzag line (like part of Orion's belt extended)
-    {
-      stars: [
-        { x: 0.58, y: 0.60 }, { x: 0.68, y: 0.55 }, { x: 0.76, y: 0.65 },
-        { x: 0.85, y: 0.58 }, { x: 0.92, y: 0.68 }, { x: 0.88, y: 0.78 },
-      ],
-      edges: [[0,1],[1,2],[2,3],[3,4],[4,5]],
+      edges: [[0,1],[1,2],[2,3]],
     },
   ]
+
+  // Also generate a field of background shimmer stars (not part of constellations)
+  const shimmerStars = []
+  for (let i = 0; i < 50; i++) {
+    shimmerStars.push({
+      x: srand(seed + i * 7 + 300) * 0.9 + 0.05,
+      y: srand(seed + i * 13 + 400) * 0.85 + 0.05,
+      size: 0.3 + srand(seed + i * 19 + 500) * 0.7,
+      phase: srand(seed + i * 29 + 600) * Math.PI * 2,
+    })
+  }
 
   // Flatten into the points/lines format expected by the draw function
   const points = []
@@ -170,7 +173,7 @@ function generateConstellations(seed) {
     offset += c.stars.length
   })
 
-  return { points, lines, count: constellations.length }
+  return { points, lines, shimmerStars, count: constellations.length }
 }
 
 // Sample text pixels — still used for cloud particle targets
@@ -346,9 +349,10 @@ function createStarGlow() {
 
 // ═══════════════════════════════════════════
 // REVEAL 1: CONSTELLATION
+// Shimmer field → stars brighten → lines connect → text emerges
 // ═══════════════════════════════════════════
 function drawConstellationReveal(ctx, w, h, revealP, stop, data, sprites) {
-  const { points, lines } = data
+  const { points, lines, shimmerStars } = data
   const horizonY = h * 0.46
 
   const blockW = w * 0.75
@@ -362,55 +366,89 @@ function drawConstellationReveal(ctx, w, h, revealP, stop, data, sprites) {
 
   ctx.save()
 
-  // Stagger: constellations appear one by one over the first 50% of the reveal
-  const starsP = clamp01(revealP / 0.50)
-  const linesP = clamp01((revealP - 0.15) / 0.40)
-  const glowP = clamp01((revealP - 0.45) / 0.3)
+  // Phase timeline:
+  // 0.00-0.20: shimmer field fades in — scattered stars twinkle
+  // 0.10-0.35: constellation stars brighten and pulse brighter than field
+  // 0.20-0.50: lines draw between constellation stars
+  // 0.40-0.60: text fades in from the constellation pattern
+  // 0.85-1.00: everything fades out
 
-  // Draw constellation lines
+  const shimmerP = clamp01(revealP / 0.20)        // field appears
+  const constStarP = clamp01((revealP - 0.10) / 0.25) // constellation stars intensify
+  const linesP = clamp01((revealP - 0.20) / 0.30) // lines connect
+  const textP = clamp01((revealP - 0.40) / 0.20)  // text emerges
+
+  // Background shimmer field — many faint twinkling stars
+  if (shimmerP > 0) {
+    for (let i = 0; i < shimmerStars.length; i++) {
+      const st = shimmerStars[i]
+      const px = blockX + st.x * blockW
+      const py = blockY + st.y * blockH
+      const twinkle = 0.4 + 0.6 * Math.sin(revealP * 30 + st.phase)
+      const s = st.size * 2
+      // Shimmer field fades out as text appears, keeping just a few bright ones
+      const fieldFade = 1 - textP * 0.7
+      ctx.globalAlpha = fade * shimmerP * twinkle * 0.25 * fieldFade
+      ctx.drawImage(sprites.starGlow, px - s, py - s, s * 2, s * 2)
+    }
+  }
+
+  // Constellation stars — brighter, pulsing, emerge from the field
+  if (constStarP > 0) {
+    for (let i = 0; i < points.length; i++) {
+      const p = points[i]
+      const starAppear = clamp01((constStarP - p.delay) / 0.2)
+      if (starAppear <= 0) continue
+      const px = blockX + p.x * blockW
+      const py = blockY + p.y * blockH
+      // Strong pulse as they "activate"
+      const pulse = 0.6 + 0.4 * Math.sin(revealP * 20 + i * 2.7)
+      const s = (p.size + 0.5) * pulse * 3
+      ctx.globalAlpha = fade * starAppear * pulse
+      ctx.drawImage(sprites.starGlow, px - s, py - s, s * 2, s * 2)
+    }
+  }
+
+  // Lines connecting constellation stars — drawn progressively
   if (linesP > 0) {
     ctx.lineWidth = 1
     for (let i = 0; i < lines.length; i++) {
       const [a, b] = lines[i]
       const pa = points[a], pb = points[b]
-      // Stagger by constellation group
-      const groupDelay = pa.constellation * 0.12
-      const lineAlpha = clamp01((linesP - groupDelay) / 0.25)
-      if (lineAlpha <= 0) continue
-      ctx.strokeStyle = rgb([150, 180, 255], fade * lineAlpha * 0.3)
+      // Stagger by constellation group then by edge index within group
+      const groupDelay = pa.constellation * 0.15
+      const edgeDelay = groupDelay + (i % 5) * 0.05
+      const lineProgress = clamp01((linesP - edgeDelay) / 0.20)
+      if (lineProgress <= 0) continue
+
+      const ax = blockX + pa.x * blockW
+      const ay = blockY + pa.y * blockH
+      const bx = blockX + pb.x * blockW
+      const by = blockY + pb.y * blockH
+
+      // Draw partial line (grows from a to b)
+      const ex = ax + (bx - ax) * easeOutCubic(lineProgress)
+      const ey = ay + (by - ay) * easeOutCubic(lineProgress)
+
+      ctx.strokeStyle = rgb([150, 180, 255], fade * lineProgress * 0.35)
       ctx.beginPath()
-      ctx.moveTo(blockX + pa.x * blockW, blockY + pa.y * blockH)
-      ctx.lineTo(blockX + pb.x * blockW, blockY + pb.y * blockH)
+      ctx.moveTo(ax, ay)
+      ctx.lineTo(ex, ey)
       ctx.stroke()
     }
   }
 
-  // Draw stars
-  if (starsP > 0) {
-    for (let i = 0; i < points.length; i++) {
-      const p = points[i]
-      const starAppear = clamp01((starsP - p.delay) / 0.2)
-      if (starAppear <= 0) continue
-      const px = blockX + p.x * blockW
-      const py = blockY + p.y * blockH
-      const twinkle = 0.7 + 0.3 * Math.sin(revealP * 25 + i * 3.1)
-      const s = (p.size + 0.5) * twinkle * 2.5
-      ctx.globalAlpha = fade * starAppear * twinkle
-      ctx.drawImage(sprites.starGlow, px - s, py - s, s * 2, s * 2)
-    }
-  }
-
-  // Draw text over constellations
-  if (glowP > 0) {
+  // Text emerges — as if forming from the constellation pattern
+  if (textP > 0) {
     const fontSize = Math.min(w * 0.045, 48)
     const lineH = fontSize * 1.3
-    ctx.globalAlpha = 1
+    const textAlpha = easeOutCubic(textP)
     ctx.font = `300 ${fontSize}px "Instrument Serif", Georgia, serif`
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
     ctx.shadowColor = 'rgba(150, 180, 255, 0.8)'
-    ctx.shadowBlur = 20 * glowP
-    ctx.fillStyle = rgb([200, 220, 255], fade * glowP * 0.9)
+    ctx.shadowBlur = 25 * (1 - textP) + 8  // stronger glow at first, then settles
+    ctx.fillStyle = rgb([200, 220, 255], fade * textAlpha * 0.9)
 
     const textX = w / 2
     const textY = blockY + blockH * 0.3
@@ -418,16 +456,16 @@ function drawConstellationReveal(ctx, w, h, revealP, stop, data, sprites) {
       ctx.fillText(line, textX, textY + i * lineH)
     })
 
-    ctx.shadowBlur = 10 * glowP
+    ctx.shadowBlur = 10 * textAlpha
     ctx.font = `700 ${Math.min(w * 0.012, 11)}px "Inter", sans-serif`
     ctx.letterSpacing = '0.2em'
-    ctx.fillStyle = rgb([150, 180, 255], fade * glowP * 0.6)
+    ctx.fillStyle = rgb([150, 180, 255], fade * textAlpha * 0.6)
     ctx.fillText(stop.label, textX, textY - fontSize * 0.8)
     ctx.letterSpacing = '0'
 
-    ctx.shadowBlur = 8 * glowP
+    ctx.shadowBlur = 8 * textAlpha
     ctx.font = `400 ${Math.min(w * 0.016, 15)}px "Crimson Text", Georgia, serif`
-    ctx.fillStyle = rgb([180, 200, 240], fade * glowP * 0.6)
+    ctx.fillStyle = rgb([180, 200, 240], fade * textAlpha * 0.6)
     ctx.fillText(stop.sub, textX, textY + stop.text.length * lineH + fontSize * 0.5)
 
     ctx.shadowBlur = 0
@@ -949,6 +987,14 @@ function drawCelestialReflection(ctx, w, h, bodyX, bodyY, bodyR, time, color, al
   // Height above horizon determines reflection distance below horizon
   const heightAbove = horizonY - bodyY
   if (heightAbove < 0) return // below horizon, no reflection
+
+  // Mountains extend ~0.04*h above horizon — don't show reflection until body
+  // has cleared the mountain peaks, and fade in gradually
+  const mountainClearance = h * 0.04
+  if (heightAbove < mountainClearance * 0.5) {
+    alpha *= clamp01((heightAbove - mountainClearance * 0.1) / (mountainClearance * 0.4))
+    if (alpha < 0.005) return
+  }
 
   // Render the disc + glow to offscreen canvas
   const offscreen = sprites.reflectionCanvas
@@ -1534,8 +1580,8 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
 
       if (i === 0) {
         const fade = sp < 0.12 ? sp / 0.12 : sp > 0.85 ? (1 - sp) / 0.15 : 1
-        const glowP = clamp01((sp - 0.45) / 0.3)
-        alpha = fade * glowP * 0.9
+        const textAppear = clamp01((sp - 0.40) / 0.20)
+        alpha = fade * textAppear * 0.9
       } else if (i === 1) {
         const fade = sp < 0.06 ? sp / 0.06 : sp > 0.88 ? (1 - sp) / 0.12 : 1
         const textP = easeOutCubic(clamp01((sp - 0.30) / 0.15))
