@@ -198,7 +198,7 @@ const clientProjects = [
       {
         id: 'website',
         label: 'Website Design',
-        websiteUrl: 'https://gunnarneuman7.wixsite.com/website-4/our-team',
+        websiteUrl: 'https://gunnarneuman7.wixsite.com/website-4',
         items: [
           'Complete homepage redesign',
           'Services overview & information architecture',
