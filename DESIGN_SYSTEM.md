@@ -368,7 +368,7 @@ Mobile should feel **just as refined** as desktop, not like an afterthought.
 ### Contact Page (to be built)
 - **Simple form:** No bullshit, just name/email/message
 - **Direct:** "I'm looking for full-time opportunities"
-- **Location:** Madison, WI (open to relocation)
+- **Location:** Milwaukee, WI (open to relocation)
 
 ---
 

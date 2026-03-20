@@ -105,7 +105,7 @@ The two photo sections currently have gradient placeholders:
 - Simple, centered form
 - Direct headline: "Get in Touch"
 - Name, email, subject dropdown, message textarea
-- Location info: "Based in Madison, WI"
+- Location info: "Based in Milwaukee, WI"
 - Submit button
 
 **Key styles to use:**

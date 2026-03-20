@@ -98,7 +98,7 @@ function Contact() {
               </div>
               <div className="hero-meta-item">
                 <span className="hero-meta-label">Based in</span>
-                <span className="hero-meta-value">Madison, WI</span>
+                <span className="hero-meta-value">Milwaukee, WI</span>
               </div>
               <div className="hero-meta-item">
                 <span className="hero-meta-label">Response</span>
@@ -231,7 +231,7 @@ function Contact() {
                 </div>
                 <div className="info-item">
                   <h3>Location</h3>
-                  <p>Madison, WI</p>
+                  <p>Milwaukee, WI</p>
                   <p className="location-note">Open to relocation/remote</p>
                 </div>
               </div>

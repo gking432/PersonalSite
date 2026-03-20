@@ -293,7 +293,7 @@ Each project gets a card with:
 **Alternative Contact Methods**
 - Email: gunnarneuman14@gmail.com
 - LinkedIn: [link]
-- Location: Madison, WI (open to relocation/remote)
+- Location: Milwaukee, WI (open to relocation/remote)
 
 **Availability Section**
 - "Currently seeking: Full-time marketing leadership roles with ambitious, growing companies"

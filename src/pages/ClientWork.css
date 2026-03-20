@@ -160,10 +160,56 @@ No modals. Progressive disclosure on-page.
 .client-feature-body {
   display: grid;
   grid-template-columns: 1fr 2fr;
+  align-items: start;
   gap: var(--space-xl);
   margin-top: var(--space-xl);
   padding-top: var(--space-xl);
   border-top: 1px solid var(--gray-200);
+}
+
+.client-feature-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-width: 0;
+}
+
+/*
+ * Screenshot projects (Elevate, WeatherFixers): row height = details content only;
+ * left column stretches to match — no extra empty space inside .client-feature-details.
+ */
+.client-feature-body--screenshot {
+  align-items: stretch;
+}
+
+.client-feature-body--screenshot .client-feature-details {
+  align-self: start;
+  height: fit-content;
+}
+
+.client-feature-body--screenshot .client-feature-left {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.client-feature-body--screenshot .client-feature-screenshot {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  aspect-ratio: unset;
+  background: transparent;
+}
+
+.client-feature-body--screenshot .client-feature-screenshot img {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
 }
 
 /* Left column — preview images or scope */
@@ -194,15 +240,10 @@ No modals. Progressive disclosure on-page.
   transform: scale(1.08);
 }
 
+/* Screenshot card shell (sizing filled in .client-feature-body--screenshot) */
 .client-feature-screenshot {
   border: 1px solid rgba(0, 0, 0, 0.06);
   overflow: hidden;
-}
-
-.client-feature-screenshot img {
-  width: 100%;
-  height: auto;
-  display: block;
 }
 
 .client-feature-scope {
@@ -386,11 +427,46 @@ No modals. Progressive disclosure on-page.
   background-color: var(--cream);
 }
 
+/* Same height as WeatherFixers strip; Petunis parchment color */
+.client-module-iframe-bar-elevate {
+  height: 32px;
+  background-color: var(--parchment);
+}
+
+/* Petunis bar height; .client-feature-alt / squeezed hospice band (cream) */
+.client-module-iframe-bar-hospice {
+  height: 62px;
+  background-color: var(--cream);
+}
+
 .client-module-iframe-wrap {
   border: 1px solid rgba(0, 0, 0, 0.08);
   overflow: hidden;
   position: relative;
   aspect-ratio: 16 / 9;
+}
+
+.client-module-external-link {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  margin-top: var(--space-lg);
+  padding: 12px 28px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--forest-green);
+  border: 2px solid var(--forest-green);
+  background: transparent;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.client-module-external-link:hover {
+  background: var(--forest-green);
+  color: var(--cream);
 }
 
 .client-module-iframe {

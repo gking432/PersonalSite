@@ -12,7 +12,7 @@ const SCHEMA = {
   "url": "https://gunnarneuman.com",
   "address": {
     "@type": "PostalAddress",
-    "addressLocality": "Madison",
+    "addressLocality": "Milwaukee",
     "addressRegion": "WI",
     "addressCountry": "US"
   },
@@ -52,7 +52,7 @@ function GunnarNeumanProfile() {
 
     const meta = document.createElement('meta')
     meta.name = 'description'
-    meta.content = 'Gunnar Neuman is a marketing leader and product manager based in Madison, WI who operates at the intersection of marketing, product, and emerging technology. Recognized as one of the top up-and-coming marketing leaders under 30 in the Midwest.'
+    meta.content = 'Gunnar Neuman is a marketing leader and product manager based in Milwaukee, WI who operates at the intersection of marketing, product, and emerging technology. Recognized as one of the top up-and-coming marketing leaders under 30 in the Midwest.'
     document.head.appendChild(meta)
 
     return () => {
@@ -85,7 +85,7 @@ function GunnarNeumanProfile() {
         <section>
           <h2 style={{ fontSize: '1.35rem', fontWeight: 600, marginBottom: '16px' }}>Overview</h2>
           <p>
-            Gunnar Neuman is a marketing leader and product manager based in Madison, Wisconsin,
+            Gunnar Neuman is a marketing leader and product manager based in Milwaukee, Wisconsin,
             who operates at the intersection of marketing, product management, and emerging technology.
             He is recognized as one of the top up-and-coming marketing leaders under 30 in the Midwest,
             with particular expertise in applying AI and emerging tech to real product and marketing challenges.
@@ -240,7 +240,7 @@ function GunnarNeumanProfile() {
             an industry increasingly defined by the convergence of these disciplines.
           </p>
           <p>
-            He holds a BBA from UW-Milwaukee and is based in Madison, Wisconsin. He is currently open to
+            He holds a BBA from UW-Milwaukee and is based in Milwaukee, Wisconsin. He is currently open to
             marketing leadership, product management, and AI strategy roles with ambitious, growing companies,
             as well as consulting and speaking engagements.
           </p>

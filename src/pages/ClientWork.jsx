@@ -8,9 +8,24 @@ import petunisAds from '../data/petunis-ads.json'
 import petunisDesignFiles from '../data/petunis-designfiles.json'
 import weatherfixersAds from '../data/weatherfixers-ads.json'
 import weatherfixersPostcards from '../data/weatherfixers-postcards.json'
+import elevateMerchandising from '../data/elevate-merchandising.json'
+import elevateDesignFiles from '../data/elevate-designfiles.json'
 import './ClientWork.css'
 
 const ndsEase = [0.22, 1, 0.36, 1]
+
+function iframeBarClassForProject(projectId) {
+  switch (projectId) {
+    case 'weatherfixers':
+      return 'weatherfixers'
+    case 'elevate-apparel':
+      return 'elevate'
+    case 'hospice-nonprofit':
+      return 'hospice'
+    default:
+      return 'petunis'
+  }
+}
 
 const clientProjects = [
   {
@@ -128,51 +143,45 @@ const clientProjects = [
     id: 'elevate-apparel',
     year: '2024',
     name: 'Elevate Apparel',
-    type: 'Brand & Ad Creative',
-    shortDesc: 'Print-on-demand gymwear brand. Brand identity design with targeted ad creative for fitness enthusiasts.',
-    description: 'Create brand identity and advertising creative for a print-on-demand activewear brand targeting gym-goers and fitness enthusiasts.',
-    brief: 'Design a bold, high-energy brand that stands out in the crowded activewear market with aspirational messaging and clean product visuals.',
-    strategy: 'Developed a bold, high-energy brand aesthetic that stands out in the crowded activewear market. Focused on aspirational messaging and clean product photography for ad campaigns.',
-    scope: 'Complete brand package, ad creative suite, social media templates, and full product line designs.',
-    screenshotLabel: 'Elevate Apparel Brand',
+    type: 'eCommerce & Merchandising',
+    shortDesc: 'Wix Studio storefront for a print-on-demand activewear line, plus merchandising and design-file imagery for the catalog.',
+    about: 'Built the Elevate Outfits shop on Wix Studio and produced merchandising visuals and design files to support the product line and online store.',
+    description: 'Design and launch a shoppable eCommerce site for a print-on-demand gymwear brand, and deliver merchandising imagery and design files aligned with the collections.',
+    brief: 'Ship a full eCommerce experience on Wix Studio and provide merchandising assets and design-ready files for products and collections.',
+    strategy: 'Organized the site around collections and product discovery, then delivered consistent merchandising imagery and design files that match how the products appear in the store.',
+    scope: 'Website design and build (Wix Studio), merchandising imagery, and design file outputs for the catalog.',
+    screenshotLabel: 'Elevate Outfits',
+    screenshotImage: '/Elevate%20Merchandising/elevate-card-preview.png',
     modules: [
       {
-        id: 'ads',
-        label: 'Advertisements',
+        id: 'website',
+        label: 'Website',
+        websiteUrl: 'https://gunnarneuman7.wixstudio.com/my-site-19',
         items: [
-          'Instagram feed ads with lifestyle imagery',
-          'Facebook dynamic product ads',
-          'TikTok short-form video ads',
-          'Ad copy & campaign structure',
-          'A/B tested creative variations'
+          'Wix Studio eCommerce storefront (Elevate Outfits)',
+          'Collections: Astro, Joggers, Retro, Classic',
+          'Homepage hero & brand story',
+          'Shop navigation, quick view & product pages',
+          'Mobile-responsive layout',
+          'Checkout & payment methods'
         ]
       },
       {
-        id: 'brand',
-        label: 'Brand Design',
+        id: 'merchandising',
+        label: 'Merchandising',
+        merchandisingFolder: 'Elevate Merchandising',
+        merchandisingFiles: elevateMerchandising,
+        designFilesImages: elevateDesignFiles,
         items: [
-          'Logo & wordmark system',
-          'Color palette & typography',
-          'Brand guidelines document',
-          'Social media templates',
-          'Packaging mockups',
-          'Pattern & textile designs'
-        ]
-      },
-      {
-        id: 'product',
-        label: 'Product Mockups',
-        items: [
-          'Leggings & shorts designs',
-          'Tank top & sports bra designs',
-          'Hoodie & jacket designs',
-          'Lifestyle mockup renders',
-          'Flat lay compositions',
-          'Size chart graphics'
+          'Merchandising imagery for collections and PDPs',
+          'Design files for catalog and production handoff',
+          'Consistent product presentation across SKUs',
+          'Hero and collection-ready visuals',
+          'Assets sized for eCommerce and social use'
         ]
       }
     ],
-    tech: ['Brand Design', 'Ad Creative', 'Print on Demand', 'Paid Social']
+    tech: ['Web Design', 'Wix Studio', 'eCommerce', 'Merchandising']
   },
   {
     id: 'hospice-nonprofit',
@@ -189,40 +198,45 @@ const clientProjects = [
       {
         id: 'website',
         label: 'Website Design',
+        websiteUrl: 'https://gunnarneuman7.wixsite.com/website-4/our-team',
         items: [
           'Complete homepage redesign',
-          'Services overview section',
-          'Team & about page',
-          'Contact & referral forms',
+          'Services overview & information architecture',
+          'Simplified navigation & clear CTAs',
+          'Team, about, contact & referral flows',
           'Donation page redesign',
+          'Mobile-responsive layouts & accessibility',
           'Resource library layout'
         ]
       },
       {
-        id: 'ux',
-        label: 'UX & Navigation',
+        id: 'social',
+        label: 'Social Media',
+        externalLinkUrl: 'https://www.instagram.com/pattimeansministry/',
+        externalLinkLabel: 'View on Instagram',
         items: [
-          'Information architecture audit',
-          'Simplified navigation structure',
-          'Clear calls-to-action placement',
-          'Mobile-responsive layouts',
-          'Accessibility improvements',
-          'User flow optimization'
+          'Feed & story templates for Facebook & Instagram',
+          'Awareness & fundraising campaign graphics',
+          'Community engagement post series',
+          'Compassionate copy aligned to brand voice',
+          'Testimonial & story layouts for social',
+          'Event & giving-day promotional creative'
         ]
       },
       {
-        id: 'content',
-        label: 'Content',
+        id: 'merchandising',
+        label: 'Merchandising',
         items: [
-          'Compassionate copywriting',
-          'Service descriptions',
-          'FAQ content',
-          'Testimonial layouts',
-          'Blog post templates'
+          'Brochures & flyers for outreach & events',
+          'Donor & family leave-behind print pieces',
+          'Event signage, banners & table displays',
+          'Volunteer recognition & staff materials',
+          'Branded merchandise concepts for fundraising',
+          'Service one-pagers & FAQ handouts'
         ]
       }
     ],
-    tech: ['Web Design', 'UX', 'Nonprofit', 'Responsive Design']
+    tech: ['Website Design', 'Social Media', 'Merchandising']
   },
   {
     id: 'blue-lizard',
@@ -455,6 +469,100 @@ function MerchandisingTabs({ mod }) {
   )
 }
 
+/* ─── Elevate: Merchandise + Design Files (two tabs) ─── */
+function ElevateMerchandisingTabs({ mod }) {
+  const [activeTab, setActiveTab] = useState('merchandise')
+  const scrollRef = useRef(null)
+
+  const tabs = [
+    { id: 'merchandise', label: 'Merchandise' },
+    { id: 'designs', label: 'Design Files' }
+  ]
+
+  const basePath = mod.merchandisingFolder.split('/').map(encodeURIComponent).join('/')
+  const buildSrc = (relativePath) =>
+    `/${basePath}/${relativePath.split('/').map(encodeURIComponent).join('/')}`
+
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId)
+    if (scrollRef.current) scrollRef.current.scrollTop = 0
+  }
+
+  return (
+    <div className="merch-tabs">
+      <div className="merch-tabs-header">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            className={`merch-tab ${activeTab === tab.id ? 'active' : ''}`}
+            onClick={() => handleTabChange(tab.id)}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="merch-tabs-viewport" ref={scrollRef}>
+        <AnimatePresence mode="wait">
+          {activeTab === 'merchandise' && (
+            <motion.div
+              key="merchandise"
+              className="merch-tabs-panel"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: ndsEase }}
+            >
+              <div className="client-module-teams-grid">
+                {mod.merchandisingFiles.map((filename) => (
+                  <img
+                    key={filename}
+                    src={buildSrc(filename)}
+                    alt=""
+                    loading="lazy"
+                  />
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'designs' && (
+            <motion.div
+              key="designs"
+              className="merch-tabs-panel"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: ndsEase }}
+            >
+              <div className="client-module-design-grid">
+                {mod.designFilesImages
+                  .slice()
+                  .sort((a, b) => {
+                    const folderCmp = a.split('/')[0].localeCompare(b.split('/')[0])
+                    if (folderCmp !== 0) return folderCmp
+                    const na = parseInt(a.split('/').pop().replace(/\D/g, ''), 10) || 0
+                    const nb = parseInt(b.split('/').pop().replace(/\D/g, ''), 10) || 0
+                    return na - nb
+                  })
+                  .map((filename) => (
+                    <div key={filename} className="client-module-design-item">
+                      <img
+                        src={buildSrc(filename)}
+                        alt=""
+                        loading="lazy"
+                      />
+                    </div>
+                  ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  )
+}
+
 /* ─── Inline Project Section ─── */
 function ProjectSection({ project, index, isExpanded, onToggle }) {
   const isAlt = index % 2 !== 0
@@ -600,7 +708,7 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
           /* ─── DEFAULT VIEW ─── */
           <motion.div
             key="default"
-            className="client-feature-body"
+            className={`client-feature-body${!project.featured && project.screenshotImage ? ' client-feature-body--screenshot' : ''}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -705,15 +813,17 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
                           transition={{ duration: 0.4, ease: ndsEase }}
                         >
                           <div className="client-module-content-inner">
-                            {/* Website iframe */}
                             {mod.websiteUrl && (
                               <div className="client-module-iframe-container">
-                                <div className={`client-module-iframe-bar client-module-iframe-bar-${project.id === 'weatherfixers' ? 'weatherfixers' : 'petunis'}`}></div>
+                                <div
+                                  className={`client-module-iframe-bar client-module-iframe-bar-${iframeBarClassForProject(project.id)}`}
+                                />
                                 <div className="client-module-iframe-wrap">
                                   <iframe
                                     src={mod.websiteUrl}
                                     title={`${project.name} — ${mod.label}`}
                                     className="client-module-iframe"
+                                    loading="lazy"
                                   />
                                 </div>
                               </div>
@@ -728,6 +838,17 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
                                 </div>
                               ))}
                             </div>
+
+                            {mod.externalLinkUrl && (
+                              <a
+                                href={mod.externalLinkUrl}
+                                className="client-module-external-link"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {mod.externalLinkLabel || 'View work'}
+                              </a>
+                            )}
 
                             {/* Hero image */}
                             {mod.heroImage && (
@@ -766,6 +887,11 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
                                   )
                                 })}
                               </div>
+                            )}
+
+                            {/* Elevate — Merchandise / Design Files tabs */}
+                            {mod.merchandisingFolder && mod.merchandisingFiles && mod.designFilesImages && (
+                              <ElevateMerchandisingTabs mod={mod} />
                             )}
 
                             {/* Tabbed gallery — For Pets / For People / Design Files */}
