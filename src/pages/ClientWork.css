@@ -57,16 +57,31 @@ No modals. Progressive disclosure on-page.
   padding: var(--space-3xl) 0;
 }
 
-/* Header — fills remaining space when expanded */
+/* Header — number sits left of title + tagline */
+.client-feature-header-left {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: clamp(1rem, 3vw, 2.25rem);
+}
+
+.client-feature-header-text {
+  flex: 1;
+  min-width: 0;
+}
+
 .client-feature-number {
   font-family: var(--font-display);
-  font-size: clamp(4rem, 12vw, 9rem);
+  font-size: clamp(3rem, 10vw, 7rem);
   font-weight: 700;
-  line-height: 1;
+  line-height: 0.92;
   letter-spacing: -0.04em;
   color: var(--gray-200);
-  display: block;
-  margin-bottom: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.client-feature-header-left .client-feature-number {
+  margin: 0;
 }
 
 .client-feature-name {
@@ -112,30 +127,21 @@ No modals. Progressive disclosure on-page.
   flex-shrink: 0;
 }
 
-/* Header with About — when expanded: number full-width, then name+about side by side */
+/* Header with About — expanded: (number + title) | About */
 .client-feature-header-with-about {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto;
   gap: var(--space-lg);
   align-items: start;
 }
 
-.client-feature-header-with-about .client-feature-number-full {
-  grid-column: 1 / -1;
-  grid-row: 1;
-}
-
-.client-feature-header-with-about .client-feature-header-left {
-  grid-column: 1;
-  grid-row: 2;
-}
-
 .client-feature-header-with-about .client-feature-header-about {
-  grid-column: 2;
-  grid-row: 2;
   padding-top: 0;
   margin-top: 0;
+}
+
+.client-feature-header-with-about > .client-feature-header-left:only-child {
+  grid-column: 1 / -1;
 }
 
 .client-feature-header-about-label {
@@ -720,6 +726,18 @@ No modals. Progressive disclosure on-page.
   background: rgba(26, 58, 46, 0.03);
 }
 
+.merch-tabs-header--single .merch-tab--single {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  user-select: none;
+}
+
+.merch-tabs-header--single .merch-tab--single:hover {
+  color: var(--forest-green);
+}
+
 .merch-tabs-viewport {
   max-height: 70vh;
   overflow-y: auto;
@@ -846,6 +864,11 @@ No modals. Progressive disclosure on-page.
 
   .client-feature-alt {
     padding: var(--space-2xl) 0;
+  }
+
+  .client-feature-header-left {
+    flex-direction: column;
+    gap: var(--space-sm);
   }
 
   .client-feature-number {

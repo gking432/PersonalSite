@@ -10,17 +10,28 @@ import weatherfixersAds from '../data/weatherfixers-ads.json'
 import weatherfixersPostcards from '../data/weatherfixers-postcards.json'
 import elevateMerchandising from '../data/elevate-merchandising.json'
 import elevateDesignFiles from '../data/elevate-designfiles.json'
+import pmmMerchandising from '../data/pmm-merchandising.json'
+import gtsRevolutionMerchandising from '../data/gts-revolution-merchandising.json'
 import './ClientWork.css'
 
 const ndsEase = [0.22, 1, 0.36, 1]
 
+function merchandisingAssetSrc(mod, filename) {
+  const folder = (mod.merchandisingFolder || '').trim()
+  const enc = (s) => s.split('/').map(encodeURIComponent).join('/')
+  if (!folder) return `/${enc(filename)}`
+  return `/${enc(folder)}/${enc(filename)}`
+}
+
 function iframeBarClassForProject(projectId) {
   switch (projectId) {
     case 'weatherfixers':
+    case 'gts-revolution':
       return 'weatherfixers'
     case 'elevate-apparel':
       return 'elevate'
     case 'hospice-nonprofit':
+    case 'blue-lizard':
       return 'hospice'
     default:
       return 'petunis'
@@ -30,12 +41,11 @@ function iframeBarClassForProject(projectId) {
 const clientProjects = [
   {
     id: 'petunis',
-    year: '2023',
+    year: '2024',
     name: 'PetUnis',
     type: 'Brand Design & eCommerce',
     shortDesc: 'NFL-inspired dog uniforms. Full brand identity, product design, and eCommerce buildout across all 32 teams.',
     about: 'A full-stack brand and eCommerce build from zero. Logo, identity system, 32 team designs, storefront, and ad creative — all built for print-on-demand. One of my most complete end-to-end projects.',
-    featured: true,
     description: 'Create a complete brand identity and eCommerce presence for a print-on-demand dog apparel line featuring NFL team-inspired designs across all 32 franchises.',
     brief: 'Build a cohesive brand from scratch — logo, identity system, product designs for all 32 NFL teams, and a full eCommerce storefront ready for print-on-demand fulfillment.',
     strategy: 'Developed cohesive brand guidelines, designed team-specific product mockups, built the storefront, and created marketing assets for social media campaigns targeting pet owners who are sports fans.',
@@ -144,12 +154,12 @@ const clientProjects = [
     year: '2024',
     name: 'Elevate Apparel',
     type: 'eCommerce & Merchandising',
-    shortDesc: 'Wix Studio storefront for a print-on-demand activewear line, plus merchandising and design-file imagery for the catalog.',
-    about: 'Built the Elevate Outfits shop on Wix Studio and produced merchandising visuals and design files to support the product line and online store.',
+    shortDesc: 'Online storefront for a print-on-demand activewear line, plus merchandising and design-file imagery for the catalog.',
+    about: 'Built the Elevate Outfits shop and produced merchandising visuals and design files to support the product line and online store.',
     description: 'Design and launch a shoppable eCommerce site for a print-on-demand gymwear brand, and deliver merchandising imagery and design files aligned with the collections.',
-    brief: 'Ship a full eCommerce experience on Wix Studio and provide merchandising assets and design-ready files for products and collections.',
+    brief: 'Ship a full eCommerce experience and provide merchandising assets and design-ready files for products and collections.',
     strategy: 'Organized the site around collections and product discovery, then delivered consistent merchandising imagery and design files that match how the products appear in the store.',
-    scope: 'Website design and build (Wix Studio), merchandising imagery, and design file outputs for the catalog.',
+    scope: 'Website design and build, merchandising imagery, and design file outputs for the catalog.',
     screenshotLabel: 'Elevate Outfits',
     screenshotImage: '/Elevate%20Merchandising/elevate-card-preview.png',
     modules: [
@@ -158,7 +168,7 @@ const clientProjects = [
         label: 'Website',
         websiteUrl: 'https://gunnarneuman7.wixstudio.com/my-site-19',
         items: [
-          'Wix Studio eCommerce storefront (Elevate Outfits)',
+          'eCommerce storefront (Elevate Outfits)',
           'Collections: Astro, Joggers, Retro, Classic',
           'Homepage hero & brand story',
           'Shop navigation, quick view & product pages',
@@ -181,19 +191,70 @@ const clientProjects = [
         ]
       }
     ],
-    tech: ['Web Design', 'Wix Studio', 'eCommerce', 'Merchandising']
+    tech: ['Web Design', 'eCommerce', 'Merchandising']
+  },
+  {
+    id: 'gts-revolution',
+    year: '2024',
+    name: 'GTS Revolution',
+    type: 'Merch & eCommerce',
+    shortDesc:
+      'Merch storefront for an Instagram-driven brand—product presentation, collections, and checkout built to match the feed.',
+    description:
+      'Design and launch a shoppable merch site for a social-first brand: clear product storytelling, drop-friendly layout, and a path from Instagram to purchase.',
+    brief:
+      'Ship a merch eCommerce experience aligned to an existing Instagram audience—fast to scan, easy to buy, and consistent with the account’s look and voice.',
+    strategy:
+      'Structured the store around how followers discover drops on social: strong visuals on collection and product pages, simple navigation, and friction-light checkout on mobile.',
+    scope: 'Merch storefront build, collection and product presentation, and supporting merchandising imagery for the catalog.',
+    screenshotLabel: 'GTS Revolution storefront',
+    screenshotImage: '/GTS/GTS%20Site%20shot.png',
+    modules: [
+      {
+        id: 'website',
+        label: 'Website',
+        websiteUrl: 'https://gunnarneuman7.wixstudio.com/gts-revolution',
+        items: [
+          'Merch storefront (collections & product pages)',
+          'Homepage tuned for campaign and drop messaging',
+          'Mobile-first layout and checkout flow',
+          'Brand-aligned typography, color, and imagery',
+          'Navigation that mirrors how the Instagram account presents products'
+        ]
+      },
+      {
+        id: 'merchandising',
+        label: 'Merchandising',
+        merchandisingSingleTab: true,
+        merchandisingTabLabel: 'Merchandising',
+        merchandisingFolder: 'GTS',
+        merchandisingFiles: gtsRevolutionMerchandising,
+        items: [
+          'Product and collection imagery for the store',
+          'Consistent PDP-ready visuals across SKUs',
+          'Hero and grid assets sized for eCommerce and social',
+          'Merch presentation aligned to Instagram campaigns'
+        ]
+      }
+    ],
+    tech: ['Web Design', 'eCommerce', 'Merchandising']
   },
   {
     id: 'hospice-nonprofit',
     year: '2023',
-    name: 'Hospice Nonprofit',
+    name: 'Patti Means Ministry',
     type: 'Website Redesign',
-    shortDesc: 'Complete homepage redesign for a hospice care nonprofit. Modernized their web presence with compassionate, clear design.',
-    description: 'Redesign the homepage for a hospice care nonprofit that needed a modern, compassionate web presence to better serve families and attract donors.',
+    shortDesc:
+      'My first paid client outside family and friends—early work I wouldn’t ship today, but the start of my freelance story, so I’m keeping it here.',
+    about:
+      'Patti Means Ministry was the first real project I landed—not for family or friends. It isn’t work I’d hold up as portfolio quality today, but it’s an honest part of how I started, which is why I chose to include it.',
+    description:
+      'Patti Means Ministry was my first paid freelance project outside family and friends. The work itself isn’t what I’d highlight today, but it matters to my story—so it stays in the lineup.',
     brief: 'Modernize a dated nonprofit website to better serve families seeking hospice care information while also improving the donation experience.',
     strategy: 'Focused on warmth, clarity, and trust. Redesigned the information architecture to prioritize the most common visitor needs: understanding services, contacting the organization, and donating.',
     scope: 'Modernized visual identity, clearer navigation, better mobile experience, improved donation flow, and professional credibility.',
-    screenshotLabel: 'Hospice Homepage Redesign',
+    screenshotLabel: 'Patti Means Ministry',
+    screenshotImage: '/PMM%20Site%20shot.png',
     modules: [
       {
         id: 'website',
@@ -226,6 +287,9 @@ const clientProjects = [
       {
         id: 'merchandising',
         label: 'Merchandising',
+        merchandisingSingleTab: true,
+        merchandisingTabLabel: 'Merchandising',
+        merchandisingFiles: pmmMerchandising,
         items: [
           'Brochures & flyers for outreach & events',
           'Donor & family leave-behind print pieces',
@@ -243,98 +307,33 @@ const clientProjects = [
     year: '2023',
     name: 'Blue Lizard Bar & Grill',
     type: 'Website Redesign',
-    shortDesc: 'Modern website redesign for a bar and grill. Clean, appetizing design that drives reservations and foot traffic.',
-    description: 'Design a modern, visually appealing website for a bar and grill that showcases the atmosphere, menu, and drives customer visits.',
-    brief: 'Create an inviting web presence that captures the restaurant\'s energy, showcases the menu, and makes it easy for customers to find hours, location, and reserve a table.',
-    strategy: 'Built around the dining experience. Bold food photography, easy-to-find hours and location, and a design that captures the energy of the restaurant without being cluttered.',
-    scope: 'Full website mockup, responsive design, brand-aligned visuals, and optimized user flow.',
-    screenshotLabel: 'Blue Lizard Homepage',
+    shortDesc:
+      'Pitch-only website redesign—the client didn’t buy it. I’m showing the live spec site here as a sales sample: how I prototype and present before a deal closes.',
+    about:
+      'This was a sales pitch, not shipped work. The only deliverable was a proposed website redesign; it never got picked up. I’m including it anyway as a sales tactic—a clickable preview so you can see how I pitch restaurants and spec work in the room.',
+    description:
+      'Unsold website redesign pitch for a bar & grill, built as a live hosted site to demonstrate layout, tone, and flow during sales conversations.',
+    brief: 'Pitch a full restaurant website redesign—homepage, menu, hours, reviews, and contact—without a signed engagement.',
+    strategy: 'Treat the site as a leave-behind: clear navigation, appetizing visuals, and obvious paths to menu, location, and third-party ordering—so a prospect can feel the direction before committing.',
+    scope: 'Website redesign concept only (pitch). No menu design or branding packages—just the proposed site.',
+    screenshotLabel: 'Blue Lizard pitch site',
+    screenshotImage: '/Blue%20Lizard/Blue%20Lizard%20Site%20shot.png',
     modules: [
       {
         id: 'website',
         label: 'Website Design',
+        websiteUrl: 'https://gunnarneuman7.wixsite.com/blue-lizard-bar-and',
         items: [
-          'Homepage with hero imagery',
-          'Menu presentation pages',
-          'Events & specials section',
-          'Location & hours module',
-          'Photo gallery of atmosphere',
-          'Mobile-first responsive layout'
-        ]
-      },
-      {
-        id: 'menu',
-        label: 'Menu Design',
-        items: [
-          'Digital menu layout',
-          'Category organization',
-          'Featured items highlights',
-          'Drink menu presentation',
-          'Seasonal specials template'
-        ]
-      },
-      {
-        id: 'branding',
-        label: 'Branding',
-        items: [
-          'Web color palette refinement',
-          'Typography selections',
-          'Photography art direction',
-          'Social media cover images',
-          'Brand-consistent iconography'
+          'Homepage & hero concept',
+          'Menu, reviews & employment sections',
+          'Hours, location & contact',
+          'Social links & delivery callouts (Uber Eats, Grubhub, DoorDash)',
+          'Mobile-responsive layout',
+          'Built as a live pitch site'
         ]
       }
     ],
-    tech: ['Web Design', 'Restaurant', 'Responsive Design']
-  },
-  {
-    id: 'mc-seafood',
-    year: '2023',
-    name: 'M&C Seafood',
-    type: 'Website Redesign',
-    shortDesc: 'Website redesign for a seafood restaurant. Fresh, ocean-inspired design highlighting the menu and coastal brand.',
-    description: 'Create a fresh, modern website design for a seafood restaurant that conveys quality, freshness, and coastal charm.',
-    brief: 'Design a coastal-inspired website that puts the menu front and center while conveying the freshness and quality of the seafood offerings.',
-    strategy: 'Leaned into the coastal aesthetic with clean blues and whites. Designed around the menu as the centerpiece, with easy ordering flow and location information front and center.',
-    scope: 'Full website mockup, brand-aligned design, responsive layout, and menu presentation system.',
-    screenshotLabel: 'M&C Seafood Homepage',
-    modules: [
-      {
-        id: 'website',
-        label: 'Website Design',
-        items: [
-          'Homepage with ocean-inspired hero',
-          'Menu-focused layout design',
-          'Online ordering flow',
-          'Location & hours section',
-          'Catering inquiry page',
-          'Mobile-responsive design'
-        ]
-      },
-      {
-        id: 'menu',
-        label: 'Menu Design',
-        items: [
-          'Digital seafood menu layout',
-          'Daily specials section',
-          'Market price display system',
-          'Combo & family meal layouts',
-          'Seasonal menu template'
-        ]
-      },
-      {
-        id: 'branding',
-        label: 'Branding',
-        items: [
-          'Coastal color palette',
-          'Typography & web fonts',
-          'Photography style direction',
-          'Brand pattern elements',
-          'Social media templates'
-        ]
-      }
-    ],
-    tech: ['Web Design', 'Restaurant', 'Brand Design']
+    tech: ['Web Design', 'Restaurant', 'Pitch']
   }
 ]
 
@@ -464,6 +463,36 @@ function MerchandisingTabs({ mod }) {
             </motion.div>
           )}
         </AnimatePresence>
+      </div>
+    </div>
+  )
+}
+
+/* ─── Single-tab merchandising (same chrome as PetUnis/Elevate tabs) ─── */
+function SingleMerchandisingTab({ mod }) {
+  const scrollRef = useRef(null)
+  const label = mod.merchandisingTabLabel || 'Merchandising'
+
+  return (
+    <div className="merch-tabs">
+      <div className="merch-tabs-header merch-tabs-header--single">
+        <div className="merch-tab active merch-tab--single" role="presentation">
+          {label}
+        </div>
+      </div>
+      <div className="merch-tabs-viewport" ref={scrollRef}>
+        <div className="merch-tabs-panel">
+          <div className="client-module-teams-grid">
+            {mod.merchandisingFiles.map((filename) => (
+              <img
+                key={filename}
+                src={merchandisingAssetSrc(mod, filename)}
+                alt=""
+                loading="lazy"
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -614,6 +643,9 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
       }, 100)
     } else {
       onToggle(project.id)
+      if (project.modules.length === 1) {
+        setExpandedModules({ [project.modules[0].id]: true })
+      }
       setTimeout(() => {
         numberRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }, 100)
@@ -632,32 +664,34 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
       >
         {isExpanded ? (
           <>
-            <motion.span
-              ref={numberRef}
-              className="client-feature-number client-feature-number-full"
-              variants={fadeUp}
-              animate="visible"
-              initial="hidden"
-            >
-              {number}
-            </motion.span>
             <div className="client-feature-header-left">
-              <motion.h2
-                className="client-feature-name"
+              <motion.span
+                ref={numberRef}
+                className="client-feature-number client-feature-number-full"
                 variants={fadeUp}
                 animate="visible"
                 initial="hidden"
               >
-                {project.name}
-              </motion.h2>
-              <motion.p
-                className="client-feature-tagline"
-                variants={fadeUp}
-                animate="visible"
-                initial="hidden"
-              >
-                {project.type} · {project.year}
-              </motion.p>
+                {number}
+              </motion.span>
+              <div className="client-feature-header-text">
+                <motion.h2
+                  className="client-feature-name"
+                  variants={fadeUp}
+                  animate="visible"
+                  initial="hidden"
+                >
+                  {project.name}
+                </motion.h2>
+                <motion.p
+                  className="client-feature-tagline"
+                  variants={fadeUp}
+                  animate="visible"
+                  initial="hidden"
+                >
+                  {project.type} · {project.year}
+                </motion.p>
+              </div>
             </div>
             {(project.about || project.shortDesc) && (
               <motion.div
@@ -682,22 +716,24 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
             >
               {number}
             </motion.span>
-            <motion.h2
-              className="client-feature-name"
-              variants={fadeUp}
-              animate="visible"
-              initial="hidden"
-            >
-              {project.name}
-            </motion.h2>
-            <motion.p
-              className="client-feature-tagline"
-              variants={fadeUp}
-              animate="visible"
-              initial="hidden"
-            >
-              {project.type} · {project.year}
-            </motion.p>
+            <div className="client-feature-header-text">
+              <motion.h2
+                className="client-feature-name"
+                variants={fadeUp}
+                animate="visible"
+                initial="hidden"
+              >
+                {project.name}
+              </motion.h2>
+              <motion.p
+                className="client-feature-tagline"
+                variants={fadeUp}
+                animate="visible"
+                initial="hidden"
+              >
+                {project.type} · {project.year}
+              </motion.p>
+            </div>
           </div>
         )}
       </motion.div>
@@ -892,6 +928,11 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
                             {/* Elevate — Merchandise / Design Files tabs */}
                             {mod.merchandisingFolder && mod.merchandisingFiles && mod.designFilesImages && (
                               <ElevateMerchandisingTabs mod={mod} />
+                            )}
+
+                            {/* Hospice (etc.) — one merchandising tab */}
+                            {mod.merchandisingSingleTab && mod.merchandisingFiles?.length > 0 && (
+                              <SingleMerchandisingTab mod={mod} />
                             )}
 
                             {/* Tabbed gallery — For Pets / For People / Design Files */}

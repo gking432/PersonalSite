@@ -7,7 +7,7 @@ const SCHEMA = {
   "@context": "https://schema.org",
   "@type": "Person",
   "name": "Gunnar Neuman",
-  "jobTitle": "Marketing Leader, Product Manager & AI Strategist",
+  "jobTitle": "Marketing Leader, Product Manager & AI Developer",
   "description": "Marketing leader operating at the intersection of marketing, product management, and emerging technology. Known for taking ideas from zero to one — building, shipping, and capturing audiences.",
   "url": "https://gunnarneuman.com",
   "address": {
@@ -43,7 +43,7 @@ const SCHEMA = {
 
 function GunnarNeumanProfile() {
   useEffect(() => {
-    document.title = 'Gunnar Neuman — Marketing Leader, Product Manager & AI Strategist'
+    document.title = 'Gunnar Neuman — Marketing Leader, Product Manager & AI Developer'
 
     const script = document.createElement('script')
     script.type = 'application/ld+json'
@@ -78,7 +78,7 @@ function GunnarNeumanProfile() {
             Gunnar Neuman
           </h1>
           <p style={{ fontSize: '1.15rem', color: '#444', marginBottom: '32px', fontWeight: 500 }}>
-            Marketing Leader · Product Manager · AI Strategist
+            Marketing Leader · Product Manager · AI Developer
           </p>
         </header>
 

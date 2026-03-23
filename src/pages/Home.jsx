@@ -318,7 +318,7 @@ function Home() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, ease: ndsEase }}
             >
-              Marketing Executive &middot; Product Manager &middot; AI Strategist
+              Marketing Leader &middot; Product Manager &middot; AI Developer
             </motion.p>
 
             <motion.div
