@@ -553,7 +553,7 @@ function Home() {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
             >
-              <Link to="/contact" className="btn btn-primary cta-btn">
+              <Link to="/contact" className="btn btn-primary btn-lg">
                 Get in Touch
                 <span className="btn-arrow">&rarr;</span>
               </Link>

@@ -79,34 +79,48 @@ const CONTENT_STOPS = [
   {
     at: 0.02, duration: 0.16, reveal: 'constellation',
     label: 'PHILOSOPHY',
-    text: ['Every system has', 'a pattern. I find it.'],
-    sub: 'Markets, products, teams — I map the terrain before I move.',
+    text: ['Structure before decisions.'],
+    sub: 'Markets, products, and teams usually follow patterns.',
   },
   {
     at: 0.18, duration: 0.24, reveal: 'cloud',
     label: 'CAPABILITY',
-    text: ['I build what others', 'just talk about.'],
-    sub: 'From strategy to code to AI — I close the gap between vision and execution.',
+    text: ['Problems become solutions.'],
+    sub: 'I turn ideas into working systems.',
   },
   {
     at: 0.36, duration: 0.18, reveal: 'sunbeam',
     label: 'IDENTITY',
     text: ['Marketing. Product. AI.'],
-    sub: 'Three disciplines, one operator.',
+    sub: 'Three disciplines that work better when treated as one.',
   },
   {
     at: 0.48, duration: 0.20, reveal: 'mist',
     label: 'PROOF',
-    text: ['Five products.', 'Zero handoffs.'],
-    sub: 'Conceived, built, branded, and shipped by one person.',
+    text: ['I stay close to the work', "until it's real."],
+    sub: 'From early ideas through to something people actually use.',
   },
   {
     at: 0.64, duration: 0.22, reveal: 'reflection',
     label: 'NEXT',
-    text: ['The sun sets on', 'the solo chapter.'],
-    sub: "I'm looking for a team that values builders.",
+    text: ["I'm looking for the right problems", 'to work on next.'],
+    sub: '',
   },
 ]
+
+/**
+ * Cloud reveal: blob targets come from sampleTextPixels() (rasterized glyph mask).
+ * Kept separate from visible CAPABILITY copy so headline edits don’t reshuffle clouds.
+ * This two-line shape matches the original “I turn ideas into / working systems.” layout
+ * the effect was tuned for — change only if you want a new silhouette on purpose.
+ */
+const CLOUD_REVEAL_SAMPLE_LINES = ['I turn ideas into', 'working systems.']
+
+/** Subtext may be a single string or multiple lines (canvas has no wrap). */
+function subTextLines(stop) {
+  if (stop.sub == null || stop.sub === '') return []
+  return Array.isArray(stop.sub) ? stop.sub : [stop.sub]
+}
 
 // ═══════════════════════════════════════════
 // TEXT PARTICLE SAMPLING
@@ -428,7 +442,13 @@ function drawConstellationReveal(ctx, w, h, revealP, stop, data, sprites) {
     ctx.shadowBlur = 8 * glowP
     ctx.font = `400 ${Math.min(w * 0.016, 15)}px "Crimson Text", Georgia, serif`
     ctx.fillStyle = rgb([180, 200, 240], fade * glowP * 0.6)
-    ctx.fillText(stop.sub, textX, textY + stop.text.length * lineH + fontSize * 0.5)
+    {
+      const subPx = Math.min(w * 0.016, 15)
+      const subLineH = subPx * 1.3
+      subTextLines(stop).forEach((line, si) => {
+        ctx.fillText(line, textX, textY + stop.text.length * lineH + fontSize * 0.5 + si * subLineH)
+      })
+    }
 
     ctx.shadowBlur = 0
     ctx.shadowColor = 'transparent'
@@ -519,7 +539,15 @@ function drawCloudReveal(ctx, w, h, revealP, stop, data, sprites) {
     ctx.globalAlpha = fade * textP * (1 - disperseP) * 0.5
     ctx.font = `400 ${Math.min(w * 0.016, 15)}px "Crimson Text", Georgia, serif`
     ctx.fillStyle = rgb([255, 245, 225], 1)
-    ctx.fillText(stop.sub, textX, textY + stop.text.length * lineH + fontSize * 0.5)
+    {
+      const subPx = Math.min(w * 0.016, 15)
+      const subLineH = subPx * 1.3
+      // Tighter gap under headline than other reveals — cloud scene reads better closer to main text
+      const subGapAfterMain = fontSize * 0.22
+      subTextLines(stop).forEach((line, si) => {
+        ctx.fillText(line, textX, textY + stop.text.length * lineH + subGapAfterMain + si * subLineH)
+      })
+    }
 
     ctx.shadowBlur = 0
     ctx.shadowColor = 'transparent'
@@ -600,7 +628,13 @@ function drawSunBeamReveal(ctx, w, h, revealP, stop, sunX, sunY) {
   ctx.font = `400 ${Math.min(w * 0.016, 15)}px "Crimson Text", Georgia, serif`
   ctx.fillStyle = rgb([255, 240, 210], 1)
   ctx.textBaseline = 'top'
-  ctx.fillText(stop.sub, textX, textY + fontSize * 0.3)
+  {
+    const subPx = Math.min(w * 0.016, 15)
+    const subLineH = subPx * 1.3
+    subTextLines(stop).forEach((line, si) => {
+      ctx.fillText(line, textX, textY + fontSize * 0.3 + si * subLineH)
+    })
+  }
 
   ctx.shadowBlur = 0
   ctx.shadowColor = 'transparent'
@@ -724,7 +758,13 @@ function drawFogRevealText(ctx, w, h, revealP, stop, fogPatches) {
   ctx.font = `400 ${Math.min(w * 0.016, 15)}px "Crimson Text", Georgia, serif`
   ctx.textBaseline = 'top'
   ctx.fillStyle = rgb([255, 240, 200], 1)
-  ctx.fillText(stop.sub, textX, textY + fontSize * 0.3)
+  {
+    const subPx = Math.min(w * 0.016, 15)
+    const subLineH = subPx * 1.3
+    subTextLines(stop).forEach((line, si) => {
+      ctx.fillText(line, textX, textY + fontSize * 0.3 + si * subLineH)
+    })
+  }
 
   ctx.shadowBlur = 0
   ctx.shadowColor = 'transparent'
@@ -810,7 +850,13 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites, time) {
   ctx.font = `400 ${Math.min(w * 0.018, 16)}px "Crimson Text", Georgia, serif`
   ctx.textBaseline = 'top'
   ctx.fillStyle = rgb([200, 190, 220], 0.75)
-  ctx.fillText(stop.sub, textX, textBaseY + fontSize * 0.35)
+  {
+    const subPx = Math.min(w * 0.018, 16)
+    const subLineH = subPx * 1.3
+    subTextLines(stop).forEach((line, si) => {
+      ctx.fillText(line, textX, textBaseY + fontSize * 0.35 + si * subLineH)
+    })
+  }
 
   ctx.shadowBlur = 0
   ctx.shadowColor = 'transparent'
@@ -1708,7 +1754,7 @@ function HorizonJourney() {
 
     const constellation = generateConstellations(1000)
 
-    const cloudTargets = sampleTextPixels(CONTENT_STOPS[1].text, 42, 20, 2000)
+    const cloudTargets = sampleTextPixels(CLOUD_REVEAL_SAMPLE_LINES, 42, 20, 2000)
     const cloudBlobs = generateCloudBlobs(cloudTargets, Math.max(cloudTargets.length, 30))
     const cloud = { blobs: cloudBlobs }
 

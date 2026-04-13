@@ -561,11 +561,6 @@ One cohesive piece. Generous whitespace. Parchment base.
   max-width: 100%;
 }
 
-.cta-btn {
-  font-size: 1.1rem;
-  padding: 20px 48px;
-}
-
 .cta .btn-primary {
   background-color: var(--cream);
   color: var(--forest-green);

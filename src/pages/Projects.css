@@ -170,28 +170,6 @@ Each project presented with editorial weight and presence
   flex-wrap: wrap;
 }
 
-.project-link-btn {
-  display: inline-flex;
-  align-items: center;
-  padding: 12px 24px;
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  background-color: var(--forest-green);
-  color: var(--cream);
-  border-radius: var(--border-radius-sm);
-  transition: all var(--duration-base) var(--ease-out);
-}
-
-.project-link-btn:hover {
-  background-color: var(--hunter-green);
-  color: var(--cream);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(26, 58, 46, 0.2);
-}
-
 /* ==========================================
    MORE PROJECTS
    ========================================== */

@@ -184,13 +184,13 @@ function Projects() {
                 </motion.div>
                 <motion.div className="project-links" variants={fadeUp}>
                   {project.links.demo && (
-                    <a href={project.links.demo} className="project-link-btn">Live Demo</a>
+                    <a href={project.links.demo} className="btn btn-primary btn-sm">Live Demo</a>
                   )}
                   {project.links.github && (
-                    <a href={project.links.github} className="project-link-btn">GitHub</a>
+                    <a href={project.links.github} className="btn btn-primary btn-sm">GitHub</a>
                   )}
                   {project.links.documentation && (
-                    <a href={project.links.documentation} className="project-link-btn">Docs</a>
+                    <a href={project.links.documentation} className="btn btn-primary btn-sm">Docs</a>
                   )}
                 </motion.div>
               </motion.div>

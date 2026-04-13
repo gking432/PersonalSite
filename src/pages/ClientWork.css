@@ -314,27 +314,6 @@ No modals. Progressive disclosure on-page.
   color: var(--forest-green);
 }
 
-.client-feature-cta {
-  display: inline-block;
-  padding: 14px 36px;
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  background-color: var(--forest-green);
-  color: var(--cream);
-  border: 2px solid var(--forest-green);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.client-feature-cta:hover {
-  background-color: transparent;
-  color: var(--forest-green);
-}
-
-
 /* ==========================================
    EXPANDED VIEW — Replaces body in-place
    ========================================== */
@@ -794,25 +773,9 @@ No modals. Progressive disclosure on-page.
 /* ==========================================
    CLOSE BUTTON — Bottom of expansion
    ========================================== */
+/* Close uses global .btn.btn-secondary; keep spacing only */
 .client-expand-close {
-  display: inline-block;
-  padding: 14px 36px;
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  background: transparent;
-  color: var(--forest-green);
-  border: 2px solid var(--forest-green);
-  cursor: pointer;
-  transition: all 0.3s ease;
   margin-top: var(--space-md);
-}
-
-.client-expand-close:hover {
-  background: var(--forest-green);
-  color: var(--cream);
 }
 
 /* ==========================================

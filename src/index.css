@@ -198,7 +198,16 @@ a:hover {
   padding: calc(var(--space-3xl) * 1.5) 0;
 }
 
-/* Buttons - NDS Style with Prestige Colors */
+/* Buttons — site-wide: use .btn + .btn-primary | .btn-secondary | modifiers */
+a.btn {
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+button.btn {
+  font: inherit;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -208,10 +217,15 @@ a:hover {
   font-family: var(--font-sans);
   font-size: 16px;
   font-weight: 600;
+  line-height: 1.2;
   border: none;
   border-radius: var(--border-radius-md);
   cursor: pointer;
-  transition: all var(--duration-base) var(--ease-out);
+  transition: background-color var(--duration-base) var(--ease-out),
+    color var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out);
   white-space: nowrap;
 }
 
@@ -223,6 +237,7 @@ a:hover {
 
 .btn-primary:hover {
   background-color: var(--hunter-green);
+  border-color: var(--hunter-green);
   transform: translateY(-2px);
   box-shadow: 0 10px 25px rgba(26, 58, 46, 0.2);
 }
@@ -243,6 +258,32 @@ a:hover {
 
 .btn-secondary:hover {
   background-color: var(--charcoal);
+  color: var(--cream);
+  transform: translateY(-2px);
+}
+
+/* Larger CTAs (hero bottom, home CTA strip) */
+.btn-lg {
+  padding: 20px 48px;
+  font-size: 1.1rem;
+}
+
+/* Compact row of actions (e.g. project links) */
+.btn-sm {
+  padding: 12px 24px;
+  font-size: 0.875rem;
+}
+
+/* On dark / forest backgrounds — outline cream */
+.btn-outline-light {
+  background: transparent;
+  color: var(--cream);
+  border: 2px solid rgba(244, 241, 234, 0.35);
+}
+
+.btn-outline-light:hover {
+  background: rgba(244, 241, 234, 0.12);
+  border-color: rgba(244, 241, 234, 0.7);
   color: var(--cream);
   transform: translateY(-2px);
 }

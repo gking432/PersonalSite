@@ -362,7 +362,7 @@ function PokerTable() {
                         <span key={idx}>{tech}</span>
                       ))}
                     </div>
-                    <a href={projects[inspectingCard].link} className="project-link">
+                    <a href={projects[inspectingCard].link} className="btn btn-primary btn-sm">
                       View Project
                       <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                         <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

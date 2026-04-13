@@ -791,7 +791,7 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
                   <span key={tech} className="tech-badge">{tech}</span>
                 ))}
               </div>
-              <button className="client-feature-cta" onClick={handleToggle}>
+              <button type="button" className="btn btn-primary" onClick={handleToggle}>
                 View Project
               </button>
             </div>
@@ -980,7 +980,7 @@ function ProjectSection({ project, index, isExpanded, onToggle }) {
             </div>
 
             {/* Close button */}
-            <button className="client-expand-close" onClick={handleToggle}>
+            <button type="button" className="btn btn-secondary client-expand-close" onClick={handleToggle}>
               Close Project
             </button>
           </motion.div>

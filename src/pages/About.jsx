@@ -475,7 +475,7 @@ function About() {
                       href={llm.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="ask-ai-photo-btn"
+                      className="btn btn-outline-light btn-sm"
                     >
                       {llm.name} →
                     </a>
@@ -505,7 +505,7 @@ function About() {
             </motion.p>
             <motion.a
               href="mailto:gking432@gmail.com"
-              className="cta-button"
+              className="btn btn-primary"
               variants={fadeUp}
             >
               Get In Touch
