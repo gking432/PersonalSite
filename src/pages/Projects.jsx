@@ -59,7 +59,7 @@ function Projects() {
     {
       number: '02',
       name: 'PrepMe',
-      tagline: 'AI · Interview Practice · Real-time Feedback',
+      tagline: 'Interview Practice · Feedback Systems · Product',
       description: 'Developed an application that conducts realistic job interviews using Claude AI, provides real-time feedback, and helps users improve their interview skills through practice.',
       tech: ['React', 'Anthropic API', 'JavaScript'],
       stat: { number: 50, suffix: '+', label: 'Interviews Simulated' },
@@ -102,7 +102,7 @@ function Projects() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
               >
-                From blockchain applications to AI-powered tools, here's what happens when curiosity meets execution.
+                From blockchain applications to digital products, here's what happens when curiosity meets execution.
               </motion.p>
             </div>
             <motion.div
@@ -117,7 +117,7 @@ function Projects() {
               </div>
               <div className="hero-meta-item">
                 <span className="hero-meta-label">Domains</span>
-                <span className="hero-meta-value">Blockchain, AI, Web</span>
+                <span className="hero-meta-value">Blockchain, Product Tools, Web</span>
               </div>
               <div className="hero-meta-item">
                 <span className="hero-meta-label">Stack</span>

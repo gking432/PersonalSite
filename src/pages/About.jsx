@@ -6,6 +6,7 @@ import GlobeSection from '../../GlobeSection'
 import './About.css'
 
 const ndsEase = [0.22, 1, 0.36, 1]
+const SHOW_ASK_AI = false
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -167,14 +168,14 @@ const storyBlocks = [
   { text: 'It wasn\'t the deliverables. It wasn\'t being my own boss. {It was building.}', highlight: 'moment' },
   { text: 'The brainstorming sessions, the strategy pivots, and the moment a client saw their idea start to take shape made all the late nights, repetitive designs, and cold calls worth it. I love taking something from zero to one.' },
   { text: 'Running my agency forced me to learn the full stack of marketing in a way traditional roles rarely require. Operating in that world gave me strong instincts about what actually drives growth and what is just noise.' },
-  { text: '{Then AI arrived.}', highlight: 'moment' },
-  { text: 'As more AI tools became widely available and dramatically cheaper, it initially felt like a gift to the industry.' },
+  { text: '{Then the tools changed.}', highlight: 'moment' },
+  { text: 'As AI and other modern tools became widely available and dramatically cheaper, it initially felt like a gift to the industry.' },
   { text: '{For me, it was the opposite.}', highlight: 'emphasis' },
-  { text: 'Almost overnight, what had been a marketing business became a sales operation for AI tools. Anybody could generate basic websites, good-enough copy, and sloppy (but cheap) creative in a matter of minutes. I was now in a race with other agencies to the lowest price, and the margins on my core offerings dropped by more than 80%. This wasn\'t a winning strategy long-term as AI was changing the economics and behaviors of the entire industry faster than I was able to adapt.' },
-  { text: 'This led me to a new way of thinking about modern marketing: {in a world where AI makes everyone fast, quality becomes the real lever.} The winners won\'t be those producing the most content or running the most campaigns. The winners will possess the judgment to know what\'s worth building and have the ability to execute above the noise.', highlight: 'pullQuote' },
-  { text: 'So I went deep into AI, aiming to understand the ecosystem behind this new tech. Large language models, data infrastructure, emerging companies, the economics of compute, energy consumption, the adoption cycle, psychological side effects, and political concerns were all areas I wanted to explore.' },
-  { text: 'I wrote research papers, articles, and lectures on these topics. More importantly, I started building with the use of AI. I created a cartography print studio, a cryptocurrency launchpad, and an AI-powered interview platform. I treated each project like a product with hours of market research, positioning, brand development, product design, and a launch strategy.' },
-  { text: 'Today, AI is part of how I operate. I use it daily, write about it, speak on it, and build with it. However, the core of what I do hasn\'t changed. I take ideas from zero to one and figure out how to get them in front of people. I can build the landing page, write the positioning, design the brand, structure the campaign, and set up the analytics. I don\'t need to do it all myself (I\'d prefer not to), but understanding every layer makes me better at leading the people responsible for them.' },
+  { text: 'Almost overnight, the economics of basic marketing production changed. Anybody could generate basic websites, good-enough copy, and sloppy (but cheap) creative in a matter of minutes. I was now in a race with other agencies to the lowest price, and the margins on my core offerings dropped by more than 80%. This wasn\'t a winning strategy long-term as technology was changing the economics and behaviors of the entire industry faster than I was able to adapt.' },
+  { text: 'This led me to a new way of thinking about modern marketing: {in a world where tools make everyone fast, quality becomes the real lever.} The winners won\'t be those producing the most content or running the most campaigns. The winners will possess the judgment to know what\'s worth building and have the ability to execute above the noise.', highlight: 'pullQuote' },
+  { text: 'So I went deep into the technology stack behind this shift. Large language models, data infrastructure, emerging companies, the economics of compute, energy consumption, the adoption cycle, psychological side effects, and political concerns were all areas I wanted to explore.' },
+  { text: 'I wrote research papers, articles, and lectures on these topics. More importantly, I started building with modern tools. I created a cartography print studio, a cryptocurrency launchpad, and an AI-powered interview platform. I treated each project like a product with hours of market research, positioning, brand development, product design, and a launch strategy.' },
+  { text: 'Today, technology is part of how I operate. I use AI daily, write about it, speak on it, and build with it. However, the core of what I do hasn\'t changed. I take ideas from zero to one and figure out how to get them in front of people. I can build the landing page, write the positioning, design the brand, structure the campaign, and set up the analytics. I don\'t need to do it all myself (I\'d prefer not to), but understanding every layer makes me better at leading the people responsible for them.' },
   { text: 'I\'m looking for a team that values strategic thinking, bias toward action, and the ambition to build something that matters. If that sounds like your team, I\'d love to hear from you.' },
 ]
 
@@ -319,7 +320,7 @@ function About() {
               </div>
               <div className="hero-meta-item">
                 <span className="hero-meta-label">Focus</span>
-                <span className="hero-meta-value">Marketing · Product · AI</span>
+                <span className="hero-meta-value">Marketing · Product · Technology</span>
               </div>
               <div className="hero-meta-item">
                 <span className="hero-meta-label">Status</span>
@@ -397,7 +398,7 @@ function About() {
                 Zero to one. That's the job.
               </StatementGiantText>
               <p className="statement-paragraph">
-                Marketing strategy, product ownership, and AI — not as separate disciplines, but as one integrated approach to building things that matter.
+                Marketing strategy, product ownership, and technical execution — not as separate disciplines, but as one integrated approach to building things that matter.
               </p>
             </motion.div>
           </div>
@@ -445,6 +446,7 @@ function About() {
       </section>
 
       {/* ═══════ ASK AI PHOTO SECTION ═══════ */}
+      {SHOW_ASK_AI && (
       <div ref={philosophyRef} className="philosophy-photo-scroll-runway">
         <div className="philosophy-photo-sticky-wrapper">
           <SqueezeSection className="philosophy-photo-section section">
@@ -486,6 +488,7 @@ function About() {
           </SqueezeSection>
         </div>
       </div>
+      )}
 
       {/* ═══════ LET'S WORK TOGETHER CTA ═══════ */}
       <section className="cta-section section">

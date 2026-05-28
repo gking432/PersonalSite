@@ -14,7 +14,7 @@ const PROJECTS = [
   {
     number: '02',
     title: 'PrepMe',
-    tag: 'AI · Interview Practice · Product',
+    tag: 'Interview Practice · Feedback Systems · Product',
     desc: 'AI-powered interview practice platform. Conducts realistic job interviews using Claude, provides real-time feedback, and helps users improve through deliberate practice.',
     link: '/projects',
   },

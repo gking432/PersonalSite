@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 
+const SHOW_ASK_AI = false
+
 function Layout({ children }) {
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
@@ -28,7 +30,7 @@ function Layout({ children }) {
   }, [menuOpen])
 
   const isActive = (path) => location.pathname === path
-  const isWorkActive = location.pathname === '/projects' || location.pathname === '/client-work' || location.pathname === '/ask-ai'
+  const isWorkActive = location.pathname === '/projects' || location.pathname === '/client-work'
 
   const navLinks = [
     { path: '/about', label: 'About' },
@@ -37,7 +39,7 @@ function Layout({ children }) {
       dropdown: [
         { path: '/projects', label: 'Dev Projects' },
         { path: '/client-work', label: 'Client Work' },
-        { path: '/ask-ai', label: 'Ask AI' },
+        ...(SHOW_ASK_AI ? [{ path: '/ask-ai', label: 'Ask AI' }] : []),
       ]
     },
     { path: '/speaking', label: 'Speaking' },
@@ -50,7 +52,7 @@ function Layout({ children }) {
     { path: '/about', label: 'About' },
     { path: '/projects', label: 'Dev Projects' },
     { path: '/client-work', label: 'Client Work' },
-    { path: '/ask-ai', label: 'Ask AI' },
+    ...(SHOW_ASK_AI ? [{ path: '/ask-ai', label: 'Ask AI' }] : []),
     { path: '/speaking', label: 'Speaking' },
     { path: '/writing', label: 'Writing' },
     { path: '/contact', label: 'Contact' },

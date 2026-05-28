@@ -318,7 +318,7 @@ function Home() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, ease: ndsEase }}
             >
-              Marketing Leader &middot; Product Manager &middot; AI Developer
+              Marketing Leader &middot; Product Builder &middot; Emerging Technology
             </motion.p>
 
             <motion.div
@@ -335,7 +335,7 @@ function Home() {
               transition={{ duration: 1, delay: 0.8, ease: ndsEase }}
             >
               From corporate marketing to founding my own consultancy to taking products from
-              zero to one — I combine marketing leadership, product management, and AI to build what others just talk about.
+              zero to one — I combine strategy, product thinking, and technical execution to build what others just talk about.
             </motion.p>
 
             <motion.div
@@ -493,14 +493,14 @@ function Home() {
                 year: '2023–2025',
                 title: 'Independent Work',
                 role: 'Marketing Consultant & Product Manager',
-                desc: 'Ran a marketing consultancy serving early-stage companies while independently taking multiple products from zero to one. Owned the full lifecycle — market research, roadmap, branding, development, and go-to-market — leveraging AI to move at startup speed.',
+                desc: 'Ran a marketing consultancy serving early-stage companies while independently taking multiple products from zero to one. Owned the full lifecycle — market research, roadmap, branding, development, and go-to-market — using modern tools to move at startup speed.',
                 side: 'right'
               },
               {
                 year: '2026',
                 title: 'Next Chapter',
                 role: 'Marketing & Product Leadership',
-                desc: 'Seeking leadership roles where marketing strategy, product thinking, and AI fluency converge. Ready to bring zero-to-one experience to a team building something that matters.',
+                desc: 'Seeking leadership roles where marketing strategy, product thinking, and technical fluency converge. Ready to bring zero-to-one experience to a team building something that matters.',
                 side: 'left'
               }
             ].map((item, i) => (
@@ -544,7 +544,7 @@ function Home() {
               transition={{ duration: 0.8, delay: 0.3, ease: ndsEase }}
             >
               I'm looking for a leadership role at a company that values marketing strategy,
-              product thinking, and the leverage that AI brings. If that's you — let's talk.
+              product thinking, and the leverage that modern technology brings. If that's you — let's talk.
             </motion.p>
 
             <motion.div

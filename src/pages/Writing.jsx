@@ -35,7 +35,7 @@ function Writing() {
             Writing
           </motion.p>
           <h1>
-            {'Thoughts on Marketing, AI, and Building'.split(' ').map((word, i) => (
+            {'Thoughts on Marketing, Technology, and Building'.split(' ').map((word, i) => (
               <motion.span
                 key={i}
                 style={{ display: 'inline-block', marginRight: '0.25em' }}
@@ -111,7 +111,7 @@ function Writing() {
               </div>
               <h3>Latest Article Title</h3>
               <p className="article-excerpt">
-                Check back soon for articles on marketing strategy, AI applications, building products, and business observations.
+                Check back soon for articles on marketing strategy, technology applications, building products, and business observations.
               </p>
               <a href="https://substack.com" target="_blank" rel="noopener noreferrer" className="article-link">
                 Read on Substack →
@@ -141,8 +141,8 @@ function Writing() {
             viewport={{ once: true, margin: "-50px" }}
           >
             <motion.div className="category-card" variants={staggerItem}>
-              <h3>AI & Technology</h3>
-              <p>Practical insights on how AI is changing the way we work and live</p>
+              <h3>Emerging Technology</h3>
+              <p>Practical insights on how new tools are changing the way we work and live</p>
             </motion.div>
             <motion.div className="category-card" variants={staggerItem}>
               <h3>Marketing Strategy</h3>

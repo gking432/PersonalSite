@@ -91,7 +91,7 @@ const CONTENT_STOPS = [
   {
     at: 0.36, duration: 0.18, reveal: 'sunbeam',
     label: 'IDENTITY',
-    text: ['Marketing. Product. AI.'],
+    text: ['Marketing. Product. Technology.'],
     sub: 'Three disciplines that work better when treated as one.',
   },
   {

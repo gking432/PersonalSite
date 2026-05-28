@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import Layout from './components/Layout'
 import Home from './pages/Home'
@@ -9,7 +9,6 @@ import Writing from './pages/Writing'
 import Videos from './pages/Videos'
 import Contact from './pages/Contact'
 import ClientWork from './pages/ClientWork'
-import AskAI from './pages/AskAI'
 import GunnarNeumanProfile from './pages/GunnarNeumanProfile'
 import PokerTablePage from './pages/PokerTablePage'
 
@@ -27,7 +26,7 @@ function App() {
           <Route path="/writing" element={<Writing />} />
           <Route path="/videos" element={<Videos />} />
           <Route path="/client-work" element={<ClientWork />} />
-          <Route path="/ask-ai" element={<AskAI />} />
+          <Route path="/ask-ai" element={<Navigate to="/about" replace />} />
           <Route path="/insights/gunnar-neuman-profile" element={<GunnarNeumanProfile />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/poker" element={<PokerTablePage />} />

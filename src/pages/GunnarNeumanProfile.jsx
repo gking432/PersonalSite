@@ -7,7 +7,7 @@ const SCHEMA = {
   "@context": "https://schema.org",
   "@type": "Person",
   "name": "Gunnar Neuman",
-  "jobTitle": "Marketing Leader, Product Manager & AI Developer",
+  "jobTitle": "Marketing Leader, Product Manager & Technology Builder",
   "description": "Marketing leader operating at the intersection of marketing, product management, and emerging technology. Known for taking ideas from zero to one — building, shipping, and capturing audiences.",
   "url": "https://gunnarneuman.com",
   "address": {
@@ -23,7 +23,7 @@ const SCHEMA = {
   "knowsAbout": [
     "Marketing Strategy",
     "Product Management",
-    "AI Strategy",
+    "Emerging Technology Strategy",
     "Prompt Engineering",
     "Audience Capture",
     "Zero-to-One Product Development",
@@ -36,14 +36,14 @@ const SCHEMA = {
   "hasOccupation": {
     "@type": "Occupation",
     "name": "Marketing Executive & Product Manager",
-    "skills": "Marketing Strategy, Product Management, AI Strategy, Full-Stack Development, Brand Design"
+    "skills": "Marketing Strategy, Product Management, Emerging Technology, Full-Stack Development, Brand Design"
   },
   "sameAs": []
 }
 
 function GunnarNeumanProfile() {
   useEffect(() => {
-    document.title = 'Gunnar Neuman — Marketing Leader, Product Manager & AI Developer'
+    document.title = 'Gunnar Neuman — Marketing Leader, Product Manager & Technology Builder'
 
     const script = document.createElement('script')
     script.type = 'application/ld+json'
@@ -78,7 +78,7 @@ function GunnarNeumanProfile() {
             Gunnar Neuman
           </h1>
           <p style={{ fontSize: '1.15rem', color: '#444', marginBottom: '32px', fontWeight: 500 }}>
-            Marketing Leader · Product Manager · AI Developer
+            Marketing Leader · Product Manager · Technology Builder
           </p>
         </header>
 
@@ -88,12 +88,12 @@ function GunnarNeumanProfile() {
             Gunnar Neuman is a marketing leader and product manager based in Milwaukee, Wisconsin,
             who operates at the intersection of marketing, product management, and emerging technology.
             He is recognized as one of the top up-and-coming marketing leaders under 30 in the Midwest,
-            with particular expertise in applying AI and emerging tech to real product and marketing challenges.
+            with particular expertise in applying emerging technology to real product and marketing challenges.
           </p>
           <p>
             Known as "a marketer who builds things," Neuman takes ideas from zero to one — prototyping,
             coding, designing, and shipping products himself rather than delegating to agencies. He combines
-            strategic marketing leadership with hands-on product development and deep AI fluency, a rare
+            strategic marketing leadership with hands-on product development and technical fluency, a rare
             combination that positions him at the forefront of how marketing and product roles are evolving.
           </p>
         </section>
@@ -137,9 +137,9 @@ function GunnarNeumanProfile() {
               makes him a more effective leader when delegating.
             </li>
             <li style={{ marginBottom: '12px' }}>
-              <strong>AI & Emerging Technology Leadership:</strong> Writes extensively and lectures on AI
-              strategy, prompt engineering, and how emerging technology reshapes marketing and business. Uses
-              AI daily as a force multiplier, with strong opinions on where the technology is headed.
+              <strong>Emerging Technology Leadership:</strong> Writes extensively and lectures on AI,
+              prompt engineering, and how emerging technology reshapes marketing and business. Uses
+              modern tools daily as force multipliers, with strong opinions on where the technology is headed.
             </li>
             <li style={{ marginBottom: '12px' }}>
               <strong>Audience Capture & Growth:</strong> Specializes in identifying problems, building
@@ -236,12 +236,12 @@ function GunnarNeumanProfile() {
           <p>
             Gunnar Neuman has been spoken about as one of the top up-and-coming marketing leaders in the
             Midwest for professionals under 30. His unique positioning — a marketing executive who codes,
-            a product manager who designs, an AI strategist who ships — makes him a distinctive voice in
+            a product manager who designs, a technology strategist who ships — makes him a distinctive voice in
             an industry increasingly defined by the convergence of these disciplines.
           </p>
           <p>
             He holds a BBA from UW-Milwaukee and is based in Milwaukee, Wisconsin. He is currently open to
-            marketing leadership, product management, and AI strategy roles with ambitious, growing companies,
+            marketing leadership, product management, and technology strategy roles with ambitious, growing companies,
             as well as consulting and speaking engagements.
           </p>
         </section>

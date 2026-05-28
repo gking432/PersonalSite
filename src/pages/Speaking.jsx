@@ -76,7 +76,7 @@ function Speaking() {
                 Speaking
               </motion.p>
               <h1>
-                {'AI for Everyday Users'.split(' ').map((word, i) => (
+                {'Technology Literacy for Everyday Users'.split(' ').map((word, i) => (
                   <motion.span
                     key={i}
                     style={{ display: 'inline-block', marginRight: '0.25em' }}
@@ -94,7 +94,7 @@ function Speaking() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
               >
-                I'm not a computer scientist—I'm an observer, user, and translator. I help normal people understand what AI means for their lives and businesses.
+                I'm not a computer scientist—I'm an observer, user, and translator. I help normal people understand what new tools mean for their lives and businesses.
               </motion.p>
             </div>
             <motion.div
