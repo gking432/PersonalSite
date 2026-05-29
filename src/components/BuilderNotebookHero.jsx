@@ -71,10 +71,6 @@ const notes = [
     className: 'notebook-note--liquidity'
   },
   {
-    text: '800M curve + 200M liquidity',
-    className: 'notebook-note--supply'
-  },
-  {
     text: 'price_numerator = 19_029_514_756u128',
     className: 'notebook-note--move'
   }
@@ -186,16 +182,6 @@ function BuilderNotebookHero() {
   const spotlightY = useTransform(smoothY, (value) => `${42 + value * 14}%`)
   const curvePoint = useMemo(() => curvePointAt(curveProgress), [curveProgress])
   const curveStats = useMemo(() => curveStatsAt(curveProgress), [curveProgress])
-  const readoutX = curvePoint.x > 500
-    ? 185
-    : curvePoint.x > 360
-      ? Math.max(126, curvePoint.x - 198)
-      : curvePoint.x + 24
-  const readoutY = curvePoint.x > 500
-    ? 116
-    : curvePoint.y > 220
-      ? curvePoint.y - 124
-      : curvePoint.y + 22
 
   const handlePointerMove = (event) => {
     if (reduceMotion) return
@@ -292,6 +278,24 @@ function BuilderNotebookHero() {
               onPointerEnter={handleCurveMove}
               onPointerMove={handleCurveMove}
             >
+              <defs>
+                <filter id="notebook-chalk-rough" x="-10%" y="-10%" width="120%" height="120%">
+                  <feTurbulence
+                    type="fractalNoise"
+                    baseFrequency="0.9"
+                    numOctaves="2"
+                    seed="11"
+                    result="noise"
+                  />
+                  <feDisplacementMap
+                    in="SourceGraphic"
+                    in2="noise"
+                    scale="1.15"
+                    xChannelSelector="R"
+                    yChannelSelector="G"
+                  />
+                </filter>
+              </defs>
               <motion.path
                 className="notebook-hero__axis"
                 d="M72 340 C162 345 256 344 540 338"
@@ -344,15 +348,21 @@ function BuilderNotebookHero() {
                   cy={curvePoint.y}
                   r="7"
                 />
-                <g className="notebook-hero__readout" transform={`translate(${readoutX} ${readoutY})`}>
-                  <rect width="178" height="94" rx="10" />
-                  <text x="14" y="25">
-                    <tspan>sold: {formatTokens(curveStats.tokensSold)}</tspan>
-                    <tspan x="14" dy="19">raised: {formatApt(curveStats.raisedApt)} APT</tspan>
-                    <tspan x="14" dy="19">price: {formatPrice(curveStats.priceApt)}</tspan>
-                    <tspan x="14" dy="19">rise: {curveStats.multiple.toFixed(1)}x</tspan>
-                  </text>
-                </g>
+              </motion.g>
+              <motion.g
+                className="notebook-hero__board-data"
+                initial={{ opacity: 0, rotate: -2 }}
+                animate={{ opacity: 1, rotate: -2 }}
+                transition={{ duration: 0.55, delay: reduceMotion ? 0 : 1.25, ease: ndsEase }}
+              >
+                <text x="154" y="178">
+                  <tspan>sold ~= {formatTokens(curveStats.tokensSold)} tokens</tspan>
+                  <tspan x="148" dy="24">raised ~= {formatApt(curveStats.raisedApt)} APT</tspan>
+                  <tspan x="162" dy="24">price ~= {formatPrice(curveStats.priceApt)}</tspan>
+                  <tspan x="151" dy="24">rise ~= {curveStats.multiple.toFixed(1)}x</tspan>
+                </text>
+                <path d="M141 188 C209 173 276 181 351 169" />
+                <path d="M145 240 C224 255 297 246 368 256" />
               </motion.g>
               <motion.path
                 className="notebook-hero__scratch"
@@ -396,6 +406,7 @@ function BuilderNotebookHero() {
             {notes.map((note, index) => (
               <motion.p
                 className={`notebook-note ${note.className}`}
+                data-text={note.text}
                 key={note.text}
                 initial={{ opacity: 0, y: 10, rotate: -1 }}
                 animate={{ opacity: 1, y: 0 }}
