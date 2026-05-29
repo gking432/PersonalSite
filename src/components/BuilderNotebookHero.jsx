@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useMemo, useState } from 'react'
 import {
   motion,
   useMotionValue,
@@ -9,6 +10,34 @@ import {
 import './BuilderNotebookHero.css'
 
 const ndsEase = [0.22, 1, 0.36, 1]
+const curvePath = 'M95 316 C170 314 245 310 318 296 C392 281 448 244 482 180 C506 134 526 89 548 58'
+const curveSupply = 800_000_000
+const graduationTokens = 792_260_950
+const priceNumerator = 19_029_514_756
+const baseOctas = 61.9053276
+const graduationRaisedApt = 1283.7
+const defaultCurveProgress = 0.73
+
+const curveSegments = [
+  {
+    p0: { x: 95, y: 316 },
+    p1: { x: 170, y: 314 },
+    p2: { x: 245, y: 310 },
+    p3: { x: 318, y: 296 }
+  },
+  {
+    p0: { x: 318, y: 296 },
+    p1: { x: 392, y: 281 },
+    p2: { x: 448, y: 244 },
+    p3: { x: 482, y: 180 }
+  },
+  {
+    p0: { x: 482, y: 180 },
+    p1: { x: 506, y: 134 },
+    p2: { x: 526, y: 89 },
+    p3: { x: 548, y: 58 }
+  }
+]
 
 const metrics = [
   { value: '3+', label: 'Years Building' },
@@ -51,8 +80,100 @@ const notes = [
   }
 ]
 
+function cubicPoint({ p0, p1, p2, p3 }, t) {
+  const inverse = 1 - t
+  const inverse2 = inverse * inverse
+  const t2 = t * t
+
+  return {
+    x: inverse2 * inverse * p0.x + 3 * inverse2 * t * p1.x + 3 * inverse * t2 * p2.x + t2 * t * p3.x,
+    y: inverse2 * inverse * p0.y + 3 * inverse2 * t * p1.y + 3 * inverse * t2 * p2.y + t2 * t * p3.y
+  }
+}
+
+function buildCurveSamples() {
+  const samples = []
+
+  curveSegments.forEach((segment, segmentIndex) => {
+    for (let index = 0; index <= 72; index += 1) {
+      if (segmentIndex > 0 && index === 0) continue
+      samples.push(cubicPoint(segment, index / 72))
+    }
+  })
+
+  let distance = 0
+  const measured = samples.map((point, index) => {
+    if (index > 0) {
+      const previous = samples[index - 1]
+      distance += Math.hypot(point.x - previous.x, point.y - previous.y)
+    }
+
+    return { ...point, distance }
+  })
+
+  const totalDistance = measured[measured.length - 1].distance
+  return measured.map((point) => ({
+    ...point,
+    progress: point.distance / totalDistance
+  }))
+}
+
+const curveSamples = buildCurveSamples()
+const graduationIntegral =
+  priceNumerator * Math.log(curveSupply / (curveSupply - graduationTokens)) +
+  baseOctas * graduationTokens
+const startPriceApt = (priceNumerator / curveSupply + baseOctas) / 1e8
+
+function nearestCurveSample(x, y) {
+  return curveSamples.reduce((closest, sample) => {
+    const distance = Math.hypot(sample.x - x, sample.y - y)
+    return distance < closest.distance ? { sample, distance } : closest
+  }, { sample: curveSamples[0], distance: Number.POSITIVE_INFINITY }).sample
+}
+
+function curvePointAt(progress) {
+  return curveSamples.reduce((closest, sample) => {
+    const distance = Math.abs(sample.progress - progress)
+    return distance < closest.distance ? { sample, distance } : closest
+  }, { sample: curveSamples[0], distance: Number.POSITIVE_INFINITY }).sample
+}
+
+function curveStatsAt(progress) {
+  const tokensSold = graduationTokens * progress
+  const priceApt = (priceNumerator / (curveSupply - tokensSold) + baseOctas) / 1e8
+  const raisedIntegral =
+    priceNumerator * Math.log(curveSupply / (curveSupply - tokensSold)) +
+    baseOctas * tokensSold
+  const raisedApt = (raisedIntegral / graduationIntegral) * graduationRaisedApt
+
+  return {
+    tokensSold,
+    priceApt,
+    raisedApt,
+    multiple: priceApt / startPriceApt
+  }
+}
+
+function formatTokens(tokens) {
+  return `${(tokens / 1_000_000).toLocaleString('en-US', {
+    maximumFractionDigits: tokens >= 100_000_000 ? 0 : 1
+  })}M`
+}
+
+function formatApt(value) {
+  return value.toLocaleString('en-US', {
+    maximumFractionDigits: value >= 100 ? 1 : 2
+  })
+}
+
+function formatPrice(value) {
+  return value.toFixed(8)
+}
+
 function BuilderNotebookHero() {
   const reduceMotion = useReducedMotion()
+  const [curveProgress, setCurveProgress] = useState(defaultCurveProgress)
+  const [isCurveActive, setIsCurveActive] = useState(false)
   const pointerX = useMotionValue(0)
   const pointerY = useMotionValue(0)
   const smoothX = useSpring(pointerX, { stiffness: 90, damping: 24, mass: 0.45 })
@@ -63,6 +184,18 @@ function BuilderNotebookHero() {
   const fieldY = useTransform(smoothY, [-0.5, 0.5], [-10, 10])
   const spotlightX = useTransform(smoothX, (value) => `${58 + value * 16}%`)
   const spotlightY = useTransform(smoothY, (value) => `${42 + value * 14}%`)
+  const curvePoint = useMemo(() => curvePointAt(curveProgress), [curveProgress])
+  const curveStats = useMemo(() => curveStatsAt(curveProgress), [curveProgress])
+  const readoutX = curvePoint.x > 500
+    ? 185
+    : curvePoint.x > 360
+      ? Math.max(126, curvePoint.x - 198)
+      : curvePoint.x + 24
+  const readoutY = curvePoint.x > 500
+    ? 116
+    : curvePoint.y > 220
+      ? curvePoint.y - 124
+      : curvePoint.y + 22
 
   const handlePointerMove = (event) => {
     if (reduceMotion) return
@@ -71,9 +204,23 @@ function BuilderNotebookHero() {
     pointerY.set((event.clientY - bounds.top) / bounds.height - 0.5)
   }
 
+  const handleCurveMove = (event) => {
+    const svg = event.currentTarget.ownerSVGElement || event.currentTarget
+    if (!svg) return
+
+    const bounds = svg.getBoundingClientRect()
+    const x = ((event.clientX - bounds.left) / bounds.width) * 620
+    const y = ((event.clientY - bounds.top) / bounds.height) * 420
+    const sample = nearestCurveSample(x, y)
+
+    setCurveProgress(sample.progress)
+    setIsCurveActive(true)
+  }
+
   const settlePointer = () => {
     pointerX.set(0)
     pointerY.set(0)
+    setIsCurveActive(false)
   }
 
   const pathTransition = reduceMotion
@@ -142,6 +289,8 @@ function BuilderNotebookHero() {
               viewBox="0 0 620 420"
               role="img"
               aria-label="Hand drawn bonding curve sketch"
+              onPointerEnter={handleCurveMove}
+              onPointerMove={handleCurveMove}
             >
               <motion.path
                 className="notebook-hero__axis"
@@ -159,11 +308,52 @@ function BuilderNotebookHero() {
               />
               <motion.path
                 className="notebook-hero__curve-line"
-                d="M95 316 C170 314 245 310 318 296 C392 281 448 244 482 180 C506 134 526 89 548 58"
+                d={curvePath}
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={{ pathLength: 1, opacity: 1 }}
                 transition={{ ...pathTransition, duration: 1.7, delay: 0.72 }}
               />
+              <motion.g
+                className="notebook-hero__tracker"
+                animate={{ opacity: isCurveActive ? 1 : 0 }}
+                transition={{ duration: isCurveActive ? 0.18 : 0.28 }}
+              >
+                <line
+                  className="notebook-hero__tracker-line"
+                  x1="84"
+                  y1={curvePoint.y}
+                  x2={curvePoint.x}
+                  y2={curvePoint.y}
+                />
+                <line
+                  className="notebook-hero__tracker-line"
+                  x1={curvePoint.x}
+                  y1={curvePoint.y}
+                  x2={curvePoint.x}
+                  y2="339"
+                />
+                <circle
+                  className="notebook-hero__tracker-glow"
+                  cx={curvePoint.x}
+                  cy={curvePoint.y}
+                  r="18"
+                />
+                <circle
+                  className="notebook-hero__tracker-dot"
+                  cx={curvePoint.x}
+                  cy={curvePoint.y}
+                  r="7"
+                />
+                <g className="notebook-hero__readout" transform={`translate(${readoutX} ${readoutY})`}>
+                  <rect width="178" height="94" rx="10" />
+                  <text x="14" y="25">
+                    <tspan>sold: {formatTokens(curveStats.tokensSold)}</tspan>
+                    <tspan x="14" dy="19">raised: {formatApt(curveStats.raisedApt)} APT</tspan>
+                    <tspan x="14" dy="19">price: {formatPrice(curveStats.priceApt)}</tspan>
+                    <tspan x="14" dy="19">rise: {curveStats.multiple.toFixed(1)}x</tspan>
+                  </text>
+                </g>
+              </motion.g>
               <motion.path
                 className="notebook-hero__scratch"
                 d="M112 94 C178 73 260 88 320 66 C380 45 440 52 502 28"
@@ -178,6 +368,10 @@ function BuilderNotebookHero() {
                 animate={{ pathLength: 1, opacity: 1 }}
                 transition={{ ...pathTransition, delay: 1.08 }}
               />
+              <path
+                className="notebook-hero__curve-hitbox"
+                d={curvePath}
+              />
               <motion.circle
                 className="notebook-hero__dot"
                 cx="548"
@@ -188,8 +382,15 @@ function BuilderNotebookHero() {
                 transition={{ duration: 0.45, delay: reduceMotion ? 0 : 1.55, ease: ndsEase }}
               />
               <text x="94" y="64">price</text>
-              <text x="408" y="374">tokens sold</text>
+              <text x="420" y="398">tokens sold</text>
               <text x="457" y="50">graduation</text>
+              <rect
+                className="notebook-hero__curve-scrub-zone"
+                x="52"
+                y="44"
+                width="528"
+                height="340"
+              />
             </svg>
 
             {notes.map((note, index) => (

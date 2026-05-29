@@ -231,12 +231,19 @@
   inset: 7% 5% 7% 0;
   width: 92%;
   height: 82%;
+  cursor: crosshair;
   overflow: visible;
 }
 
 .notebook-hero__curve path,
-.notebook-hero__curve circle {
+.notebook-hero__curve circle,
+.notebook-hero__curve line {
   vector-effect: non-scaling-stroke;
+}
+
+.notebook-hero__curve-scrub-zone {
+  fill: rgba(244, 241, 234, 0.001);
+  pointer-events: all;
 }
 
 .notebook-hero__axis,
@@ -270,6 +277,52 @@
   fill: rgba(199, 161, 88, 0.8);
   stroke: rgba(244, 241, 234, 0.64);
   stroke-width: 2;
+}
+
+.notebook-hero__tracker,
+.notebook-hero__readout {
+  pointer-events: none;
+}
+
+.notebook-hero__tracker-line {
+  stroke: rgba(199, 161, 88, 0.52);
+  stroke-width: 1.6;
+  stroke-dasharray: 6 8;
+  stroke-linecap: round;
+}
+
+.notebook-hero__tracker-glow {
+  fill: rgba(199, 161, 88, 0.18);
+  filter: blur(2px);
+}
+
+.notebook-hero__tracker-dot {
+  fill: rgba(199, 161, 88, 0.92);
+  stroke: rgba(244, 241, 234, 0.88);
+  stroke-width: 2.4;
+}
+
+.notebook-hero__readout rect {
+  fill: rgba(7, 17, 14, 0.72);
+  stroke: rgba(244, 241, 234, 0.2);
+  stroke-width: 1;
+}
+
+.notebook-hero__curve .notebook-hero__readout text {
+  fill: rgba(244, 241, 234, 0.86);
+  font-family: 'Courier New', monospace;
+  font-size: 13.5px;
+  letter-spacing: 0;
+}
+
+.notebook-hero__curve-hitbox {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 54;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  cursor: crosshair;
+  pointer-events: stroke;
 }
 
 .notebook-hero__curve text,
@@ -330,9 +383,9 @@
 }
 
 .notebook-note--rise {
-  right: 16%;
-  bottom: 25%;
-  font-size: 1.42rem;
+  right: 7%;
+  bottom: 33%;
+  font-size: 1.22rem;
   transform: rotate(7deg);
 }
 
@@ -487,9 +540,9 @@
   }
 
   .notebook-note--rise {
-    right: 17%;
-    bottom: 28%;
-    font-size: 0.96rem;
+    right: 11%;
+    bottom: 34%;
+    font-size: 0.86rem;
   }
 
   .notebook-note--liquidity,
