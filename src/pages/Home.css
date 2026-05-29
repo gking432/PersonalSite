@@ -161,65 +161,6 @@ One cohesive piece. Generous whitespace. Parchment base.
 }
 
 /* ═══════════════════════════════════════════
-   STATS BAR — SQUEEZE + GIANT NUMBERS
-   ═══════════════════════════════════════════ */
-.stats-bar {
-  background-color: var(--forest-green);
-  padding: var(--space-2xl) 0;
-  position: relative;
-}
-
-/* Subtle noise texture */
-.stats-bar::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events: none;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-xl);
-  text-align: center;
-  position: relative;
-  z-index: 1;
-}
-
-.stat-item {
-  color: var(--cream);
-  perspective: 800px;
-}
-
-.stat-number {
-  font-family: var(--font-display);
-  font-size: clamp(4rem, 12vw, 14rem);
-  font-weight: 700;
-  line-height: 1;
-  margin-bottom: var(--space-sm);
-  letter-spacing: -0.03em;
-  color: var(--cream);
-}
-
-.stat-label-line {
-  width: 40px;
-  height: 2px;
-  background: rgba(244, 241, 234, 0.3);
-  margin: var(--space-sm) auto;
-}
-
-.stat-label {
-  font-family: var(--font-sans);
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(244, 241, 234, 0.6);
-  margin: 0;
-}
-
-/* ═══════════════════════════════════════════
    APPROACH — EDITORIAL TYPOGRAPHY SECTION
    Lives on parchment. Breathes between colored sections.
    ═══════════════════════════════════════════ */
@@ -578,11 +519,6 @@ One cohesive piece. Generous whitespace. Parchment base.
    RESPONSIVE
    ═══════════════════════════════════════════ */
 @media (max-width: 1024px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-lg);
-  }
-
   .giant-text {
     font-size: clamp(2.5rem, 10vw, 6rem);
   }
@@ -614,14 +550,6 @@ One cohesive piece. Generous whitespace. Parchment base.
 
   .scroll-indicator {
     display: none;
-  }
-
-  .stats-bar {
-    padding: var(--space-xl) 0;
-  }
-
-  .stat-number {
-    font-size: clamp(3rem, 10vw, 6rem);
   }
 
   .approach {
@@ -681,10 +609,6 @@ One cohesive piece. Generous whitespace. Parchment base.
 }
 
 @media (max-width: 480px) {
-  .stat-number {
-    font-size: 3rem;
-  }
-
   .giant-text {
     font-size: clamp(1.75rem, 8vw, 3rem);
   }

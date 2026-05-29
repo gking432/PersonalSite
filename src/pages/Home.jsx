@@ -50,31 +50,6 @@ function SqueezeSection({ children, className, as: Tag = 'section' }) {
   )
 }
 
-// ─── ANIMATED NUMBER ───
-function AnimatedNumber({ target, duration = 2, suffix = "" }) {
-  const [count, setCount] = useState(0)
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: "-100px" })
-
-  useEffect(() => {
-    if (!isInView) return
-    let startTime
-    let animationFrame
-    const easeOut = (t) => 1 - Math.pow(1 - t, 3)
-    const animate = (currentTime) => {
-      if (!startTime) startTime = currentTime
-      const linear = Math.min((currentTime - startTime) / (duration * 1000), 1)
-      const progress = easeOut(linear)
-      setCount(Math.floor(progress * target))
-      if (progress < 1) animationFrame = requestAnimationFrame(animate)
-    }
-    animationFrame = requestAnimationFrame(animate)
-    return () => cancelAnimationFrame(animationFrame)
-  }, [isInView, target, duration])
-
-  return <span ref={ref}>{count}{suffix}</span>
-}
-
 // ─── GIANT TEXT (word-by-word color reveal on scroll) ───
 function GiantText({ children, scrollYProgress }) {
   const words = typeof children === 'string' ? children.split(' ') : [children]
@@ -237,23 +212,6 @@ function RevealSection({ children, className, direction = 'bottom' }) {
   )
 }
 
-// ─── STAGGER VARIANTS ───
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.15, delayChildren: 0.1 }
-  }
-}
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 60, scale: 0.92 },
-  visible: {
-    opacity: 1, y: 0, scale: 1,
-    transition: { duration: 0.8, ease: ndsEase }
-  }
-}
-
 // ─── HERO LETTER ANIMATION ───
 function AnimatedTitle({ text }) {
   const letters = text.split('')
@@ -299,33 +257,6 @@ function Home() {
 
       {/* ═══════ HERO ═══════ */}
       <BuilderNotebookHero />
-
-      {/* ═══════ STATS — SQUEEZE ═══════ */}
-      <SqueezeSection className="stats-bar">
-        <div className="container">
-          <motion.div
-            className="stats-grid"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-          >
-            {[
-              { target: 3, suffix: '+', label: 'Years Building' },
-              { target: 5, suffix: '+', label: 'Products Launched' },
-              { target: 100, suffix: '+', label: 'People Educated' },
-            ].map((stat, i) => (
-              <motion.div className="stat-item" key={i} variants={itemVariants}>
-                <div className="stat-number">
-                  <AnimatedNumber target={stat.target} suffix={stat.suffix} />
-                </div>
-                <div className="stat-label-line" />
-                <p className="stat-label">{stat.label}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </SqueezeSection>
 
       {/* ═══════ APPROACH — EDITORIAL ═══════ */}
       <section className="approach">
