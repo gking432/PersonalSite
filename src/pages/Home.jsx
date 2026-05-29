@@ -5,7 +5,7 @@ import { useRef, useEffect, useState } from 'react'
 
 import PageTransition from '../components/PageTransition'
 import HorizonJourney from '../components/HorizonJourney'
-import BuilderPortraitHero from '../components/BuilderPortraitHero'
+import BuilderNotebookHero from '../components/BuilderNotebookHero'
 import './Home.css'
 
 // ─── NDS EASING ───
@@ -298,7 +298,7 @@ function Home() {
       <ScrollProgress />
 
       {/* ═══════ HERO ═══════ */}
-      <BuilderPortraitHero />
+      <BuilderNotebookHero />
 
       {/* ═══════ STATS — SQUEEZE ═══════ */}
       <SqueezeSection className="stats-bar">
