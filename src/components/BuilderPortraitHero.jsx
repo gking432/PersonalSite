@@ -10,30 +10,6 @@ import './BuilderPortraitHero.css'
 
 const ndsEase = [0.22, 1, 0.36, 1]
 
-const proofItems = [
-  {
-    label: 'Client Systems',
-    title: 'Brands into working channels',
-    body: 'Storefronts, campaigns, and digital systems for teams that need traction.',
-    image: '/images/petunis-storefront.png',
-    to: '/client-work'
-  },
-  {
-    label: 'Product Builds',
-    title: 'Ideas into interfaces',
-    body: 'Zero-to-one product work across launch flows, APIs, and feedback loops.',
-    image: '/WeatherFixers/Storefront.png',
-    to: '/projects'
-  },
-  {
-    label: 'Technology',
-    title: 'Useful leverage',
-    body: 'Automation, analytics, and AI where they make the work sharper.',
-    image: '/GTS/GTS Site shot.png',
-    to: '/about'
-  }
-]
-
 const metrics = [
   { value: '3+', label: 'Years Building' },
   { value: '5+', label: 'Products Launched' },
@@ -48,9 +24,8 @@ function BuilderPortraitHero() {
   const smoothY = useSpring(pointerY, { stiffness: 90, damping: 24, mass: 0.45 })
   const rotateX = useTransform(smoothY, [-0.5, 0.5], [3.5, -3.5])
   const rotateY = useTransform(smoothX, [-0.5, 0.5], [-5, 5])
-  const portraitX = useTransform(smoothX, [-0.5, 0.5], [-12, 12])
-  const portraitY = useTransform(smoothY, [-0.5, 0.5], [-8, 8])
-  const proofShift = useTransform(smoothX, [-0.5, 0.5], [12, -12])
+  const portraitX = useTransform(smoothX, [-0.5, 0.5], [-18, 18])
+  const portraitY = useTransform(smoothY, [-0.5, 0.5], [-10, 10])
   const spotlightX = useTransform(smoothX, (value) => `${58 + value * 16}%`)
   const spotlightY = useTransform(smoothY, (value) => `${42 + value * 14}%`)
 
@@ -117,59 +92,15 @@ function BuilderPortraitHero() {
           initial={{ opacity: 0, y: 34, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 1, delay: 0.12, ease: ndsEase }}
-          aria-label="Portrait surrounded by work evidence"
+          aria-label="Gunnar Neuman portrait"
         >
-          <div className="portrait-hero__plate" aria-hidden="true" />
           <motion.div
             className="portrait-hero__portrait"
             style={reduceMotion ? undefined : { x: portraitX, y: portraitY }}
           >
             <img src="/images/gunnar-headshot.webp" alt="Gunnar Neuman" />
           </motion.div>
-
-          <motion.div
-            className="portrait-hero__proofs"
-            style={reduceMotion ? undefined : { x: proofShift }}
-          >
-            {proofItems.map((item, index) => (
-              <motion.article
-                className={`portrait-proof portrait-proof--${index + 1}`}
-                key={item.title}
-                initial={{ opacity: 0, y: 26 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.75, delay: 0.3 + index * 0.13, ease: ndsEase }}
-              >
-                <Link to={item.to} className="portrait-proof__link">
-                  <span className="portrait-proof__label">{item.label}</span>
-                  <h2>{item.title}</h2>
-                  <p>{item.body}</p>
-                  <img src={item.image} alt="" aria-hidden="true" />
-                </Link>
-              </motion.article>
-            ))}
-          </motion.div>
-
-          <motion.div
-            className="portrait-hero__tag portrait-hero__tag--strategy"
-            animate={reduceMotion ? undefined : { y: [0, -7, 0] }}
-            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            Strategy
-          </motion.div>
-          <motion.div
-            className="portrait-hero__tag portrait-hero__tag--product"
-            animate={reduceMotion ? undefined : { y: [0, 6, 0] }}
-            transition={{ duration: 5.8, repeat: Infinity, ease: 'easeInOut', delay: 0.7 }}
-          >
-            Product
-          </motion.div>
-          <motion.div
-            className="portrait-hero__tag portrait-hero__tag--technology"
-            animate={reduceMotion ? undefined : { y: [0, -5, 0] }}
-            transition={{ duration: 5.4, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }}
-          >
-            Technology
-          </motion.div>
+          <div className="portrait-hero__halo" aria-hidden="true" />
         </motion.div>
       </div>
     </motion.section>
