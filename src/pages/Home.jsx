@@ -5,6 +5,7 @@ import { useRef, useEffect, useState } from 'react'
 
 import PageTransition from '../components/PageTransition'
 import HorizonJourney from '../components/HorizonJourney'
+import BuilderTableHero from '../components/BuilderTableHero'
 import './Home.css'
 
 // ─── NDS EASING ───
@@ -291,84 +292,13 @@ function AnimatedTitle({ text }) {
 // HOME COMPONENT
 // ═══════════════════════════════════════════
 function Home() {
-  const { scrollYProgress } = useScroll()
-
-  // Hero parallax
-  const heroY = useTransform(scrollYProgress, [0, 0.3], [0, -150])
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0])
-  const heroPerspective = useTransform(scrollYProgress, [0, 0.15], [0, 8])
-
   return (
     <PageTransition>
     <div className="home">
       <ScrollProgress />
 
       {/* ═══════ HERO ═══════ */}
-      <motion.section
-        className="hero"
-        style={{ y: heroY, opacity: heroOpacity }}
-      >
-        <div className="hero-grid-bg" />
-
-        <div className="container">
-          <div className="hero-content">
-            <motion.p
-              className="hero-label"
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, ease: ndsEase }}
-            >
-              Marketing Leader &middot; Product Builder &middot; Emerging Technology
-            </motion.p>
-
-            <motion.div
-              className="hero-title-wrapper"
-              style={{ rotateX: heroPerspective, transformPerspective: 1200 }}
-            >
-              <AnimatedTitle text="Gunnar Neuman" />
-            </motion.div>
-
-            <motion.p
-              className="hero-subheadline"
-              initial={{ opacity: 0, y: 40, filter: 'blur(10px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              transition={{ duration: 1, delay: 0.8, ease: ndsEase }}
-            >
-              From corporate marketing to founding my own consultancy to taking products from
-              zero to one — I combine strategy, product thinking, and technical execution to build what others just talk about.
-            </motion.p>
-
-            <motion.div
-              className="hero-cta"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.1, ease: ndsEase }}
-            >
-              <Link to="/projects" className="btn btn-primary btn-magnetic">
-                See What I've Built
-                <span className="btn-arrow">&rarr;</span>
-              </Link>
-              <Link to="/contact" className="btn btn-secondary">
-                Get in Touch
-              </Link>
-            </motion.div>
-
-            <motion.div
-              className="scroll-indicator"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 2, duration: 1 }}
-            >
-              <motion.div
-                className="scroll-indicator-line"
-                animate={{ scaleY: [0, 1, 0] }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-              />
-              <span>Scroll</span>
-            </motion.div>
-          </div>
-        </div>
-      </motion.section>
+      <BuilderTableHero />
 
       {/* ═══════ STATS — SQUEEZE ═══════ */}
       <SqueezeSection className="stats-bar">
