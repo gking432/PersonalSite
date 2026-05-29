@@ -186,7 +186,7 @@
 .builder-hero__table-wrap {
   position: relative;
   min-height: 590px;
-  transform-style: preserve-3d;
+  transform-style: flat;
   perspective: 1400px;
   will-change: transform;
 }
@@ -194,6 +194,7 @@
 .builder-hero__table {
   position: absolute;
   inset: 5% -5% 6% -2%;
+  z-index: 1;
   overflow: hidden;
   border-radius: 999px;
   transform: rotateX(58deg) rotateZ(-8deg) translateY(32px);
@@ -267,11 +268,13 @@
 .builder-hero__dossiers {
   position: absolute;
   inset: 0;
-  transform-style: preserve-3d;
+  z-index: 3;
+  transform-style: flat;
 }
 
 .builder-dossier {
   position: absolute;
+  z-index: 1;
   width: 246px;
   min-height: 330px;
   border-radius: 8px;
@@ -281,7 +284,7 @@
   box-shadow:
     0 24px 42px rgba(0, 0, 0, 0.34),
     inset 0 0 0 1px rgba(48, 32, 18, 0.13);
-  transform-style: preserve-3d;
+  transform-style: flat;
   transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out);
 }
 
@@ -413,7 +416,7 @@
 
 .builder-hero__token {
   position: absolute;
-  z-index: 3;
+  z-index: 4;
   display: grid;
   place-items: center;
   width: 94px;
