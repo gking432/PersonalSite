@@ -20,6 +20,34 @@ const staggerItem = {
   visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: ndsEase } }
 }
 
+const fieldNotes = [
+  {
+    status: 'Field Note 01',
+    title: 'When tools make everyone fast, judgment becomes the scarce asset.',
+    excerpt: 'The old advantage was production speed. The new advantage is knowing what is worth producing, what customer behavior you are trying to move, and what quality looks like when the tools make average work cheap.',
+    themes: ['Technology', 'Marketing Strategy', 'Quality']
+  },
+  {
+    status: 'Field Note 02',
+    title: 'Product strategy starts before the build.',
+    excerpt: 'Every prototype carries assumptions about the customer, pricing, trust, distribution, and timing. The earlier those assumptions are named, the faster the build becomes useful.',
+    themes: ['Product', 'Customer Insight', 'GTM']
+  },
+  {
+    status: 'Field Note 03',
+    title: 'A bonding curve is also a positioning problem.',
+    excerpt: 'MoveMint is technical on the surface, but the real work is translation: helping users understand incentives, risk, graduation, and value creation before they act.',
+    themes: ['Market Mechanics', 'Web3', 'Translation']
+  }
+]
+
+const writingTopics = [
+  { title: 'Customer Behavior', text: 'How people decide, hesitate, trust, buy, and return.' },
+  { title: 'Technology Adoption', text: 'What new tools change operationally, economically, and culturally.' },
+  { title: 'Product Judgment', text: 'How builders move from vague idea to specific working system.' },
+  { title: 'Go-To-Market', text: 'Positioning, acquisition, messaging, and proof from the operator seat.' }
+]
+
 function Writing() {
   return (
     <PageTransition>
@@ -35,15 +63,15 @@ function Writing() {
             Writing
           </motion.p>
           <h1>
-            {'Thoughts on Marketing, Technology, and Building'.split(' ').map((word, i) => (
+            {'Field Notes'.split(' ').map((word, i, words) => (
               <motion.span
                 key={i}
-                style={{ display: 'inline-block', marginRight: '0.25em' }}
+                style={{ display: 'inline-block' }}
                 initial={{ opacity: 0, y: 60 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.1 + i * 0.06, ease: ndsEase }}
               >
-                {word}
+                {word}{i < words.length - 1 ? '\u00a0' : ''}
               </motion.span>
             ))}
           </h1>
@@ -53,12 +81,12 @@ function Writing() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6, ease: ndsEase }}
           >
-            I write about whatever I'm curious about—usually at the intersection of technology and human behavior.
+            Short essays on customer behavior, technology adoption, product judgment, and the messy path from idea to market.
           </motion.p>
         </div>
       </section>
 
-      {/* Substack Integration — Squeezed */}
+      {/* Field Notes Thesis */}
       <SqueezeSection className="substack-section section">
         <div className="container">
           <motion.div
@@ -68,20 +96,12 @@ function Writing() {
             viewport={{ once: true, margin: "-100px" }}
             variants={staggerContainer}
           >
-            <motion.h2 variants={fadeUp}>Read on Substack</motion.h2>
+            <motion.h2 variants={fadeUp}>The writing has a job.</motion.h2>
             <motion.p className="substack-description" variants={fadeUp}>
-              All my writing is published on Substack. Subscribe to get new articles delivered to your inbox.
+              I use writing to pressure-test ideas before they become products, talks,
+              campaigns, or tools. The best notes clarify what I believe, what I am
+              seeing in the market, and what I would build next.
             </motion.p>
-            <motion.div className="substack-cta" variants={fadeUp}>
-              <a
-                href="https://substack.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-primary"
-              >
-                Subscribe on Substack
-              </a>
-            </motion.div>
           </motion.div>
         </div>
       </SqueezeSection>
@@ -96,7 +116,7 @@ function Writing() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, ease: ndsEase }}
           >
-            Recent Articles
+            Current Notes
           </motion.h2>
           <motion.div
             className="articles-list"
@@ -105,18 +125,20 @@ function Writing() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6, ease: ndsEase }}
           >
-            <div className="article-card">
-              <div className="article-meta">
-                <span className="article-date">Coming Soon</span>
+            {fieldNotes.map((note) => (
+              <div className="article-card" key={note.title}>
+                <div className="article-meta">
+                  <span className="article-date">{note.status}</span>
+                </div>
+                <h3>{note.title}</h3>
+                <p className="article-excerpt">{note.excerpt}</p>
+                <div className="article-themes">
+                  {note.themes.map((theme) => (
+                    <span key={theme}>{theme}</span>
+                  ))}
+                </div>
               </div>
-              <h3>Latest Article Title</h3>
-              <p className="article-excerpt">
-                Check back soon for articles on marketing strategy, technology applications, building products, and business observations.
-              </p>
-              <a href="https://substack.com" target="_blank" rel="noopener noreferrer" className="article-link">
-                Read on Substack →
-              </a>
-            </div>
+            ))}
           </motion.div>
         </div>
       </section>
@@ -131,7 +153,7 @@ function Writing() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, ease: ndsEase }}
           >
-            Topics I Write About
+            Topics I Keep Coming Back To
           </motion.h2>
           <motion.div
             className="categories-grid"
@@ -140,22 +162,12 @@ function Writing() {
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
           >
-            <motion.div className="category-card" variants={staggerItem}>
-              <h3>Emerging Technology</h3>
-              <p>Practical insights on how new tools are changing the way we work and live</p>
-            </motion.div>
-            <motion.div className="category-card" variants={staggerItem}>
-              <h3>Marketing Strategy</h3>
-              <p>Thoughts on customer acquisition, branding, and campaign execution</p>
-            </motion.div>
-            <motion.div className="category-card" variants={staggerItem}>
-              <h3>Building & Delivering</h3>
-              <p>Lessons learned from building products and turning ideas into reality</p>
-            </motion.div>
-            <motion.div className="category-card" variants={staggerItem}>
-              <h3>Business Observations</h3>
-              <p>Observations on business, strategy, and the intersection of technology and commerce</p>
-            </motion.div>
+            {writingTopics.map((topic) => (
+              <motion.div className="category-card" key={topic.title} variants={staggerItem}>
+                <h3>{topic.title}</h3>
+                <p>{topic.text}</p>
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </SqueezeSection>

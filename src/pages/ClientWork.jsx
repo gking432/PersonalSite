@@ -1024,15 +1024,15 @@ function ClientWork() {
                   Client Work
                 </motion.p>
                 <h1>
-                  {'Marketing That Converts'.split(' ').map((word, i) => (
+                  {'The Market Lab'.split(' ').map((word, i, words) => (
                     <motion.span
                       key={i}
-                      style={{ display: 'inline-block', marginRight: '0.3em' }}
+                      style={{ display: 'inline-block' }}
                       initial={{ opacity: 0, y: 60 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.7, delay: 0.1 + i * 0.08, ease: ndsEase }}
                     >
-                      {word}
+                      {word}{i < words.length - 1 ? '\u00a0' : ''}
                     </motion.span>
                   ))}
                 </h1>
@@ -1042,8 +1042,8 @@ function ClientWork() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
                 >
-                  Brand design, website builds, ad creative, and full marketing strategy
-                  for clients across industries. Click any project to explore the work.
+                  Client work where brand, web, acquisition, and reporting had to become
+                  a working growth system. Click any project to inspect the build.
                 </motion.p>
               </div>
               <motion.div
@@ -1057,16 +1057,16 @@ function ClientWork() {
                   <span className="hero-meta-value">6 Projects</span>
                 </div>
                 <div className="hero-meta-item">
-                  <span className="hero-meta-label">Industries</span>
-                  <span className="hero-meta-value">eCommerce, Lead Gen, Food, Nonprofit</span>
+                  <span className="hero-meta-label">Work</span>
+                  <span className="hero-meta-value">Brand, web, ads, merchandising</span>
                 </div>
                 <div className="hero-meta-item">
-                  <span className="hero-meta-label">Services</span>
-                  <span className="hero-meta-value">Brand, Web, Ads, Strategy</span>
+                  <span className="hero-meta-label">Channels</span>
+                  <span className="hero-meta-value">SEO, paid, direct mail, eCommerce</span>
                 </div>
                 <div className="hero-meta-item">
-                  <span className="hero-meta-label">Approach</span>
-                  <span className="hero-meta-value hero-meta-status">End-to-end delivery</span>
+                  <span className="hero-meta-label">Role</span>
+                  <span className="hero-meta-value hero-meta-status">Full lifecycle</span>
                 </div>
               </motion.div>
             </div>

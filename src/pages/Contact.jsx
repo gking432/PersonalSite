@@ -21,6 +21,30 @@ const staggerItem = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: ndsEase } }
 }
 
+const subjectOptions = [
+  { value: 'fulltime', label: 'Full-time role' },
+  { value: 'product-gtm', label: 'Product / GTM challenge' },
+  { value: 'workshop', label: 'Workshop / briefing' },
+  { value: 'client-project', label: 'Client project' },
+  { value: 'partnership', label: 'Partnership' },
+  { value: 'general', label: 'General note' }
+]
+
+const contactIntents = [
+  {
+    title: 'Role or Team Fit',
+    text: 'Product marketing, growth, strategy, or operator roles where customer insight and technical fluency both matter.'
+  },
+  {
+    title: 'Product / GTM Problem',
+    text: 'A product, launch, positioning, funnel, or customer behavior problem that needs a practical outside read.'
+  },
+  {
+    title: 'Briefing or Workshop',
+    text: 'A session for teams trying to understand what technology changes, what to build, or how to make better decisions.'
+  }
+]
+
 function Contact() {
   const [formData, setFormData] = useState({
     name: '',
@@ -39,7 +63,17 @@ function Contact() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    console.log('Form submitted:', formData)
+    const subjectLabel = subjectOptions.find((option) => option.value === formData.subject)?.label || 'General note'
+    const emailSubject = `Build Brief: ${subjectLabel}`
+    const emailBody = [
+      `Name: ${formData.name}`,
+      `Email: ${formData.email}`,
+      `Reason: ${subjectLabel}`,
+      '',
+      formData.message
+    ].join('\n')
+
+    window.location.href = `mailto:gunnarneuman14@gmail.com?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`
     setSubmitted(true)
     setFormData({
       name: '',
@@ -62,18 +96,18 @@ function Contact() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: ndsEase }}
               >
-                Contact
+                Build Brief
               </motion.p>
               <h1>
-                {'Get In Touch'.split(' ').map((word, i) => (
+                {'Start Here'.split(' ').map((word, i, words) => (
                   <motion.span
                     key={i}
-                    style={{ display: 'inline-block', marginRight: '0.25em' }}
+                    style={{ display: 'inline-block' }}
                     initial={{ opacity: 0, y: 60 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.7, delay: 0.1 + i * 0.08, ease: ndsEase }}
                   >
-                    {word}
+                    {word}{i < words.length - 1 ? '\u00a0' : ''}
                   </motion.span>
                 ))}
               </h1>
@@ -83,7 +117,7 @@ function Contact() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
               >
-                Have a question, opportunity, or just want to connect? I'd love to hear from you.
+                Send the context: role, product, workshop, or market problem. I&apos;ll respond with the next useful move.
               </motion.p>
             </div>
             <motion.div
@@ -125,7 +159,10 @@ function Contact() {
           >
             {/* Contact Form */}
             <motion.div className="contact-form-section" variants={fadeUp}>
-              <h2>Send a Message</h2>
+              <h2>Start a Build Brief</h2>
+              <p className="form-intro">
+                The best notes include the situation, what matters most, and what a useful next step would look like.
+              </p>
               <AnimatePresence mode="wait">
                 {submitted ? (
                   <motion.div
@@ -136,13 +173,16 @@ function Contact() {
                     transition={{ duration: 0.5, ease: ndsEase }}
                   >
                     <div className="success-icon">&#10003;</div>
-                    <h3>Message Sent</h3>
-                    <p>Thank you for reaching out. I'll get back to you within 24 hours.</p>
+                    <h3>Email Draft Opened</h3>
+                    <p>
+                      Your email client should have the brief ready. If it did not open, email me directly at{' '}
+                      <a href="mailto:gunnarneuman14@gmail.com">gunnarneuman14@gmail.com</a>.
+                    </p>
                     <button
                       className="btn btn-secondary"
                       onClick={() => setSubmitted(false)}
                     >
-                      Send Another Message
+                      Draft Another Brief
                     </button>
                   </motion.div>
                 ) : (
@@ -177,7 +217,7 @@ function Contact() {
                       />
                     </motion.div>
                     <motion.div className="form-group" variants={staggerItem}>
-                      <label htmlFor="subject">Subject</label>
+                      <label htmlFor="subject">Reason</label>
                       <select
                         id="subject"
                         name="subject"
@@ -185,13 +225,10 @@ function Contact() {
                         onChange={handleChange}
                         required
                       >
-                        <option value="">Select a subject</option>
-                        <option value="general">General Inquiry</option>
-                        <option value="speaking">Speaking Engagement</option>
-                        <option value="consulting">Consulting/Freelance Opportunity</option>
-                        <option value="fulltime">Full-Time Opportunity</option>
-                        <option value="partnership">Partnership</option>
-                        <option value="other">Other</option>
+                        <option value="">Select a reason</option>
+                        {subjectOptions.map((option) => (
+                          <option key={option.value} value={option.value}>{option.label}</option>
+                        ))}
                       </select>
                     </motion.div>
                     <motion.div className="form-group" variants={staggerItem}>
@@ -202,12 +239,13 @@ function Contact() {
                         rows="6"
                         value={formData.message}
                         onChange={handleChange}
+                        placeholder="What are you trying to do, decide, build, or hire for?"
                         required
                       ></textarea>
                     </motion.div>
                     <motion.div variants={staggerItem}>
                       <button type="submit" className="btn btn-primary">
-                        Send Message
+                        Open Email Draft
                       </button>
                     </motion.div>
                   </motion.form>
@@ -217,7 +255,15 @@ function Contact() {
 
             {/* Contact Info */}
             <motion.div className="contact-info-section" variants={fadeUp}>
-              <h2>Other Ways to Reach Me</h2>
+              <h2>Useful Reasons to Reach Out</h2>
+              <div className="contact-intents">
+                {contactIntents.map((intent) => (
+                  <div className="contact-intent" key={intent.title}>
+                    <h3>{intent.title}</h3>
+                    <p>{intent.text}</p>
+                  </div>
+                ))}
+              </div>
               <div className="contact-info">
                 <div className="info-item">
                   <h3>Email</h3>
@@ -240,10 +286,10 @@ function Contact() {
                 <h2>Availability</h2>
                 <div className="availability-content">
                   <p className="availability-text">
-                    <strong>Currently seeking:</strong> Full-time marketing leadership roles with ambitious, growing companies
+                    <strong>Currently seeking:</strong> Full-time roles where product marketing, growth, customer insight, and technology meet
                   </p>
                   <p className="availability-text">
-                    <strong>Also available for:</strong> Consulting, speaking engagements, partnerships
+                    <strong>Also available for:</strong> Product/GTM consulting, briefings, workshops, and selective build projects
                   </p>
                 </div>
               </div>

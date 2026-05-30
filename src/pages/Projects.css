@@ -138,6 +138,37 @@ Each project presented with editorial weight and presence
   font-size: 1.1rem;
 }
 
+.project-proof-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+  margin: 0 0 var(--space-lg);
+}
+
+.project-proof-card {
+  padding-top: var(--space-md);
+  border-top: 1px solid rgba(26, 58, 46, 0.22);
+}
+
+.project-proof-card span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--forest-green);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.project-proof-card p {
+  margin: 0;
+  color: var(--slate);
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
 .project-tech {
   display: flex;
   flex-wrap: wrap;
@@ -349,6 +380,10 @@ Each project presented with editorial weight and presence
   }
 
   .more-projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-proof-grid {
     grid-template-columns: 1fr;
   }
 }

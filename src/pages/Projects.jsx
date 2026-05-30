@@ -49,22 +49,56 @@ function Projects() {
   const featuredProjects = [
     {
       number: '01',
-      name: 'Aptos Token Launcher',
-      tagline: 'Blockchain · Token Creation · Web3',
-      description: 'Built a user-friendly interface for creating and deploying tokens on the Aptos blockchain. Simplified a complex technical process into an accessible web application that anyone can use.',
-      tech: ['Aptos blockchain', 'React', 'TypeScript'],
-      stat: { number: 1, suffix: '', label: 'Blockchain Launched' },
-      links: { github: '#', documentation: '#' }
+      name: 'MoveMint Launchpad',
+      tagline: 'Aptos · Bonding Curves · Market Mechanics',
+      description: 'A crypto token launchpad concept built around the hard part of product work: turning incentives, pricing, liquidity, and user behavior into something understandable enough to ship.',
+      tech: ['Aptos', 'React', 'TypeScript', 'Bonding Curves'],
+      stat: { number: 792, suffix: 'M', label: 'Graduation Tokens Modeled' },
+      proof: [
+        { label: 'Problem', value: 'Token launches are usually technically dense, financially opaque, and hard for nontechnical teams to reason about.' },
+        { label: 'Build', value: 'Modeled bonding-curve mechanics, price progression, graduation thresholds, and user-facing launch flows.' },
+        { label: 'GTM Lens', value: 'Treated the product as a trust problem: users need to understand what happens before they commit capital.' },
+        { label: 'Learning', value: 'The interface matters as much as the mechanism. Complex markets need translation, not just execution.' }
+      ]
     },
     {
       number: '02',
       name: 'PrepMe',
-      tagline: 'Interview Practice · Feedback Systems · Product',
-      description: 'Developed an application that conducts realistic job interviews using Claude AI, provides real-time feedback, and helps users improve their interview skills through practice.',
-      tech: ['React', 'Anthropic API', 'JavaScript'],
-      stat: { number: 50, suffix: '+', label: 'Interviews Simulated' },
-      links: { demo: '#', github: '#' }
+      tagline: 'Interview Simulation · Feedback Loops · Candidate Prep',
+      description: 'An interview-practice product concept focused on realistic repetition, structured feedback, and the confidence gap candidates feel before high-stakes conversations.',
+      tech: ['React', 'Claude API', 'JavaScript', 'Feedback Systems'],
+      stat: { number: 50, suffix: '+', label: 'Interview Paths Tested' },
+      proof: [
+        { label: 'Problem', value: 'Most interview prep is passive. Candidates read advice but do not get enough realistic reps.' },
+        { label: 'Build', value: 'Designed a simulation flow with role-specific questions, response evaluation, and improvement prompts.' },
+        { label: 'GTM Lens', value: 'Positioned around practice quality, not novelty: better reps, clearer feedback, less anxiety.' },
+        { label: 'Learning', value: 'A useful tool has to feel human enough to reduce nerves and structured enough to improve performance.' }
+      ]
     }
+  ]
+
+  const moreProjects = [
+    {
+      name: 'Topography Print Studio',
+      desc: 'A product concept for turning place-based memory into custom map art, with positioning, visual identity, and fulfillment assumptions considered from the start.',
+      tech: ['Product Concept', 'Print Commerce', 'Brand']
+    },
+    {
+      name: 'Productivity Dashboard',
+      desc: 'A decision-support dashboard concept for turning scattered tasks, priorities, and signals into a cleaner operating surface.',
+      tech: ['Dashboard', 'Workflow', 'UX']
+    },
+    {
+      name: 'This Portfolio',
+      desc: 'A living portfolio built as a product in its own right: interactive homepage, navigation spine, case-study structure, and evolving positioning.',
+      tech: ['React', 'Framer Motion', 'Positioning']
+    }
+  ]
+
+  const evaluationCards = [
+    { title: 'Customer Signal', text: 'What problem does this solve, and how painful is it for the person living with it?' },
+    { title: 'Mechanism', text: 'What has to be true technically, economically, or behaviorally for the product to work?' },
+    { title: 'Market Path', text: 'How would someone discover it, trust it, try it, and eventually pay for it?' }
   ]
 
   return (
@@ -84,15 +118,15 @@ function Projects() {
                 Projects
               </motion.p>
               <h1>
-                {'I Build What I Imagine'.split(' ').map((word, i) => (
+                {'The Workbench'.split(' ').map((word, i, words) => (
                   <motion.span
                     key={i}
-                    style={{ display: 'inline-block', marginRight: '0.25em' }}
+                    style={{ display: 'inline-block' }}
                     initial={{ opacity: 0, y: 60 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.7, delay: 0.1 + i * 0.08, ease: ndsEase }}
                   >
-                    {word}
+                    {word}{i < words.length - 1 ? '\u00a0' : ''}
                   </motion.span>
                 ))}
               </h1>
@@ -102,7 +136,7 @@ function Projects() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
               >
-                From blockchain applications to digital products, here's what happens when curiosity meets execution.
+                Product experiments, market mechanics, and working prototypes. This is where ideas get pressure-tested before they become real businesses.
               </motion.p>
             </div>
             <motion.div
@@ -112,20 +146,20 @@ function Projects() {
               transition={{ duration: 0.8, delay: 0.6, ease: ndsEase }}
             >
               <div className="hero-meta-item">
-                <span className="hero-meta-label">Featured</span>
-                <span className="hero-meta-value">2 Projects</span>
+                <span className="hero-meta-label">Mode</span>
+                <span className="hero-meta-value">Prototype to proof</span>
               </div>
               <div className="hero-meta-item">
                 <span className="hero-meta-label">Domains</span>
-                <span className="hero-meta-value">Blockchain, Product Tools, Web</span>
+                <span className="hero-meta-value">Marketplaces, tools, launch systems</span>
               </div>
               <div className="hero-meta-item">
                 <span className="hero-meta-label">Stack</span>
-                <span className="hero-meta-value">React, Python, APIs</span>
+                <span className="hero-meta-value">React, TypeScript, APIs</span>
               </div>
               <div className="hero-meta-item">
-                <span className="hero-meta-label">Status</span>
-                <span className="hero-meta-value hero-meta-status">Always building</span>
+                <span className="hero-meta-label">Lens</span>
+                <span className="hero-meta-value hero-meta-status">Problem to prototype to GTM</span>
               </div>
             </motion.div>
           </div>
@@ -177,21 +211,18 @@ function Projects() {
                 variants={staggerContainer}
               >
                 <motion.p variants={fadeUp}>{project.description}</motion.p>
+                <motion.div className="project-proof-grid" variants={staggerContainer}>
+                  {project.proof.map((item) => (
+                    <motion.div className="project-proof-card" key={item.label} variants={staggerItem}>
+                      <span>{item.label}</span>
+                      <p>{item.value}</p>
+                    </motion.div>
+                  ))}
+                </motion.div>
                 <motion.div className="project-tech" variants={fadeUp}>
                   {project.tech.map((tech) => (
                     <span key={tech} className="tech-badge">{tech}</span>
                   ))}
-                </motion.div>
-                <motion.div className="project-links" variants={fadeUp}>
-                  {project.links.demo && (
-                    <a href={project.links.demo} className="btn btn-primary btn-sm">Live Demo</a>
-                  )}
-                  {project.links.github && (
-                    <a href={project.links.github} className="btn btn-primary btn-sm">GitHub</a>
-                  )}
-                  {project.links.documentation && (
-                    <a href={project.links.documentation} className="btn btn-primary btn-sm">Docs</a>
-                  )}
                 </motion.div>
               </motion.div>
             </div>
@@ -232,15 +263,17 @@ function Projects() {
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
           >
-            <motion.div className="more-project-card" variants={staggerItem}>
-              <h3>To-Do List App</h3>
-              <p>A clean, functional to-do list application built to practice core development skills.</p>
-              <div className="project-tech">
-                <span className="tech-badge">React</span>
-                <span className="tech-badge">JavaScript</span>
-              </div>
-              <a href="#" className="project-link-text">GitHub →</a>
-            </motion.div>
+            {moreProjects.map((project) => (
+              <motion.div className="more-project-card" key={project.name} variants={staggerItem}>
+                <h3>{project.name}</h3>
+                <p>{project.desc}</p>
+                <div className="project-tech">
+                  {project.tech.map((tech) => (
+                    <span className="tech-badge" key={tech}>{tech}</span>
+                  ))}
+                </div>
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </SqueezeSection>
@@ -255,7 +288,7 @@ function Projects() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, ease: ndsEase }}
           >
-            Client Campaign Results
+            How I Evaluate Builds
           </motion.h2>
           <motion.div
             className="case-studies"
@@ -264,18 +297,12 @@ function Projects() {
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
           >
-            <motion.div className="case-study" variants={staggerItem}>
-              <h3>Challenge</h3>
-              <p>Drive customer acquisition across multiple channels for diverse client portfolio.</p>
-            </motion.div>
-            <motion.div className="case-study" variants={staggerItem}>
-              <h3>Strategy</h3>
-              <p>Integrated digital, audio, and direct mail campaigns with data-driven optimization.</p>
-            </motion.div>
-            <motion.div className="case-study" variants={staggerItem}>
-              <h3>Results</h3>
-              <p>Generated high-quality leads and improved conversion rates across all channels.</p>
-            </motion.div>
+            {evaluationCards.map((card) => (
+              <motion.div className="case-study" key={card.title} variants={staggerItem}>
+                <h3>{card.title}</h3>
+                <p>{card.text}</p>
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </section>
@@ -289,7 +316,7 @@ function Projects() {
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: ndsEase }}
           >
-            What I'm Building Next
+            The workbench stays open.
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 30 }}
@@ -297,7 +324,7 @@ function Projects() {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2, ease: ndsEase }}
           >
-            Always launching. Check back soon for new projects and updates.
+            I use projects to sharpen judgment: what to build, how to explain it, where the market lives, and what proof is still missing.
           </motion.p>
         </div>
       </SqueezeSection>

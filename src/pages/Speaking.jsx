@@ -22,6 +22,33 @@ const staggerItem = {
   visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: ndsEase } }
 }
 
+const briefingModules = [
+  {
+    title: 'Executive Briefing: Technology Without Theater',
+    format: '45-75 minute talk',
+    description: 'A practical briefing for teams who need to understand what new tools actually change: customer behavior, cost structures, operating models, and the quality bar.',
+    outcomes: [
+      'Separate durable technology shifts from hype cycles',
+      'Understand where AI and automation create leverage',
+      'Identify the customer behaviors most likely to change',
+      'Leave with a shared vocabulary for strategic decisions'
+    ],
+    audience: 'Leadership teams, marketing teams, operators, founders'
+  },
+  {
+    title: 'Operator Workshop: Build the First Useful Tool',
+    format: 'Half-day hands-on workshop',
+    description: 'A working session for teams that want to leave with a useful internal prototype, not just a better understanding of the tools.',
+    outcomes: [
+      'Map one high-friction workflow in the business',
+      'Design a lightweight tool around real constraints',
+      'Prototype a first version using modern builder workflows',
+      'Define the measurement plan and next iteration'
+    ],
+    audience: 'Marketing, sales, operations, and product teams'
+  }
+]
+
 function FAQItem({ question, answer }) {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -54,10 +81,10 @@ function FAQItem({ question, answer }) {
 
 function Speaking() {
   const faqs = [
-    { q: "Do I need technical knowledge?", a: "No. These lectures are designed for everyday users and business professionals, not computer scientists." },
-    { q: "Will I get the slides/materials?", a: "Yes. All materials, slides, and resources are included with your purchase." },
-    { q: "Can I get a refund?", a: "Refund policy details will be provided at checkout. We want you to be satisfied with your purchase." },
-    { q: "Do you do custom workshops?", a: "Yes! Contact me to discuss custom workshops tailored to your organization's needs." },
+    { q: "Is this only about AI?", a: "No. AI is one part of the conversation, but the real focus is how technology changes customer behavior, operating leverage, quality, and go-to-market strategy." },
+    { q: "Do teams need technical knowledge?", a: "No. The sessions are built for operators, marketers, founders, and business teams. Technical concepts are translated into decisions and workflows." },
+    { q: "Can this be customized?", a: "Yes. The strongest version starts with your team’s actual customer, workflow, or market problem and builds the session around that." },
+    { q: "Can workshops produce something tangible?", a: "Yes. For hands-on sessions, the goal is to leave with a first useful prototype, workflow map, or decision framework." },
   ]
 
   return (
@@ -76,15 +103,15 @@ function Speaking() {
                 Speaking
               </motion.p>
               <h1>
-                {'Technology Literacy for Everyday Users'.split(' ').map((word, i) => (
+                {'The Briefing Room'.split(' ').map((word, i, words) => (
                   <motion.span
                     key={i}
-                    style={{ display: 'inline-block', marginRight: '0.25em' }}
+                    style={{ display: 'inline-block' }}
                     initial={{ opacity: 0, y: 60 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.7, delay: 0.1 + i * 0.08, ease: ndsEase }}
                   >
-                    {word}
+                    {word}{i < words.length - 1 ? '\u00a0' : ''}
                   </motion.span>
                 ))}
               </h1>
@@ -94,7 +121,7 @@ function Speaking() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
               >
-                I'm not a computer scientist—I'm an observer, user, and translator. I help normal people understand what new tools mean for their lives and businesses.
+                I translate technology into operator language: what changes, what matters, what to build, and how teams should respond.
               </motion.p>
             </div>
             <motion.div
@@ -104,156 +131,77 @@ function Speaking() {
               transition={{ duration: 0.8, delay: 0.6, ease: ndsEase }}
             >
               <div className="hero-meta-item">
-                <span className="hero-meta-label">Lectures</span>
-                <span className="hero-meta-value">2 Available</span>
-              </div>
-              <div className="hero-meta-item">
-                <span className="hero-meta-label">Format</span>
-                <span className="hero-meta-value">Virtual, In-Person, Download</span>
+                <span className="hero-meta-label">Formats</span>
+                <span className="hero-meta-value">Briefings & workshops</span>
               </div>
               <div className="hero-meta-item">
                 <span className="hero-meta-label">Audience</span>
-                <span className="hero-meta-value">Everyday users & businesses</span>
+                <span className="hero-meta-value">Operators, marketers, founders</span>
               </div>
               <div className="hero-meta-item">
-                <span className="hero-meta-label">Custom</span>
-                <span className="hero-meta-value hero-meta-status">Workshops available</span>
+                <span className="hero-meta-label">Focus</span>
+                <span className="hero-meta-value">Technology, behavior, leverage</span>
+              </div>
+              <div className="hero-meta-item">
+                <span className="hero-meta-label">Output</span>
+                <span className="hero-meta-value hero-meta-status">Shared decisions</span>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Lecture 1 */}
-      <section className="lecture-section section">
-        <div className="container">
-          <motion.div
-            className="lecture-card"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, ease: ndsEase }}
-          >
-            <div className="lecture-header">
-              <h2>Lecture 1: AI Basics for Everyday Users</h2>
-              <div className="lecture-thumbnail">
-                <div className="thumbnail-placeholder">AI Basics</div>
+      {briefingModules.map((module, index) => {
+        const content = (
+          <div className="container">
+            <motion.div
+              className="lecture-card"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6, ease: ndsEase }}
+            >
+              <div className="lecture-header">
+                <h2>{module.title}</h2>
+                <div className="lecture-thumbnail">
+                  <div className="thumbnail-placeholder">{index === 0 ? 'Briefing' : 'Workshop'}</div>
+                </div>
               </div>
-            </div>
-            <div className="lecture-content">
-              <div className="lecture-meta">
-                <span className="duration">Duration: ~90 minutes</span>
+              <div className="lecture-content">
+                <div className="lecture-meta">
+                  <span className="duration">{module.format}</span>
+                </div>
+                <div className="lecture-section-content">
+                  <h3>What It Is</h3>
+                  <p>{module.description}</p>
+                </div>
+                <div className="lecture-section-content">
+                  <h3>What The Team Leaves With</h3>
+                  <ul className="learning-list">
+                    {module.outcomes.map((outcome) => (
+                      <li key={outcome}>{outcome}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="lecture-section-content">
+                  <h3>Who It's For</h3>
+                  <p>{module.audience}</p>
+                </div>
               </div>
-              <div className="lecture-section-content">
-                <h3>What You'll Learn</h3>
-                <ul className="learning-list">
-                  <li>What AI actually is (and isn't)</li>
-                  <li>What LLMs can do exceptionally well</li>
-                  <li>Critical limitations and dangers</li>
-                  <li>How to use AI responsibly</li>
-                  <li>Real-world examples you can use immediately</li>
-                </ul>
-              </div>
-              <div className="lecture-section-content">
-                <h3>Who It's For</h3>
-                <p>Anyone curious about AI, parents concerned about their kids, professionals wanting to understand the tool</p>
-              </div>
-              <div className="pricing-section">
-                <h3>Pricing</h3>
-                <motion.div
-                  className="pricing-tiers"
-                  variants={staggerContainer}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, margin: "-50px" }}
-                >
-                  <motion.div className="pricing-tier" variants={staggerItem}>
-                    <div className="tier-name">Virtual Live Event</div>
-                    <div className="tier-price">$7<span className="tier-cents">.49</span></div>
-                    <div className="tier-note">Includes Q&A session</div>
-                  </motion.div>
-                  <motion.div className="pricing-tier" variants={staggerItem}>
-                    <div className="tier-name">Download Only</div>
-                    <div className="tier-price">$2<span className="tier-cents">.99</span></div>
-                    <div className="tier-note">Video + slide deck</div>
-                  </motion.div>
-                  <motion.div className="pricing-tier" variants={staggerItem}>
-                    <div className="tier-name">In-Person</div>
-                    <div className="tier-price">$24<span className="tier-cents">.99</span></div>
-                    <div className="tier-note">When available</div>
-                  </motion.div>
-                </motion.div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+            </motion.div>
+          </div>
+        )
 
-      {/* Lecture 2 — Squeezed (alt bg) */}
-      <SqueezeSection className="lecture-section section alt">
-        <div className="container">
-          <motion.div
-            className="lecture-card"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, ease: ndsEase }}
-          >
-            <div className="lecture-header">
-              <h2>Lecture 2: AI for Business - Building Tools That Scale</h2>
-              <div className="lecture-thumbnail">
-                <div className="thumbnail-placeholder">AI for Business</div>
-              </div>
-            </div>
-            <div className="lecture-content">
-              <div className="lecture-meta">
-                <span className="duration">Duration: ~3 hours (hands-on workshop)</span>
-              </div>
-              <div className="lecture-section-content">
-                <h3>What You'll Learn</h3>
-                <ul className="learning-list">
-                  <li>Building custom AI tools for your business</li>
-                  <li>Customer data analysis automation</li>
-                  <li>Marketing content systems</li>
-                  <li>Workflow automation</li>
-                  <li>Decision-support dashboards</li>
-                  <li>You'll build actual tools during the session</li>
-                </ul>
-              </div>
-              <div className="lecture-section-content">
-                <h3>Who It's For</h3>
-                <p>Business owners, marketers, operations professionals, entrepreneurs</p>
-              </div>
-              <div className="pricing-section">
-                <h3>Pricing</h3>
-                <motion.div
-                  className="pricing-tiers"
-                  variants={staggerContainer}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, margin: "-50px" }}
-                >
-                  <motion.div className="pricing-tier" variants={staggerItem}>
-                    <div className="tier-name">Virtual Live Workshop</div>
-                    <div className="tier-price">$49<span className="tier-cents">.99</span></div>
-                    <div className="tier-note">Includes Q&A + follow-up support</div>
-                  </motion.div>
-                  <motion.div className="pricing-tier" variants={staggerItem}>
-                    <div className="tier-name">Download Only</div>
-                    <div className="tier-price">$149<span className="tier-cents">.99</span></div>
-                    <div className="tier-note">Full video + all code/templates/resources</div>
-                  </motion.div>
-                  <motion.div className="pricing-tier" variants={staggerItem}>
-                    <div className="tier-name">In-Person Workshop</div>
-                    <div className="tier-price">$299<span className="tier-cents">.99</span></div>
-                    <div className="tier-note">Limited availability</div>
-                  </motion.div>
-                </motion.div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </SqueezeSection>
+        return index === 0 ? (
+          <section className="lecture-section section" key={module.title}>
+            {content}
+          </section>
+        ) : (
+          <SqueezeSection className="lecture-section section alt" key={module.title}>
+            {content}
+          </SqueezeSection>
+        )
+      })}
 
       {/* Booking Section — Squeezed (green bg) */}
       <SqueezeSection className="booking-section section">
@@ -265,7 +213,7 @@ function Speaking() {
               viewport={{ once: true }}
               transition={{ duration: 0.8, ease: ndsEase }}
             >
-              Interested in bringing these talks to your organization?
+              Need a clearer read on what technology means for your team?
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 30 }}
@@ -273,7 +221,7 @@ function Speaking() {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2, ease: ndsEase }}
             >
-              Corporate/group rates available. Custom workshops tailored to your team.
+              I can tailor the briefing around your market, customer, workflows, or the specific decision your team is trying to make.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}

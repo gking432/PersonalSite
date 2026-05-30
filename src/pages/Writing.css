@@ -60,7 +60,7 @@ Magazine-style article listing
 }
 
 .substack-content {
-  max-width: 600px;
+  max-width: 780px;
   margin: 0 auto;
 }
 
@@ -89,7 +89,7 @@ Magazine-style article listing
 }
 
 .articles-list {
-  max-width: 800px;
+  max-width: 980px;
 }
 
 .article-card {
@@ -132,6 +132,29 @@ Magazine-style article listing
   color: var(--slate);
   line-height: 1.75;
   margin-bottom: var(--space-md);
+}
+
+.article-themes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.article-themes span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 5px 10px;
+  border: 1px solid rgba(26, 58, 46, 0.18);
+  border-radius: 999px;
+  color: var(--forest-green);
+  background: rgba(26, 58, 46, 0.04);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .article-link {

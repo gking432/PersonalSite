@@ -73,6 +73,13 @@ Not a customer service form. An invitation to connect.
   line-height: 1.2;
 }
 
+.form-intro {
+  color: var(--slate);
+  line-height: 1.7;
+  margin: calc(var(--space-lg) * -0.5) 0 var(--space-lg);
+  max-width: 620px;
+}
+
 /* Form */
 .contact-form {
   display: flex;
@@ -121,7 +128,40 @@ Not a customer service form. An invitation to connect.
   min-height: 140px;
 }
 
+.form-group textarea::placeholder {
+  color: var(--warm-gray);
+}
+
 /* Contact Info */
+.contact-intents {
+  display: grid;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.contact-intent {
+  padding: var(--space-md);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--border-radius-md);
+  background-color: var(--cream);
+}
+
+.contact-intent h3 {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--forest-green);
+  margin-bottom: var(--space-xs);
+}
+
+.contact-intent p {
+  color: var(--slate);
+  line-height: 1.65;
+  font-size: 0.98rem;
+}
+
 .contact-info {
   margin-bottom: var(--space-xl);
 }
@@ -250,6 +290,11 @@ Not a customer service form. An invitation to connect.
   color: var(--slate);
   margin-bottom: var(--space-lg);
   max-width: 400px;
+}
+
+.form-success a {
+  color: var(--forest-green);
+  font-weight: 600;
 }
 
 .form-success .btn {

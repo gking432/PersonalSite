@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
 import SqueezeSection from '../components/SqueezeSection'
@@ -37,6 +38,25 @@ const processSteps = [
   { number: '01', title: 'Understand', desc: 'Sit across the table. Learn the business, the audience, the constraints. Strategy without context is just guessing.' },
   { number: '02', title: 'Build', desc: 'Design it, code it, launch it. No handoffs to wonder about — I go from concept to working product.' },
   { number: '03', title: 'Deliver', desc: 'Get it live, measure what happens, iterate fast. The work isn\'t done until it\'s performing.' },
+]
+
+const builderProfile = [
+  {
+    stage: 'Customer Insight',
+    proof: 'Client discovery, showroom sales, analytics, and market research trained me to start with behavior instead of assumptions.'
+  },
+  {
+    stage: 'Positioning',
+    proof: 'Product launches, campaign strategy, naming, copy, and brand work taught me how to make the market understand why something matters.'
+  },
+  {
+    stage: 'Prototype',
+    proof: 'React, TypeScript, modern development tools, and rapid iteration let me turn ideas into working surfaces quickly.'
+  },
+  {
+    stage: 'Launch',
+    proof: 'eCommerce, SEO, paid media, content, and reporting connect the build to distribution, learning, and measurable growth.'
+  }
 ]
 
 const STEP_HEIGHTS = [0, 200, 368] // px per step - tighter gap between 2 and 3 to match 0-1
@@ -267,18 +287,18 @@ function About() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1, ease: ndsEase }}
               >
-                Introduction
+                Builder Profile
               </motion.p>
               <h1>
-                {'About Me'.split('').map((char, i) => (
+                {'How I Work'.split(' ').map((word, i, words) => (
                   <motion.span
                     key={i}
                     style={{ display: 'inline-block' }}
                     initial={{ opacity: 0, y: 60 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 0.2 + i * 0.05, ease: ndsEase }}
+                    transition={{ duration: 0.7, delay: 0.2 + i * 0.08, ease: ndsEase }}
                   >
-                    {char}
+                    {word}{i < words.length - 1 ? '\u00a0' : ''}
                   </motion.span>
                 ))}
               </h1>
@@ -288,7 +308,7 @@ function About() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
               >
-                My career has lived at the intersection of marketing, product, and emerging technology.
+                I operate where customer insight, product strategy, technical fluency, and go-to-market execution meet.
               </motion.p>
               <motion.a
                 href="#my-story"
@@ -319,8 +339,8 @@ function About() {
                 <span className="hero-meta-value">BBA, UW-Milwaukee</span>
               </div>
               <div className="hero-meta-item">
-                <span className="hero-meta-label">Focus</span>
-                <span className="hero-meta-value">Marketing · Product · Technology</span>
+                <span className="hero-meta-label">Operating Range</span>
+                <span className="hero-meta-value">Insight · Positioning · Prototype · Launch</span>
               </div>
               <div className="hero-meta-item">
                 <span className="hero-meta-label">Status</span>
@@ -328,6 +348,45 @@ function About() {
               </div>
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* ═══════ BUILDER DOSSIER ═══════ */}
+      <section className="builder-dossier section">
+        <div className="container">
+          <motion.p
+            className="label"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, ease: ndsEase }}
+          >
+            Operating Manual
+          </motion.p>
+          <motion.h2
+            className="builder-dossier-heading"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1, ease: ndsEase }}
+          >
+            The useful version of me is not one discipline. It is the handoff between them.
+          </motion.h2>
+          <motion.div
+            className="builder-dossier-grid"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+          >
+            {builderProfile.map((item, index) => (
+              <motion.div className="builder-dossier-card" key={item.stage} variants={staggerItem}>
+                <span>{String(index + 1).padStart(2, '0')}</span>
+                <h3>{item.stage}</h3>
+                <p>{item.proof}</p>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
@@ -501,18 +560,16 @@ function About() {
             variants={staggerContainer}
           >
             <motion.h2 className="cta-heading" variants={fadeUp}>
-              Let's Work Together
+              Bring Me a Problem
             </motion.h2>
             <motion.p className="cta-sub" variants={fadeUp}>
-              Looking for someone who can think strategically and build what they envision? Let's talk.
+              Looking for someone who can understand the customer, shape the strategy, and help turn the idea into something real? Start with the context.
             </motion.p>
-            <motion.a
-              href="mailto:gking432@gmail.com"
-              className="btn btn-primary"
-              variants={fadeUp}
-            >
-              Get In Touch
-            </motion.a>
+            <motion.div variants={fadeUp}>
+              <Link to="/contact" className="btn btn-primary">
+                Start a Build Brief
+              </Link>
+            </motion.div>
           </motion.div>
         </div>
       </section>
