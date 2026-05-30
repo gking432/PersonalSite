@@ -8,6 +8,7 @@ function Layout({ children }) {
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [navPhase, setNavPhase] = useState('top')
 
   // Close menu on route change + instant jump to top
   useEffect(() => {
@@ -16,12 +17,29 @@ function Layout({ children }) {
     document.body.scrollTop = 0
   }, [location.pathname])
 
-  // Navbar solid on scroll
+  // Headroom-style navbar: visible at top, hidden during early scroll, revealed later.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50)
+    const updateNavbar = () => {
+      const scrollY = window.scrollY
+      const revealAt = Math.max(560, window.innerHeight * 0.72)
+
+      setScrolled(scrollY > 50)
+      setNavPhase(scrollY <= 12 ? 'top' : scrollY < revealAt ? 'hidden' : 'revealed')
+    }
+
+    function onScroll() {
+      updateNavbar()
+    }
+
+    updateNavbar()
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+    window.addEventListener('resize', updateNavbar)
+
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', updateNavbar)
+    }
+  }, [location.pathname])
 
   // Prevent body scroll when menu is open
   useEffect(() => {
@@ -31,6 +49,15 @@ function Layout({ children }) {
 
   const isActive = (path) => location.pathname === path
   const isWorkActive = location.pathname === '/projects' || location.pathname === '/client-work'
+  const isHome = location.pathname === '/'
+  const navbarClassName = [
+    'navbar',
+    scrolled ? 'navbar-scrolled' : '',
+    isHome && navPhase === 'top' ? 'navbar-home-top' : '',
+    navPhase === 'hidden' ? 'navbar-hidden' : '',
+    navPhase === 'revealed' ? 'navbar-revealed' : '',
+    menuOpen ? 'navbar-menu-open' : ''
+  ].filter(Boolean).join(' ')
 
   const navLinks = [
     { path: '/about', label: 'About' },
@@ -60,7 +87,7 @@ function Layout({ children }) {
 
   return (
     <div className="layout">
-      <nav className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}>
+      <nav className={navbarClassName}>
         <div className="container">
           <Link to="/" className="logo">
             Gunnar Neuman
