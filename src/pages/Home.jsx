@@ -11,6 +11,95 @@ import './Home.css'
 // ─── NDS EASING ───
 const ndsEase = [0.22, 1, 0.36, 1]
 
+const approachPrinciples = [
+  {
+    number: '01',
+    title: 'Start with the customer',
+    desc: 'I use customer discovery, competitive research, sales context, and analytics to understand what people actually need before deciding what to build.'
+  },
+  {
+    number: '02',
+    title: 'Prototype the strategy',
+    desc: 'I move from positioning and pricing hypotheses into working React, TypeScript, and product prototypes fast enough to learn from the real thing.'
+  },
+  {
+    number: '03',
+    title: 'Tie it to growth',
+    desc: 'SEO, paid media, content, eCommerce, reporting, and ROI conversations all feed the same question: what behavior are we trying to change?'
+  }
+]
+
+const resumeHighlights = [
+  {
+    value: '0 to 1',
+    label: 'Product Development',
+    detail: 'Interview simulation, token launchpad, print studio, and productivity dashboard concepts built into working prototypes.'
+  },
+  {
+    value: 'Full-cycle',
+    label: 'Client Strategy',
+    detail: 'Discovery, strategy, execution, reporting, and optimization across acquisition and conversion work.'
+  },
+  {
+    value: '2.5 yrs',
+    label: 'Rotational Training',
+    detail: 'Sales operations, product marketing, launches, showroom sales, and dealer sales inside a premium brand.'
+  },
+  {
+    value: 'GTM',
+    label: 'Role Fit',
+    detail: 'Product marketing, growth, or product roles where customer insight, technology, and go-to-market strategy meet.'
+  }
+]
+
+const resumeTimeline = [
+  {
+    year: 'Oct 2025-Present',
+    title: 'GunnarNeuman.com',
+    role: 'Product Developer',
+    location: 'Milwaukee, WI',
+    desc: 'Created and launched multiple early-stage software prototypes while sharpening a product direction at the intersection of customer insight, technology, and measurable growth.',
+    bullets: [
+      'Built prototypes with AI-assisted development workflows, React, and TypeScript.',
+      'Explored concepts including an interview simulation app, crypto token launchpad, topography print studio, and productivity dashboard.',
+      'Evaluated customer problems, pricing structures, positioning, and go-to-market potential across software, service, and media concepts.',
+      'Developed hands-on fluency with Claude Code, Cursor, Codex, and modern development stacks.'
+    ],
+    tags: ['React', 'TypeScript', 'Prototyping', 'Product Strategy'],
+    side: 'left'
+  },
+  {
+    year: 'Mar 2023-Oct 2025',
+    title: 'TouchPoint Marketing Solutions',
+    role: 'Founder',
+    location: 'Denver, CO',
+    desc: 'Managed the full client lifecycle across strategy, execution, reporting, and optimization for businesses looking to turn marketing spend into measurable outcomes.',
+    bullets: [
+      'Owned discovery, strategy, campaign execution, reporting, and ongoing client optimization.',
+      'Drove acquisition through SEO, paid advertising, content strategy, eCommerce improvements, and conversion-focused campaigns.',
+      'Managed digital, audio, traditional, relational, and direct mail channels depending on the client problem.',
+      'Used Google Analytics and campaign reporting to refine strategy, communicate ROI, and guide budget decisions.'
+    ],
+    tags: ['Customer Acquisition', 'Analytics', 'SEO', 'Paid Media'],
+    side: 'right'
+  },
+  {
+    year: 'Jun 2020-Feb 2023',
+    title: 'Sub-Zero Group, Inc.',
+    role: 'Sales Rotational Program',
+    location: 'Madison, WI',
+    desc: 'Selected as the inaugural candidate for a 2.5-year rotational program across sales operations, product marketing, product launch, showroom sales, and dealer sales.',
+    bullets: [
+      'Supported product positioning and launch execution through competitive research, naming, imagery, copy, and sales materials.',
+      'Trained external sales teams on custom Power BI reports, improving access to sales insights and data-informed decisions.',
+      'Delivered luxury showroom sales experiences and helped customers evaluate product fit, design choices, and full kitchen packages.',
+      'Supported dealer relationships through training, sales materials, product knowledge, and market-facing support.'
+    ],
+    tags: ['Product Marketing', 'Launches', 'Power BI', 'Premium Brand'],
+    side: 'left'
+  }
+]
+
 // ─── SCROLL PROGRESS INDICATOR ───
 function ScrollProgress() {
   const { scrollYProgress } = useScroll()
@@ -277,26 +366,10 @@ function Home() {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.1, ease: ndsEase }}
           >
-            I find the gap between strategy and execution — then I close it.
+            I connect customer insight, go-to-market strategy, and working product.
           </motion.h2>
           <div className="approach-principles">
-            {[
-              {
-                number: '01',
-                title: 'See the system',
-                desc: 'Markets, products, users — I map the full picture before making a move.'
-              },
-              {
-                number: '02',
-                title: 'Build, don\'t brief',
-                desc: 'If I can prototype it, I will. Speed compounds when you eliminate handoffs.'
-              },
-              {
-                number: '03',
-                title: 'Measure what matters',
-                desc: 'Vanity metrics are noise. I track the numbers that move the business.'
-              }
-            ].map((item, i) => (
+            {approachPrinciples.map((item, i) => (
               <motion.div
                 key={i}
                 className="approach-principle"
@@ -330,7 +403,7 @@ function Home() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, ease: ndsEase }}
             >
-              Experience
+              Resume
             </motion.p>
             <motion.h2
               className="section-heading"
@@ -339,34 +412,40 @@ function Home() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1, ease: ndsEase }}
             >
-              Background
+              Built across product, growth, and market execution.
             </motion.h2>
+            <motion.p
+              className="timeline-summary"
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.18, ease: ndsEase }}
+            >
+              Marketing and product professional with experience across customer acquisition,
+              product marketing, client management, and software prototyping. I fit roles
+              that need product marketing, growth, or product ownership where customer
+              insight, technology, and go-to-market strategy intersect.
+            </motion.p>
+            <div className="resume-highlights">
+              {resumeHighlights.map((item, i) => (
+                <motion.div
+                  className="resume-highlight"
+                  key={item.label}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.25 + i * 0.08, ease: ndsEase }}
+                >
+                  <span className="resume-highlight-value">{item.value}</span>
+                  <h3>{item.label}</h3>
+                  <p>{item.detail}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
 
           <div className="timeline">
-            {[
-              {
-                year: '2020–2023',
-                title: 'Sub-Zero Group, Inc.',
-                role: 'Sales Rotational Program',
-                desc: 'Inaugural candidate in 2.5-year program. Rotated through sales operations, product marketing, and dealer sales for luxury kitchen appliances. Trained teams on Power BI. Managed national product launches.',
-                side: 'left'
-              },
-              {
-                year: '2023–2025',
-                title: 'Independent Work',
-                role: 'Marketing Consultant & Product Manager',
-                desc: 'Ran a marketing consultancy serving early-stage companies while independently taking multiple products from zero to one. Owned the full lifecycle — market research, roadmap, branding, development, and go-to-market — using modern tools to move at startup speed.',
-                side: 'right'
-              },
-              {
-                year: '2026',
-                title: 'Next Chapter',
-                role: 'Marketing & Product Leadership',
-                desc: 'Seeking leadership roles where marketing strategy, product thinking, and technical fluency converge. Ready to bring zero-to-one experience to a team building something that matters.',
-                side: 'left'
-              }
-            ].map((item, i) => (
+            {resumeTimeline.map((item, i) => (
               <motion.div
                 key={i}
                 className={`timeline-item timeline-${item.side}`}
@@ -377,9 +456,24 @@ function Home() {
               >
                 <span className="timeline-year">{item.year}</span>
                 <div className="timeline-content">
-                  <h4>{item.title}</h4>
-                  <p className="timeline-role">{item.role}</p>
+                  <div className="timeline-content-header">
+                    <div>
+                      <h4>{item.title}</h4>
+                      <p className="timeline-role">{item.role}</p>
+                    </div>
+                    <span className="timeline-location">{item.location}</span>
+                  </div>
                   <p>{item.desc}</p>
+                  <ul className="timeline-bullets">
+                    {item.bullets.map((bullet) => (
+                      <li key={bullet}>{bullet}</li>
+                    ))}
+                  </ul>
+                  <div className="timeline-tags">
+                    {item.tags.map((tag) => (
+                      <span key={tag}>{tag}</span>
+                    ))}
+                  </div>
                 </div>
               </motion.div>
             ))}
