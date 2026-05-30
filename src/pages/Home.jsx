@@ -259,7 +259,7 @@ function Home() {
       <BuilderNotebookHero />
 
       {/* ═══════ APPROACH — EDITORIAL ═══════ */}
-      <section className="approach">
+      <section className="approach" id="approach">
         <div className="container">
           <motion.p
             className="label"
@@ -315,10 +315,12 @@ function Home() {
       </section>
 
       {/* ═══════ HORIZON JOURNEY — Full day-cycle scroll experience ═══════ */}
-      <HorizonJourney />
+      <div className="home-anchor" id="builds">
+        <HorizonJourney />
+      </div>
 
       {/* ═══════ EXPERIENCE TIMELINE ═══════ */}
-      <section className="background">
+      <section className="background" id="background">
         <div className="container">
           <div className="timeline-header">
             <motion.p

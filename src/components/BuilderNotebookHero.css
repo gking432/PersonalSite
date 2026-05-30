@@ -7,7 +7,7 @@
   isolation: isolate;
   display: flex;
   align-items: center;
-  min-height: calc(100svh - 120px);
+  min-height: 100svh;
   overflow: hidden;
   color: var(--notebook-cream);
   background:
@@ -62,7 +62,7 @@
   max-width: var(--max-width);
   min-height: inherit;
   margin: 0 auto;
-  padding: 54px var(--gutter) 48px;
+  padding: calc(var(--header-height) + 44px) var(--gutter) 56px;
 }
 
 .notebook-hero__copy {
@@ -105,10 +105,61 @@
 
 .notebook-hero__dek {
   max-width: 560px;
-  margin: 0 0 28px;
+  margin: 0 0 24px;
   color: rgba(244, 241, 234, 0.72);
   font-size: 1.06rem;
   line-height: 1.7;
+}
+
+.notebook-hero__spine-nav {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  max-width: 560px;
+  margin: 0 0 22px;
+}
+
+.notebook-hero__spine-button {
+  min-width: 0;
+  min-height: 48px;
+  padding: 10px 11px;
+  border: 1px solid rgba(244, 241, 234, 0.2);
+  border-radius: 8px;
+  background: rgba(244, 241, 234, 0.045);
+  color: rgba(244, 241, 234, 0.68);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.03em;
+  text-align: left;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 0.2s var(--ease-out),
+    border-color 0.2s var(--ease-out),
+    color 0.2s var(--ease-out),
+    transform 0.2s var(--ease-out);
+}
+
+.notebook-hero__spine-button span {
+  display: block;
+  margin-bottom: 4px;
+  color: rgba(199, 161, 88, 0.72);
+  font-family: 'Marker Felt', 'Chalkboard SE', 'Bradley Hand', 'Segoe Print', cursive;
+  font-size: 0.88rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.notebook-hero__spine-button:hover,
+.notebook-hero__spine-button:focus-visible,
+.notebook-hero__spine-button.is-active {
+  border-color: rgba(199, 161, 88, 0.62);
+  background: rgba(199, 161, 88, 0.11);
+  color: var(--notebook-cream);
+  transform: translateY(-1px);
 }
 
 .notebook-hero__actions {
@@ -116,7 +167,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 14px;
-  margin-bottom: 32px;
+  margin-bottom: 0;
 }
 
 .notebook-hero__actions .btn-primary {
@@ -130,6 +181,10 @@
   border-color: #fffaf0;
   color: var(--forest-green);
   box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
+}
+
+.notebook-hero__stage-action {
+  width: auto;
 }
 
 .notebook-hero__secondary-action {
@@ -311,7 +366,7 @@
 .notebook-hero__board-data text {
   fill: rgba(244, 241, 234, 0.68);
   font-family: 'Marker Felt', 'Chalkboard SE', 'Bradley Hand', 'Segoe Print', cursive;
-  font-size: 18.5px;
+  font-size: 17px;
   letter-spacing: 0;
   text-shadow:
     1px -1px 0 rgba(244, 241, 234, 0.14),
@@ -334,6 +389,56 @@
   stroke-linejoin: round;
   cursor: crosshair;
   pointer-events: stroke;
+}
+
+.notebook-hero__spine-marker {
+  cursor: pointer;
+  outline: none;
+}
+
+.notebook-hero__spine-marker-halo {
+  fill: rgba(199, 161, 88, 0.12);
+  stroke: rgba(199, 161, 88, 0.44);
+  stroke-width: 1.4;
+  opacity: 0.72;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+}
+
+.notebook-hero__spine-marker-dot {
+  fill: rgba(244, 241, 234, 0.82);
+  stroke: rgba(199, 161, 88, 0.75);
+  stroke-width: 2;
+  transition: fill 0.2s var(--ease-out), stroke 0.2s var(--ease-out);
+}
+
+.notebook-hero__spine-marker text {
+  fill: rgba(244, 241, 234, 0.54);
+  font-family: 'Marker Felt', 'Chalkboard SE', 'Bradley Hand', 'Segoe Print', cursive;
+  font-size: 16px;
+  letter-spacing: 0;
+  text-anchor: middle;
+  filter: url(#notebook-chalk-rough);
+  pointer-events: none;
+}
+
+.notebook-hero__spine-marker:hover .notebook-hero__spine-marker-halo,
+.notebook-hero__spine-marker:focus-visible .notebook-hero__spine-marker-halo,
+.notebook-hero__spine-marker.is-active .notebook-hero__spine-marker-halo {
+  opacity: 1;
+  transform: scale(1.24);
+}
+
+.notebook-hero__spine-marker:hover .notebook-hero__spine-marker-dot,
+.notebook-hero__spine-marker:focus-visible .notebook-hero__spine-marker-dot,
+.notebook-hero__spine-marker.is-active .notebook-hero__spine-marker-dot {
+  fill: rgba(199, 161, 88, 0.92);
+  stroke: rgba(244, 241, 234, 0.9);
+}
+
+.notebook-hero__spine-marker.is-active text {
+  fill: rgba(199, 161, 88, 0.94);
 }
 
 .notebook-hero__curve text,
@@ -488,7 +593,7 @@
   .notebook-hero__container {
     grid-template-columns: 1fr;
     gap: 28px;
-    padding-top: 42px;
+    padding-top: calc(var(--header-height) + 26px);
   }
 
   .notebook-hero__copy {
@@ -519,7 +624,7 @@
 
   .notebook-hero__container {
     gap: 16px;
-    padding: 18px 18px 28px;
+    padding: calc(var(--header-height) + 12px) 18px 28px;
   }
 
   .notebook-hero__visual {
@@ -575,7 +680,11 @@
   }
 
   .notebook-hero__board-data text {
-    font-size: 16.5px;
+    font-size: 12.7px;
+  }
+
+  .notebook-hero__spine-marker text {
+    font-size: 14px;
   }
 
   .notebook-note--liquidity,
@@ -604,13 +713,26 @@
     line-height: 1.55;
   }
 
+  .notebook-hero__spine-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .notebook-hero__spine-button {
+    min-height: 44px;
+    padding: 9px 10px;
+    font-size: 0.66rem;
+  }
+
   .notebook-hero__actions {
     align-items: stretch;
     gap: 10px;
     margin-bottom: 0;
   }
 
-  .notebook-hero__actions .btn {
+  .notebook-hero__actions .btn,
+  .notebook-hero__stage-action {
     width: 100%;
     white-space: normal;
   }

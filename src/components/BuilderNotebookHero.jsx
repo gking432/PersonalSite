@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useMemo, useState } from 'react'
 import {
   motion,
@@ -16,7 +16,7 @@ const graduationTokens = 792_260_950
 const priceNumerator = 19_029_514_756
 const baseOctas = 61.9053276
 const graduationRaisedApt = 1283.7
-const defaultCurveProgress = 0.73
+const defaultCurveProgress = 0.46
 
 const curveSegments = [
   {
@@ -39,10 +39,67 @@ const curveSegments = [
   }
 ]
 
-const metrics = [
-  { value: '3+', label: 'Years Building' },
-  { value: '5+', label: 'Products Launched' },
-  { value: '100+', label: 'People Educated' }
+const spineStages = [
+  {
+    id: 'thesis',
+    number: '01',
+    label: 'Thesis',
+    progress: 0.06,
+    target: '#approach',
+    signal: 'gap between strategy + execution',
+    output: 'operating point of view',
+    nextLabel: 'Approach'
+  },
+  {
+    id: 'workbench',
+    number: '02',
+    label: 'Workbench',
+    progress: 0.24,
+    target: '#builds',
+    signal: 'ideas need working surfaces',
+    output: 'interactive build system',
+    nextLabel: 'Build Journey'
+  },
+  {
+    id: 'projects',
+    number: '03',
+    label: 'Projects',
+    progress: 0.46,
+    target: '/projects',
+    signal: 'prototype until it behaves',
+    output: 'products and experiments',
+    nextLabel: 'Dev Projects'
+  },
+  {
+    id: 'market',
+    number: '04',
+    label: 'Market',
+    progress: 0.64,
+    target: '/client-work',
+    signal: 'systems have to sell',
+    output: 'client execution',
+    nextLabel: 'Client Work'
+  },
+  {
+    id: 'voice',
+    number: '05',
+    label: 'Voice',
+    progress: 0.81,
+    target: '/writing',
+    signal: 'thinking should travel',
+    output: 'writing and talks',
+    nextLabel: 'Writing'
+  },
+  {
+    id: 'contact',
+    number: '06',
+    label: 'Contact',
+    progress: 0.96,
+    target: '/contact',
+    signal: 'ship with the right team',
+    output: 'conversation',
+    nextLabel: 'Contact'
+  }
 ]
 
 const notes = [
@@ -150,6 +207,13 @@ function curveStatsAt(progress) {
   }
 }
 
+function nearestSpineStage(progress) {
+  return spineStages.reduce((closest, stage) => {
+    const distance = Math.abs(stage.progress - progress)
+    return distance < closest.distance ? { stage, distance } : closest
+  }, { stage: spineStages[0], distance: Number.POSITIVE_INFINITY }).stage
+}
+
 function formatTokens(tokens) {
   return `${(tokens / 1_000_000).toLocaleString('en-US', {
     maximumFractionDigits: tokens >= 100_000_000 ? 0 : 1
@@ -167,6 +231,7 @@ function formatPrice(value) {
 }
 
 function BuilderNotebookHero() {
+  const navigate = useNavigate()
   const reduceMotion = useReducedMotion()
   const [curveProgress, setCurveProgress] = useState(defaultCurveProgress)
   const [isCurveActive, setIsCurveActive] = useState(false)
@@ -182,6 +247,13 @@ function BuilderNotebookHero() {
   const spotlightY = useTransform(smoothY, (value) => `${42 + value * 14}%`)
   const curvePoint = useMemo(() => curvePointAt(curveProgress), [curveProgress])
   const curveStats = useMemo(() => curveStatsAt(curveProgress), [curveProgress])
+  const activeStage = useMemo(() => nearestSpineStage(curveProgress), [curveProgress])
+  const stagePoints = useMemo(() => (
+    spineStages.map((stage) => ({
+      ...stage,
+      point: curvePointAt(stage.progress)
+    }))
+  ), [])
 
   const handlePointerMove = (event) => {
     if (reduceMotion) return
@@ -201,6 +273,30 @@ function BuilderNotebookHero() {
 
     setCurveProgress(sample.progress)
     setIsCurveActive(true)
+  }
+
+  const openStage = (stage) => {
+    if (stage.target.startsWith('#')) {
+      document.querySelector(stage.target)?.scrollIntoView({ block: 'start' })
+      return
+    }
+
+    navigate(stage.target)
+  }
+
+  const activateStage = (stage, shouldOpen = false) => {
+    setCurveProgress(stage.progress)
+    setIsCurveActive(true)
+
+    if (shouldOpen) {
+      openStage(stage)
+    }
+  }
+
+  const handleStageKeyDown = (event, stage) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return
+    event.preventDefault()
+    activateStage(stage, true)
   }
 
   const settlePointer = () => {
@@ -238,23 +334,34 @@ function BuilderNotebookHero() {
             from zero to one.
           </p>
 
+          <div className="notebook-hero__spine-nav" aria-label="Explore the site by builder stage">
+            {spineStages.map((stage) => (
+              <button
+                className={`notebook-hero__spine-button ${activeStage.id === stage.id ? 'is-active' : ''}`}
+                key={stage.id}
+                type="button"
+                onClick={() => activateStage(stage, true)}
+                onPointerEnter={() => activateStage(stage)}
+                onFocus={() => activateStage(stage)}
+              >
+                <span>{stage.number}</span>
+                {stage.label}
+              </button>
+            ))}
+          </div>
+
           <div className="notebook-hero__actions">
-            <Link to="/projects" className="btn btn-primary btn-magnetic">
-              See What I've Built
+            <button
+              className="btn btn-primary btn-magnetic notebook-hero__stage-action"
+              type="button"
+              onClick={() => openStage(activeStage)}
+            >
+              Open {activeStage.nextLabel}
               <span className="btn-arrow">&rarr;</span>
-            </Link>
+            </button>
             <Link to="/contact" className="btn notebook-hero__secondary-action">
               Get in Touch
             </Link>
-          </div>
-
-          <div className="notebook-hero__metrics" aria-label="Builder metrics">
-            {metrics.map((metric) => (
-              <div className="notebook-hero__metric" key={metric.label}>
-                <span>{metric.value}</span>
-                <small>{metric.label}</small>
-              </div>
-            ))}
           </div>
         </motion.div>
 
@@ -296,6 +403,13 @@ function BuilderNotebookHero() {
                   />
                 </filter>
               </defs>
+              <rect
+                className="notebook-hero__curve-scrub-zone"
+                x="52"
+                y="44"
+                width="528"
+                height="340"
+              />
               <motion.path
                 className="notebook-hero__axis"
                 d="M72 340 C162 345 256 344 540 338"
@@ -319,7 +433,7 @@ function BuilderNotebookHero() {
               />
               <motion.g
                 className="notebook-hero__tracker"
-                animate={{ opacity: isCurveActive ? 1 : 0 }}
+                animate={{ opacity: isCurveActive ? 1 : 0.52 }}
                 transition={{ duration: isCurveActive ? 0.18 : 0.28 }}
               >
                 <line
@@ -349,20 +463,39 @@ function BuilderNotebookHero() {
                   r="7"
                 />
               </motion.g>
+              {stagePoints.map((stage) => (
+                <g
+                  className={`notebook-hero__spine-marker ${activeStage.id === stage.id ? 'is-active' : ''}`}
+                  key={stage.id}
+                  role="link"
+                  tabIndex="0"
+                  aria-label={`Open ${stage.nextLabel}`}
+                  transform={`translate(${stage.point.x} ${stage.point.y})`}
+                  onClick={() => activateStage(stage, true)}
+                  onPointerEnter={() => activateStage(stage)}
+                  onFocus={() => activateStage(stage)}
+                  onKeyDown={(event) => handleStageKeyDown(event, stage)}
+                >
+                  <circle className="notebook-hero__spine-marker-halo" r="17" />
+                  <circle className="notebook-hero__spine-marker-dot" r="8" />
+                  <text x="0" y="-24">{stage.number}</text>
+                </g>
+              ))}
               <motion.g
                 className="notebook-hero__board-data"
                 initial={{ opacity: 0, rotate: -2 }}
                 animate={{ opacity: 1, rotate: -2 }}
                 transition={{ duration: 0.55, delay: reduceMotion ? 0 : 1.25, ease: ndsEase }}
               >
-                <text x="154" y="178">
-                  <tspan>sold ~= {formatTokens(curveStats.tokensSold)} tokens</tspan>
-                  <tspan x="148" dy="24">raised ~= {formatApt(curveStats.raisedApt)} APT</tspan>
-                  <tspan x="162" dy="24">price ~= {formatPrice(curveStats.priceApt)}</tspan>
-                  <tspan x="151" dy="24">rise ~= {curveStats.multiple.toFixed(1)}x</tspan>
+                <text x="146" y="154">
+                  <tspan>{activeStage.number} / {activeStage.label}</tspan>
+                  <tspan x="142" dy="24">signal: {activeStage.signal}</tspan>
+                  <tspan x="156" dy="24">output: {activeStage.output}</tspan>
+                  <tspan x="148" dy="24">sold ~= {formatTokens(curveStats.tokensSold)} tokens</tspan>
+                  <tspan x="162" dy="24">raised ~= {formatApt(curveStats.raisedApt)} APT</tspan>
                 </text>
                 <path d="M141 188 C209 173 276 181 351 169" />
-                <path d="M145 240 C224 255 297 246 368 256" />
+                <path d="M145 258 C224 273 297 264 368 274" />
               </motion.g>
               <motion.path
                 className="notebook-hero__scratch"
@@ -394,13 +527,6 @@ function BuilderNotebookHero() {
               <text x="94" y="64">price</text>
               <text x="420" y="398">tokens sold</text>
               <text x="457" y="50">graduation</text>
-              <rect
-                className="notebook-hero__curve-scrub-zone"
-                x="52"
-                y="44"
-                width="528"
-                height="340"
-              />
             </svg>
 
             {notes.map((note, index) => (

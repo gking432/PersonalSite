@@ -6,8 +6,15 @@ One cohesive piece. Generous whitespace. Parchment base.
 
 .home {
   background-color: var(--parchment);
-  padding-top: 80px;
+  padding-top: 0;
   overflow-x: clip;
+}
+
+.home-anchor,
+.approach,
+.background,
+.cta {
+  scroll-margin-top: calc(var(--header-height) + 24px);
 }
 
 /* ═══════════════════════════════════════════
@@ -534,7 +541,7 @@ One cohesive piece. Generous whitespace. Parchment base.
 
 @media (max-width: 768px) {
   .home {
-    padding-top: 70px;
+    padding-top: 0;
   }
 
   .hero {
