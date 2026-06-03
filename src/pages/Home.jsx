@@ -33,7 +33,7 @@ const resumeHighlights = [
   {
     value: '0 to 1',
     label: 'Product Development',
-    detail: 'Interview simulation, token launchpad, print studio, and productivity dashboard concepts built into working prototypes.'
+    detail: 'Interview simulation, MoveMint, Terralis Print Studio, and productivity dashboard concepts built into working prototypes.'
   },
   {
     value: 'Full-cycle',
@@ -61,7 +61,7 @@ const resumeTimeline = [
     desc: 'Created and launched multiple early-stage software prototypes while sharpening a product direction at the intersection of customer insight, technology, and measurable growth.',
     bullets: [
       'Built prototypes with AI-assisted development workflows, React, and TypeScript.',
-      'Explored concepts including an interview simulation app, crypto token launchpad, topography print studio, and productivity dashboard.',
+      'Explored concepts including an interview simulation app, MoveMint token launcher, Terralis Print Studio, and productivity dashboard.',
       'Evaluated customer problems, pricing structures, positioning, and go-to-market potential across software, service, and media concepts.',
       'Developed hands-on fluency with Claude Code, Cursor, Codex, and modern development stacks.'
     ],

@@ -201,6 +201,42 @@ Each project presented with editorial weight and presence
   flex-wrap: wrap;
 }
 
+.project-live-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(26, 58, 46, 0.22);
+  border-radius: var(--border-radius-sm);
+  color: var(--forest-green);
+  background: rgba(26, 58, 46, 0.04);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.project-live-link span {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.project-live-link small {
+  color: var(--warm-gray);
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.project-live-link:hover {
+  border-color: var(--forest-green);
+  background: rgba(26, 58, 46, 0.08);
+  transform: translateY(-2px);
+}
+
 /* ==========================================
    MORE PROJECTS
    ========================================== */
@@ -245,6 +281,10 @@ Each project presented with editorial weight and presence
 }
 
 .project-link-text {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
   font-family: var(--font-sans);
   font-size: 0.85rem;
   font-weight: 600;
@@ -252,6 +292,15 @@ Each project presented with editorial weight and presence
   text-transform: uppercase;
   color: var(--forest-green);
   transition: color var(--duration-fast);
+}
+
+.project-link-text span {
+  color: var(--warm-gray);
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .project-link-text:hover {

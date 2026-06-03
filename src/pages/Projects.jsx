@@ -53,6 +53,9 @@ function Projects() {
       tagline: 'Aptos · Bonding Curves · Market Mechanics',
       description: 'A crypto token launchpad concept built around the hard part of product work: turning incentives, pricing, liquidity, and user behavior into something understandable enough to ship.',
       tech: ['Aptos', 'React', 'TypeScript', 'Bonding Curves'],
+      url: 'https://movemint.fun',
+      linkLabel: 'Visit MoveMint',
+      domain: 'movemint.fun',
       stat: { number: 792, suffix: 'M', label: 'Graduation Tokens Modeled' },
       proof: [
         { label: 'Problem', value: 'Token launches are usually technically dense, financially opaque, and hard for nontechnical teams to reason about.' },
@@ -79,9 +82,12 @@ function Projects() {
 
   const moreProjects = [
     {
-      name: 'Topography Print Studio',
-      desc: 'A product concept for turning place-based memory into custom map art, with positioning, visual identity, and fulfillment assumptions considered from the start.',
-      tech: ['Product Concept', 'Print Commerce', 'Brand']
+      name: 'Terralis Print Studio',
+      desc: 'A live print studio for turning place-based memory into custom topographic map art, with product positioning, visual identity, and fulfillment assumptions considered from the start.',
+      tech: ['Product Concept', 'Print Commerce', 'Brand'],
+      url: 'https://terralis.space',
+      linkLabel: 'Visit Terralis',
+      domain: 'terralis.space'
     },
     {
       name: 'Productivity Dashboard',
@@ -224,6 +230,19 @@ function Projects() {
                     <span key={tech} className="tech-badge">{tech}</span>
                   ))}
                 </motion.div>
+                {project.url && (
+                  <motion.div className="project-links" variants={fadeUp}>
+                    <a
+                      href={project.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="project-live-link"
+                    >
+                      <span>{project.linkLabel}</span>
+                      <small>{project.domain}</small>
+                    </a>
+                  </motion.div>
+                )}
               </motion.div>
             </div>
           </div>
@@ -272,6 +291,16 @@ function Projects() {
                     <span className="tech-badge" key={tech}>{tech}</span>
                   ))}
                 </div>
+                {project.url && (
+                  <a
+                    href={project.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="project-link-text"
+                  >
+                    {project.linkLabel} <span>{project.domain}</span>
+                  </a>
+                )}
               </motion.div>
             ))}
           </motion.div>

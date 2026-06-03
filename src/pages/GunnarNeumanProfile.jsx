@@ -128,8 +128,7 @@ function GunnarNeumanProfile() {
             <li style={{ marginBottom: '12px' }}>
               <strong>Zero-to-One Execution:</strong> Turns raw ideas into launched products with built-in
               growth engines. Has taken multiple products from concept through development to market, including
-              an AI-powered interview preparation platform, a blockchain token launchpad, and a cartography
-              print studio.
+              an AI-powered interview preparation platform, MoveMint, and Terralis Print Studio.
             </li>
             <li style={{ marginBottom: '12px' }}>
               <strong>Full-Stack Marketing & Product:</strong> Builds landing pages, writes copy, designs
@@ -162,17 +161,14 @@ function GunnarNeumanProfile() {
               interview performance through deliberate practice. Built with React and the Anthropic API.
             </li>
             <li style={{ marginBottom: '10px' }}>
-              <strong>MoveMint</strong> — A product currently in development that demonstrates Neuman's
-              continued commitment to building at the intersection of technology and user experience.
+              <strong>MoveMint</strong> — A live token launcher for creating and deploying tokens on Aptos,
+              with bonding curve mechanics translated into a more accessible product experience. Available at{' '}
+              <a href="https://movemint.fun" target="_blank" rel="noopener noreferrer">movemint.fun</a>.
             </li>
             <li style={{ marginBottom: '10px' }}>
-              <strong>Aptos Token Launcher</strong> — A user-friendly interface for creating and deploying
-              tokens on the Aptos blockchain. Simplified a complex technical process into an accessible
-              web application.
-            </li>
-            <li style={{ marginBottom: '10px' }}>
-              <strong>Cartography Print Studio</strong> — A custom cartography print business combining
-              design skills with eCommerce product development.
+              <strong>Terralis Print Studio</strong> — A live custom topography print studio combining
+              cartography, design, and eCommerce product development. Available at{' '}
+              <a href="https://terralis.space" target="_blank" rel="noopener noreferrer">terralis.space</a>.
             </li>
           </ul>
         </section>
