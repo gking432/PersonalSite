@@ -5,93 +5,172 @@ import './Projects.css'
 
 const ndsEase = [0.22, 1, 0.36, 1]
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: ndsEase } }
+}
+
 const staggerContainer = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.12 } }
 }
 
-const staggerItem = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: ndsEase } }
-}
-
 const projects = [
   {
     name: 'MoveMint',
-    eyebrow: 'Live Product',
     type: 'Token Launcher',
-    description:
+    status: 'Live Product',
+    shortDesc:
       'A token launch experience for Aptos projects, built around bonding curve mechanics, clearer launch flows, and a more understandable path from token creation to market.',
     image: '/images/project-movemint.png',
+    imageAlt: 'MoveMint landing page preview',
     url: 'https://movemint.fun',
     buttonLabel: 'Visit MoveMint',
-    tags: ['Aptos', 'Bonding Curves', 'Launch Systems']
+    tech: ['Aptos', 'Bonding Curves', 'Launch Systems']
   },
   {
     name: 'Terralis Print Studio',
-    eyebrow: 'Live Product',
     type: 'Print Commerce',
-    description:
+    status: 'Live Product',
+    shortDesc:
       'A topographic map print studio that turns place-based memory into custom wall art, with the product, brand, and buying experience built as one system.',
     image: '/images/project-terralis.png',
+    imageAlt: 'Terralis landing page preview',
     url: 'https://terralis.space',
     buttonLabel: 'Visit Terralis',
-    tags: ['eCommerce', 'Cartography', 'Brand']
+    tech: ['eCommerce', 'Cartography', 'Brand']
   },
   {
     name: 'PrepMe',
-    eyebrow: 'Private Prototype',
     type: 'Interview Practice',
-    description:
+    status: 'Private Prototype',
+    shortDesc:
       'A candidate-prep product concept focused on realistic interview reps, structured feedback, and the confidence gap before high-stakes conversations.',
     preview: 'prepme',
-    tags: ['Interview Prep', 'Feedback Loops', 'AI Workflow']
+    tech: ['Interview Prep', 'Feedback Loops', 'AI Workflow']
   },
   {
     name: 'Productivity Dashboard',
-    eyebrow: 'Concept Build',
     type: 'Decision Surface',
-    description:
+    status: 'Concept Build',
+    shortDesc:
       'A workflow dashboard concept for turning scattered tasks, priorities, and signals into a cleaner operating surface for daily decisions.',
     preview: 'dashboard',
-    tags: ['Dashboard', 'Workflow', 'UX']
+    tech: ['Dashboard', 'Workflow', 'UX']
   },
   {
     name: 'This Portfolio',
-    eyebrow: 'Live Build',
     type: 'Personal Site',
-    description:
+    status: 'Live Build',
+    shortDesc:
       'A living portfolio built as a product in its own right, with an interactive homepage, navigation spine, project language, and evolving positioning.',
     preview: 'portfolio',
     url: '/',
     buttonLabel: 'View Homepage',
-    tags: ['React', 'Framer Motion', 'Positioning']
+    tech: ['React', 'Framer Motion', 'Positioning']
   }
 ]
 
-function ProjectPreview({ project }) {
+function ProjectVisual({ project }) {
   if (project.image) {
     return (
-      <div className="project-card-preview project-card-preview-image">
-        <img src={project.image} alt={`${project.name} landing page preview`} loading="lazy" />
+      <div className="dev-project-screenshot">
+        <img src={project.image} alt={project.imageAlt} loading="lazy" />
       </div>
     )
   }
 
   return (
-    <div className={`project-card-preview project-card-preview-${project.preview || 'default'}`} aria-hidden="true">
-      <div className="project-preview-bar">
+    <div className={`dev-project-preview dev-project-preview-${project.preview || 'default'}`} aria-hidden="true">
+      <div className="dev-preview-browser">
         <span />
         <span />
         <span />
       </div>
-      <div className="project-preview-stage">
-        <span className="project-preview-kicker">{project.type}</span>
+      <div className="dev-preview-content">
+        <span>{project.type}</span>
         <strong>{project.name}</strong>
-        <div className="project-preview-line project-preview-line-long" />
-        <div className="project-preview-line" />
+        <div className="dev-preview-line dev-preview-line-long" />
+        <div className="dev-preview-line" />
       </div>
     </div>
+  )
+}
+
+function ProjectSection({ project, index }) {
+  const number = String(index + 1).padStart(2, '0')
+  const isAlt = index % 2 !== 0
+
+  const content = (
+    <div className="container">
+      <motion.div
+        className="dev-project-header"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={staggerContainer}
+      >
+        <div className="dev-project-header-left">
+          <motion.span className="dev-project-number" variants={fadeUp}>
+            {number}
+          </motion.span>
+          <div className="dev-project-header-text">
+            <motion.h2 className="dev-project-name" variants={fadeUp}>
+              {project.name}
+            </motion.h2>
+            <motion.p className="dev-project-tagline" variants={fadeUp}>
+              {project.type} · {project.status}
+            </motion.p>
+          </div>
+        </div>
+      </motion.div>
+
+      <motion.div
+        className={`dev-project-body${project.image ? ' dev-project-body-screenshot' : ''}`}
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-80px" }}
+        transition={{ duration: 0.55, ease: ndsEase }}
+      >
+        <div className="dev-project-left">
+          <ProjectVisual project={project} />
+        </div>
+        <div className="dev-project-details">
+          <p className="dev-project-desc">{project.shortDesc}</p>
+          <div className="dev-project-tech">
+            {project.tech.map((tech) => (
+              <span key={tech} className="tech-badge">{tech}</span>
+            ))}
+          </div>
+          {project.url ? (
+            <a
+              href={project.url}
+              target={project.url.startsWith('http') ? '_blank' : undefined}
+              rel={project.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+              className="btn btn-primary"
+            >
+              {project.buttonLabel}
+            </a>
+          ) : (
+            <span className="btn btn-secondary dev-project-disabled">Private Prototype</span>
+          )}
+        </div>
+      </motion.div>
+    </div>
+  )
+
+  if (isAlt) {
+    return (
+      <SqueezeSection className="dev-project dev-project-alt">
+        {content}
+      </SqueezeSection>
+    )
+  }
+
+  return (
+    <section className="dev-project">
+      {content}
+    </section>
   )
 }
 
@@ -130,7 +209,7 @@ function Projects() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
                 >
-                  A compact look at the products, prototypes, and experiments I have built. Each card is meant to be scanned quickly, then opened if it earns the click.
+                  Products, prototypes, and experiments presented like a portfolio: what it is, what it looks like, and where to open it.
                 </motion.p>
               </div>
               <motion.div
@@ -141,7 +220,7 @@ function Projects() {
               >
                 <div className="hero-meta-item">
                   <span className="hero-meta-label">Format</span>
-                  <span className="hero-meta-value">Portfolio index</span>
+                  <span className="hero-meta-value">Portfolio rows</span>
                 </div>
                 <div className="hero-meta-item">
                   <span className="hero-meta-label">Includes</span>
@@ -160,61 +239,9 @@ function Projects() {
           </div>
         </section>
 
-        <SqueezeSection className="project-gallery section">
-          <div className="container">
-            <motion.div
-              className="project-gallery-heading"
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.55, ease: ndsEase }}
-            >
-              <p className="label">Project Index</p>
-              <h2>Open the build, not the dissertation.</h2>
-            </motion.div>
-
-            <motion.div
-              className="project-grid"
-              variants={staggerContainer}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-80px" }}
-            >
-              {projects.map((project) => (
-                <motion.article className="project-card" key={project.name} variants={staggerItem}>
-                  <ProjectPreview project={project} />
-                  <div className="project-card-body">
-                    <div className="project-card-meta">
-                      <span>{project.eyebrow}</span>
-                      <span>{project.type}</span>
-                    </div>
-                    <h3>{project.name}</h3>
-                    <p>{project.description}</p>
-                    <div className="project-tags" aria-label={`${project.name} tags`}>
-                      {project.tags.map((tag) => (
-                        <span key={tag}>{tag}</span>
-                      ))}
-                    </div>
-                    <div className="project-card-action">
-                      {project.url ? (
-                        <a
-                          href={project.url}
-                          target={project.url.startsWith('http') ? '_blank' : undefined}
-                          rel={project.url.startsWith('http') ? 'noopener noreferrer' : undefined}
-                          className="project-button"
-                        >
-                          {project.buttonLabel}
-                        </a>
-                      ) : (
-                        <span className="project-button project-button-muted">Private Prototype</span>
-                      )}
-                    </div>
-                  </div>
-                </motion.article>
-              ))}
-            </motion.div>
-          </div>
-        </SqueezeSection>
+        {projects.map((project, index) => (
+          <ProjectSection key={project.name} project={project} index={index} />
+        ))}
       </div>
     </PageTransition>
   )
