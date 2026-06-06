@@ -14,18 +14,18 @@ const ndsEase = [0.22, 1, 0.36, 1]
 const approachPrinciples = [
   {
     number: '01',
-    title: 'Start with the customer',
-    desc: 'I use customer discovery, competitive research, sales context, and analytics to understand what people actually need before deciding what to build.'
+    title: 'Find the real problem',
+    desc: 'I start with customer conversations, sales context, competitive research, and analytics so the work is aimed at behavior, not vibes.'
   },
   {
     number: '02',
-    title: 'Prototype the strategy',
-    desc: 'I move from positioning and pricing hypotheses into working React, TypeScript, and product prototypes fast enough to learn from the real thing.'
+    title: 'Build a testable version',
+    desc: 'I turn positioning, pricing, and product ideas into working prototypes quickly enough to learn from something real.'
   },
   {
     number: '03',
-    title: 'Tie it to growth',
-    desc: 'SEO, paid media, content, eCommerce, reporting, and ROI conversations all feed the same question: what behavior are we trying to change?'
+    title: 'Connect it to traction',
+    desc: 'Launch only counts when the market can respond. SEO, paid media, content, eCommerce, and reporting all serve that feedback loop.'
   }
 ]
 
@@ -33,12 +33,12 @@ const resumeHighlights = [
   {
     value: '0 to 1',
     label: 'Product Development',
-    detail: 'Interview simulation, MoveMint, Terralis Print Studio, and productivity dashboard concepts built into working prototypes.'
+    detail: 'MoveMint, Terralis Print Studio, interview practice, and dashboard concepts moved from rough idea to working product surfaces.'
   },
   {
     value: 'Full-cycle',
     label: 'Client Strategy',
-    detail: 'Discovery, strategy, execution, reporting, and optimization across acquisition and conversion work.'
+    detail: 'Discovery, strategy, execution, reporting, and iteration across websites, acquisition campaigns, and conversion work.'
   },
   {
     value: '2.5 yrs',
@@ -48,7 +48,7 @@ const resumeHighlights = [
   {
     value: 'GTM',
     label: 'Role Fit',
-    detail: 'Product marketing, growth, or product roles where customer insight, technology, and go-to-market strategy meet.'
+    detail: 'Product marketing, growth, or operator roles that need someone comfortable between the customer, the market, and the build.'
   }
 ]
 
@@ -58,11 +58,11 @@ const resumeTimeline = [
     title: 'GunnarNeuman.com',
     role: 'Product Developer',
     location: 'Milwaukee, WI',
-    desc: 'Created and launched multiple early-stage software prototypes while sharpening a product direction at the intersection of customer insight, technology, and measurable growth.',
+    desc: 'Created and launched early-stage products while sharpening a product direction around customer problems, launch mechanics, and measurable growth.',
     bullets: [
       'Built prototypes with AI-assisted development workflows, React, and TypeScript.',
       'Explored concepts including an interview simulation app, MoveMint token launcher, Terralis Print Studio, and productivity dashboard.',
-      'Evaluated customer problems, pricing structures, positioning, and go-to-market potential across software, service, and media concepts.',
+      'Evaluated customer problems, pricing structures, positioning, and launch potential across software, commerce, and media concepts.',
       'Developed hands-on fluency with Claude Code, Cursor, Codex, and modern development stacks.'
     ],
     tags: ['React', 'TypeScript', 'Prototyping', 'Product Strategy'],
@@ -366,7 +366,7 @@ function Home() {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.1, ease: ndsEase }}
           >
-            I connect customer insight, go-to-market strategy, and working product.
+            I help ideas survive contact with customers, markets, and the build itself.
           </motion.h2>
           <div className="approach-principles">
             {approachPrinciples.map((item, i) => (
@@ -421,10 +421,10 @@ function Home() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.18, ease: ndsEase }}
             >
-              Marketing and product professional with experience across customer acquisition,
-              product marketing, client management, and software prototyping. I fit roles
-              that need product marketing, growth, or product ownership where customer
-              insight, technology, and go-to-market strategy intersect.
+              I have worked across premium product marketing, client acquisition,
+              eCommerce, software prototypes, and early-stage launch strategy. I fit
+              teams that need someone who can understand the customer, shape the offer,
+              build the first version, and keep the work tied to growth.
             </motion.p>
             <div className="resume-highlights">
               {resumeHighlights.map((item, i) => (
@@ -500,8 +500,8 @@ function Home() {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.3, ease: ndsEase }}
             >
-              I'm looking for a leadership role at a company that values marketing strategy,
-              product thinking, and the leverage that modern technology brings. If that's you — let's talk.
+              I'm looking for a team with a real problem, a high bar, and the patience to
+              build something useful. If that sounds like your world, let's talk.
             </motion.p>
 
             <motion.div

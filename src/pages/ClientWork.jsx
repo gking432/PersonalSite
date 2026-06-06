@@ -44,11 +44,11 @@ const clientProjects = [
     year: '2024',
     name: 'PetUnis',
     type: 'Brand Design & eCommerce',
-    shortDesc: 'NFL-inspired dog uniforms. Full brand identity, product design, and eCommerce buildout across all 32 teams.',
-    about: 'A full-stack brand and eCommerce build from zero. Logo, identity system, 32 team designs, storefront, and ad creative — all built for print-on-demand. One of my most complete end-to-end projects.',
+    shortDesc: 'NFL-inspired dog uniforms with a complete brand, storefront, product catalog, and ad system across all 32 teams.',
+    about: 'A full brand and eCommerce build from zero: logo, identity system, 32 team designs, storefront, and ad creative for a print-on-demand dog apparel concept.',
     description: 'Create a complete brand identity and eCommerce presence for a print-on-demand dog apparel line featuring NFL team-inspired designs across all 32 franchises.',
     brief: 'Build a cohesive brand from scratch — logo, identity system, product designs for all 32 NFL teams, and a full eCommerce storefront ready for print-on-demand fulfillment.',
-    strategy: 'Developed cohesive brand guidelines, designed team-specific product mockups, built the storefront, and created marketing assets for social media campaigns targeting pet owners who are sports fans.',
+    strategy: 'Built the concept around an easy customer truth: pet owners who are sports fans love visible team identity. The work turned that into team-specific product mockups, a storefront, and social creative.',
     scope: '32 unique team designs, complete brand guidelines, full eCommerce site, social ad campaigns, and print-on-demand integration.',
     screenshotLabel: 'PetUnis Storefront',
     screenshotImage: '/images/petunis-storefront.png',
@@ -101,11 +101,11 @@ const clientProjects = [
     year: '2024',
     name: 'WeatherFixers.com',
     type: 'Lead Aggregation Website',
-    shortDesc: 'Lead aggregation website for storm damage professionals. Website design, digital ads, and direct mail postcards.',
-    about: 'Lead-gen site for storm damage contractors. Website, digital ads, and direct mail postcards — designed to capture and qualify leads in geographic areas hit by severe weather.',
+    shortDesc: 'Lead aggregation site for storm damage professionals, supported by digital ads and direct mail.',
+    about: 'A lead-gen build for storm damage contractors, designed to capture and qualify homeowners in geographic areas hit by severe weather.',
     description: 'Designed a lead aggregation website that connects storm damage contractors with homeowners in affected areas. Created the website, digital advertisements, and direct door mailing postcards.',
     brief: 'Build a lead aggregation website for storm damage pros. Design the site, run digital ad campaigns, and create direct mail postcards for door-to-door outreach.',
-    strategy: 'Designed the website to capture and qualify leads for storm damage contractors. Created targeted digital ad campaigns and direct mail postcards for geographic areas hit by severe weather.',
+    strategy: 'Focused the site and outreach around urgency, local relevance, and a simple conversion path for homeowners who needed help after severe weather.',
     scope: 'Website design, digital advertisements, direct door mailing postcards, and lead capture system.',
     screenshotLabel: 'WeatherFixers Website',
     screenshotImage: '/WeatherFixers/Storefront.png',
@@ -154,11 +154,11 @@ const clientProjects = [
     year: '2024',
     name: 'Elevate Apparel',
     type: 'eCommerce & Merchandising',
-    shortDesc: 'Online storefront for a print-on-demand activewear line, plus merchandising and design-file imagery for the catalog.',
-    about: 'Built the Elevate Outfits shop and produced merchandising visuals and design files to support the product line and online store.',
+    shortDesc: 'Online storefront and merchandising system for a print-on-demand activewear concept.',
+    about: 'Built the Elevate Outfits shop and produced the merchandising visuals and design files needed to make the catalog feel coherent.',
     description: 'Design and launch a shoppable eCommerce site for a print-on-demand gymwear brand, and deliver merchandising imagery and design files aligned with the collections.',
     brief: 'Ship a full eCommerce experience and provide merchandising assets and design-ready files for products and collections.',
-    strategy: 'Organized the site around collections and product discovery, then delivered consistent merchandising imagery and design files that match how the products appear in the store.',
+    strategy: 'Organized the store around product discovery and collection browsing, then kept the merchandising visuals consistent across the shopping experience.',
     scope: 'Website design and build, merchandising imagery, and design file outputs for the catalog.',
     screenshotLabel: 'Elevate Outfits',
     screenshotImage: '/Elevate%20Merchandising/elevate-card-preview.png',
@@ -199,13 +199,13 @@ const clientProjects = [
     name: 'GTS Revolution',
     type: 'Merch & eCommerce',
     shortDesc:
-      'Merch storefront for an Instagram-driven brand—product presentation, collections, and checkout built to match the feed.',
+      'Merch storefront for an Instagram-driven brand, with product pages and collections built to match the way the audience already discovers drops.',
     description:
       'Design and launch a shoppable merch site for a social-first brand: clear product storytelling, drop-friendly layout, and a path from Instagram to purchase.',
     brief:
       'Ship a merch eCommerce experience aligned to an existing Instagram audience—fast to scan, easy to buy, and consistent with the account’s look and voice.',
     strategy:
-      'Structured the store around how followers discover drops on social: strong visuals on collection and product pages, simple navigation, and friction-light checkout on mobile.',
+      'Structured the store around social discovery: strong visuals, simple navigation, and a short path from Instagram interest to mobile checkout.',
     scope: 'Merch storefront build, collection and product presentation, and supporting merchandising imagery for the catalog.',
     screenshotLabel: 'GTS Revolution storefront',
     screenshotImage: '/GTS/GTS%20Site%20shot.png',
@@ -245,9 +245,9 @@ const clientProjects = [
     name: 'Patti Means Ministry',
     type: 'Website Redesign',
     shortDesc:
-      'My first paid client outside family and friends—early work I wouldn’t ship today, but the start of my freelance story, so I’m keeping it here.',
+      'My first paid client outside family and friends. Early work, but an honest marker of where the freelance path started.',
     about:
-      'Patti Means Ministry was the first real project I landed—not for family or friends. It isn’t work I’d hold up as portfolio quality today, but it’s an honest part of how I started, which is why I chose to include it.',
+      'Patti Means Ministry was the first real project I landed outside family and friends. I would make different choices today, but it belongs here because it shows the beginning of the story.',
     description:
       'Patti Means Ministry was my first paid freelance project outside family and friends. The work itself isn’t what I’d highlight today, but it matters to my story—so it stays in the lineup.',
     brief: 'Modernize a dated nonprofit website to better serve families seeking hospice care information while also improving the donation experience.',
@@ -308,9 +308,9 @@ const clientProjects = [
     name: 'Blue Lizard Bar & Grill',
     type: 'Website Redesign',
     shortDesc:
-      'Pitch-only website redesign—the client didn’t buy it. I’m showing the live spec site here as a sales sample: how I prototype and present before a deal closes.',
+      'Pitch-only restaurant website redesign. The client did not buy it, but the live spec site shows how I prototype before a deal closes.',
     about:
-      'This was a sales pitch, not shipped work. The only deliverable was a proposed website redesign; it never got picked up. I’m including it anyway as a sales tactic—a clickable preview so you can see how I pitch restaurants and spec work in the room.',
+      'This was a sales pitch, not shipped client work. I am including it because a clickable spec site is one of the clearest ways to show direction in the room.',
     description:
       'Unsold website redesign pitch for a bar & grill, built as a live hosted site to demonstrate layout, tone, and flow during sales conversations.',
     brief: 'Pitch a full restaurant website redesign—homepage, menu, hours, reviews, and contact—without a signed engagement.',
@@ -1042,8 +1042,8 @@ function ClientWork() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
                 >
-                  Client work where brand, web, acquisition, and reporting had to become
-                  a working growth system. Click any project to inspect the build.
+                  Client work from the agency years: brands, storefronts, pitch sites,
+                  ads, direct mail, and merchandising built around real business needs.
                 </motion.p>
               </div>
               <motion.div

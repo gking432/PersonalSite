@@ -23,29 +23,29 @@ const staggerItem = {
 const fieldNotes = [
   {
     status: 'Field Note 01',
-    title: 'When tools make everyone fast, judgment becomes the scarce asset.',
-    excerpt: 'The old advantage was production speed. The new advantage is knowing what is worth producing, what customer behavior you are trying to move, and what quality looks like when the tools make average work cheap.',
+    title: 'When everyone can make more, the hard part is knowing what matters.',
+    excerpt: 'The old edge was production speed. The new edge is judgment: what is worth making, what customer behavior should change, and what quality looks like when average work is cheap.',
     themes: ['Technology', 'Marketing Strategy', 'Quality']
   },
   {
     status: 'Field Note 02',
-    title: 'Product strategy starts before the build.',
-    excerpt: 'Every prototype carries assumptions about the customer, pricing, trust, distribution, and timing. The earlier those assumptions are named, the faster the build becomes useful.',
+    title: 'A prototype is already a strategy document.',
+    excerpt: 'Every first version carries assumptions about the customer, price, trust, distribution, and timing. Naming those assumptions early makes the build more useful.',
     themes: ['Product', 'Customer Insight', 'GTM']
   },
   {
     status: 'Field Note 03',
-    title: 'A bonding curve is also a positioning problem.',
-    excerpt: 'MoveMint is technical on the surface, but the real work is translation: helping users understand incentives, risk, graduation, and value creation before they act.',
+    title: 'A bonding curve has to explain itself.',
+    excerpt: 'MoveMint is technical on the surface, but the real work is translation: incentives, risk, graduation, and value creation need to make sense before someone clicks launch.',
     themes: ['Market Mechanics', 'Web3', 'Translation']
   }
 ]
 
 const writingTopics = [
-  { title: 'Customer Behavior', text: 'How people decide, hesitate, trust, buy, and return.' },
-  { title: 'Technology Adoption', text: 'What new tools change operationally, economically, and culturally.' },
-  { title: 'Product Judgment', text: 'How builders move from vague idea to specific working system.' },
-  { title: 'Go-To-Market', text: 'Positioning, acquisition, messaging, and proof from the operator seat.' }
+  { title: 'Customer Behavior', text: 'The moments where people decide, hesitate, trust, buy, abandon, and return.' },
+  { title: 'Technology Adoption', text: 'What new tools actually change inside teams, markets, cost structures, and habits.' },
+  { title: 'Product Judgment', text: 'How builders decide what to make before the work becomes expensive.' },
+  { title: 'Go-To-Market', text: 'Positioning, acquisition, messaging, and proof from close to the work.' }
 ]
 
 function Writing() {
@@ -81,7 +81,7 @@ function Writing() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6, ease: ndsEase }}
           >
-            Short essays on customer behavior, technology adoption, product judgment, and the messy path from idea to market.
+            Notes on customer behavior, technology adoption, product judgment, and the uncomfortable stretch between idea and market.
           </motion.p>
         </div>
       </section>
@@ -98,9 +98,9 @@ function Writing() {
           >
             <motion.h2 variants={fadeUp}>The writing has a job.</motion.h2>
             <motion.p className="substack-description" variants={fadeUp}>
-              I use writing to pressure-test ideas before they become products, talks,
-              campaigns, or tools. The best notes clarify what I believe, what I am
-              seeing in the market, and what I would build next.
+              I write to sharpen ideas before they become products, talks, campaigns,
+              or tools. The best notes make the pattern clearer and the next build
+              more obvious.
             </motion.p>
           </motion.div>
         </div>

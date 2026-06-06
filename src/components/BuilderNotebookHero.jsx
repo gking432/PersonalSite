@@ -46,8 +46,8 @@ const spineStages = [
     label: 'Thesis',
     progress: 0.06,
     target: '#approach',
-    signal: 'gap between strategy + execution',
-    output: 'operating point of view',
+    signal: 'the customer problem',
+    output: 'a sharper thesis',
     nextLabel: 'Approach'
   },
   {
@@ -56,8 +56,8 @@ const spineStages = [
     label: 'Workbench',
     progress: 0.24,
     target: '#builds',
-    signal: 'ideas need working surfaces',
-    output: 'interactive build system',
+    signal: 'the fastest useful test',
+    output: 'a working surface',
     nextLabel: 'Build Journey'
   },
   {
@@ -66,8 +66,8 @@ const spineStages = [
     label: 'Projects',
     progress: 0.46,
     target: '/projects',
-    signal: 'prototype until it behaves',
-    output: 'products and experiments',
+    signal: 'proof over polish',
+    output: 'live products',
     nextLabel: 'Dev Projects'
   },
   {
@@ -76,8 +76,8 @@ const spineStages = [
     label: 'Market',
     progress: 0.64,
     target: '/client-work',
-    signal: 'systems have to sell',
-    output: 'client execution',
+    signal: 'the market has to respond',
+    output: 'brand, web, and acquisition',
     nextLabel: 'Client Work'
   },
   {
@@ -86,8 +86,8 @@ const spineStages = [
     label: 'Voice',
     progress: 0.81,
     target: '/writing',
-    signal: 'thinking should travel',
-    output: 'writing and talks',
+    signal: 'the pattern worth naming',
+    output: 'field notes and briefings',
     nextLabel: 'Writing'
   },
   {
@@ -96,8 +96,8 @@ const spineStages = [
     label: 'Contact',
     progress: 0.96,
     target: '/contact',
-    signal: 'ship with the right team',
-    output: 'conversation',
+    signal: 'the next real problem',
+    output: 'a useful conversation',
     nextLabel: 'Contact'
   }
 ]
@@ -325,13 +325,13 @@ function BuilderNotebookHero() {
           transition={{ duration: 0.75, ease: ndsEase }}
         >
           <p className="notebook-hero__label">
-            Marketing Leader &middot; Product Builder &middot; Emerging Technology
+            Product-minded marketer &middot; builder &middot; operator
           </p>
           <h1 className="notebook-hero__name">Gunnar Neuman</h1>
-          <p className="notebook-hero__line">I turn ideas into working systems.</p>
+          <p className="notebook-hero__line">I build the path from idea to launch.</p>
           <p className="notebook-hero__dek">
-            Strategy, product thinking, and technical execution for teams building
-            from zero to one.
+            I use customer insight, product strategy, and modern development tools to
+            turn rough opportunities into products, campaigns, and growth systems.
           </p>
 
           <div className="notebook-hero__spine-nav" aria-label="Explore the site by builder stage">

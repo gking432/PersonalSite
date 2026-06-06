@@ -26,23 +26,23 @@ const briefingModules = [
   {
     title: 'Executive Briefing: Technology Without Theater',
     format: '45-75 minute talk',
-    description: 'A practical briefing for teams who need to understand what new tools actually change: customer behavior, cost structures, operating models, and the quality bar.',
+    description: 'A practical briefing for teams trying to separate durable technology shifts from noise, with emphasis on customer behavior, operating leverage, and the new quality bar.',
     outcomes: [
       'Separate durable technology shifts from hype cycles',
-      'Understand where AI and automation create leverage',
+      'Understand where AI and automation create practical leverage',
       'Identify the customer behaviors most likely to change',
-      'Leave with a shared vocabulary for strategic decisions'
+      'Leave with a sharper vocabulary for strategic decisions'
     ],
     audience: 'Leadership teams, marketing teams, operators, founders'
   },
   {
     title: 'Operator Workshop: Build the First Useful Tool',
     format: 'Half-day hands-on workshop',
-    description: 'A working session for teams that want to leave with a useful internal prototype, not just a better understanding of the tools.',
+    description: 'A working session for teams that want to leave with a first useful prototype, workflow map, or decision surface instead of another abstract discussion.',
     outcomes: [
       'Map one high-friction workflow in the business',
       'Design a lightweight tool around real constraints',
-      'Prototype a first version using modern builder workflows',
+      'Prototype a first version with modern builder workflows',
       'Define the measurement plan and next iteration'
     ],
     audience: 'Marketing, sales, operations, and product teams'
@@ -81,9 +81,9 @@ function FAQItem({ question, answer }) {
 
 function Speaking() {
   const faqs = [
-    { q: "Is this only about AI?", a: "No. AI is one part of the conversation, but the real focus is how technology changes customer behavior, operating leverage, quality, and go-to-market strategy." },
-    { q: "Do teams need technical knowledge?", a: "No. The sessions are built for operators, marketers, founders, and business teams. Technical concepts are translated into decisions and workflows." },
-    { q: "Can this be customized?", a: "Yes. The strongest version starts with your team’s actual customer, workflow, or market problem and builds the session around that." },
+    { q: "Is this only about AI?", a: "No. AI is part of the conversation, but the real focus is what technology changes for customers, teams, cost structures, quality, and launch decisions." },
+    { q: "Do teams need technical knowledge?", a: "No. These sessions are built for operators, marketers, founders, and business teams. Technical ideas get translated into decisions and workflows." },
+    { q: "Can this be customized?", a: "Yes. The best version starts with your actual customer, workflow, market, or strategic decision." },
     { q: "Can workshops produce something tangible?", a: "Yes. For hands-on sessions, the goal is to leave with a first useful prototype, workflow map, or decision framework." },
   ]
 
@@ -121,7 +121,7 @@ function Speaking() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
               >
-                I translate technology into operator language: what changes, what matters, what to build, and how teams should respond.
+                Practical talks and workshops for teams trying to understand what technology changes, what still matters, and what to build next.
               </motion.p>
             </div>
             <motion.div
@@ -213,7 +213,7 @@ function Speaking() {
               viewport={{ once: true }}
               transition={{ duration: 0.8, ease: ndsEase }}
             >
-              Need a clearer read on what technology means for your team?
+              Need a sharper read on what technology means for your team?
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 30 }}
@@ -221,7 +221,7 @@ function Speaking() {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2, ease: ndsEase }}
             >
-              I can tailor the briefing around your market, customer, workflows, or the specific decision your team is trying to make.
+              I can shape the session around your market, customer, workflow, or the decision your team needs to make next.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}

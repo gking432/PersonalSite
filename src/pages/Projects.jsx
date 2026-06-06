@@ -21,7 +21,7 @@ const projects = [
     type: 'Token Launcher',
     status: 'Live Product',
     shortDesc:
-      'A token launch experience for Aptos projects, built around bonding curve mechanics, clearer launch flows, and a more understandable path from token creation to market.',
+      'A live Aptos token launcher built around bonding curve mechanics, graduation logic, and a cleaner path from token idea to public market.',
     image: '/images/project-movemint.png',
     imageAlt: 'MoveMint landing page preview',
     url: 'https://movemint.fun',
@@ -33,7 +33,7 @@ const projects = [
     type: 'Print Commerce',
     status: 'Live Product',
     shortDesc:
-      'A topographic map print studio that turns place-based memory into custom wall art, with the product, brand, and buying experience built as one system.',
+      'A topographic print studio that turns meaningful places into custom wall art, with the product, brand, and buying flow designed as one system.',
     image: '/images/project-terralis.png',
     imageAlt: 'Terralis landing page preview',
     url: 'https://terralis.space',
@@ -45,7 +45,7 @@ const projects = [
     type: 'Interview Practice',
     status: 'Private Prototype',
     shortDesc:
-      'A candidate-prep product concept focused on realistic interview reps, structured feedback, and the confidence gap before high-stakes conversations.',
+      'An interview practice concept built around realistic reps, structured feedback, and the nervous gap before high-stakes conversations.',
     preview: 'prepme',
     tech: ['Interview Prep', 'Feedback Loops', 'AI Workflow']
   },
@@ -54,7 +54,7 @@ const projects = [
     type: 'Decision Surface',
     status: 'Concept Build',
     shortDesc:
-      'A workflow dashboard concept for turning scattered tasks, priorities, and signals into a cleaner operating surface for daily decisions.',
+      'A workflow dashboard concept for turning scattered priorities, tasks, and signals into a calmer surface for daily decisions.',
     preview: 'dashboard',
     tech: ['Dashboard', 'Workflow', 'UX']
   },
@@ -63,7 +63,7 @@ const projects = [
     type: 'Personal Site',
     status: 'Live Build',
     shortDesc:
-      'A living portfolio built as a product in its own right, with an interactive homepage, navigation spine, project language, and evolving positioning.',
+      'A personal site treated like a product: interactive homepage, evolving positioning, real project links, and a visual system built to keep improving.',
     preview: 'portfolio',
     url: '/',
     buttonLabel: 'View Homepage',
@@ -209,7 +209,7 @@ function Projects() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
                 >
-                  Products, prototypes, and experiments presented like a portfolio: what it is, what it looks like, and where to open it.
+                  A small collection of products and prototypes. Each one started as a question, became a working surface, and taught me something about building for a market.
                 </motion.p>
               </div>
               <motion.div

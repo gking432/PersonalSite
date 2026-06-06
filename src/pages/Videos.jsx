@@ -35,15 +35,15 @@ function Videos() {
             Videos
           </motion.p>
           <h1>
-            {'Video Essays & Explorations'.split(' ').map((word, i) => (
+            {'Video Notes'.split(' ').map((word, i, words) => (
               <motion.span
                 key={i}
-                style={{ display: 'inline-block', marginRight: '0.25em' }}
+                style={{ display: 'inline-block' }}
                 initial={{ opacity: 0, y: 60 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.1 + i * 0.08, ease: ndsEase }}
               >
-                {word}
+                {word}{i < words.length - 1 ? '\u00a0' : ''}
               </motion.span>
             ))}
           </h1>
@@ -53,7 +53,7 @@ function Videos() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
           >
-            One video per week on topics that fascinate me.
+            Short video work will live here when the format is ready. For now, the writing and briefings carry the thinking.
           </motion.p>
         </div>
       </section>
@@ -68,18 +68,13 @@ function Videos() {
             viewport={{ once: true, margin: "-100px" }}
             variants={staggerContainer}
           >
-            <motion.h2 variants={fadeUp}>Watch on YouTube</motion.h2>
+            <motion.h2 variants={fadeUp}>Video Channel Coming Soon</motion.h2>
             <motion.p className="youtube-description" variants={fadeUp}>
-              All my videos are published on YouTube. Subscribe to get notified when new videos are released.
+              I am holding this page until the videos are strong enough to deserve a place on the site.
             </motion.p>
             <motion.div className="youtube-cta" variants={fadeUp}>
-              <a
-                href="https://youtube.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-primary"
-              >
-                Subscribe on YouTube
+              <a href="/writing" className="btn btn-primary">
+                View Writing
               </a>
             </motion.div>
           </motion.div>
@@ -96,7 +91,7 @@ function Videos() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, ease: ndsEase }}
           >
-            Latest Video
+            First Feature
           </motion.h2>
           <motion.div
             className="featured-video-container"
@@ -107,14 +102,14 @@ function Videos() {
           >
             <div className="video-placeholder">
               <div className="video-placeholder-content">
-                <p>Latest video will appear here</p>
+                <p>First video will appear here</p>
                 <a
                   href="https://youtube.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn btn-secondary"
                 >
-                  View on YouTube
+                  Coming Soon
                 </a>
               </div>
             </div>

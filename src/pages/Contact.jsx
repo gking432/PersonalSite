@@ -33,7 +33,7 @@ const subjectOptions = [
 const contactIntents = [
   {
     title: 'Role or Team Fit',
-    text: 'Product marketing, growth, strategy, or operator roles where customer insight and technical fluency both matter.'
+    text: 'Product marketing, growth, strategy, or operator roles where customer understanding and builder fluency both matter.'
   },
   {
     title: 'Product / GTM Problem',
@@ -41,7 +41,7 @@ const contactIntents = [
   },
   {
     title: 'Briefing or Workshop',
-    text: 'A session for teams trying to understand what technology changes, what to build, or how to make better decisions.'
+    text: 'A session for teams trying to understand what technology changes, what to build, and how to make better decisions.'
   }
 ]
 
@@ -117,7 +117,7 @@ function Contact() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
               >
-                Send the context: role, product, workshop, or market problem. I&apos;ll respond with the next useful move.
+                Send the role, product, workshop, or market problem. I&apos;ll read the context and respond with a useful next step.
               </motion.p>
             </div>
             <motion.div
@@ -161,7 +161,7 @@ function Contact() {
             <motion.div className="contact-form-section" variants={fadeUp}>
               <h2>Start a Build Brief</h2>
               <p className="form-intro">
-                The best notes include the situation, what matters most, and what a useful next step would look like.
+                The most useful notes include the situation, what matters most, and what a good next step would look like.
               </p>
               <AnimatePresence mode="wait">
                 {submitted ? (
@@ -239,7 +239,7 @@ function Contact() {
                         rows="6"
                         value={formData.message}
                         onChange={handleChange}
-                        placeholder="What are you trying to do, decide, build, or hire for?"
+                        placeholder="What are you trying to build, decide, launch, or hire for?"
                         required
                       ></textarea>
                     </motion.div>
@@ -286,7 +286,7 @@ function Contact() {
                 <h2>Availability</h2>
                 <div className="availability-content">
                   <p className="availability-text">
-                    <strong>Currently seeking:</strong> Full-time roles where product marketing, growth, customer insight, and technology meet
+                    <strong>Currently seeking:</strong> Full-time roles in product marketing, growth, strategy, or product-adjacent operator work
                   </p>
                   <p className="availability-text">
                     <strong>Also available for:</strong> Product/GTM consulting, briefings, workshops, and selective build projects

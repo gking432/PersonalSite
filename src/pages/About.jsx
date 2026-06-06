@@ -35,27 +35,27 @@ const toolkitRow2 = [
 ]
 
 const processSteps = [
-  { number: '01', title: 'Understand', desc: 'Sit across the table. Learn the business, the audience, the constraints. Strategy without context is just guessing.' },
-  { number: '02', title: 'Build', desc: 'Design it, code it, launch it. No handoffs to wonder about — I go from concept to working product.' },
-  { number: '03', title: 'Deliver', desc: 'Get it live, measure what happens, iterate fast. The work isn\'t done until it\'s performing.' },
+  { number: '01', title: 'Understand', desc: 'Get close to the customer, the business, and the constraints. Most bad strategy starts too far away from the people it is supposed to move.' },
+  { number: '02', title: 'Build', desc: 'Turn the idea into something people can react to. A sketch, a page, a prototype, a launch flow - whatever gets the question into the real world.' },
+  { number: '03', title: 'Deliver', desc: 'Ship it, measure it, and improve it. The work is not done when it looks good. It is done when it starts teaching us something.' },
 ]
 
 const builderProfile = [
   {
     stage: 'Customer Insight',
-    proof: 'Client discovery, showroom sales, analytics, and market research trained me to start with behavior instead of assumptions.'
+    proof: 'Showroom sales, client discovery, analytics, and market research taught me to look for behavior before opinions.'
   },
   {
     stage: 'Positioning',
-    proof: 'Product launches, campaign strategy, naming, copy, and brand work taught me how to make the market understand why something matters.'
+    proof: 'Product launches, campaign strategy, naming, copy, and brand work taught me how to make a market understand why something matters now.'
   },
   {
     stage: 'Prototype',
-    proof: 'React, TypeScript, modern development tools, and rapid iteration let me turn ideas into working surfaces quickly.'
+    proof: 'React, TypeScript, modern development tools, and rapid iteration let me make ideas testable without waiting for a giant handoff.'
   },
   {
     stage: 'Launch',
-    proof: 'eCommerce, SEO, paid media, content, and reporting connect the build to distribution, learning, and measurable growth.'
+    proof: 'eCommerce, SEO, paid media, content, and reporting keep the work connected to distribution, learning, and revenue.'
   }
 ]
 
@@ -180,23 +180,23 @@ function ProcessStep({ step, scrollYProgress, index, total }) {
 
 // Story content — each item is either a paragraph, a pullQuote (breakout), or a moment (big display text)
 const storyBlocks = [
-  { text: 'I started my career with Sub-Zero Group, Inc. in a rotating program that took me through sales operations, product marketing, product launch, and external dealer sales. It was a masterclass in how premium brands are built and maintained at scale. I saw firsthand how product ideas sweep through markets, how distribution works on a national level, and how marketing, sales, and product must align for a brand to thrive.', first: true },
-  { text: 'Working inside a company functioning at the highest level gave me an appreciation for the operational side of growth; how strategy translates into real revenue through sales teams, distribution networks, and a disciplined brand/product relationship.' },
+  { text: 'I started my career at Sub-Zero Group, Inc. in a rotational program that moved through sales operations, product marketing, product launch, showroom sales, and external dealer sales. It was an unusually good seat for learning how premium products move through a market.', first: true },
+  { text: 'I saw the parts most people only talk about in pieces: the product story, the sales team, the dealer network, the showroom experience, the launch material, and the discipline required to make a brand feel consistent at every touchpoint.' },
   { text: 'As the rotational program came to an end, {I decided to take a risk and bet on myself.}', highlight: 'pullQuote' },
-  { text: 'I started doing freelance marketing work, which turned into a small but legitimate agency. I found myself sitting across the table from aspiring entrepreneurs, trying to figure out how to bring their ideas to life. We\'d talk branding, campaigns, websites, and customer acquisition, always eager to start something new.' },
-  { text: 'That was the first time I realized what kind of work I actually love.' },
+  { text: 'I started doing freelance marketing work, and that slowly became a small agency. I was sitting across the table from business owners, founders, and aspiring entrepreneurs trying to make their ideas feel real enough for customers to trust.' },
+  { text: 'That was the first time I understood what kind of work actually pulls me in.' },
   { text: 'It wasn\'t the deliverables. It wasn\'t being my own boss. {It was building.}', highlight: 'moment' },
-  { text: 'The brainstorming sessions, the strategy pivots, and the moment a client saw their idea start to take shape made all the late nights, repetitive designs, and cold calls worth it. I love taking something from zero to one.' },
-  { text: 'Running my agency forced me to learn the full stack of marketing in a way traditional roles rarely require. Operating in that world gave me strong instincts about what actually drives growth and what is just noise.' },
+  { text: 'The best moments were not the handoff moments. They were the messy middle: the strategy pivots, the rough drafts, the first version of a site, the moment a client could finally see the shape of what they had been describing.' },
+  { text: 'Running that agency forced me to learn the practical stack of growth: positioning, web, content, SEO, paid media, eCommerce, reporting, client management, and the uncomfortable art of deciding what is actually worth doing.' },
   { text: '{Then the tools changed.}', highlight: 'moment' },
-  { text: 'As AI and other modern tools became widely available and dramatically cheaper, it initially felt like a gift to the industry.' },
+  { text: 'As AI and modern builder tools became widely available, the industry changed fast. At first, it felt like a gift: more speed, more leverage, more ways to make small teams powerful.' },
   { text: '{For me, it was the opposite.}', highlight: 'emphasis' },
-  { text: 'Almost overnight, the economics of basic marketing production changed. Anybody could generate basic websites, good-enough copy, and sloppy (but cheap) creative in a matter of minutes. I was now in a race with other agencies to the lowest price, and the margins on my core offerings dropped by more than 80%. This wasn\'t a winning strategy long-term as technology was changing the economics and behaviors of the entire industry faster than I was able to adapt.' },
-  { text: 'This led me to a new way of thinking about modern marketing: {in a world where tools make everyone fast, quality becomes the real lever.} The winners won\'t be those producing the most content or running the most campaigns. The winners will possess the judgment to know what\'s worth building and have the ability to execute above the noise.', highlight: 'pullQuote' },
-  { text: 'So I went deep into the technology stack behind this shift. Large language models, data infrastructure, emerging companies, the economics of compute, energy consumption, the adoption cycle, psychological side effects, and political concerns were all areas I wanted to explore.' },
-  { text: 'I wrote research papers, articles, and lectures on these topics. More importantly, I started building with modern tools. I created a cartography print studio, a cryptocurrency launchpad, and an AI-powered interview platform. I treated each project like a product with hours of market research, positioning, brand development, product design, and a launch strategy.' },
-  { text: 'Today, technology is part of how I operate. I use AI daily, write about it, speak on it, and build with it. However, the core of what I do hasn\'t changed. I take ideas from zero to one and figure out how to get them in front of people. I can build the landing page, write the positioning, design the brand, structure the campaign, and set up the analytics. I don\'t need to do it all myself (I\'d prefer not to), but understanding every layer makes me better at leading the people responsible for them.' },
-  { text: 'I\'m looking for a team that values strategic thinking, bias toward action, and the ambition to build something that matters. If that sounds like your team, I\'d love to hear from you.' },
+  { text: 'Then the economics of basic marketing production collapsed. Websites, copy, and ad creative became cheaper and easier to produce. That made the average deliverable less defensible, and it forced me to ask a better question: what still matters when almost everyone can make something?' },
+  { text: 'This led me to a new way of thinking about modern marketing: {in a world where tools make everyone fast, judgment becomes the real lever.} The winners will not be the teams that make the most stuff. They will be the teams that know what is worth making, why it should exist, and how to execute above the noise.', highlight: 'pullQuote' },
+  { text: 'So I went deeper into the technology behind the shift. I studied large language models, data infrastructure, emerging companies, compute economics, adoption cycles, and the cultural questions that come with powerful tools becoming ordinary.' },
+  { text: 'More importantly, I started building. I created Terralis Print Studio, MoveMint, an interview practice platform, and this portfolio as a living product. Each one forced the same questions: who is this for, why now, what should it feel like, how does it launch, and what would make it worth using?' },
+  { text: 'Today, technology is part of my operating system, but it is not the point. The point is still the work: finding a real problem, shaping the offer, building the first version, putting it in front of people, and improving it with evidence.' },
+  { text: 'I\'m looking for a team with serious problems, a strong product instinct, and the ambition to build things that matter. That is where I do my best work.' },
 ]
 
 function renderStoryText(text, highlight) {
@@ -308,7 +308,7 @@ function About() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
               >
-                I operate where customer insight, product strategy, technical fluency, and go-to-market execution meet.
+                I work best when the problem is still messy and someone needs to turn it into a product, a story, and a plan.
               </motion.p>
               <motion.a
                 href="#my-story"
@@ -370,7 +370,7 @@ function About() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1, ease: ndsEase }}
           >
-            The useful version of me is not one discipline. It is the handoff between them.
+            The useful version of me is the person who can move between the customer, the market, and the build.
           </motion.h2>
           <motion.div
             className="builder-dossier-grid"
@@ -457,7 +457,7 @@ function About() {
                 Zero to one. That's the job.
               </StatementGiantText>
               <p className="statement-paragraph">
-                Marketing strategy, product ownership, and technical execution — not as separate disciplines, but as one integrated approach to building things that matter.
+                Find the problem, shape the offer, build the first version, and learn from the market.
               </p>
             </motion.div>
           </div>
@@ -563,7 +563,7 @@ function About() {
               Bring Me a Problem
             </motion.h2>
             <motion.p className="cta-sub" variants={fadeUp}>
-              Looking for someone who can understand the customer, shape the strategy, and help turn the idea into something real? Start with the context.
+              Have a customer problem, a product bet, or a launch that needs sharper thinking and real execution? Start with the context.
             </motion.p>
             <motion.div variants={fadeUp}>
               <Link to="/contact" className="btn btn-primary">

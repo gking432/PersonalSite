@@ -15,14 +15,14 @@ const PROJECTS = [
     number: '02',
     title: 'PrepMe',
     tag: 'Interview Practice · Feedback Systems · Product',
-    desc: 'AI-powered interview practice platform. Conducts realistic job interviews using Claude, provides real-time feedback, and helps users improve through deliberate practice.',
+    desc: 'Interview practice platform concept. Runs realistic interview reps, provides structured feedback, and helps users improve through deliberate practice.',
     link: '/projects',
   },
   {
     number: '03',
     title: 'Client Portfolio',
-    tag: 'Brand · Strategy · Go-to-Market',
-    desc: 'Brand identities, eCommerce builds, and go-to-market campaigns for early-stage companies. Full lifecycle — from market research to launch to iteration.',
+    tag: 'Brand · Strategy · Launch',
+    desc: 'Brand identities, eCommerce builds, and launch campaigns for early-stage companies. Full lifecycle - from market research to launch to iteration.',
     link: '/client-work',
   },
 ]
