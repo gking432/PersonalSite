@@ -440,7 +440,7 @@ function drawConstellationReveal(ctx, w, h, revealP, stop, data, sprites) {
     ctx.letterSpacing = '0'
 
     ctx.shadowBlur = 8 * glowP
-    ctx.font = `400 ${Math.min(w * 0.016, 15)}px "Crimson Text", Georgia, serif`
+    ctx.font = `400 ${Math.min(w * 0.016, 15)}px "Instrument Serif", Georgia, serif`
     ctx.fillStyle = rgb([180, 200, 240], fade * glowP * 0.6)
     {
       const subPx = Math.min(w * 0.016, 15)
@@ -537,7 +537,7 @@ function drawCloudReveal(ctx, w, h, revealP, stop, data, sprites) {
     ctx.fillText(stop.label, textX, textY - fontSize * 0.8)
 
     ctx.globalAlpha = fade * textP * (1 - disperseP) * 0.5
-    ctx.font = `400 ${Math.min(w * 0.016, 15)}px "Crimson Text", Georgia, serif`
+    ctx.font = `400 ${Math.min(w * 0.016, 15)}px "Instrument Serif", Georgia, serif`
     ctx.fillStyle = rgb([255, 245, 225], 1)
     {
       const subPx = Math.min(w * 0.016, 15)
@@ -625,7 +625,7 @@ function drawSunBeamReveal(ctx, w, h, revealP, stop, sunX, sunY) {
   ctx.fillText(stop.label, textX, textY - stop.text.length * lineH - fontSize * 0.5)
 
   ctx.globalAlpha = fade * easeOutCubic(clamp01((revealP - 0.4) / 0.3)) * 0.6
-  ctx.font = `400 ${Math.min(w * 0.016, 15)}px "Crimson Text", Georgia, serif`
+  ctx.font = `400 ${Math.min(w * 0.016, 15)}px "Instrument Serif", Georgia, serif`
   ctx.fillStyle = rgb([255, 240, 210], 1)
   ctx.textBaseline = 'top'
   {
@@ -755,7 +755,7 @@ function drawFogRevealText(ctx, w, h, revealP, stop, fogPatches) {
   ctx.fillText(stop.label, textX, textY - stop.text.length * lineH - fontSize * 0.4)
 
   ctx.globalAlpha = fade * clearance * 0.5
-  ctx.font = `400 ${Math.min(w * 0.016, 15)}px "Crimson Text", Georgia, serif`
+  ctx.font = `400 ${Math.min(w * 0.016, 15)}px "Instrument Serif", Georgia, serif`
   ctx.textBaseline = 'top'
   ctx.fillStyle = rgb([255, 240, 200], 1)
   {
@@ -847,7 +847,7 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites, time) {
 
   ctx.globalAlpha = fade * 0.6
   ctx.shadowBlur = 8
-  ctx.font = `400 ${Math.min(w * 0.018, 16)}px "Crimson Text", Georgia, serif`
+  ctx.font = `400 ${Math.min(w * 0.018, 16)}px "Instrument Serif", Georgia, serif`
   ctx.textBaseline = 'top'
   ctx.fillStyle = rgb([200, 190, 220], 0.75)
   {

@@ -5,7 +5,7 @@ import { useRef, useEffect, useState } from 'react'
 
 import PageTransition from '../components/PageTransition'
 import HorizonJourney from '../components/HorizonJourney'
-import BuilderNotebookHero from '../components/BuilderNotebookHero'
+import EditorialHero from '../components/EditorialHero'
 import './Home.css'
 
 // ─── NDS EASING ───
@@ -345,7 +345,7 @@ function Home() {
       <ScrollProgress />
 
       {/* ═══════ HERO ═══════ */}
-      <BuilderNotebookHero />
+      <EditorialHero />
 
       {/* ═══════ APPROACH — EDITORIAL ═══════ */}
       <section className="approach" id="approach">
@@ -449,10 +449,10 @@ function Home() {
               <motion.div
                 key={i}
                 className={`timeline-item timeline-${item.side}`}
-                initial={{ opacity: 0, x: item.side === 'left' ? -80 : 80, rotateY: item.side === 'left' ? -15 : 15 }}
-                whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+                initial={{ opacity: 0, y: 32 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-10%" }}
-                transition={{ duration: 0.9, ease: ndsEase, delay: i * 0.15 }}
+                transition={{ duration: 0.7, ease: ndsEase, delay: i * 0.12 }}
               >
                 <span className="timeline-year">{item.year}</span>
                 <div className="timeline-content">

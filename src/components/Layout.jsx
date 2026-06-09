@@ -53,7 +53,6 @@ function Layout({ children }) {
   const navbarClassName = [
     'navbar',
     scrolled ? 'navbar-scrolled' : '',
-    isHome && navPhase === 'top' ? 'navbar-home-top' : '',
     navPhase === 'hidden' ? 'navbar-hidden' : '',
     navPhase === 'revealed' ? 'navbar-revealed' : '',
     menuOpen ? 'navbar-menu-open' : ''

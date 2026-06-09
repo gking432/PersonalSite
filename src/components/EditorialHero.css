@@ -1,0 +1,171 @@
+/* ═══════════════════════════════════════════
+   EDITORIAL HERO — NDS minimalism on paper
+   One serif, one sans. Massive whitespace.
+   Type does the work; one quiet rotating proof line.
+   ═══════════════════════════════════════════ */
+.editorial-hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  background-color: var(--parchment);
+  overflow: hidden;
+}
+
+.editorial-hero__inner {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: calc(var(--header-height) + var(--space-xl)) var(--gutter) var(--space-2xl);
+}
+
+.editorial-hero__eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 var(--space-lg);
+  max-width: none;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--forest-green);
+}
+
+.editorial-hero__eyebrow span {
+  color: var(--warm-gray);
+  font-weight: 400;
+}
+
+.editorial-hero__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(3.75rem, 13vw, 11rem);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  color: var(--charcoal);
+  text-wrap: balance;
+}
+
+.editorial-hero__statement {
+  margin: var(--space-lg) 0 0;
+  max-width: 640px;
+  font-family: var(--font-sans);
+  font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--slate);
+}
+
+/* ─── Rotating proof line ─── */
+.editorial-hero__proof {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+  min-height: 2rem;
+}
+
+.editorial-hero__proof-rule {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 1px;
+  background: var(--forest-green);
+}
+
+.editorial-hero__proof-line {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin: 0;
+  max-width: none;
+}
+
+.editorial-hero__proof-key {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+}
+
+.editorial-hero__proof-value {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 1.8vw, 1.45rem);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--charcoal);
+}
+
+/* ─── Actions ─── */
+.editorial-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+}
+
+/* ─── Scroll cue ─── */
+.editorial-hero__scroll {
+  position: absolute;
+  left: var(--gutter);
+  bottom: var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.editorial-hero__scroll-line {
+  width: 48px;
+  height: 1px;
+  background: var(--warm-gray);
+  transform-origin: left;
+  animation: editorial-scroll-pulse 2.4s var(--ease-out) infinite;
+}
+
+.editorial-hero__scroll-label {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+}
+
+@keyframes editorial-scroll-pulse {
+  0%, 100% { transform: scaleX(0.4); opacity: 0.5; }
+  50% { transform: scaleX(1); opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .editorial-hero {
+    align-items: flex-start;
+  }
+
+  .editorial-hero__inner {
+    padding: calc(var(--header-height) + var(--space-lg)) var(--gutter) var(--space-xl);
+  }
+
+  .editorial-hero__actions {
+    flex-direction: column;
+  }
+
+  .editorial-hero__actions .btn {
+    width: 100%;
+  }
+
+  .editorial-hero__scroll {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editorial-hero__scroll-line {
+    animation: none;
+  }
+}
