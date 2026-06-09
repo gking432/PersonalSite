@@ -12,15 +12,17 @@ import ClientWork from './pages/ClientWork'
 import GunnarNeumanProfile from './pages/GunnarNeumanProfile'
 import PokerTablePage from './pages/PokerTablePage'
 import HomeOpus from './variants/HomeOpus'
+import HomeStudio from './variants/HomeStudio'
 
 function App() {
   const location = useLocation()
 
-  // Standalone full-bleed design direction — rendered without the global nav/footer.
-  if (location.pathname === '/v1') {
+  // Standalone full-bleed design directions — rendered without the global nav/footer.
+  if (location.pathname === '/v1' || location.pathname === '/v2') {
     return (
       <Routes location={location} key={location.pathname}>
-        <Route path="/v1" element={<HomeOpus />} />
+        <Route path="/v1" element={<HomeStudio />} />
+        <Route path="/v2" element={<HomeOpus />} />
       </Routes>
     )
   }
