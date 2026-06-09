@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -8,6 +8,7 @@ import {
   resumeHighlights,
   cta
 } from '../data/homeContent'
+import HorizonJourney from '../components/HorizonJourney'
 import './HomeStudio.css'
 
 const ease = [0.22, 1, 0.36, 1]
@@ -44,13 +45,44 @@ function Globe() {
     const toXYZ = (lat, lon, ry, rx) => {
       const la = (lat * Math.PI) / 180
       const lo = (lon * Math.PI) / 180 + ry
-      let x = Math.cos(la) * Math.sin(lo)
-      let y = Math.sin(la)
-      let z = Math.cos(la) * Math.cos(lo)
-      // tilt
+      const x = Math.cos(la) * Math.sin(lo)
+      const y = Math.sin(la)
+      const z = Math.cos(la) * Math.cos(lo)
       const y2 = y * Math.cos(rx) - z * Math.sin(rx)
       const z2 = y * Math.sin(rx) + z * Math.cos(rx)
       return { x, y: y2, z: z2 }
+    }
+    const baseVec = (lat, lon) => {
+      const la = (lat * Math.PI) / 180, lo = (lon * Math.PI) / 180
+      return { x: Math.cos(la) * Math.sin(lo), y: Math.sin(la), z: Math.cos(la) * Math.cos(lo) }
+    }
+    const rot = (v, ry, rx) => {
+      const x = v.x * Math.cos(ry) + v.z * Math.sin(ry)
+      const z0 = -v.x * Math.sin(ry) + v.z * Math.cos(ry)
+      const y2 = v.y * Math.cos(rx) - z0 * Math.sin(rx)
+      const z2 = v.y * Math.sin(rx) + z0 * Math.cos(rx)
+      return { x, y: y2, z: z2 }
+    }
+    const slerp = (a, b, tt) => {
+      let d = a.x * b.x + a.y * b.y + a.z * b.z
+      d = Math.max(-1, Math.min(1, d))
+      const o = Math.acos(d)
+      if (o < 1e-4) return a
+      const s = Math.sin(o), k0 = Math.sin((1 - tt) * o) / s, k1 = Math.sin(tt * o) / s
+      return { x: a.x * k0 + b.x * k1, y: a.y * k0 + b.y * k1, z: a.z * k0 + b.z * k1 }
+    }
+    // gilded travel arcs tracing the path between places
+    const placeBase = places.map((p) => baseVec(p.lat, p.lon))
+    const arcs = []
+    for (let i = 0; i < placeBase.length - 1; i++) {
+      const seg = []
+      for (let s = 0; s <= 44; s++) {
+        const tt = s / 44
+        const m = slerp(placeBase[i], placeBase[i + 1], tt)
+        const lift = 1 + 0.17 * Math.sin(Math.PI * tt)
+        seg.push({ x: m.x * lift, y: m.y * lift, z: m.z * lift })
+      }
+      arcs.push(seg)
     }
 
     let t = 0
@@ -100,6 +132,36 @@ function Globe() {
         line(pts)
       }
 
+      // gilded travel arcs
+      ctx.lineWidth = 1.4
+      arcs.forEach((seg) => {
+        ctx.beginPath()
+        let started = false
+        seg.forEach((bp) => {
+          const p = rot(bp, ry, rx)
+          const sx = cx + p.x * R, sy = cy - p.y * R
+          if (p.z >= -0.02) {
+            if (!started) { ctx.moveTo(sx, sy); started = true } else ctx.lineTo(sx, sy)
+          } else started = false
+        })
+        ctx.strokeStyle = 'rgba(168, 130, 60, 0.6)'
+        ctx.stroke()
+      })
+      // travelling glint along the path
+      if (arcs.length) {
+        const prog = (t * 0.05) % 1
+        const ai = Math.min(arcs.length - 1, Math.floor(prog * arcs.length))
+        const seg = arcs[ai]
+        const local = prog * arcs.length - ai
+        const bp = seg[Math.floor(local * (seg.length - 1))]
+        const p = rot(bp, ry, rx)
+        if (p.z >= -0.02) {
+          const sx = cx + p.x * R, sy = cy - p.y * R
+          ctx.fillStyle = 'rgba(206, 166, 86, 0.95)'
+          ctx.beginPath(); ctx.arc(sx, sy, 2.8, 0, Math.PI * 2); ctx.fill()
+        }
+      }
+
       // place markers
       places.forEach((pl) => {
         const p = toXYZ(pl.lat, pl.lon, ry, rx)
@@ -138,9 +200,25 @@ function Globe() {
 }
 
 function HomeStudio() {
+  const [barHidden, setBarHidden] = useState(false)
+
+  // Hide the top bar while the full-bleed Horizon Journey is pinned on screen,
+  // so the cinematic statement piece plays uninterrupted.
+  useEffect(() => {
+    const onScroll = () => {
+      const runway = document.querySelector('.horizon-scroll-runway')
+      if (!runway) return
+      const r = runway.getBoundingClientRect()
+      setBarHidden(r.top <= 1 && r.bottom >= window.innerHeight - 1)
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
     <div className="studio">
-      <header className="studio-topbar">
+      <header className={`studio-topbar ${barHidden ? 'is-hidden' : ''}`}>
         <Link to="/" className="studio-mark">Gunnar&nbsp;Neuman</Link>
         <nav className="studio-nav">
           <Link to="/projects">Work</Link>
@@ -220,6 +298,15 @@ function HomeStudio() {
             </motion.div>
           ))}
         </div>
+      </section>
+
+      {/* ─── STATEMENT PIECE — HORIZON JOURNEY ─── */}
+      <section className="studio-statement" aria-label="The build journey">
+        <div className="studio-statement__intro">
+          <span className="studio-kicker">The Build Journey</span>
+          <h2>From first light to launch — keep scrolling.</h2>
+        </div>
+        <HorizonJourney />
       </section>
 
       {/* ─── EXPERIENCE ─── */}
