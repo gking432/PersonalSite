@@ -25,6 +25,7 @@ Prestige portfolio warmth + colors
   --off-white: #fefefe;
   --warm-gray: #8b8680;
   --tobacco: #6b4423;
+  --gold: #a8823c;
   
   /* NDS Monochrome */
   --black: #0a0a0a;
@@ -97,7 +98,7 @@ body {
 /* Typography - NDS Scale with Prestige Fonts */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-serif);
-  font-weight: 600;
+  font-weight: 400; /* Instrument Serif reads best at its native weight — elegant, not faux-bold */
   line-height: 1.0;
   letter-spacing: -0.02em;
   color: var(--charcoal);
@@ -108,21 +109,21 @@ h1, h2, h3, h4, h5, h6 {
 .display-text,
 .giant-text {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 400;
   line-height: 0.95;
   letter-spacing: -0.03em;
 }
 
 h1 {
   font-size: clamp(4rem, 12vw, 10rem);
-  font-weight: 700;
+  font-weight: 400;
   line-height: 0.95;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.035em;
 }
 
 h2 {
   font-size: clamp(2rem, 6vw, 4.5rem);
-  font-weight: 600;
+  font-weight: 400;
   line-height: 1.0;
   letter-spacing: -0.025em;
 }
@@ -436,10 +437,10 @@ button.btn {
 
 .nav-links a {
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-weight: 500;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  text-transform: none;
   color: var(--slate);
   transition: color var(--duration-fast);
 }
@@ -449,6 +450,20 @@ button.btn {
   color: var(--forest-green);
 }
 
+/* Contact pill — matches the home chrome */
+.nav-links a.nav-cta {
+  padding: 0.5rem 1.1rem;
+  border: 1px solid var(--charcoal);
+  border-radius: 999px;
+  color: var(--charcoal);
+  transition: background-color var(--duration-base) var(--ease-out),
+    color var(--duration-base) var(--ease-out);
+}
+.nav-links a.nav-cta:hover {
+  background-color: var(--charcoal);
+  color: var(--parchment);
+}
+
 /* Nav Dropdown */
 .nav-dropdown {
   position: relative;
@@ -456,10 +471,10 @@ button.btn {
 
 .nav-dropdown-trigger {
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-weight: 500;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  text-transform: none;
   color: var(--slate);
   cursor: default;
   transition: color var(--duration-fast);
@@ -639,11 +654,12 @@ button.btn {
   min-height: calc(100vh - 200px);
 }
 
-/* Footer */
+/* Footer — light, matches the home chrome */
 .footer {
-  background-color: var(--forest-green);
-  color: var(--cream);
-  padding: 3rem 0;
+  background-color: var(--parchment);
+  color: var(--charcoal);
+  border-top: 1px solid var(--gray-200);
+  padding: 2.4rem 0;
   margin-top: var(--space-2xl);
 }
 
@@ -654,31 +670,32 @@ button.btn {
 }
 
 .footer p {
-  color: var(--cream);
-  opacity: 0.8;
+  color: var(--slate);
+  opacity: 1;
   margin: 0;
+  font-size: 0.88rem;
 }
 
 .footer-links {
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
 .footer-links a {
-  color: var(--cream);
-  font-size: 0.9rem;
+  color: var(--slate);
+  font-size: 0.88rem;
   font-weight: 500;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  opacity: 0.8;
-  transition: opacity var(--duration-fast);
+  letter-spacing: 0.01em;
+  text-transform: none;
+  opacity: 1;
+  transition: color var(--duration-fast);
 }
 
 .footer-links a:hover {
-  opacity: 1;
+  color: var(--charcoal);
 }
 
 /* ==========================================

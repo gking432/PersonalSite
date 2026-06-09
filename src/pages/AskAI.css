@@ -31,7 +31,7 @@ Minimal, confident, mysterious. Let the results do the talking.
 .ask-ai-hero h1 {
   font-family: var(--font-display);
   font-size: clamp(4rem, 12vw, 10rem);
-  font-weight: 700;
+  font-weight: 400;
   line-height: 0.95;
   letter-spacing: -0.04em;
   color: var(--charcoal);
@@ -73,7 +73,7 @@ Minimal, confident, mysterious. Let the results do the talking.
 .prompt-text {
   font-family: var(--font-serif);
   font-size: clamp(2rem, 5vw, 3.5rem);
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1.15;
   letter-spacing: -0.02em;
   color: var(--charcoal);

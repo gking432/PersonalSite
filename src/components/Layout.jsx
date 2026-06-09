@@ -82,7 +82,7 @@ function Layout({ children }) {
     },
     { path: '/speaking', label: 'Speaking' },
     { path: '/writing', label: 'Writing' },
-    { path: '/contact', label: 'Contact' },
+    { path: '/contact', label: 'Contact', cta: true },
   ]
 
   // Flat list for mobile menu
@@ -120,7 +120,10 @@ function Layout({ children }) {
                 </li>
               ) : (
                 <li key={link.path}>
-                  <Link to={link.path} className={isActive(link.path) ? 'active' : ''}>
+                  <Link
+                    to={link.path}
+                    className={`${isActive(link.path) ? 'active' : ''}${link.cta ? ' nav-cta' : ''}`.trim()}
+                  >
                     {link.label}
                   </Link>
                 </li>

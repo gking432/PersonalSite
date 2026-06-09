@@ -28,7 +28,7 @@ VIDEOS PAGE — Content Showcase + NDS Patterns
 .videos-hero h1 {
   font-family: var(--font-display);
   font-size: clamp(3rem, 10vw, 8rem);
-  font-weight: 700;
+  font-weight: 400;
   line-height: 0.95;
   letter-spacing: -0.04em;
   color: var(--charcoal);

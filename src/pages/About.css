@@ -38,7 +38,7 @@ Reads like a biography in a private club's member directory
 .about-hero h1 {
   font-family: var(--font-display);
   font-size: clamp(4rem, 12vw, 10rem);
-  font-weight: 700;
+  font-weight: 400;
   line-height: 0.95;
   letter-spacing: -0.04em;
   color: var(--charcoal);
@@ -119,7 +119,7 @@ Reads like a biography in a private club's member directory
   color: var(--forest-green);
   font-family: var(--font-display);
   font-size: 2.5rem;
-  font-weight: 700;
+  font-weight: 400;
   line-height: 0.9;
   letter-spacing: 0;
 }
@@ -236,7 +236,7 @@ Reads like a biography in a private club's member directory
   margin-right: 12px;
   margin-top: 8px;
   color: var(--charcoal);
-  font-weight: 700;
+  font-weight: 400;
 }
 
 /* Inline highlights — big text exactly where it appears in the story */
@@ -255,7 +255,7 @@ Reads like a biography in a private club's member directory
   display: block;
   font-family: var(--font-display);
   font-size: clamp(2.5rem, 7vw, 5rem);
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1.05;
   letter-spacing: -0.03em;
   color: var(--charcoal);
@@ -337,7 +337,7 @@ Reads like a biography in a private club's member directory
 .process-number {
   font-family: var(--font-display);
   font-size: clamp(3.5rem, 8vw, 6rem);
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1;
   letter-spacing: -0.03em;
   color: var(--forest-green);
@@ -434,7 +434,7 @@ Reads like a biography in a private club's member directory
 .statement-text {
   font-family: var(--font-display);
   font-size: clamp(3rem, 10vw, 8rem);
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1.0;
   letter-spacing: -0.04em;
   color: var(--parchment);
@@ -618,7 +618,7 @@ Reads like a biography in a private club's member directory
 .cta-heading {
   font-family: var(--font-display);
   font-size: clamp(3rem, 8vw, 7rem);
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1.0;
   letter-spacing: -0.04em;
   color: var(--charcoal);

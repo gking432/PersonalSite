@@ -221,9 +221,10 @@ function HomeStudio() {
       <header className={`studio-topbar ${barHidden ? 'is-hidden' : ''}`}>
         <Link to="/" className="studio-mark">Gunnar&nbsp;Neuman</Link>
         <nav className="studio-nav">
-          <Link to="/projects">Work</Link>
-          <Link to="/writing">Writing</Link>
           <Link to="/about">About</Link>
+          <Link to="/projects">Work</Link>
+          <Link to="/speaking">Speaking</Link>
+          <Link to="/writing">Writing</Link>
           <Link to="/contact" className="studio-nav__cta">Contact</Link>
         </nav>
       </header>

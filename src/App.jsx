@@ -1,7 +1,6 @@
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import Layout from './components/Layout'
-import Home from './pages/Home'
 import About from './pages/About'
 import Projects from './pages/Projects'
 import Speaking from './pages/Speaking'
@@ -17,10 +16,11 @@ import HomeStudio from './variants/HomeStudio'
 function App() {
   const location = useLocation()
 
-  // Standalone full-bleed design directions — rendered without the global nav/footer.
-  if (location.pathname === '/v1' || location.pathname === '/v2') {
+  // Home + standalone design directions — rendered with their own chrome.
+  if (location.pathname === '/' || location.pathname === '/v1' || location.pathname === '/v2') {
     return (
       <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<HomeStudio />} />
         <Route path="/v1" element={<HomeStudio />} />
         <Route path="/v2" element={<HomeOpus />} />
       </Routes>
@@ -31,7 +31,6 @@ function App() {
     <Layout>
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/speaking" element={<Speaking />} />
