@@ -1729,8 +1729,9 @@ function HorizonJourney() {
     target: squeezeRef,
     offset: ['start 0.85', 'start 0.15'],
   })
-  const rawScale = useTransform(squeezeProgress, [0, 1], [1, 0.88])
-  const rawRadius = useTransform(squeezeProgress, [0, 1], [0, 24])
+  // Full-bleed: the day-cycle runs edge-to-edge for true immersion (no card framing).
+  const rawScale = useTransform(squeezeProgress, [0, 1], [1, 1])
+  const rawRadius = useTransform(squeezeProgress, [0, 1], [0, 0])
   const scale = useSpring(rawScale, { stiffness: 120, damping: 30 })
   const borderRadius = useSpring(rawRadius, { stiffness: 120, damping: 30 })
 

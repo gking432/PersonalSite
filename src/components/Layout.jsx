@@ -24,6 +24,18 @@ function Layout({ children }) {
       const revealAt = Math.max(560, window.innerHeight * 0.72)
 
       setScrolled(scrollY > 50)
+
+      // While an immersive full-bleed section (e.g. the Horizon Journey) is
+      // pinned to the viewport, hide the navbar so the scene plays uninterrupted.
+      const immersive = document.querySelector('.horizon-scroll-runway')
+      if (immersive) {
+        const rect = immersive.getBoundingClientRect()
+        if (rect.top <= 1 && rect.bottom >= window.innerHeight - 1) {
+          setNavPhase('hidden')
+          return
+        }
+      }
+
       setNavPhase(scrollY <= 12 ? 'top' : scrollY < revealAt ? 'hidden' : 'revealed')
     }
 
