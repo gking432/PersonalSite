@@ -109,7 +109,20 @@
 .opus-arch__line--inner { stroke: var(--gold); opacity: 0.28; stroke-width: 1; }
 .opus-arch__key { fill: var(--gold-bright); }
 
-.opus-hero__copy { text-align: center; }
+.opus-hero__copy { text-align: center; position: relative; z-index: 1; }
+
+/* Soft scrim so the headline reads cleanly over the bright horizon */
+.opus-hero__scrim {
+  position: absolute;
+  inset: -12% -18%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(58% 50% at 50% 50%,
+    rgba(16, 5, 9, 0.62) 0%,
+    rgba(16, 5, 9, 0.34) 52%,
+    transparent 78%);
+  filter: blur(10px);
+}
 
 .opus-eyebrow {
   display: block;

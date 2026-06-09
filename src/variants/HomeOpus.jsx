@@ -231,6 +231,7 @@ function HomeOpus() {
           </svg>
 
           <div className="opus-hero__copy">
+            <div className="opus-hero__scrim" aria-hidden="true" />
             <motion.span className="opus-eyebrow"
               initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease, delay: 0.3 }}>
