@@ -11,20 +11,16 @@ import Contact from './pages/Contact'
 import ClientWork from './pages/ClientWork'
 import GunnarNeumanProfile from './pages/GunnarNeumanProfile'
 import PokerTablePage from './pages/PokerTablePage'
-import HomeCinematic from './variants/HomeCinematic'
-import HomeKinetic from './variants/HomeKinetic'
-import HomeImmersive from './variants/HomeImmersive'
+import HomeOpus from './variants/HomeOpus'
 
 function App() {
   const location = useLocation()
 
-  // Standalone full-bleed design directions — rendered without the global nav/footer.
-  if (['/v1', '/v2', '/v3'].includes(location.pathname)) {
+  // Standalone full-bleed design direction — rendered without the global nav/footer.
+  if (location.pathname === '/v1') {
     return (
       <Routes location={location} key={location.pathname}>
-        <Route path="/v1" element={<HomeCinematic />} />
-        <Route path="/v2" element={<HomeKinetic />} />
-        <Route path="/v3" element={<HomeImmersive />} />
+        <Route path="/v1" element={<HomeOpus />} />
       </Routes>
     )
   }
