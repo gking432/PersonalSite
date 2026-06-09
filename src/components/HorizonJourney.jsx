@@ -591,9 +591,13 @@ function drawSunBeamReveal(ctx, w, h, revealP, stop, sunX, sunY) {
   ctx.closePath()
   ctx.fill()
 
-  // The sun beam stays as a glow behind the headline, but the text itself is
-  // never masked by it — the message must always read fully and crisply.
   ctx.save()
+  ctx.beginPath()
+  ctx.moveTo(sunX, sunY)
+  ctx.lineTo(beamLeft - 10, horizonY + 20)
+  ctx.lineTo(beamRight + 10, horizonY + 20)
+  ctx.closePath()
+  ctx.clip()
 
   ctx.font = `300 ${fontSize}px "Instrument Serif", Georgia, serif`
   ctx.textAlign = 'center'
@@ -697,7 +701,7 @@ function drawSunBeamWaterReflection(ctx, w, h, revealP, stop, sunX, sunY, sprite
   const destY = horizonY + waterH * 0.05
   const stripH = 2
 
-  ctx.globalAlpha = beamRevealAlpha * 0.16
+  ctx.globalAlpha = beamRevealAlpha * 0.35
 
   for (let y = 0; y < offH; y += stripH) {
     const waveOffset = Math.sin(y * 0.08 + time * 1.6) * (3 + y * 0.05)
