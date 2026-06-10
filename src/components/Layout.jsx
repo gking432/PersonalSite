@@ -80,7 +80,6 @@ function Layout({ children }) {
         ...(SHOW_ASK_AI ? [{ path: '/ask-ai', label: 'Ask AI' }] : []),
       ]
     },
-    { path: '/speaking', label: 'Speaking' },
     { path: '/writing', label: 'Writing' },
     { path: '/contact', label: 'Contact', cta: true },
   ]
@@ -91,7 +90,6 @@ function Layout({ children }) {
     { path: '/projects', label: 'Dev Projects' },
     { path: '/client-work', label: 'Client Work' },
     ...(SHOW_ASK_AI ? [{ path: '/ask-ai', label: 'Ask AI' }] : []),
-    { path: '/speaking', label: 'Speaking' },
     { path: '/writing', label: 'Writing' },
     { path: '/contact', label: 'Contact' },
   ]

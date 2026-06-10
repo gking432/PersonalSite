@@ -223,8 +223,13 @@ function HomeStudio() {
         <Link to="/" className="studio-mark">Gunnar&nbsp;Neuman</Link>
         <nav className="studio-nav">
           <Link to="/about">About</Link>
-          <Link to="/projects">Work</Link>
-          <Link to="/speaking">Speaking</Link>
+          <div className="studio-dropdown">
+            <span className="studio-dropdown__trigger" tabIndex={0}>Work</span>
+            <div className="studio-dropdown__menu">
+              <Link to="/projects">Dev Projects</Link>
+              <Link to="/client-work">Client Work</Link>
+            </div>
+          </div>
           <Link to="/writing">Writing</Link>
           <Link to="/contact" className="studio-nav__cta">Contact</Link>
         </nav>

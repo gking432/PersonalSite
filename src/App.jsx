@@ -3,9 +3,7 @@ import { AnimatePresence } from 'framer-motion'
 import Layout from './components/Layout'
 import About from './pages/About'
 import Projects from './pages/Projects'
-import Speaking from './pages/Speaking'
 import Writing from './pages/Writing'
-import Videos from './pages/Videos'
 import Contact from './pages/Contact'
 import ClientWork from './pages/ClientWork'
 import GunnarNeumanProfile from './pages/GunnarNeumanProfile'
@@ -33,14 +31,13 @@ function App() {
         <Routes location={location} key={location.pathname}>
           <Route path="/about" element={<About />} />
           <Route path="/projects" element={<Projects />} />
-          <Route path="/speaking" element={<Speaking />} />
           <Route path="/writing" element={<Writing />} />
-          <Route path="/videos" element={<Videos />} />
           <Route path="/client-work" element={<ClientWork />} />
           <Route path="/ask-ai" element={<Navigate to="/about" replace />} />
           <Route path="/insights/gunnar-neuman-profile" element={<GunnarNeumanProfile />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/poker" element={<PokerTablePage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AnimatePresence>
     </Layout>
