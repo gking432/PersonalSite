@@ -1318,17 +1318,46 @@ function drawTreelineLayer(ctx, w, h, baseY, trees, color, alpha, hScale, wScale
 // ═══════════════════════════════════════════
 // LOON — a lone loon drifting on the lake (with reflection + wake)
 // ═══════════════════════════════════════════
-function loonBodyPath(ctx, cx, cy, s, bh) {
+// Paint a loon from primitives: low body + short, near-vertical neck + head + bill.
+function paintLoon(ctx, cx, cy, s, bh, color) {
+  const headX = cx - s * 0.5
+  const headY = cy - bh * 1.55
+  ctx.fillStyle = rgb(color, 1)
+  ctx.strokeStyle = rgb(color, 1)
+
+  // neck — short and rising nearly straight up
+  ctx.lineCap = 'round'
+  ctx.lineWidth = s * 0.34
   ctx.beginPath()
-  ctx.moveTo(cx + s * 1.05, cy - bh * 0.1)                                   // tail tip (right)
-  ctx.quadraticCurveTo(cx + s * 0.25, cy - bh * 1.05, cx - s * 0.45, cy - bh * 0.55) // back to neck base
-  ctx.quadraticCurveTo(cx - s * 0.78, cy - bh * 1.05, cx - s * 0.86, cy - bh * 2.05) // neck back edge up
-  ctx.quadraticCurveTo(cx - s * 0.96, cy - bh * 2.7, cx - s * 1.18, cy - bh * 2.32)  // over the head
-  ctx.lineTo(cx - s * 1.5, cy - bh * 2.16)                                   // bill tip
-  ctx.lineTo(cx - s * 1.16, cy - bh * 1.96)                                  // bill underside
-  ctx.quadraticCurveTo(cx - s * 0.72, cy - bh * 1.5, cx - s * 0.7, cy - bh * 0.15) // neck front to breast
-  ctx.quadraticCurveTo(cx - s * 0.2, cy + bh * 0.55, cx + s * 1.05, cy - bh * 0.1)  // belly along waterline
+  ctx.moveTo(cx - s * 0.38, cy - bh * 0.2)
+  ctx.lineTo(headX, headY + bh * 0.35)
+  ctx.stroke()
+
+  // body — low ellipse sitting on the water
+  ctx.beginPath()
+  ctx.ellipse(cx, cy, s, bh, 0, 0, Math.PI * 2)
+  ctx.fill()
+
+  // tail — slight taper off the back
+  ctx.beginPath()
+  ctx.moveTo(cx + s * 0.6, cy - bh * 0.25)
+  ctx.quadraticCurveTo(cx + s * 1.4, cy - bh * 0.45, cx + s * 1.2, cy + bh * 0.12)
+  ctx.quadraticCurveTo(cx + s * 0.95, cy + bh * 0.05, cx + s * 0.6, cy)
   ctx.closePath()
+  ctx.fill()
+
+  // head
+  ctx.beginPath()
+  ctx.ellipse(headX, headY, s * 0.3, bh * 0.72, -0.12, 0, Math.PI * 2)
+  ctx.fill()
+
+  // bill — short, pointing forward (left)
+  ctx.beginPath()
+  ctx.moveTo(headX - s * 0.18, headY - bh * 0.1)
+  ctx.lineTo(headX - s * 0.78, headY + bh * 0.04)
+  ctx.lineTo(headX - s * 0.18, headY + bh * 0.26)
+  ctx.closePath()
+  ctx.fill()
 }
 
 function drawLoon(ctx, w, h, horizonY, progress, time, sunWarmth) {
@@ -1336,64 +1365,38 @@ function drawLoon(ctx, w, h, horizonY, progress, time, sunWarmth) {
   if (alpha < 0.01) return
 
   const waterH = h - horizonY
-  const cx = w * (0.62 + Math.sin(time * 0.045) * 0.03)
-  const cy = horizonY + waterH * 0.17
-  const s = Math.max(11, w * 0.0145)
-  const bh = s * 0.42
-  const bob = Math.sin(time * 0.6) * bh * 0.06
-  const body = [11, 15, 19]
+  // Smaller and nearer the horizon so it reads as further out on the lake.
+  const cx = w * (0.6 + Math.sin(time * 0.045) * 0.025)
+  const cy = horizonY + waterH * 0.085
+  const s = Math.max(6, w * 0.0085)
+  const bh = s * 0.5
+  const bob = Math.sin(time * 0.6) * bh * 0.05
+  const body = [14, 18, 22]
+  const waterline = cy + bh * 0.5
 
   ctx.save()
 
-  // wake — a soft expanding ripple + faint V behind
-  const wakePhase = (time * 0.5) % 1
-  ctx.globalAlpha = alpha * (1 - wakePhase) * 0.18
-  ctx.strokeStyle = rgb([255, 255, 255], 1)
-  ctx.lineWidth = 1
-  ctx.beginPath()
-  ctx.ellipse(cx, cy + bh * 0.35, s * (0.9 + wakePhase * 1.6), bh * (0.5 + wakePhase * 0.9), 0, 0, Math.PI * 2)
-  ctx.stroke()
-
-  // reflection (mirrored, faint, wavy offset)
-  ctx.globalAlpha = alpha * 0.26
+  // reflection (mirrored about the waterline, faint + gentle horizontal wobble)
+  ctx.globalAlpha = alpha * 0.2
   ctx.save()
-  ctx.translate(cx + Math.sin(time * 1.4) * 1.5, cy + bh * 1.3 + bob)
+  ctx.translate(Math.sin(time * 1.4) * 1.2, 2 * waterline)
   ctx.scale(1, -1)
-  loonBodyPath(ctx, 0, 0, s, bh)
-  ctx.fillStyle = rgb(body, 1)
-  ctx.fill()
+  paintLoon(ctx, cx, cy + bob, s, bh, body)
   ctx.restore()
 
   // body
   ctx.globalAlpha = alpha
-  loonBodyPath(ctx, cx, cy + bob, s, bh)
-  ctx.fillStyle = rgb(body, 1)
-  ctx.fill()
+  paintLoon(ctx, cx, cy + bob, s, bh, body)
 
   // warm rim light on the back from a low sun
   if (sunWarmth > 0.02) {
-    ctx.globalAlpha = alpha * sunWarmth * 0.5
+    ctx.globalAlpha = alpha * sunWarmth * 0.45
     ctx.strokeStyle = rgb([255, 210, 150], 1)
     ctx.lineWidth = 1
     ctx.beginPath()
-    ctx.moveTo(cx + s * 0.9, cy + bob - bh * 0.2)
-    ctx.quadraticCurveTo(cx + s * 0.2, cy + bob - bh * 1.0, cx - s * 0.45, cy + bob - bh * 0.55)
+    ctx.ellipse(cx, cy + bob, s * 0.95, bh * 0.95, 0, Math.PI * 1.08, Math.PI * 1.92)
     ctx.stroke()
   }
-
-  // white throat band (loon signature)
-  ctx.globalAlpha = alpha * 0.55
-  ctx.fillStyle = rgb([225, 228, 232], 1)
-  ctx.beginPath()
-  ctx.ellipse(cx - s * 0.64, cy + bob - bh * 1.05, s * 0.1, bh * 0.46, -0.25, 0, Math.PI * 2)
-  ctx.fill()
-
-  // eye glint
-  ctx.globalAlpha = alpha * 0.8
-  ctx.fillStyle = rgb([210, 90, 70], 1)
-  ctx.beginPath()
-  ctx.arc(cx - s * 1.0, cy + bob - bh * 2.25, Math.max(0.8, s * 0.05), 0, Math.PI * 2)
-  ctx.fill()
 
   ctx.restore()
 }
