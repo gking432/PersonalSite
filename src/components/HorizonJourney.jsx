@@ -1366,19 +1366,18 @@ function drawLoon(ctx, w, h, horizonY, progress, time, sunWarmth) {
 
   const waterH = h - horizonY
   const body = [14, 18, 22]
-  // A small scattered group, tiny and far out near the shore — the closest
-  // one only slightly bigger, the others way out near the horizon.
+  // One loon far out near the shore with two much smaller ones just behind it.
   const flock = [
-    { xb: 0.585, depth: 0.052, sc: 1.0,  ph: 0.0, a: 1.0 },
-    { xb: 0.47,  depth: 0.028, sc: 0.62, ph: 1.4, a: 0.7 },
-    { xb: 0.665, depth: 0.022, sc: 0.5,  ph: 2.2, a: 0.6 },
+    { xb: 0.665, depth: 0.045, sc: 0.5,   ph: 0.0, a: 1.0 },  // the one we keep, halved
+    { xb: 0.692, depth: 0.034, sc: 0.125, ph: 1.1, a: 0.85 }, // behind-right, ~1/4 its size
+    { xb: 0.642, depth: 0.033, sc: 0.125, ph: 2.0, a: 0.85 }, // behind-left, ~1/4 its size
   ]
-  const baseS = Math.max(3.5, w * 0.0052)
+  const baseS = Math.max(2.4, w * 0.0026)
 
   for (const l of flock) {
     const s = baseS * l.sc
     const bh = s * 0.5
-    const cx = w * (l.xb + Math.sin(time * 0.045 + l.ph) * 0.012)
+    const cx = w * (l.xb + Math.sin(time * 0.045 + l.ph) * 0.01)
     const cy = horizonY + waterH * l.depth
     const bob = Math.sin(time * 0.6 + l.ph) * bh * 0.05
     const waterline = cy + bh * 0.5
@@ -1386,10 +1385,20 @@ function drawLoon(ctx, w, h, horizonY, progress, time, sunWarmth) {
 
     ctx.save()
 
+    // little ripple spreading out at the waterline
+    const ripple = (time * 0.35 + l.ph) % 1
+    ctx.globalAlpha = la * (1 - ripple) * 0.22
+    ctx.strokeStyle = rgb([235, 238, 240], 1)
+    ctx.lineWidth = 1
+    const rr = (2.6 + s * 1.4) * (0.6 + ripple * 1.9)
+    ctx.beginPath()
+    ctx.ellipse(cx, waterline, rr, rr * 0.32, 0, 0, Math.PI * 2)
+    ctx.stroke()
+
     // reflection (mirrored about the waterline, faint + gentle wobble)
     ctx.globalAlpha = la * 0.18
     ctx.save()
-    ctx.translate(Math.sin(time * 1.4 + l.ph) * 1.0, 2 * waterline)
+    ctx.translate(Math.sin(time * 1.4 + l.ph) * 0.8, 2 * waterline)
     ctx.scale(1, -1)
     paintLoon(ctx, cx, cy + bob, s, bh, body)
     ctx.restore()
@@ -1397,16 +1406,6 @@ function drawLoon(ctx, w, h, horizonY, progress, time, sunWarmth) {
     // body
     ctx.globalAlpha = la
     paintLoon(ctx, cx, cy + bob, s, bh, body)
-
-    // warm rim light — only the closest catches it
-    if (sunWarmth > 0.02 && l.sc >= 0.9) {
-      ctx.globalAlpha = la * sunWarmth * 0.45
-      ctx.strokeStyle = rgb([255, 210, 150], 1)
-      ctx.lineWidth = 1
-      ctx.beginPath()
-      ctx.ellipse(cx, cy + bob, s * 0.95, bh * 0.95, 0, Math.PI * 1.08, Math.PI * 1.92)
-      ctx.stroke()
-    }
 
     ctx.restore()
   }
