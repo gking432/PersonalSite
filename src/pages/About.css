@@ -692,3 +692,10 @@ Reads like a biography in a private club's member directory
   color: var(--accent);
   margin-bottom: var(--space-xl);
 }
+
+.journey-concept__tag--standalone {
+  text-align: center;
+  padding: var(--space-2xl) 0 0;
+  margin-bottom: 0;
+  background: var(--parchment);
+}
