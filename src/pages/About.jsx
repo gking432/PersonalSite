@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
 import SqueezeSection from '../components/SqueezeSection'
-import GlobeSection from '../../GlobeSection'
+import JourneyGlobe from '../components/JourneyGlobe'
+import JourneyMap from '../components/JourneyMap'
 import './About.css'
 
 const ndsEase = [0.22, 1, 0.36, 1]
@@ -465,8 +466,23 @@ function About() {
         </div>
       </div>
 
-      {/* ═══════ GLOBE — Visual journey through career ═══════ */}
-      <GlobeSection />
+      {/* ═══════ JOURNEY — two concepts stacked for comparison ═══════ */}
+      <section className="journey-compare section">
+        <div className="container">
+          <p className="section-eyebrow">Journey</p>
+          <h2 className="journey-compare__title">Where I’ve Been</h2>
+        </div>
+
+        <div className="journey-concept">
+          <p className="journey-concept__tag">Concept 1 — Interactive globe</p>
+          <JourneyGlobe />
+        </div>
+
+        <div className="journey-concept">
+          <p className="journey-concept__tag">Concept 2 — Pop-up map</p>
+          <JourneyMap />
+        </div>
+      </section>
 
       {/* ═══════ TOOLKIT MARQUEE — full viewport ═══════ */}
       <section className="toolkit-section">

@@ -667,3 +667,28 @@ Reads like a biography in a private club's member directory
     min-height: 50vh;
   }
 }
+
+/* ═══════ JOURNEY CONCEPTS (comparison) ═══════ */
+.journey-compare {
+  padding: var(--space-3xl) 0;
+  background-color: var(--cream);
+}
+.journey-compare__title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 400;
+  line-height: 1.05;
+  color: var(--charcoal);
+  margin: 0.2rem 0 var(--space-2xl);
+}
+.journey-concept { padding: var(--space-2xl) 0; }
+.journey-concept__tag {
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: var(--space-xl);
+}

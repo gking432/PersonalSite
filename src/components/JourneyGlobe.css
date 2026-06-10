@@ -1,0 +1,97 @@
+.jg {
+  display: grid;
+  grid-template-columns: minmax(240px, 360px) 1fr;
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+/* chapter list */
+.jg__list { list-style: none; margin: 0; padding: 0; }
+.jg__item {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.85rem 0.5rem;
+  background: none;
+  border: none;
+  border-bottom: 1px solid rgba(26, 26, 23, 0.1);
+  text-align: left;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.3s var(--ease-out), padding-left 0.3s var(--ease-out);
+}
+.jg__item:hover { opacity: 0.85; }
+.jg__item.is-active { opacity: 1; padding-left: 1rem; }
+.jg__num {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  min-width: 1.6em;
+}
+.jg__item-text { display: flex; flex-direction: column; gap: 0.1rem; }
+.jg__item-chapter {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--slate);
+}
+.jg__item-city {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  color: var(--charcoal);
+}
+
+/* globe + card */
+.jg__stage { position: relative; display: flex; flex-direction: column; align-items: center; }
+.jg__canvas { width: 100%; max-width: 480px; aspect-ratio: 1 / 1; }
+.jg__card {
+  text-align: center;
+  max-width: 420px;
+  margin-top: -0.5rem;
+}
+.jg__card-index {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+}
+.jg__card-chapter {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin-top: 0.6rem;
+}
+.jg__card-city {
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 400;
+  color: var(--charcoal);
+  margin: 0.2rem 0 0.6rem;
+}
+.jg__card-story {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--slate);
+  margin: 0;
+}
+
+@media (max-width: 860px) {
+  .jg { grid-template-columns: 1fr; gap: 2rem; }
+  .jg__list { display: flex; overflow-x: auto; gap: 0.5rem; }
+  .jg__item { border-bottom: none; flex: 0 0 auto; white-space: nowrap; }
+  .jg__item.is-active { padding-left: 0.5rem; }
+}
