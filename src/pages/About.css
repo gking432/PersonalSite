@@ -4,7 +4,7 @@ Reads like a biography in a private club's member directory
 */
 
 .about {
-  background-color: var(--cream);
+  background-color: var(--parchment);
   padding-top: 80px;
 }
 
@@ -169,7 +169,7 @@ Reads like a biography in a private club's member directory
   height: 85vh;
   max-height: 85vh;
   overflow: hidden;
-  background-color: var(--cream);
+  background-color: var(--parchment);
   padding: 0;
   display: flex;
   align-items: flex-start;
@@ -671,7 +671,7 @@ Reads like a biography in a private club's member directory
 /* ═══════ JOURNEY CONCEPTS (comparison) ═══════ */
 .journey-compare {
   padding: var(--space-3xl) 0;
-  background-color: var(--cream);
+  background-color: var(--parchment);
 }
 .journey-compare__title {
   font-family: var(--font-serif);

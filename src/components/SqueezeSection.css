@@ -1,7 +1,7 @@
 .squeeze-wrapper {
   padding: 20px 0;
-  /* Whatever shows behind a squeezing panel stays the site's warm cream — never a lighter "white" margin. */
-  background-color: var(--cream);
+  /* Whatever shows behind a squeezing panel stays the site's warm parchment — never a lighter "white" margin. */
+  background-color: var(--parchment);
 }
 
 .squeeze-inner {
