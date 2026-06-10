@@ -1,5 +1,5 @@
 import { useRef, useEffect, useMemo } from 'react'
-import { useScroll, useTransform, useSpring, motion } from 'framer-motion'
+import { useScroll, useTransform, useSpring, useMotionTemplate, motion } from 'framer-motion'
 import './HorizonJourney.css'
 
 // ═══════════════════════════════════════════
@@ -1724,16 +1724,19 @@ function HorizonJourney() {
     offset: ['start end', 'end start'],
   })
 
-  const squeezeRef = useRef(null)
-  const { scrollYProgress: squeezeProgress } = useScroll({
-    target: squeezeRef,
-    offset: ['start 0.85', 'start 0.15'],
-  })
-  // Full-bleed: the day-cycle runs edge-to-edge for true immersion (no card framing).
-  const rawScale = useTransform(squeezeProgress, [0, 1], [1, 1])
-  const rawRadius = useTransform(squeezeProgress, [0, 1], [0, 0])
-  const scale = useSpring(rawScale, { stiffness: 120, damping: 30 })
-  const borderRadius = useSpring(rawRadius, { stiffness: 120, damping: 30 })
+  // "From the void" portal. The section pins to the viewport across raw progress
+  // 0.125–0.875 (that window holds the full day-cycle). Before/after that, the
+  // scene is clipped to a point so the screen is pure cream — a total void.
+  // As it pins, the landscape blooms out of a tiny round pin in the centre; at
+  // the end it collapses back into itself and the user keeps scrolling.
+  // A circular clip keeps the pin perfectly round (the canvas is 16:10);
+  // 75% radius fully clears the rectangle's corners.
+  const rawClip = useTransform(scrollYProgress, [0.125, 0.27, 0.78, 0.875], [0, 75, 75, 0])
+  const clipR = useSpring(rawClip, { stiffness: 80, damping: 26 })
+  const clipPath = useMotionTemplate`circle(${clipR}% at 50% 50%)`
+  // A subtle outward zoom so the vista feels like it expands, not just uncovers.
+  const rawScale = useTransform(scrollYProgress, [0.125, 0.27, 0.78, 0.875], [1.14, 1, 1, 1.14])
+  const scale = useSpring(rawScale, { stiffness: 80, damping: 26 })
 
   const sceneData = useMemo(() => {
     const stars = generateStars(200)
@@ -1824,13 +1827,13 @@ function HorizonJourney() {
   }, [sceneData])
 
   return (
-    <section className="horizon-section" ref={squeezeRef}>
+    <section className="horizon-section">
       <div className="horizon-scroll-runway" ref={sectionRef}>
         <div className="horizon-sticky-wrapper">
           <motion.div
             className="horizon-squeeze"
             ref={containerRef}
-            style={{ scale, borderRadius, overflow: 'hidden' }}
+            style={{ scale, clipPath, WebkitClipPath: clipPath }}
           >
             <canvas ref={canvasRef} className="horizon-canvas" />
           </motion.div>

@@ -19,14 +19,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* The void: a total cream field the portal blooms out of and collapses back into */
+  background: var(--paper, #fcfaf4);
+  overflow: hidden;
 }
 
 .horizon-squeeze {
   width: 100%;
   height: 100%;
   background: #050508;
-  will-change: transform;
+  will-change: transform, clip-path;
   transform-origin: center;
+  /* a soft halo so the round pin reads as a crafted aperture against the cream */
+  filter: drop-shadow(0 24px 60px rgba(26, 26, 23, 0.14));
 }
 
 .horizon-canvas {
