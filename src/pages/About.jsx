@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
 import SqueezeSection from '../components/SqueezeSection'
-import StoryScroll from '../components/StoryScroll'
+import StoryThread from '../components/StoryThread'
 import './About.css'
 
 const ndsEase = [0.22, 1, 0.36, 1]
@@ -465,11 +465,8 @@ function About() {
         </div>
       </div>
 
-      {/* ═══════ MY STORY — scroll-driven bloom sequence (two tones to compare) ═══════ */}
-      <div className="journey-concept__tag journey-concept__tag--standalone">Option A — Cinematic dark</div>
-      <StoryScroll theme="dark" />
-      <div className="journey-concept__tag journey-concept__tag--standalone">Option B — Editorial cream</div>
-      <StoryScroll theme="cream" />
+      {/* ═══════ THE THREAD — cinematic, self-building story ═══════ */}
+      <StoryThread />
 
       {/* ═══════ TOOLKIT MARQUEE — full viewport ═══════ */}
       <section className="toolkit-section">
