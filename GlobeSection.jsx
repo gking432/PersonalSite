@@ -14,7 +14,7 @@ const journeyStops = [
     chapter: "The Beginning",
     story: "Born and raised in small-town Wisconsin. The kind of place where everyone knows your name and nobody locks their doors.",
     stateId: "55",
-    scrollWeight: 5.0, flyRatio: 0.5,
+    scrollWeight: 3.0, flyRatio: 0.5,
   },
   {
     lat: 43.04, lng: -87.91, zoom: 10,
@@ -38,7 +38,7 @@ const journeyStops = [
     chapter: "New Territory",
     story: "Relocated with Sub-Zero to manage dealer networks across the Southwest. First time living somewhere that wasn't Wisconsin.",
     stateId: "04",
-    scrollWeight: 3.2, flyRatio: 0.55,
+    scrollWeight: 2.6, flyRatio: 0.55,
   },
   {
     lat: 32.78, lng: -79.93, zoom: 5,
@@ -46,7 +46,7 @@ const journeyStops = [
     chapter: "Going Independent",
     story: "Started my own marketing consultancy. First taste of building something from nothing. Terrifying and addictive in equal measure.",
     stateId: "45",
-    scrollWeight: 3.2, flyRatio: 0.55,
+    scrollWeight: 2.6, flyRatio: 0.55,
   },
   {
     lat: 39.74, lng: -104.99, zoom: 5,

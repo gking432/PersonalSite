@@ -6,8 +6,8 @@ Dark background, prestige palette, NDS easing.
 
 .globe-section {
   position: relative;
-  /* 1400vh globe + 400vh outro runway = scroll pauses while common thread text animates */
-  height: 1800vh;
+  /* ~780vh globe + ~220vh outro runway = tightened pacing so every screen earns its scroll */
+  height: 1000vh;
   background-color: var(--parchment);
 }
 
