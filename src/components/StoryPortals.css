@@ -1,0 +1,146 @@
+.sp { position: relative; background: var(--parchment); }
+.sp__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.sp__head {
+  position: absolute;
+  top: clamp(2rem, 7vh, 4.5rem);
+  left: 0; right: 0;
+  text-align: center;
+  z-index: 3;
+  pointer-events: none;
+}
+.sp__eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.28em; text-transform: uppercase;
+  color: var(--slate); margin: 0;
+}
+.sp__title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4.5vw, 3.4rem);
+  font-weight: 400; color: var(--charcoal);
+  margin: 0.4rem 0 0;
+}
+
+.sp__field { position: absolute; inset: 0; }
+
+/* ── portal ── */
+.sp__portal {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  will-change: transform, opacity;
+  animation: sp-float 9s ease-in-out infinite;
+}
+@keyframes sp-float {
+  0%, 100% { translate: 0 -6px; }
+  50% { translate: 0 6px; }
+}
+.sp__scene {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.sp__ring {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgba(168, 130, 60, 0.5);
+  box-shadow: 0 18px 50px rgba(26, 40, 30, 0.18), inset 0 0 0 6px rgba(250, 248, 243, 0.04);
+}
+
+/* sun/moon disc + land silhouette shared */
+.sp__sun {
+  position: absolute;
+  width: 22%; height: 22%;
+  border-radius: 50%;
+  left: 50%; top: 42%;
+  transform: translate(-50%, -50%);
+}
+.sp__land {
+  position: absolute;
+  left: -5%; right: -5%; bottom: -2%;
+  height: 34%;
+  border-radius: 50% 50% 0 0 / 80% 80% 0 0;
+}
+
+/* ── time-of-day scenes ── */
+.sp__scene--dawn { background: linear-gradient(180deg, #2b3a63 0%, #6d6a8e 45%, #e6a87e 80%, #f3c9a3 100%); }
+.sp__scene--dawn .sp__sun { left: 64%; top: 60%; background: radial-gradient(circle, #ffd9a8, #f3a25e); box-shadow: 0 0 30px rgba(243,162,94,0.6); }
+.sp__scene--dawn .sp__land { background: #2a3a30; }
+
+.sp__scene--morning { background: linear-gradient(180deg, #8fb6d9 0%, #bcd4e6 55%, #e7eef0 100%); }
+.sp__scene--morning .sp__sun { left: 50%; top: 34%; background: radial-gradient(circle, #fff7e6, #ffe3a8); box-shadow: 0 0 26px rgba(255,227,168,0.7); }
+.sp__scene--morning .sp__land { background: #36513f; }
+
+.sp__scene--midday { background: linear-gradient(180deg, #6aa6db 0%, #a7c9e6 60%, #dce9ef 100%); }
+.sp__scene--midday .sp__sun { left: 40%; top: 24%; background: radial-gradient(circle, #fffdf4, #fff0c4); box-shadow: 0 0 30px rgba(255,240,196,0.8); }
+.sp__scene--midday .sp__land { background: #2f4a38; }
+
+.sp__scene--golden { background: linear-gradient(180deg, #c98a4e 0%, #e6a85c 45%, #f3cf86 78%, #f7e2a8 100%); }
+.sp__scene--golden .sp__sun { left: 60%; top: 58%; background: radial-gradient(circle, #fff2cf, #f3b25e); box-shadow: 0 0 40px rgba(243,178,94,0.8); }
+.sp__scene--golden .sp__land { background: #3a2e1f; }
+
+.sp__scene--dusk { background: linear-gradient(180deg, #3a3160 0%, #7a4f7a 42%, #c46f72 72%, #e0a06a 100%); }
+.sp__scene--dusk .sp__sun { left: 36%; top: 64%; background: radial-gradient(circle, #ffd2b0, #d77a6a); box-shadow: 0 0 34px rgba(215,122,106,0.7); }
+.sp__scene--dusk .sp__land { background: #241c2a; }
+
+.sp__scene--night { background: linear-gradient(180deg, #0d1430 0%, #1b2347 55%, #2a2f52 100%); }
+.sp__scene--night .sp__sun { left: 62%; top: 30%; background: radial-gradient(circle, #f4f1e6, #cdd2e0); box-shadow: 0 0 24px rgba(205,210,224,0.6); }
+.sp__scene--night .sp__land { background: #0a1019; }
+
+/* ── per-portal label ── */
+.sp__label {
+  position: absolute;
+  top: calc(100% + 0.8rem);
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  white-space: nowrap;
+}
+.sp__num {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.62rem; font-weight: 600;
+  letter-spacing: 0.22em; color: var(--accent);
+}
+.sp__ch {
+  display: block; margin-top: 0.2rem;
+  font-family: var(--font-serif);
+  font-size: 1.05rem; color: var(--charcoal);
+}
+.sp__place {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.7rem; letter-spacing: 0.06em;
+  color: var(--slate);
+}
+
+/* ── running narrative caption ── */
+.sp__caption {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: clamp(2rem, 7vh, 4rem);
+  text-align: center;
+  z-index: 3;
+  padding: 0 var(--gutter);
+  pointer-events: none;
+}
+.sp__caption-line {
+  position: absolute;
+  left: 0; right: 0;
+  margin: 0 auto;
+  max-width: 560px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(1.05rem, 2vw, 1.4rem);
+  line-height: 1.4;
+  color: var(--charcoal);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sp__portal { animation: none; }
+}

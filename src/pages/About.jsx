@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
 import SqueezeSection from '../components/SqueezeSection'
+import StoryPortals from '../components/StoryPortals'
 import './About.css'
 
 const ndsEase = [0.22, 1, 0.36, 1]
@@ -463,6 +464,9 @@ function About() {
         </SqueezeSection>
         </div>
       </div>
+
+      {/* ═══════ MY STORY — floating portals prototype ═══════ */}
+      <StoryPortals />
 
       {/* ═══════ TOOLKIT MARQUEE — full viewport ═══════ */}
       <section className="toolkit-section">
