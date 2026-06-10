@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
 import SqueezeSection from '../components/SqueezeSection'
-import StoryThread from '../components/StoryThread'
 import './About.css'
 
 const ndsEase = [0.22, 1, 0.36, 1]
@@ -464,9 +463,6 @@ function About() {
         </SqueezeSection>
         </div>
       </div>
-
-      {/* ═══════ THE THREAD — cinematic, self-building story ═══════ */}
-      <StoryThread />
 
       {/* ═══════ TOOLKIT MARQUEE — full viewport ═══════ */}
       <section className="toolkit-section">
