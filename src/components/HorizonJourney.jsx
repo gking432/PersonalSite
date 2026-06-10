@@ -1365,40 +1365,51 @@ function drawLoon(ctx, w, h, horizonY, progress, time, sunWarmth) {
   if (alpha < 0.01) return
 
   const waterH = h - horizonY
-  // Smaller and nearer the horizon so it reads as further out on the lake.
-  const cx = w * (0.6 + Math.sin(time * 0.045) * 0.025)
-  const cy = horizonY + waterH * 0.085
-  const s = Math.max(6, w * 0.0085)
-  const bh = s * 0.5
-  const bob = Math.sin(time * 0.6) * bh * 0.05
   const body = [14, 18, 22]
-  const waterline = cy + bh * 0.5
+  // A small scattered group, tiny and far out near the shore — the closest
+  // one only slightly bigger, the others way out near the horizon.
+  const flock = [
+    { xb: 0.585, depth: 0.052, sc: 1.0,  ph: 0.0, a: 1.0 },
+    { xb: 0.47,  depth: 0.028, sc: 0.62, ph: 1.4, a: 0.7 },
+    { xb: 0.665, depth: 0.022, sc: 0.5,  ph: 2.2, a: 0.6 },
+  ]
+  const baseS = Math.max(3.5, w * 0.0052)
 
-  ctx.save()
+  for (const l of flock) {
+    const s = baseS * l.sc
+    const bh = s * 0.5
+    const cx = w * (l.xb + Math.sin(time * 0.045 + l.ph) * 0.012)
+    const cy = horizonY + waterH * l.depth
+    const bob = Math.sin(time * 0.6 + l.ph) * bh * 0.05
+    const waterline = cy + bh * 0.5
+    const la = alpha * l.a
 
-  // reflection (mirrored about the waterline, faint + gentle horizontal wobble)
-  ctx.globalAlpha = alpha * 0.2
-  ctx.save()
-  ctx.translate(Math.sin(time * 1.4) * 1.2, 2 * waterline)
-  ctx.scale(1, -1)
-  paintLoon(ctx, cx, cy + bob, s, bh, body)
-  ctx.restore()
+    ctx.save()
 
-  // body
-  ctx.globalAlpha = alpha
-  paintLoon(ctx, cx, cy + bob, s, bh, body)
+    // reflection (mirrored about the waterline, faint + gentle wobble)
+    ctx.globalAlpha = la * 0.18
+    ctx.save()
+    ctx.translate(Math.sin(time * 1.4 + l.ph) * 1.0, 2 * waterline)
+    ctx.scale(1, -1)
+    paintLoon(ctx, cx, cy + bob, s, bh, body)
+    ctx.restore()
 
-  // warm rim light on the back from a low sun
-  if (sunWarmth > 0.02) {
-    ctx.globalAlpha = alpha * sunWarmth * 0.45
-    ctx.strokeStyle = rgb([255, 210, 150], 1)
-    ctx.lineWidth = 1
-    ctx.beginPath()
-    ctx.ellipse(cx, cy + bob, s * 0.95, bh * 0.95, 0, Math.PI * 1.08, Math.PI * 1.92)
-    ctx.stroke()
+    // body
+    ctx.globalAlpha = la
+    paintLoon(ctx, cx, cy + bob, s, bh, body)
+
+    // warm rim light — only the closest catches it
+    if (sunWarmth > 0.02 && l.sc >= 0.9) {
+      ctx.globalAlpha = la * sunWarmth * 0.45
+      ctx.strokeStyle = rgb([255, 210, 150], 1)
+      ctx.lineWidth = 1
+      ctx.beginPath()
+      ctx.ellipse(cx, cy + bob, s * 0.95, bh * 0.95, 0, Math.PI * 1.08, Math.PI * 1.92)
+      ctx.stroke()
+    }
+
+    ctx.restore()
   }
-
-  ctx.restore()
 }
 
 // ═══════════════════════════════════════════
