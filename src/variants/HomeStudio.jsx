@@ -9,6 +9,7 @@ import {
   cta
 } from '../data/homeContent'
 import HorizonJourney from '../components/HorizonJourney'
+import SqueezeSection from '../components/SqueezeSection'
 import './HomeStudio.css'
 
 const ease = [0.22, 1, 0.36, 1]
@@ -278,27 +279,31 @@ function HomeStudio() {
         ))}
       </section>
 
-      {/* ─── APPROACH ─── */}
-      <section className="studio-section studio-approach">
-        <div className="studio-section__head">
-          <span className="studio-kicker">Approach</span>
-          <motion.h2
-            initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }} transition={{ duration: 0.8, ease }}>
-            I help ideas survive contact with customers, markets, and the build itself.
-          </motion.h2>
-        </div>
-        <div className="studio-approach__grid">
-          {approachPrinciples.map((item, i) => (
-            <motion.div className="studio-card" key={item.number}
-              initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ duration: 0.7, ease, delay: i * 0.1 }}>
-              <span className="studio-card__num">{item.number}</span>
-              <h3>{item.title}</h3>
-              <p>{item.desc}</p>
-            </motion.div>
-          ))}
-        </div>
+      {/* ─── APPROACH (tinted squeeze panel) ─── */}
+      <section className="studio-band studio-approach">
+        <SqueezeSection className="studio-panel studio-panel--tint">
+          <div className="studio-panel__inner">
+            <div className="studio-section__head">
+              <span className="studio-kicker">Approach</span>
+              <motion.h2
+                initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ duration: 0.8, ease }}>
+                I help ideas survive contact with customers, markets, and the build itself.
+              </motion.h2>
+            </div>
+            <div className="studio-approach__grid">
+              {approachPrinciples.map((item, i) => (
+                <motion.div className="studio-card" key={item.number}
+                  initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }} transition={{ duration: 0.7, ease, delay: i * 0.1 }}>
+                  <span className="studio-card__num">{item.number}</span>
+                  <h3>{item.title}</h3>
+                  <p>{item.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </SqueezeSection>
       </section>
 
       {/* ─── STATEMENT PIECE — HORIZON JOURNEY ─── */}
@@ -342,15 +347,19 @@ function HomeStudio() {
         </div>
       </section>
 
-      {/* ─── CTA ─── */}
-      <section className="studio-cta">
-        <motion.h2
-          initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }} transition={{ duration: 0.8, ease }}>
-          {cta.heading}
-        </motion.h2>
-        <p>{cta.body}</p>
-        <Link to="/contact" className="studio-btn studio-btn--primary studio-btn--lg">Get in touch</Link>
+      {/* ─── CTA (green squeeze panel) ─── */}
+      <section className="studio-band">
+        <SqueezeSection className="studio-panel studio-panel--cta">
+          <div className="studio-panel__inner">
+            <motion.h2
+              initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }} transition={{ duration: 0.8, ease }}>
+              {cta.heading}
+            </motion.h2>
+            <p>{cta.body}</p>
+            <Link to="/contact" className="studio-btn studio-btn--lg studio-btn--oncolor">Get in touch</Link>
+          </div>
+        </SqueezeSection>
       </section>
 
       <footer className="studio-footer">
