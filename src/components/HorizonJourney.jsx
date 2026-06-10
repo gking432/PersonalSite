@@ -1288,6 +1288,150 @@ function drawMoon(ctx, w, h, progress, rawProgress, sprites, time) {
 // ═══════════════════════════════════════════
 // MAIN DRAW FUNCTION
 // ═══════════════════════════════════════════
+// ═══════════════════════════════════════════
+// CONIFERS — layered fir silhouette (fuller than a single triangle)
+// ═══════════════════════════════════════════
+function addConiferPath(ctx, x, baseY, th, tw) {
+  const tiers = 5
+  for (let i = 0; i < tiers; i++) {
+    const f = i / tiers
+    const halfW = tw * (1 - f) * 0.5
+    const tierBase = baseY - th * (i / tiers) * 0.92
+    const tierApex = baseY - th * ((i + 1.5) / tiers) * 0.92
+    ctx.moveTo(x, tierApex)
+    ctx.lineTo(x - halfW, tierBase)
+    ctx.lineTo(x + halfW, tierBase)
+    ctx.closePath()
+  }
+}
+
+function drawTreelineLayer(ctx, w, h, baseY, trees, color, alpha, hScale, wScale) {
+  if (alpha <= 0) return
+  ctx.beginPath()
+  for (const t of trees) {
+    addConiferPath(ctx, t.x * w, baseY, t.h * h * hScale, t.w * h * wScale)
+  }
+  ctx.fillStyle = rgb(color, alpha)
+  ctx.fill()
+}
+
+// ═══════════════════════════════════════════
+// LOON — a lone loon drifting on the lake (with reflection + wake)
+// ═══════════════════════════════════════════
+function loonBodyPath(ctx, cx, cy, s, bh) {
+  ctx.beginPath()
+  ctx.moveTo(cx + s * 1.05, cy - bh * 0.1)                                   // tail tip (right)
+  ctx.quadraticCurveTo(cx + s * 0.25, cy - bh * 1.05, cx - s * 0.45, cy - bh * 0.55) // back to neck base
+  ctx.quadraticCurveTo(cx - s * 0.78, cy - bh * 1.05, cx - s * 0.86, cy - bh * 2.05) // neck back edge up
+  ctx.quadraticCurveTo(cx - s * 0.96, cy - bh * 2.7, cx - s * 1.18, cy - bh * 2.32)  // over the head
+  ctx.lineTo(cx - s * 1.5, cy - bh * 2.16)                                   // bill tip
+  ctx.lineTo(cx - s * 1.16, cy - bh * 1.96)                                  // bill underside
+  ctx.quadraticCurveTo(cx - s * 0.72, cy - bh * 1.5, cx - s * 0.7, cy - bh * 0.15) // neck front to breast
+  ctx.quadraticCurveTo(cx - s * 0.2, cy + bh * 0.55, cx + s * 1.05, cy - bh * 0.1)  // belly along waterline
+  ctx.closePath()
+}
+
+function drawLoon(ctx, w, h, horizonY, progress, time, sunWarmth) {
+  const alpha = clamp01((progress - 0.18) / 0.06) * (1 - clamp01((progress - 0.80) / 0.06))
+  if (alpha < 0.01) return
+
+  const waterH = h - horizonY
+  const cx = w * (0.62 + Math.sin(time * 0.045) * 0.03)
+  const cy = horizonY + waterH * 0.17
+  const s = Math.max(11, w * 0.0145)
+  const bh = s * 0.42
+  const bob = Math.sin(time * 0.6) * bh * 0.06
+  const body = [11, 15, 19]
+
+  ctx.save()
+
+  // wake — a soft expanding ripple + faint V behind
+  const wakePhase = (time * 0.5) % 1
+  ctx.globalAlpha = alpha * (1 - wakePhase) * 0.18
+  ctx.strokeStyle = rgb([255, 255, 255], 1)
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  ctx.ellipse(cx, cy + bh * 0.35, s * (0.9 + wakePhase * 1.6), bh * (0.5 + wakePhase * 0.9), 0, 0, Math.PI * 2)
+  ctx.stroke()
+
+  // reflection (mirrored, faint, wavy offset)
+  ctx.globalAlpha = alpha * 0.26
+  ctx.save()
+  ctx.translate(cx + Math.sin(time * 1.4) * 1.5, cy + bh * 1.3 + bob)
+  ctx.scale(1, -1)
+  loonBodyPath(ctx, 0, 0, s, bh)
+  ctx.fillStyle = rgb(body, 1)
+  ctx.fill()
+  ctx.restore()
+
+  // body
+  ctx.globalAlpha = alpha
+  loonBodyPath(ctx, cx, cy + bob, s, bh)
+  ctx.fillStyle = rgb(body, 1)
+  ctx.fill()
+
+  // warm rim light on the back from a low sun
+  if (sunWarmth > 0.02) {
+    ctx.globalAlpha = alpha * sunWarmth * 0.5
+    ctx.strokeStyle = rgb([255, 210, 150], 1)
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.moveTo(cx + s * 0.9, cy + bob - bh * 0.2)
+    ctx.quadraticCurveTo(cx + s * 0.2, cy + bob - bh * 1.0, cx - s * 0.45, cy + bob - bh * 0.55)
+    ctx.stroke()
+  }
+
+  // white throat band (loon signature)
+  ctx.globalAlpha = alpha * 0.55
+  ctx.fillStyle = rgb([225, 228, 232], 1)
+  ctx.beginPath()
+  ctx.ellipse(cx - s * 0.64, cy + bob - bh * 1.05, s * 0.1, bh * 0.46, -0.25, 0, Math.PI * 2)
+  ctx.fill()
+
+  // eye glint
+  ctx.globalAlpha = alpha * 0.8
+  ctx.fillStyle = rgb([210, 90, 70], 1)
+  ctx.beginPath()
+  ctx.arc(cx - s * 1.0, cy + bob - bh * 2.25, Math.max(0.8, s * 0.05), 0, Math.PI * 2)
+  ctx.fill()
+
+  ctx.restore()
+}
+
+// ═══════════════════════════════════════════
+// FOG BANK — cohesive drifting mist layers (replaces scattered blobs)
+// ═══════════════════════════════════════════
+function drawFogBank(ctx, w, h, horizonY, density, time, warm) {
+  if (density < 0.01) return
+  const base = lerpColor([214, 211, 200], [228, 199, 158], clamp01(warm))
+  const layers = [
+    { y: horizonY - h * 0.018, hh: h * 0.05, op: 0.40, speed: 12, n: 6 },
+    { y: horizonY + h * 0.018, hh: h * 0.07, op: 0.70, speed: 8,  n: 5 },
+    { y: horizonY + h * 0.060, hh: h * 0.09, op: 0.52, speed: 4.5, n: 5 },
+  ]
+  ctx.save()
+  for (const L of layers) {
+    const span = w / L.n
+    for (let i = -1; i <= L.n; i++) {
+      const px = ((time * L.speed + i * span) % (w + span * 2) + w + span * 2) % (w + span * 2) - span
+      const pw = span * 1.6
+      const swell = 0.55 + 0.45 * Math.sin(i * 1.7 + time * 0.25)
+      const a = density * L.op * swell
+      if (a < 0.004) continue
+      const g = ctx.createRadialGradient(px, L.y, 0, px, L.y, pw)
+      g.addColorStop(0, rgb(base, a * 0.42))
+      g.addColorStop(0.5, rgb(base, a * 0.2))
+      g.addColorStop(1, rgb(base, 0))
+      ctx.fillStyle = g
+      ctx.fillRect(px - pw, L.y - L.hh, pw * 2, L.hh * 2)
+    }
+  }
+  ctx.restore()
+}
+
+// ═══════════════════════════════════════════
+// MAIN SCENE COMPOSITOR
+// ═══════════════════════════════════════════
 function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
   ctx.clearRect(0, 0, w, h)
 
@@ -1464,23 +1608,13 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
     drawSunBeamReveal(ctx, w, h, c2p, c2, sunX, sunY)
   }
 
-  // ═══════ TREELINE ═══════
+  // ═══════ TREELINE (layered conifers for depth) ═══════
   if (mtAlpha > 0) {
-    ctx.beginPath()
-    for (const t of treeline) {
-      const x = t.x * w, th = t.h * h, tw = t.w * h
-      ctx.moveTo(x, horizonY - th * 0.25)
-      ctx.lineTo(x - tw * 0.5, horizonY + 2)
-      ctx.lineTo(x + tw * 0.5, horizonY + 2)
-      ctx.moveTo(x, horizonY - th * 0.65)
-      ctx.lineTo(x - tw * 0.38, horizonY - th * 0.15)
-      ctx.lineTo(x + tw * 0.38, horizonY - th * 0.15)
-      ctx.moveTo(x, horizonY - th)
-      ctx.lineTo(x - tw * 0.22, horizonY - th * 0.45)
-      ctx.lineTo(x + tw * 0.22, horizonY - th * 0.45)
-    }
-    ctx.fillStyle = rgb([6, 14, 10], mtAlpha * 0.95)
-    ctx.fill()
+    // far row — smaller, lighter, hazed toward the sky for atmosphere
+    const farColor = lerpColor([16, 30, 24], skyPalette[4], 0.32)
+    drawTreelineLayer(ctx, w, h, horizonY + 1, sceneData.treelineFar, farColor, mtAlpha * 0.6, 0.6, 1.0)
+    // near row — taller, darkest
+    drawTreelineLayer(ctx, w, h, horizonY + 2, treeline, [6, 14, 10], mtAlpha * 0.95, 1.0, 1.05)
   }
 
   // ═══════ FOG REVEAL TEXT (overlaps with sunbeam fade) ═══════
@@ -1528,13 +1662,7 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
 
     ctx.beginPath()
     for (const t of treeline) {
-      const x = t.x * w, th = t.h * h, tw = t.w * h
-      ctx.moveTo(x, horizonY - th * 0.25)
-      ctx.lineTo(x - tw * 0.5, horizonY + 2)
-      ctx.lineTo(x + tw * 0.5, horizonY + 2)
-      ctx.moveTo(x, horizonY - th * 0.65)
-      ctx.lineTo(x - tw * 0.38, horizonY - th * 0.15)
-      ctx.lineTo(x + tw * 0.38, horizonY - th * 0.15)
+      addConiferPath(ctx, t.x * w, horizonY + 2, t.h * h, t.w * h * 1.05)
     }
     ctx.fillStyle = rgb([6, 14, 10], 1)
     ctx.fill()
@@ -1646,6 +1774,13 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
   // ═══════ LAKE TEXTURE (localized ripple patches) ═══════
   drawLakeTexture(ctx, w, h, progress, sceneData.ripplePatches, time)
 
+  // ═══════ LOON ON THE LAKE ═══════
+  {
+    const sunArcP = clamp01((progress - 0.14) / 0.66)
+    const lowSun = Math.max(0, 1 - Math.sin(sunArcP * Math.PI)) * clamp01(sunArcP * 4) * clamp01((1 - sunArcP) * 4)
+    drawLoon(ctx, w, h, horizonY, progress, time, lowSun)
+  }
+
   // ═══════ LANDSCAPE MIST / FOG ═══════
   // Morning mist
   const morningMist = clamp01((progress - 0.16) / 0.08) * (1 - clamp01((progress - 0.30) / 0.08))
@@ -1670,27 +1805,10 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
       ctx.fillRect(mx + drift - mw, my - mw * 0.3, mw * 2, mw * 0.6)
     }
 
-    // Dense treeline fog — fades in proportionally with the base fog
-    // No threshold — it comes in as a continuous part of the fog buildup
-    // Each patch has its own staggered delay for organic appearance
+    // Rolling fog bank — cohesive drifting mist layers over water + treeline
     if (fogRollIn > 0.01) {
-      for (let i = 0; i < 18; i++) {
-        const patchDelay = srand(i * 41 + 703) * 0.4 // each patch starts at different time
-        const patchFog = easeInOutCubic(clamp01((fogRollIn - patchDelay) / (1 - patchDelay)))
-        if (patchFog < 0.01) continue
-
-        const fx = srand(i * 23 + 700) * w
-        const fy = horizonY + (srand(i * 31 + 701) - 0.5) * h * 0.06
-        const fw = (0.06 + srand(i * 37 + 702) * 0.10) * w
-        const windDrift = Math.sin(i * 1.7 + progress * 3) * 25
-        const fg = ctx.createRadialGradient(fx + windDrift, fy, 0, fx + windDrift, fy, fw)
-        const fAlpha = patchFog * (0.25 + srand(i * 43 + 704) * 0.25)
-        fg.addColorStop(0, rgb([200, 195, 180], fAlpha * 0.10))
-        fg.addColorStop(0.4, rgb([200, 195, 180], fAlpha * 0.06))
-        fg.addColorStop(1, 'rgba(200,195,180,0)')
-        ctx.fillStyle = fg
-        ctx.fillRect(fx + windDrift - fw, fy - fw * 0.35, fw * 2, fw * 0.7)
-      }
+      const warm = clamp01((progress - 0.46) / 0.2)
+      drawFogBank(ctx, w, h, horizonY, fogRollIn, time, warm)
     }
   }
 
@@ -1745,7 +1863,8 @@ function HorizonJourney() {
       mid: generateMountainLayer(99, 4, 0.44, 0.04, 0.004),
       near: generateMountainLayer(177, 3, 0.455, 0.02, 0.002),
     }
-    const treeline = generateTreeline(500, 70)
+    const treeline = generateTreeline(500, 90)
+    const treelineFar = generateTreeline(820, 60)
     const mist = []
     for (let i = 0; i < 12; i++) {
       mist.push({
@@ -1775,7 +1894,7 @@ function HorizonJourney() {
 
     const ripplePatches = generateRipplePatches(40, 900)
 
-    return { stars, mountains, treeline, mist, constellation, cloud, fogPatches, ripplePatches }
+    return { stars, mountains, treeline, treelineFar, mist, constellation, cloud, fogPatches, ripplePatches }
   }, [])
 
   useEffect(() => {
