@@ -1366,13 +1366,13 @@ function drawLoon(ctx, w, h, horizonY, progress, time, sunWarmth) {
 
   const waterH = h - horizonY
   const body = [14, 18, 22]
-  // One loon far out near the shore with two much smaller ones just behind it.
+  // One loon far out with two smaller ones clustered tight beside it.
   const flock = [
-    { xb: 0.665, depth: 0.045, sc: 0.5,   ph: 0.0, a: 1.0 },  // the one we keep, halved
-    { xb: 0.692, depth: 0.034, sc: 0.125, ph: 1.1, a: 0.85 }, // behind-right, ~1/4 its size
-    { xb: 0.642, depth: 0.033, sc: 0.125, ph: 2.0, a: 0.85 }, // behind-left, ~1/4 its size
+    { xb: 0.665, depth: 0.05,  sc: 0.5, ph: 0.0, a: 1.0 },  // the main one
+    { xb: 0.677, depth: 0.044, sc: 0.3, ph: 1.1, a: 0.9 },  // tucked close, right
+    { xb: 0.655, depth: 0.043, sc: 0.3, ph: 2.0, a: 0.9 },  // tucked close, left
   ]
-  const baseS = Math.max(2.4, w * 0.0026)
+  const baseS = Math.max(7.2, w * 0.0078)
 
   for (const l of flock) {
     const s = baseS * l.sc
