@@ -351,8 +351,8 @@ function About() {
         </div>
       </section>
 
-      {/* ═══════ BUILDER DOSSIER ═══════ */}
-      <section className="builder-dossier section">
+      {/* ═══════ BUILDER DOSSIER — colored squeeze ═══════ */}
+      <SqueezeSection className="builder-dossier section">
         <div className="container">
           <motion.p
             className="label"
@@ -388,7 +388,7 @@ function About() {
             ))}
           </motion.div>
         </div>
-      </section>
+      </SqueezeSection>
 
       {/* ═══════ MY STORY — Editorial chronicle ═══════ */}
       <StoryChronicle />
@@ -535,14 +535,14 @@ function About() {
             variants={staggerContainer}
           >
             <motion.h2 className="cta-heading" variants={fadeUp}>
-              Bring Me a Problem
+              Let's Work Together
             </motion.h2>
             <motion.p className="cta-sub" variants={fadeUp}>
-              Have a customer problem, a product bet, or a launch that needs sharper thinking and real execution? Start with the context.
+              I'm looking for my next role — full-time, contract, or consulting. If you have a problem worth solving and a high bar for the people solving it, let's talk.
             </motion.p>
             <motion.div variants={fadeUp}>
               <Link to="/contact" className="btn btn-primary">
-                Start a Build Brief
+                Get in Touch
               </Link>
             </motion.div>
           </motion.div>

@@ -64,7 +64,7 @@ function Contact() {
   const handleSubmit = (e) => {
     e.preventDefault()
     const subjectLabel = subjectOptions.find((option) => option.value === formData.subject)?.label || 'General note'
-    const emailSubject = `Build Brief: ${subjectLabel}`
+    const emailSubject = `Inquiry: ${subjectLabel}`
     const emailBody = [
       `Name: ${formData.name}`,
       `Email: ${formData.email}`,
@@ -96,7 +96,7 @@ function Contact() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: ndsEase }}
               >
-                Build Brief
+                Get in Touch
               </motion.p>
               <h1>
                 {'Start Here'.split(' ').map((word, i, words) => (
@@ -117,7 +117,7 @@ function Contact() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
               >
-                Send the role, product, workshop, or market problem. I&apos;ll read the context and respond with a useful next step.
+                Full-time, contract, or consulting — send the role, product, or problem. I&apos;ll read the context and respond with a useful next step.
               </motion.p>
             </div>
             <motion.div
@@ -159,7 +159,7 @@ function Contact() {
           >
             {/* Contact Form */}
             <motion.div className="contact-form-section" variants={fadeUp}>
-              <h2>Start a Build Brief</h2>
+              <h2>Send a Message</h2>
               <p className="form-intro">
                 The most useful notes include the situation, what matters most, and what a good next step would look like.
               </p>
@@ -175,14 +175,14 @@ function Contact() {
                     <div className="success-icon">&#10003;</div>
                     <h3>Email Draft Opened</h3>
                     <p>
-                      Your email client should have the brief ready. If it did not open, email me directly at{' '}
+                      Your email client should have the message ready. If it did not open, email me directly at{' '}
                       <a href="mailto:gunnarneuman14@gmail.com">gunnarneuman14@gmail.com</a>.
                     </p>
                     <button
                       className="btn btn-secondary"
                       onClick={() => setSubmitted(false)}
                     >
-                      Draft Another Brief
+                      Send Another
                     </button>
                   </motion.div>
                 ) : (

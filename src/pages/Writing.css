@@ -84,7 +84,7 @@ Magazine-style article listing
 
 /* Articles */
 .articles-section {
-  background-color: var(--cream);
+  background-color: var(--parchment);
   padding: var(--space-2xl) 0;
 }
 

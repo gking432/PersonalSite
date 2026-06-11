@@ -320,51 +320,51 @@ function HomeStudio() {
         <HorizonJourney />
       </section>
 
-      {/* ─── EXPERIENCE ─── */}
-      <section className="studio-section studio-experience">
-        <div className="studio-section__head">
-          <span className="studio-kicker">Experience</span>
-          <motion.h2
-            initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }} transition={{ duration: 0.8, ease }}>
-            Built across product, growth, and market execution.
-          </motion.h2>
-        </div>
-        <div className="studio-exp__list">
-          {resumeTimeline.map((item) => (
-            <motion.article className="studio-exp" key={item.title}
-              initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-10%' }} transition={{ duration: 0.8, ease }}>
-              <div className="studio-exp__meta">
-                <span className="studio-exp__year">{item.year}</span>
-                <span className="studio-exp__loc">{item.location}</span>
-              </div>
-              <div className="studio-exp__body">
-                <h3>{item.title}</h3>
-                <span className="studio-exp__role">{item.role}</span>
-                <p>{item.desc}</p>
-                <div className="studio-tags">
-                  {item.tags.map((tg) => <span key={tg}>{tg}</span>)}
-                </div>
-              </div>
-            </motion.article>
-          ))}
-        </div>
-      </section>
-
-      {/* ─── CTA (green squeeze panel) ─── */}
+      {/* ─── EXPERIENCE (tinted squeeze panel) ─── */}
       <section className="studio-band">
-        <SqueezeSection className="studio-panel studio-panel--cta">
+        <SqueezeSection className="studio-panel studio-panel--tint">
           <div className="studio-panel__inner">
-            <motion.h2
-              initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ duration: 0.8, ease }}>
-              {cta.heading}
-            </motion.h2>
-            <p>{cta.body}</p>
-            <Link to="/contact" className="studio-btn studio-btn--lg studio-btn--oncolor">Get in touch</Link>
+            <div className="studio-section__head">
+              <span className="studio-kicker">Experience</span>
+              <motion.h2
+                initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ duration: 0.8, ease }}>
+                Built across product, growth, and market execution.
+              </motion.h2>
+            </div>
+            <div className="studio-exp__list">
+              {resumeTimeline.map((item) => (
+                <motion.article className="studio-exp" key={item.title}
+                  initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-10%' }} transition={{ duration: 0.8, ease }}>
+                  <div className="studio-exp__meta">
+                    <span className="studio-exp__year">{item.year}</span>
+                    <span className="studio-exp__loc">{item.location}</span>
+                  </div>
+                  <div className="studio-exp__body">
+                    <h3>{item.title}</h3>
+                    <span className="studio-exp__role">{item.role}</span>
+                    <p>{item.desc}</p>
+                    <div className="studio-tags">
+                      {item.tags.map((tg) => <span key={tg}>{tg}</span>)}
+                    </div>
+                  </div>
+                </motion.article>
+              ))}
+            </div>
           </div>
         </SqueezeSection>
+      </section>
+
+      {/* ─── CTA (plain, parchment — the page resolves calm) ─── */}
+      <section className="studio-section studio-cta">
+        <motion.h2
+          initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.8, ease }}>
+          {cta.heading}
+        </motion.h2>
+        <p>{cta.body}</p>
+        <Link to="/contact" className="studio-btn studio-btn--lg studio-btn--primary">Get in touch &rarr;</Link>
       </section>
 
       <footer className="studio-footer">
