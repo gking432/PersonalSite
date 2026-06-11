@@ -1,19 +1,30 @@
 .chron {
+  position: relative;
   background: var(--parchment);
-  padding: clamp(5rem, 13vh, 10rem) 0 clamp(5rem, 13vh, 10rem);
 }
-.chron__inner {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 0 var(--gutter);
+.chron__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* ── Header ── */
-.chron__header {
-  max-width: 760px;
-  margin: 0 auto clamp(3.5rem, 8vh, 6rem);
+/* ── Intro heading (blooms in, dissolves) ── */
+.chron__intro {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+  padding: 0 var(--gutter);
+  will-change: transform, opacity, filter;
 }
+.chron__intro > * { max-width: min(760px, 90vw); }
 .chron__eyebrow {
   font-family: var(--font-sans);
   font-size: 0.72rem; font-weight: 600;
@@ -24,7 +35,7 @@
 .chron__title {
   font-family: var(--font-serif);
   font-weight: 400;
-  font-size: clamp(2.6rem, 6vw, 4.6rem);
+  font-size: clamp(2.8rem, 6.5vw, 5rem);
   line-height: 1.02;
   color: var(--charcoal);
   margin: 0 0 1.4rem;
@@ -38,52 +49,45 @@
   max-width: 560px;
 }
 
-/* ── Body: rail + article ── */
-.chron__body {
+/* ── Chapters frame ── */
+.chron__frame {
+  position: relative;
+  width: min(var(--max-width), 92vw);
   display: grid;
-  grid-template-columns: 220px minmax(0, 680px);
+  grid-template-columns: 230px minmax(0, 660px);
   justify-content: center;
   gap: clamp(2.5rem, 6vw, 6rem);
-  align-items: start;
+  height: 70vh;
+  align-items: center;
 }
 
-/* ── Timeline spine ── */
+/* ── Timeline spine (accumulates) ── */
 .chron__rail {
-  position: sticky;
-  top: 22vh;
+  position: relative;
+  align-self: center;
+  padding-left: 1.4rem;
   display: flex;
   flex-direction: column;
-  gap: 2.4rem;
-  padding-left: 1.2rem;
+  gap: 2rem;
 }
-.chron__rail::before {
-  content: '';
-  position: absolute;
-  left: 4px; top: 6px; bottom: 6px;
-  width: 1px;
-  background: rgba(42, 42, 42, 0.14);
-}
+.chron__rail-track,
 .chron__rail-fill {
   position: absolute;
-  left: 4px; top: 6px;
+  left: 4px; top: 0.4rem;
   width: 1px;
-  background: var(--gold);
-  transition: height 0.5s var(--ease-out);
 }
+.chron__rail-track { bottom: 0.4rem; background: rgba(42, 42, 42, 0.14); }
+.chron__rail-fill { background: var(--gold); transition: height 0.5s var(--ease-out); }
 .chron__marker {
   position: relative;
   display: flex;
   align-items: flex-start;
   gap: 0.9rem;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  text-align: left;
+  will-change: transform, opacity;
 }
 .chron__dot {
   position: absolute;
-  left: -1.2rem; top: 0.35rem;
+  left: -1.4rem; top: 0.32rem;
   width: 9px; height: 9px;
   border-radius: 50%;
   background: var(--parchment);
@@ -98,26 +102,33 @@
 .chron__marker-text { display: flex; flex-direction: column; gap: 0.15rem; }
 .chron__marker-num {
   font-family: var(--font-sans);
-  font-size: 0.68rem; font-weight: 600;
+  font-size: 0.66rem; font-weight: 600;
   letter-spacing: 0.16em;
   color: var(--warm-gray);
 }
 .chron__marker-title {
   font-family: var(--font-serif);
-  font-size: 1.08rem;
+  font-size: 1.06rem;
   color: var(--slate);
   transition: color 0.4s var(--ease-out);
 }
 .chron__marker.is-active .chron__marker-title { color: var(--charcoal); }
 
-/* ── Article ── */
+/* ── Article (one chapter at a time, crossfading) ── */
+.chron__article {
+  position: relative;
+  align-self: center;
+  height: 100%;
+}
 .chron__chapter {
-  padding-bottom: clamp(3.5rem, 8vh, 6rem);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  will-change: transform, opacity;
 }
-.chron__chapter:last-child { padding-bottom: 0; }
-.chron__chapter-head {
-  margin-bottom: 1.8rem;
-}
+.chron__chapter-head { margin-bottom: 1.6rem; }
 .chron__chapter-era {
   display: block;
   font-family: var(--font-sans);
@@ -129,26 +140,22 @@
 .chron__chapter-title {
   font-family: var(--font-serif);
   font-weight: 400;
-  font-size: clamp(1.9rem, 3.4vw, 2.7rem);
-  line-height: 1.08;
+  font-size: clamp(2rem, 3.6vw, 2.9rem);
+  line-height: 1.06;
   color: var(--charcoal);
   margin: 0;
   display: flex;
   align-items: baseline;
   gap: 1rem;
 }
-.chron__chapter-num {
-  font-size: 0.9rem;
-  letter-spacing: 0.1em;
-  color: var(--gold);
-}
+.chron__chapter-num { font-size: 0.9rem; letter-spacing: 0.1em; color: var(--gold); }
 
 .chron__p {
   font-family: var(--font-serif);
-  font-size: clamp(1.2rem, 1.5vw, 1.35rem);
-  line-height: 1.72;
+  font-size: clamp(1.18rem, 1.45vw, 1.32rem);
+  line-height: 1.7;
   color: var(--charcoal);
-  margin: 0 0 1.5rem;
+  margin: 0 0 1.2rem;
 }
 .chron__p:last-child { margin-bottom: 0; }
 .chron__p--lead::first-letter {
@@ -156,29 +163,26 @@
   -webkit-initial-letter: 3;
   font-family: var(--font-serif);
   color: var(--gold);
-  font-weight: 400;
   margin-right: 0.7rem;
 }
 .chron__p--emph {
-  font-size: clamp(1.3rem, 1.7vw, 1.5rem);
-  line-height: 1.55;
-  color: var(--charcoal);
+  font-size: clamp(1.28rem, 1.7vw, 1.5rem);
+  line-height: 1.5;
   font-style: italic;
-  padding-top: 0.5rem;
+  padding-top: 0.4rem;
 }
-
 .chron__quote {
-  margin: 2.4rem 0;
-  padding: 0.3rem 0 0.3rem 2rem;
+  margin: 0 0 1.4rem;
+  padding: 0.2rem 0 0.2rem 2rem;
   border-left: 2px solid var(--gold);
   font-family: var(--font-serif);
   font-size: clamp(1.6rem, 2.6vw, 2.2rem);
-  line-height: 1.32;
+  line-height: 1.3;
   color: var(--charcoal);
 }
 
 /* ── Responsive ── */
 @media (max-width: 880px) {
-  .chron__body { grid-template-columns: minmax(0, 680px); justify-content: center; }
+  .chron__frame { grid-template-columns: minmax(0, 660px); height: 74vh; }
   .chron__rail { display: none; }
 }

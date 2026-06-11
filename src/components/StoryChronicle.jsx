@@ -1,5 +1,5 @@
-import { useRef, useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { useRef, useState } from 'react'
+import { motion, useScroll, useTransform, useMotionTemplate, useMotionValueEvent } from 'framer-motion'
 import './StoryChronicle.css'
 
 // The full story — preserved, organized as a chronicle.
@@ -21,8 +21,7 @@ const CHAPTERS = [
       { type: 'quote', text: 'As the rotational program came to an end, I decided to take a risk and bet on myself.' },
       { type: 'p', text: 'I started doing freelance marketing work, and that slowly became a small agency. I was sitting across the table from business owners, founders, and aspiring entrepreneurs trying to make their ideas feel real enough for customers to trust.' },
       { type: 'p', text: 'That was the first time I understood what kind of work actually pulls me in. It wasn’t the deliverables. It wasn’t being my own boss. It was building.' },
-      { type: 'p', text: 'The best moments were not the handoff moments. They were the messy middle: the strategy pivots, the rough drafts, the first version of a site, the moment a client could finally see the shape of what they had been describing.' },
-      { type: 'p', text: 'Running that agency forced me to learn the practical stack of growth: positioning, web, content, SEO, paid media, eCommerce, reporting, client management, and the uncomfortable art of deciding what is actually worth doing.' },
+      { type: 'p', text: 'Running that agency forced me to learn the practical stack of growth: positioning, web, content, SEO, paid media, eCommerce, reporting, and the uncomfortable art of deciding what is actually worth doing.' },
     ],
   },
   {
@@ -41,7 +40,7 @@ const CHAPTERS = [
     blocks: [
       { type: 'quote', text: 'In a world where tools make everyone fast, judgment becomes the real lever.' },
       { type: 'p', text: 'The winners will not be the teams that make the most stuff. They will be the teams that know what is worth making, why it should exist, and how to execute above the noise.' },
-      { type: 'p', text: 'So I went deeper into the technology behind the shift. I studied large language models, data infrastructure, emerging companies, compute economics, adoption cycles, and the cultural questions that come with powerful tools becoming ordinary.' },
+      { type: 'p', text: 'So I went deeper into the technology behind the shift — large language models, data infrastructure, compute economics, adoption cycles, and the cultural questions that come with powerful tools becoming ordinary.' },
     ],
   },
   {
@@ -50,119 +49,118 @@ const CHAPTERS = [
     title: 'Building Now',
     blocks: [
       { type: 'p', text: 'More importantly, I started building. I created Terralis Print Studio, MoveMint, an interview practice platform, and this portfolio as a living product. Each one forced the same questions: who is this for, why now, what should it feel like, how does it launch, and what would make it worth using?' },
-      { type: 'p', text: 'Today, technology is part of my operating system, but it is not the point. The point is still the work: finding a real problem, shaping the offer, building the first version, putting it in front of people, and improving it with evidence.' },
       { type: 'emph', text: 'I’m looking for a team with serious problems, a strong product instinct, and the ambition to build things that matter. That is where I do my best work.' },
     ],
   },
 ]
+const N = CHAPTERS.length
+const INTRO = 1 / (N + 1) // intro occupies the first segment
+const SEG = (1 - INTRO) / N
 
 function Block({ block, lead }) {
   if (block.type === 'quote') {
-    return (
-      <motion.blockquote
-        className="chron__quote"
-        initial={{ opacity: 0, y: 14 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-12% 0px' }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      >
-        {block.text}
-      </motion.blockquote>
-    )
+    return <blockquote className="chron__quote">{block.text}</blockquote>
   }
   const cls = block.type === 'emph' ? 'chron__p chron__p--emph' : 'chron__p'
+  return <p className={`${cls}${lead ? ' chron__p--lead' : ''}`}>{block.text}</p>
+}
+
+function Chapter({ progress, i }) {
+  const c = INTRO + SEG * (i + 0.5)
+  const last = i === N - 1
+  const inA = c - SEG * 0.55, inB = c - SEG * 0.18
+  const outA = c + SEG * 0.18, outB = c + SEG * 0.55
+  const opacity = useTransform(
+    progress,
+    last ? [inA, inB, 1.1, 1.2] : [inA, inB, outA, outB],
+    last ? [0, 1, 1, 1] : [0, 1, 1, 0]
+  )
+  const y = useTransform(
+    progress,
+    last ? [inA, inB, 1.1, 1.2] : [inA, inB, outA, outB],
+    last ? [34, 0, 0, 0] : [34, 0, 0, -34]
+  )
+  const ch = CHAPTERS[i]
   return (
-    <motion.p
-      className={`${cls}${lead ? ' chron__p--lead' : ''}`}
-      initial={{ opacity: 0, y: 14 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-12% 0px' }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-    >
-      {block.text}
-    </motion.p>
+    <motion.article className="chron__chapter" style={{ opacity, y }}>
+      <header className="chron__chapter-head">
+        <span className="chron__chapter-era">{ch.era}</span>
+        <h3 className="chron__chapter-title">
+          <span className="chron__chapter-num">{String(i + 1).padStart(2, '0')}</span>
+          {ch.title}
+        </h3>
+      </header>
+      {ch.blocks.map((b, bi) => (
+        <Block key={bi} block={b} lead={i === 0 && b.type === 'lead'} />
+      ))}
+    </motion.article>
+  )
+}
+
+function RailMarker({ progress, i, active }) {
+  const s = INTRO + SEG * i
+  const opacity = useTransform(progress, [s - 0.005, s + 0.03], [0, 1])
+  const x = useTransform(progress, [s - 0.005, s + 0.03], [-10, 0])
+  return (
+    <motion.div className={`chron__marker${active ? ' is-active' : ''}`} style={{ opacity, x }}>
+      <span className="chron__dot" />
+      <span className="chron__marker-text">
+        <span className="chron__marker-num">{String(i + 1).padStart(2, '0')}</span>
+        <span className="chron__marker-title">{CHAPTERS[i].title}</span>
+      </span>
+    </motion.div>
   )
 }
 
 export default function StoryChronicle() {
-  const [active, setActive] = useState(CHAPTERS[0].id)
-  const refs = useRef({})
+  const ref = useRef(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] })
+  const [active, setActive] = useState(-1)
 
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) setActive(e.target.dataset.id)
-        })
-      },
-      { rootMargin: '-45% 0px -50% 0px', threshold: 0 }
-    )
-    Object.values(refs.current).forEach((el) => el && obs.observe(el))
-    return () => obs.disconnect()
-  }, [])
+  useMotionValueEvent(scrollYProgress, 'change', (v) => {
+    const idx = v < INTRO ? -1 : Math.min(N - 1, Math.floor((v - INTRO) / SEG + 1e-6))
+    if (idx !== active) setActive(idx)
+  })
 
-  const jump = (id) =>
-    refs.current[id]?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  // Intro heading: bloom in from nothing, hold, dissolve away
+  const introOpacity = useTransform(scrollYProgress, [0, 0.04, INTRO - 0.05, INTRO - 0.005], [0, 1, 1, 0])
+  const introScale = useTransform(scrollYProgress, [0, 0.07], [0.84, 1])
+  const introBlurPx = useTransform(scrollYProgress, [0, 0.06], [10, 0])
+  const introBlur = useMotionTemplate`blur(${introBlurPx}px)`
+  const introY = useTransform(scrollYProgress, [INTRO - 0.06, INTRO - 0.005], [0, -50])
 
-  const activeIndex = CHAPTERS.findIndex((c) => c.id === active)
+  // Chapters frame fades in as the heading leaves
+  const stageOpacity = useTransform(scrollYProgress, [INTRO - 0.05, INTRO + 0.02], [0, 1])
+  const railFill = active < 0 ? 0 : (active / (N - 1)) * 100
 
   return (
-    <section className="chron" id="my-story" aria-label="My story">
-      <div className="chron__inner">
-        <header className="chron__header">
+    <section className="chron" id="my-story" aria-label="My story" ref={ref} style={{ height: `${(N + 1) * 95}vh` }}>
+      <div className="chron__stage">
+        {/* Intro heading — blooms in, dissolves away */}
+        <motion.div className="chron__intro" style={{ opacity: introOpacity, scale: introScale, filter: introBlur, y: introY }}>
           <p className="chron__eyebrow">My Story</p>
           <h2 className="chron__title">How I got here.</h2>
           <p className="chron__deck">
             A path from inside a premium brand, to building on my own, to making
             judgment the thing I lead with.
           </p>
-        </header>
+        </motion.div>
 
-        <div className="chron__body">
-          {/* Timeline spine */}
+        {/* Chapters frame */}
+        <motion.div className="chron__frame" style={{ opacity: stageOpacity }}>
           <nav className="chron__rail" aria-label="Chapters">
-            <span
-              className="chron__rail-fill"
-              style={{ height: `${(activeIndex / (CHAPTERS.length - 1)) * 100}%` }}
-            />
+            <span className="chron__rail-track" />
+            <span className="chron__rail-fill" style={{ height: `${railFill}%` }} />
             {CHAPTERS.map((c, i) => (
-              <button
-                key={c.id}
-                className={`chron__marker${c.id === active ? ' is-active' : ''}`}
-                onClick={() => jump(c.id)}
-              >
-                <span className="chron__dot" />
-                <span className="chron__marker-text">
-                  <span className="chron__marker-num">{String(i + 1).padStart(2, '0')}</span>
-                  <span className="chron__marker-title">{c.title}</span>
-                </span>
-              </button>
+              <RailMarker key={c.id} progress={scrollYProgress} i={i} active={i === active} />
             ))}
           </nav>
-
-          {/* Article */}
           <div className="chron__article">
-            {CHAPTERS.map((c, ci) => (
-              <article
-                key={c.id}
-                className="chron__chapter"
-                data-id={c.id}
-                ref={(el) => (refs.current[c.id] = el)}
-              >
-                <header className="chron__chapter-head">
-                  <span className="chron__chapter-era">{c.era}</span>
-                  <h3 className="chron__chapter-title">
-                    <span className="chron__chapter-num">{String(ci + 1).padStart(2, '0')}</span>
-                    {c.title}
-                  </h3>
-                </header>
-                {c.blocks.map((b, bi) => (
-                  <Block key={bi} block={b} lead={ci === 0 && b.type === 'lead'} />
-                ))}
-              </article>
+            {CHAPTERS.map((c, i) => (
+              <Chapter key={c.id} progress={scrollYProgress} i={i} />
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   )
