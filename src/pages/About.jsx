@@ -288,7 +288,13 @@ function About() {
                 transition={{ duration: 0.6, delay: 0.8, ease: ndsEase }}
                 onClick={(e) => {
                   e.preventDefault()
-                  document.getElementById('my-story')?.scrollIntoView({ behavior: 'smooth' })
+                  const el = document.getElementById('my-story')
+                  if (!el) return
+                  // Land a touch into the section so the intro heading arrives
+                  // mid-bloom (fully formed) rather than at progress 0 (blank).
+                  const top = el.getBoundingClientRect().top + window.scrollY
+                  const scrollable = el.offsetHeight - window.innerHeight
+                  window.scrollTo({ top: top + scrollable * 0.09, behavior: 'smooth' })
                 }}
               >
                 Read the full story

@@ -122,12 +122,10 @@ export default function StoryChronicle() {
     if (idx !== active) setActive(idx)
   })
 
-  // Intro heading: present immediately on arrival (so jumping here from the
-  // "Read the full story" button never lands on a blank screen), then a gentle
-  // settle, then dissolve away as the chapters take over.
-  const introOpacity = useTransform(scrollYProgress, [0, INTRO - 0.05, INTRO - 0.005], [1, 1, 0])
-  const introScale = useTransform(scrollYProgress, [0, 0.07], [0.96, 1])
-  const introBlurPx = useTransform(scrollYProgress, [0, 0.05], [3, 0])
+  // Intro heading: bloom in from nothing, hold, dissolve away
+  const introOpacity = useTransform(scrollYProgress, [0, 0.04, INTRO - 0.05, INTRO - 0.005], [0, 1, 1, 0])
+  const introScale = useTransform(scrollYProgress, [0, 0.07], [0.84, 1])
+  const introBlurPx = useTransform(scrollYProgress, [0, 0.06], [10, 0])
   const introBlur = useMotionTemplate`blur(${introBlurPx}px)`
   const introY = useTransform(scrollYProgress, [INTRO - 0.06, INTRO - 0.005], [0, -50])
 
