@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
 import SqueezeSection from '../components/SqueezeSection'
@@ -23,19 +24,36 @@ function merchandisingAssetSrc(mod, filename) {
   return `/${enc(folder)}/${enc(filename)}`
 }
 
-function iframeBarClassForProject(projectId) {
-  switch (projectId) {
-    case 'weatherfixers':
-    case 'gts-revolution':
-      return 'weatherfixers'
-    case 'elevate-apparel':
-      return 'elevate'
-    case 'hospice-nonprofit':
-    case 'blue-lizard':
-      return 'hospice'
-    default:
-      return 'petunis'
-  }
+// Which projects get the full featured treatment (the rest go in the index)
+const FEATURED_IDS = ['petunis', 'weatherfixers']
+
+// Clean vanity URLs shown in the browser chrome (hides the host platform)
+const SITE_DISPLAY = {
+  petunis: 'petunis.com',
+  weatherfixers: 'weatherfixers.com',
+  'elevate-apparel': 'elevateoutfits.com',
+  'gts-revolution': 'gtsrevolution.com',
+  'hospice-nonprofit': 'pattimeansministry.org',
+  'blue-lizard': 'bluelizardbargrill.com',
+}
+
+// Height (px) of the host-platform banner to mask at the top of each live site
+const BANNER_COVER = {
+  petunis: 62,
+  weatherfixers: 32,
+  'elevate-apparel': 32,
+  'gts-revolution': 32,
+  'hospice-nonprofit': 62,
+  'blue-lizard': 62,
+}
+
+// Short tab label for a module based on the kind of surface it holds
+function moduleTabLabel(mod) {
+  if (mod.websiteUrl) return 'Live Site'
+  if (mod.adsImagesFolder) return 'Ads'
+  if (mod.postcardsImagesFolder) return 'Direct Mail'
+  if (mod.externalLinkUrl) return mod.label || 'Social'
+  return 'Merchandising'
 }
 
 const clientProjects = [
@@ -592,420 +610,242 @@ function ElevateMerchandisingTabs({ mod }) {
   )
 }
 
-/* ─── Inline Project Section ─── */
-function ProjectSection({ project, index, isExpanded, onToggle }) {
-  const isAlt = index % 2 !== 0
+/* ─── Ads / Direct-mail galleries (image-only, no padded lists) ─── */
+function AdsGallery({ project, mod }) {
+  const list = project.id === 'weatherfixers' ? weatherfixersAds : petunisAds
+  return (
+    <div className="client-module-masonry">
+      {list.map((filename) => {
+        const base = mod.adsBasePath === '' ? '' : (mod.adsBasePath || 'pdfs')
+        const encoded = filename.split('/').map(encodeURIComponent).join('/')
+        const src = base ? `/${base}/${mod.adsImagesFolder}/${encoded}` : `/${mod.adsImagesFolder}/${encoded}`
+        return (
+          <div key={filename} className="client-module-masonry-item">
+            <img src={src} alt="" loading="lazy" />
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function PostcardGallery({ mod }) {
+  return (
+    <div className="client-module-postcards">
+      {weatherfixersPostcards.map((filename) => {
+        const base = mod.postcardsBasePath === '' ? '' : (mod.postcardsBasePath || 'pdfs')
+        const encoded = filename.split('/').map(encodeURIComponent).join('/')
+        const src = base ? `/${base}/${mod.postcardsImagesFolder}/${encoded}` : `/${mod.postcardsImagesFolder}/${encoded}`
+        return (
+          <div key={filename} className="client-module-postcard-item">
+            <img src={src} alt="" loading="lazy" />
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+/* ─── Browser frame — the live site, made to feel deliberate ─── */
+function BrowserFrame({ project, url }) {
+  const cover = BANNER_COVER[project.id] || 0
+  const display = SITE_DISPLAY[project.id] || ''
+  return (
+    <div className="bf">
+      <div className="bf-chrome">
+        <span className="bf-dots"><i /><i /><i /></span>
+        <span className="bf-url">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 10V8a6 6 0 1112 0v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <rect x="4" y="10" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="2" />
+          </svg>
+          {display}
+        </span>
+        <a className="bf-open" href={url} target="_blank" rel="noopener noreferrer">
+          Open ↗
+        </a>
+      </div>
+      <div className="bf-viewport" style={{ '--banner-cover': `${cover}px` }}>
+        <iframe src={url} title={`${project.name} — live site`} className="bf-iframe" loading="lazy" />
+      </div>
+    </div>
+  )
+}
+
+/* ─── Surface renderer — one module = one surface in the viewer ─── */
+function renderSurface(project, mod) {
+  if (mod.websiteUrl) return <BrowserFrame project={project} url={mod.websiteUrl} />
+  if (mod.adsImagesFolder) return <AdsGallery project={project} mod={mod} />
+  if (mod.postcardsImagesFolder) return <PostcardGallery mod={mod} />
+  if (mod.merchandisingFolder && mod.merchandisingFiles && mod.designFilesImages)
+    return <ElevateMerchandisingTabs mod={mod} />
+  if (mod.merchandisingSingleTab && mod.merchandisingFiles?.length > 0)
+    return <SingleMerchandisingTab mod={mod} />
+  if (mod.teamsImagesFolder) return <MerchandisingTabs mod={mod} />
+  if (mod.externalLinkUrl) {
+    return (
+      <div className="cw-surface-link">
+        <p>This work lived on social. Take a look at the live account.</p>
+        <a href={mod.externalLinkUrl} className="client-module-external-link" target="_blank" rel="noopener noreferrer">
+          {mod.externalLinkLabel || 'View work'}
+        </a>
+      </div>
+    )
+  }
+  return null
+}
+
+/* ─── Surface viewer — flat tabs, live site shown first ─── */
+function SurfaceViewer({ project }) {
+  const mods = project.modules
+  const siteIdx = mods.findIndex((m) => m.websiteUrl)
+  const [active, setActive] = useState(siteIdx >= 0 ? siteIdx : 0)
+  const mod = mods[active] || mods[0]
+
+  return (
+    <div className="cw-viewer">
+      {mods.length > 1 && (
+        <div className="cw-viewer-tabs" role="tablist">
+          {mods.map((m, i) => (
+            <button
+              key={m.id}
+              type="button"
+              className={`cw-viewer-tab ${i === active ? 'active' : ''}`}
+              onClick={() => setActive(i)}
+            >
+              {moduleTabLabel(m)}
+            </button>
+          ))}
+        </div>
+      )}
+      <div className="cw-viewer-stage">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={mod.id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25, ease: ndsEase }}
+          >
+            {renderSurface(project, mod)}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
+  )
+}
+
+/* ─── Featured case — full, live-site-forward treatment ─── */
+function FeaturedCase({ project, index, alt }) {
   const number = String(index + 1).padStart(2, '0')
-  const sectionRef = useRef(null)
-  const numberRef = useRef(null)
-  const [expandedModules, setExpandedModules] = useState({})
-  const moduleRefs = useRef({})
-  const moduleButtonRefs = useRef({})
-
-  const toggleModule = (modId) => {
-    const wasExpanded = expandedModules[modId]
-    
-    // If opening a new module, close all others first
-    if (!wasExpanded) {
-      setExpandedModules({ [modId]: true })
-      
-      // Wait for DOM to update and animations to settle before scrolling
-      // Use requestAnimationFrame to ensure layout has updated
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setTimeout(() => {
-            const buttonRef = moduleButtonRefs.current[modId]
-            if (buttonRef) {
-              const headerHeight = 80 // --header-height from CSS
-              const buttonPosition = buttonRef.getBoundingClientRect().top + window.pageYOffset
-              const offsetPosition = buttonPosition - headerHeight
-              
-              window.scrollTo({
-                top: offsetPosition,
-                behavior: 'smooth'
-              })
-            }
-          }, 450) // Wait for module close animation (400ms) + buffer
-        })
-      })
-    } else {
-      // Closing the module
-      setExpandedModules(prev => ({ ...prev, [modId]: false }))
-    }
-  }
-
-  const handleToggle = () => {
-    if (isExpanded) {
-      onToggle(null)
-      setExpandedModules({})
-      setTimeout(() => {
-        sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }, 100)
-    } else {
-      onToggle(project.id)
-      if (project.modules.length === 1) {
-        setExpandedModules({ [project.modules[0].id]: true })
-      }
-      setTimeout(() => {
-        numberRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }, 100)
-    }
-  }
 
   const content = (
-    <div className={`container ${isExpanded ? 'client-expand-viewport' : ''}`} ref={sectionRef}>
-      {/* Header — always visible; when expanded, About on right */}
+    <div className="container">
       <motion.div
-        className={`client-feature-header ${isExpanded ? 'client-feature-header-with-about' : ''}`}
+        className="cw-case-head"
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
+        viewport={{ once: true, margin: '-100px' }}
         variants={staggerContainer}
       >
-        {isExpanded ? (
-          <>
-            <div className="client-feature-header-left">
-              <motion.span
-                ref={numberRef}
-                className="client-feature-number client-feature-number-full"
-                variants={fadeUp}
-                animate="visible"
-                initial="hidden"
-              >
-                {number}
-              </motion.span>
-              <div className="client-feature-header-text">
-                <motion.h2
-                  className="client-feature-name"
-                  variants={fadeUp}
-                  animate="visible"
-                  initial="hidden"
-                >
-                  {project.name}
-                </motion.h2>
-                <motion.p
-                  className="client-feature-tagline"
-                  variants={fadeUp}
-                  animate="visible"
-                  initial="hidden"
-                >
-                  {project.type} · {project.year}
-                </motion.p>
-              </div>
-            </div>
-            {(project.about || project.shortDesc) && (
-              <motion.div
-                className="client-feature-header-about"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4, delay: 0.2, ease: ndsEase }}
-              >
-                <span className="client-feature-header-about-label">About this project</span>
-                <p>{project.about || project.shortDesc}</p>
-              </motion.div>
-            )}
-          </>
-        ) : (
-          <div className="client-feature-header-left">
-            <motion.span
-              ref={numberRef}
-              className="client-feature-number"
-              variants={fadeUp}
-              animate="visible"
-              initial="hidden"
-            >
-              {number}
-            </motion.span>
-            <div className="client-feature-header-text">
-              <motion.h2
-                className="client-feature-name"
-                variants={fadeUp}
-                animate="visible"
-                initial="hidden"
-              >
-                {project.name}
-              </motion.h2>
-              <motion.p
-                className="client-feature-tagline"
-                variants={fadeUp}
-                animate="visible"
-                initial="hidden"
-              >
-                {project.type} · {project.year}
-              </motion.p>
-            </div>
+        <div className="cw-case-head-left">
+          <motion.span className="cw-case-number" variants={fadeUp}>{number}</motion.span>
+          <div>
+            <motion.h2 className="cw-case-name" variants={fadeUp}>{project.name}</motion.h2>
+            <motion.p className="cw-case-tagline" variants={fadeUp}>
+              {project.type} · {project.year}
+            </motion.p>
           </div>
-        )}
+        </div>
+        <motion.div className="cw-case-about" variants={fadeUp}>
+          <span className="cw-case-about-label">About this project</span>
+          <p>{project.about || project.shortDesc}</p>
+        </motion.div>
       </motion.div>
 
-      {/* Body — swaps between default and expanded */}
-      <AnimatePresence mode="wait">
-        {!isExpanded ? (
-          /* ─── DEFAULT VIEW ─── */
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.55, ease: ndsEase }}
+      >
+        <SurfaceViewer project={project} />
+      </motion.div>
+
+      <div className="cw-case-meta">
+        <div className="cw-case-meta-item">
+          <span>The Brief</span>
+          <p>{project.brief}</p>
+        </div>
+        <div className="cw-case-meta-item">
+          <span>Strategy</span>
+          <p>{project.strategy}</p>
+        </div>
+        <div className="cw-case-meta-item">
+          <span>Scope</span>
+          <p>{project.scope}</p>
+        </div>
+      </div>
+    </div>
+  )
+
+  if (alt) {
+    return <SqueezeSection className="cw-case cw-case-alt">{content}</SqueezeSection>
+  }
+  return <section className="cw-case">{content}</section>
+}
+
+/* ─── Index card — compact, expands into the same surface viewer ─── */
+function IndexCard({ project, number }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div className={`cw-index-card ${open ? 'open' : ''}`}>
+      <button type="button" className="cw-index-head" onClick={() => setOpen((o) => !o)}>
+        <div className="cw-index-thumb">
+          {project.screenshotImage && <img src={project.screenshotImage} alt="" loading="lazy" />}
+        </div>
+        <div className="cw-index-info">
+          <span className="cw-index-number">{number}</span>
+          <h3 className="cw-index-name">{project.name}</h3>
+          <p className="cw-index-tagline">{project.type} · {project.year}</p>
+          <p className="cw-index-desc">{project.shortDesc}</p>
+          <div className="cw-index-tags">
+            {project.tech.map((t) => (
+              <span key={t} className="tech-badge">{t}</span>
+            ))}
+          </div>
+        </div>
+        <span className="cw-index-toggle">
+          {open ? 'Close' : 'Open live site'}
+          <svg className={`cw-index-chevron ${open ? 'open' : ''}`} width="15" height="15" viewBox="0 0 16 16" fill="none">
+            <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
+      </button>
+
+      <AnimatePresence initial={false}>
+        {open && (
           <motion.div
-            key="default"
-            className={`client-feature-body${!project.featured && project.screenshotImage ? ' client-feature-body--screenshot' : ''}`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            className="cw-index-viewer"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.4, ease: ndsEase }}
           >
-            <motion.div
-              className="client-feature-left"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.6, ease: ndsEase }}
-            >
-              {project.featured && project.screenshotImage ? (
-                <div className="client-feature-preview">
-                  <div className="client-feature-preview-slot">
-                    <img src="/pdfs/Test%20PetUnis%20Ads.png" alt="" />
-                  </div>
-                  <div className="client-feature-preview-slot">
-                    <img src={project.screenshotImage} alt="" />
-                  </div>
-                  <div className="client-feature-preview-slot">
-                    <img src="/pdfs/For%20People%20Background.png" alt="" />
-                  </div>
-                </div>
-              ) : project.screenshotImage ? (
-                <div className="client-feature-screenshot">
-                  <img src={project.screenshotImage} alt={project.screenshotLabel} />
-                </div>
-              ) : (
-                <div className="client-feature-scope">
-                  <span className="client-feature-scope-label">Scope</span>
-                  <div className="client-feature-scope-list">
-                    {project.modules.map((mod) => (
-                      <span key={mod.id} className="client-feature-scope-item">{mod.label}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </motion.div>
-            <div className="client-feature-details">
-              <p className="client-feature-desc">{project.shortDesc}</p>
-              <div className="client-feature-tech">
-                {project.tech.map((tech) => (
-                  <span key={tech} className="tech-badge">{tech}</span>
-                ))}
-              </div>
-              <button type="button" className="btn btn-primary" onClick={handleToggle}>
-                View Project
-              </button>
+            <div className="cw-index-viewer-inner">
+              <SurfaceViewer project={project} />
             </div>
-          </motion.div>
-        ) : (
-          /* ─── EXPANDED VIEW — replaces body ─── */
-          <motion.div
-            key="expanded"
-            className="client-expand"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.4, ease: ndsEase }}
-          >
-            {/* Modules — expandable subsections (lead with the work) */}
-            <div className="client-expand-modules">
-              <span className="client-expand-section-label">What I Built</span>
-
-              {project.modules.map((mod, mi) => {
-                const modExpanded = expandedModules[mod.id]
-
-                return (
-                  <motion.div
-                    key={mod.id}
-                    ref={(el) => { if (el) moduleRefs.current[mod.id] = el }}
-                    className="client-module-section"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.2 + mi * 0.06, ease: ndsEase }}
-                  >
-                    <button
-                      ref={(el) => { if (el) moduleButtonRefs.current[mod.id] = el }}
-                      className={`client-module-row ${modExpanded ? 'active' : ''}`}
-                      onClick={() => toggleModule(mod.id)}
-                    >
-                      <div className="client-module-row-left">
-                        <span className="client-module-number">{String(mi + 1).padStart(2, '0')}</span>
-                        <span className="client-module-name">{mod.label}</span>
-                      </div>
-                      <div className="client-module-row-right">
-                        <span className="client-module-count">{mod.items.length} deliverables</span>
-                        <svg className={`client-module-chevron ${modExpanded ? 'open' : ''}`} width="16" height="16" viewBox="0 0 16 16" fill="none">
-                          <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </div>
-                    </button>
-
-                    <AnimatePresence>
-                      {modExpanded && (
-                        <motion.div
-                          className="client-module-content"
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.4, ease: ndsEase }}
-                        >
-                          <div className="client-module-content-inner">
-                            {mod.websiteUrl && (
-                              <div className="client-module-iframe-container">
-                                <div
-                                  className={`client-module-iframe-bar client-module-iframe-bar-${iframeBarClassForProject(project.id)}`}
-                                />
-                                <div className="client-module-iframe-wrap">
-                                  <iframe
-                                    src={mod.websiteUrl}
-                                    title={`${project.name} — ${mod.label}`}
-                                    className="client-module-iframe"
-                                    loading="lazy"
-                                  />
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Deliverables list */}
-                            <div className="client-module-deliverables">
-                              {mod.items.map((item, i) => (
-                                <div key={i} className="client-module-deliverable">
-                                  <span className="client-module-deliverable-num">{String(i + 1).padStart(2, '0')}</span>
-                                  <p>{item}</p>
-                                </div>
-                              ))}
-                            </div>
-
-                            {mod.externalLinkUrl && (
-                              <a
-                                href={mod.externalLinkUrl}
-                                className="client-module-external-link"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                {mod.externalLinkLabel || 'View work'}
-                              </a>
-                            )}
-
-                            {/* Hero image */}
-                            {mod.heroImage && (
-                              <div className="client-module-hero-img">
-                                <img src={mod.heroImage} alt={mod.label} />
-                              </div>
-                            )}
-
-                            {/* Ads masonry */}
-                            {mod.adsImagesFolder && (
-                              <div className="client-module-masonry">
-                                {(project.id === 'weatherfixers' ? weatherfixersAds : petunisAds).map((filename) => {
-                                  const base = mod.adsBasePath === '' ? '' : (mod.adsBasePath || 'pdfs')
-                                  const encoded = filename.split('/').map(encodeURIComponent).join('/')
-                                  const src = base ? `/${base}/${mod.adsImagesFolder}/${encoded}` : `/${mod.adsImagesFolder}/${encoded}`
-                                  return (
-                                    <div key={filename} className="client-module-masonry-item">
-                                      <img src={src} alt="" loading="lazy" />
-                                    </div>
-                                  )
-                                })}
-                              </div>
-                            )}
-
-                            {/* Postcards grid */}
-                            {mod.postcardsImagesFolder && (
-                              <div className="client-module-postcards">
-                                {weatherfixersPostcards.map((filename) => {
-                                  const base = mod.postcardsBasePath === '' ? '' : (mod.postcardsBasePath || 'pdfs')
-                                  const encoded = filename.split('/').map(encodeURIComponent).join('/')
-                                  const src = base ? `/${base}/${mod.postcardsImagesFolder}/${encoded}` : `/${mod.postcardsImagesFolder}/${encoded}`
-                                  return (
-                                    <div key={filename} className="client-module-postcard-item">
-                                      <img src={src} alt="" loading="lazy" />
-                                    </div>
-                                  )
-                                })}
-                              </div>
-                            )}
-
-                            {/* Elevate — Merchandise / Design Files tabs */}
-                            {mod.merchandisingFolder && mod.merchandisingFiles && mod.designFilesImages && (
-                              <ElevateMerchandisingTabs mod={mod} />
-                            )}
-
-                            {/* Hospice (etc.) — one merchandising tab */}
-                            {mod.merchandisingSingleTab && mod.merchandisingFiles?.length > 0 && (
-                              <SingleMerchandisingTab mod={mod} />
-                            )}
-
-                            {/* Tabbed gallery — For Pets / For People / Design Files */}
-                            {mod.teamsImagesFolder && (
-                              <MerchandisingTabs mod={mod} />
-                            )}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                )
-              })}
-            </div>
-
-            {/* Brief / Strategy / Scope — below the work */}
-            <div className="client-expand-meta">
-              <motion.div
-                className="client-expand-meta-item"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.05, ease: ndsEase }}
-              >
-                <span className="client-expand-meta-label">The Brief</span>
-                <p>{project.brief}</p>
-              </motion.div>
-              <motion.div
-                className="client-expand-meta-item"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1, ease: ndsEase }}
-              >
-                <span className="client-expand-meta-label">Strategy</span>
-                <p>{project.strategy}</p>
-              </motion.div>
-              <motion.div
-                className="client-expand-meta-item"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.15, ease: ndsEase }}
-              >
-                <span className="client-expand-meta-label">Scope</span>
-                <p>{project.scope}</p>
-              </motion.div>
-            </div>
-
-            {/* Close button */}
-            <button type="button" className="btn btn-secondary client-expand-close" onClick={handleToggle}>
-              Close Project
-            </button>
           </motion.div>
         )}
       </AnimatePresence>
     </div>
   )
-
-  if (isAlt) {
-    return (
-      <SqueezeSection key={project.id} className="client-feature client-feature-alt">
-        {content}
-      </SqueezeSection>
-    )
-  }
-
-  return (
-    <section key={project.id} className="client-feature">
-      {content}
-    </section>
-  )
 }
 
 function ClientWork() {
-  const [expandedProject, setExpandedProject] = useState(null)
+  const featured = clientProjects.filter((p) => FEATURED_IDS.includes(p.id))
+  const indexed = clientProjects.filter((p) => !FEATURED_IDS.includes(p.id))
 
   return (
     <PageTransition>
@@ -1032,7 +872,7 @@ function ClientWork() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.7, delay: 0.1 + i * 0.08, ease: ndsEase }}
                     >
-                      {word}{i < words.length - 1 ? '\u00a0' : ''}
+                      {word}{i < words.length - 1 ? ' ' : ''}
                     </motion.span>
                   ))}
                 </h1>
@@ -1042,8 +882,9 @@ function ClientWork() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
                 >
-                  Client work from the agency years: brands, storefronts, pitch sites,
-                  ads, direct mail, and merchandising built around real business needs.
+                  Before the products, there were clients. This is where I learned the full
+                  lifecycle — brand, storefront, ads, direct mail, and merchandising — for real
+                  businesses with real constraints. You can click into the sites I built and use them.
                 </motion.p>
               </div>
               <motion.div
@@ -1073,16 +914,70 @@ function ClientWork() {
           </div>
         </section>
 
-        {/* Projects */}
-        {clientProjects.map((project, index) => (
-          <ProjectSection
-            key={project.id}
-            project={project}
-            index={index}
-            isExpanded={expandedProject === project.id}
-            onToggle={setExpandedProject}
-          />
+        {/* Featured cases */}
+        {featured.map((project, i) => (
+          <FeaturedCase key={project.id} project={project} index={i} alt={i % 2 !== 0} />
         ))}
+
+        {/* The rest — compact index */}
+        <section className="cw-index-section section">
+          <div className="container">
+            <motion.p
+              className="cw-index-label"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, ease: ndsEase }}
+            >
+              More Client Work
+            </motion.p>
+            <motion.h2
+              className="cw-index-heading"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.08, ease: ndsEase }}
+            >
+              The rest of the agency years.
+            </motion.h2>
+            <motion.p
+              className="cw-index-intro"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.14, ease: ndsEase }}
+            >
+              Smaller builds, pitches, and early work. Kept honest — open any of them to browse the live site.
+            </motion.p>
+            <div className="cw-index-grid">
+              {indexed.map((project, i) => (
+                <IndexCard key={project.id} project={project} number={String(featured.length + i + 1).padStart(2, '0')} />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Closing CTA */}
+        <SqueezeSection className="cw-cta section">
+          <div className="container">
+            <motion.div
+              className="cw-cta-content"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-80px' }}
+              variants={staggerContainer}
+            >
+              <motion.p className="cw-cta-eyebrow" variants={fadeUp}>From clients to products</motion.p>
+              <motion.h2 className="cw-cta-heading" variants={fadeUp}>
+                This is the foundation. The dev work is where it's headed.
+              </motion.h2>
+              <motion.div className="cw-cta-actions" variants={fadeUp}>
+                <Link to="/projects" className="btn btn-primary">See Dev Projects</Link>
+                <Link to="/contact" className="btn btn-outline-light">Get in Touch</Link>
+              </motion.div>
+            </motion.div>
+          </div>
+        </SqueezeSection>
       </div>
     </PageTransition>
   )
