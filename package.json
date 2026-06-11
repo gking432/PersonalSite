@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node scripts/list-pdfs.js && vite",
-    "build": "node scripts/list-pdfs.js && vite build",
+    "dev": "node scripts/list-pdfs.js && node scripts/fetch-substack.mjs && vite",
+    "build": "node scripts/list-pdfs.js && node scripts/fetch-substack.mjs && vite build",
     "preview": "vite preview",
     "compress-images": "node scripts/compress-images.js",
     "compress-images:dry": "node scripts/compress-images.js --dry-run"

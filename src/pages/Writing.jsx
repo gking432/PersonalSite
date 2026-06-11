@@ -1,7 +1,11 @@
 import { motion } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
 import SqueezeSection from '../components/SqueezeSection'
+import writingPosts from '../data/writing-posts.json'
 import './Writing.css'
+
+// TODO: confirm this is the correct Substack publication URL.
+const SUBSTACK_URL = 'https://gunnarneuman.substack.com'
 
 const ndsEase = [0.22, 1, 0.36, 1]
 
@@ -19,27 +23,6 @@ const staggerItem = {
   hidden: { opacity: 0, y: 30, scale: 0.98 },
   visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: ndsEase } }
 }
-
-const fieldNotes = [
-  {
-    status: 'Field Note 01',
-    title: 'When everyone can make more, the hard part is knowing what matters.',
-    excerpt: 'The old edge was production speed. The new edge is judgment: what is worth making, what customer behavior should change, and what quality looks like when average work is cheap.',
-    themes: ['Technology', 'Marketing Strategy', 'Quality']
-  },
-  {
-    status: 'Field Note 02',
-    title: 'A prototype is already a strategy document.',
-    excerpt: 'Every first version carries assumptions about the customer, price, trust, distribution, and timing. Naming those assumptions early makes the build more useful.',
-    themes: ['Product', 'Customer Insight', 'GTM']
-  },
-  {
-    status: 'Field Note 03',
-    title: 'A bonding curve has to explain itself.',
-    excerpt: 'MoveMint is technical on the surface, but the real work is translation: incentives, risk, graduation, and value creation need to make sense before someone clicks launch.',
-    themes: ['Market Mechanics', 'Web3', 'Translation']
-  }
-]
 
 const writingTopics = [
   { title: 'Customer Behavior', text: 'The moments where people decide, hesitate, trust, buy, abandon, and return.' },
@@ -106,40 +89,78 @@ function Writing() {
         </div>
       </SqueezeSection>
 
-      {/* Recent Articles */}
+      {/* Latest from Substack */}
       <section className="articles-section section">
         <div className="container">
-          <motion.h2
-            className="section-title"
+          <motion.div
+            className="articles-head"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, ease: ndsEase }}
           >
-            Current Notes
-          </motion.h2>
-          <motion.div
-            className="articles-list"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.6, ease: ndsEase }}
-          >
-            {fieldNotes.map((note) => (
-              <div className="article-card" key={note.title}>
-                <div className="article-meta">
-                  <span className="article-date">{note.status}</span>
-                </div>
-                <h3>{note.title}</h3>
-                <p className="article-excerpt">{note.excerpt}</p>
-                <div className="article-themes">
-                  {note.themes.map((theme) => (
-                    <span key={theme}>{theme}</span>
-                  ))}
-                </div>
-              </div>
-            ))}
+            <h2 className="section-title">Latest Notes</h2>
+            <a
+              className="articles-substack-link"
+              href={SUBSTACK_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              All posts on Substack →
+            </a>
           </motion.div>
+
+          {writingPosts.length > 0 ? (
+            <motion.div
+              className="articles-list"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, ease: ndsEase }}
+            >
+              {writingPosts.map((post) => (
+                <a
+                  className="article-card"
+                  key={post.url}
+                  href={post.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {post.dateLabel && (
+                    <div className="article-meta">
+                      <span className="article-date">{post.dateLabel}</span>
+                    </div>
+                  )}
+                  <h3>{post.title}</h3>
+                  {post.excerpt && <p className="article-excerpt">{post.excerpt}</p>}
+                  <span className="article-readmore">Read on Substack →</span>
+                </a>
+              ))}
+            </motion.div>
+          ) : (
+            <motion.div
+              className="articles-empty"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, ease: ndsEase }}
+            >
+              <p className="articles-empty-title">The first field notes are publishing soon.</p>
+              <p className="articles-empty-text">
+                I'm writing about customer behavior, technology adoption, and product
+                judgment — the gap between an idea and a market. Follow along and the
+                posts will show up here as they go live.
+              </p>
+              <a
+                className="btn btn-primary"
+                href={SUBSTACK_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Follow on Substack →
+              </a>
+            </motion.div>
+          )}
         </div>
       </section>
 
