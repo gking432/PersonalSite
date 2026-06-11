@@ -162,17 +162,6 @@ function Layout({ children }) {
         <div className="container">
           <div className="footer-content">
             <p>&copy; {new Date().getFullYear()} Gunnar Neuman</p>
-            <ul className="footer-links">
-              <li>
-                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-              </li>
-              <li>
-                <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
-              </li>
-              <li>
-                <a href="mailto:gunnarneuman14@gmail.com">Email</a>
-              </li>
-            </ul>
           </div>
         </div>
       </footer>

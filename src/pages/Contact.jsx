@@ -270,12 +270,6 @@ function Contact() {
                   <a href="mailto:gunnarneuman14@gmail.com">gunnarneuman14@gmail.com</a>
                 </div>
                 <div className="info-item">
-                  <h3>LinkedIn</h3>
-                  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
-                    Connect on LinkedIn
-                  </a>
-                </div>
-                <div className="info-item">
                   <h3>Location</h3>
                   <p>Milwaukee, WI</p>
                   <p className="location-note">Open to relocation/remote</p>
