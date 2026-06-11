@@ -1305,3 +1305,36 @@ No modals. Progressive disclosure on-page.
   .cw-index-thumb { max-width: 320px; }
   .cw-index-toggle { align-self: start; }
 }
+
+/* ── Featured case: info beside the viewer ── */
+.cw-case-layout {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+}
+.cw-case-aside {
+  position: sticky;
+  top: calc(var(--header-height) + 1.5rem);
+}
+.cw-case-aside .cw-case-head-left {
+  padding-bottom: var(--space-md);
+  margin-bottom: var(--space-md);
+  border-bottom: 1px solid var(--gray-200);
+}
+.cw-case-aside .cw-case-number {
+  font-size: clamp(2.4rem, 4vw, 3.6rem);
+}
+.cw-case-aside .cw-case-name {
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+}
+.cw-case-main { min-width: 0; }
+
+/* Smaller, capped live-site previews */
+.bf { max-width: 760px; }
+.cw-index-viewer-inner .cw-viewer { max-width: 760px; }
+
+@media (max-width: 900px) {
+  .cw-case-layout { grid-template-columns: 1fr; gap: var(--space-lg); }
+  .cw-case-aside { position: static; }
+}

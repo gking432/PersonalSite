@@ -661,9 +661,6 @@ function BrowserFrame({ project, url }) {
           </svg>
           {display}
         </span>
-        <a className="bf-open" href={url} target="_blank" rel="noopener noreferrer">
-          Open ↗
-        </a>
       </div>
       <div className="bf-viewport" style={{ '--banner-cover': `${cover}px` }}>
         <iframe src={url} title={`${project.name} — live site`} className="bf-iframe" loading="lazy" />
@@ -741,36 +738,39 @@ function FeaturedCase({ project, index, alt }) {
 
   const content = (
     <div className="container">
-      <motion.div
-        className="cw-case-head"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-100px' }}
-        variants={staggerContainer}
-      >
-        <div className="cw-case-head-left">
-          <motion.span className="cw-case-number" variants={fadeUp}>{number}</motion.span>
-          <div>
-            <motion.h2 className="cw-case-name" variants={fadeUp}>{project.name}</motion.h2>
-            <motion.p className="cw-case-tagline" variants={fadeUp}>
-              {project.type} · {project.year}
-            </motion.p>
+      <div className="cw-case-layout">
+        <motion.aside
+          className="cw-case-aside"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-100px' }}
+          variants={staggerContainer}
+        >
+          <div className="cw-case-head-left">
+            <motion.span className="cw-case-number" variants={fadeUp}>{number}</motion.span>
+            <div>
+              <motion.h2 className="cw-case-name" variants={fadeUp}>{project.name}</motion.h2>
+              <motion.p className="cw-case-tagline" variants={fadeUp}>
+                {project.type} · {project.year}
+              </motion.p>
+            </div>
           </div>
-        </div>
-        <motion.div className="cw-case-about" variants={fadeUp}>
-          <span className="cw-case-about-label">About this project</span>
-          <p>{project.about || project.shortDesc}</p>
-        </motion.div>
-      </motion.div>
+          <motion.div className="cw-case-about" variants={fadeUp}>
+            <span className="cw-case-about-label">About this project</span>
+            <p>{project.about || project.shortDesc}</p>
+          </motion.div>
+        </motion.aside>
 
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-60px' }}
-        transition={{ duration: 0.55, ease: ndsEase }}
-      >
-        <SurfaceViewer project={project} />
-      </motion.div>
+        <motion.div
+          className="cw-case-main"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.55, ease: ndsEase }}
+        >
+          <SurfaceViewer project={project} />
+        </motion.div>
+      </div>
 
       <div className="cw-case-meta">
         <div className="cw-case-meta-item">
