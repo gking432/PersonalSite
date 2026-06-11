@@ -1059,11 +1059,15 @@ No modals. Progressive disclosure on-page.
   overflow: hidden;
   background: #fff;
 }
+.bf-scaler {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+  overflow: hidden;
+}
 .bf-iframe {
   display: block;
-  width: 100%;
-  height: calc(100% + var(--banner-cover, 0px));
-  margin-top: calc(-1 * var(--banner-cover, 0px));
   border: 0;
 }
 

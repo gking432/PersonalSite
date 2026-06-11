@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
@@ -646,10 +646,29 @@ function PostcardGallery({ mod }) {
   )
 }
 
-/* ─── Browser frame — the live site, made to feel deliberate ─── */
+/* ─── Browser frame — the live site, made to feel deliberate ───
+   Render the iframe at a full desktop width and scale it down so the embedded
+   site uses its DESKTOP layout (no mobile breakpoint, no horizontal scroll),
+   then fits whatever column it lives in. */
+const BF_DESKTOP_W = 1280
+const BF_VIS_H = 800 // 16:10 visible window of the desktop site
+
 function BrowserFrame({ project, url }) {
   const cover = BANNER_COVER[project.id] || 0
   const display = SITE_DISPLAY[project.id] || ''
+  const viewRef = useRef(null)
+  const [scale, setScale] = useState(0.55)
+
+  useEffect(() => {
+    const el = viewRef.current
+    if (!el) return
+    const update = () => setScale(el.clientWidth / BF_DESKTOP_W)
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
   return (
     <div className="bf">
       <div className="bf-chrome">
@@ -662,8 +681,19 @@ function BrowserFrame({ project, url }) {
           {display}
         </span>
       </div>
-      <div className="bf-viewport" style={{ '--banner-cover': `${cover}px` }}>
-        <iframe src={url} title={`${project.name} — live site`} className="bf-iframe" loading="lazy" />
+      <div className="bf-viewport" ref={viewRef}>
+        <div
+          className="bf-scaler"
+          style={{ width: BF_DESKTOP_W, height: BF_VIS_H, transform: `scale(${scale})` }}
+        >
+          <iframe
+            src={url}
+            title={`${project.name} — live site`}
+            className="bf-iframe"
+            loading="lazy"
+            style={{ width: BF_DESKTOP_W, height: BF_VIS_H + cover, marginTop: -cover }}
+          />
+        </div>
       </div>
     </div>
   )
