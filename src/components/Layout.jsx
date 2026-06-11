@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 
-const SHOW_ASK_AI = false
-
 function Layout({ children }) {
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
@@ -60,7 +58,6 @@ function Layout({ children }) {
   }, [menuOpen])
 
   const isActive = (path) => location.pathname === path
-  const isWorkActive = location.pathname === '/projects' || location.pathname === '/client-work'
   const isHome = location.pathname === '/'
   const navbarClassName = [
     'navbar',
@@ -72,25 +69,16 @@ function Layout({ children }) {
 
   const navLinks = [
     { path: '/about', label: 'About' },
-    {
-      label: 'Work',
-      dropdown: [
-        { path: '/projects', label: 'Dev Projects' },
-        { path: '/client-work', label: 'Client Work' },
-        ...(SHOW_ASK_AI ? [{ path: '/ask-ai', label: 'Ask AI' }] : []),
-      ]
-    },
-    { path: '/writing', label: 'Writing' },
+    { path: '/projects', label: 'Projects' },
+    { path: '/client-work', label: 'Client Work' },
     { path: '/contact', label: 'Contact', cta: true },
   ]
 
   // Flat list for mobile menu
   const mobileLinks = [
     { path: '/about', label: 'About' },
-    { path: '/projects', label: 'Dev Projects' },
+    { path: '/projects', label: 'Projects' },
     { path: '/client-work', label: 'Client Work' },
-    ...(SHOW_ASK_AI ? [{ path: '/ask-ai', label: 'Ask AI' }] : []),
-    { path: '/writing', label: 'Writing' },
     { path: '/contact', label: 'Contact' },
   ]
 
@@ -103,29 +91,14 @@ function Layout({ children }) {
           </Link>
           <ul className="nav-links">
             {navLinks.map(link => (
-              link.dropdown ? (
-                <li key={link.label} className={`nav-dropdown ${isWorkActive ? 'active' : ''}`}>
-                  <span className="nav-dropdown-trigger">{link.label}</span>
-                  <ul className="nav-dropdown-menu">
-                    {link.dropdown.map(sub => (
-                      <li key={sub.path}>
-                        <Link to={sub.path} className={isActive(sub.path) ? 'active' : ''}>
-                          {sub.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-              ) : (
-                <li key={link.path}>
-                  <Link
-                    to={link.path}
-                    className={`${isActive(link.path) ? 'active' : ''}${link.cta ? ' nav-cta' : ''}`.trim()}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              )
+              <li key={link.path}>
+                <Link
+                  to={link.path}
+                  className={`${isActive(link.path) ? 'active' : ''}${link.cta ? ' nav-cta' : ''}`.trim()}
+                >
+                  {link.label}
+                </Link>
+              </li>
             ))}
           </ul>
           <button
