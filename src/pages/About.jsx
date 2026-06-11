@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
 import SqueezeSection from '../components/SqueezeSection'
-import CinematicStory from '../components/CinematicStory'
+import StoryChronicle from '../components/StoryChronicle'
 import './About.css'
 
 const ndsEase = [0.22, 1, 0.36, 1]
@@ -390,8 +390,8 @@ function About() {
         </div>
       </section>
 
-      {/* ═══════ MY STORY — Cinematic ambient sequence ═══════ */}
-      <CinematicStory />
+      {/* ═══════ MY STORY — Editorial chronicle ═══════ */}
+      <StoryChronicle />
 
       {/* ═══════ HOW I WORK — Scroll-driven cylinder picker ═══════ */}
       <section className="how-i-work-scroll" ref={processRef}>

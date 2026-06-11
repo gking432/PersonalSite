@@ -1,0 +1,184 @@
+.chron {
+  background: var(--parchment);
+  padding: clamp(5rem, 13vh, 10rem) 0 clamp(5rem, 13vh, 10rem);
+}
+.chron__inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+/* ── Header ── */
+.chron__header {
+  max-width: 760px;
+  margin: 0 auto clamp(3.5rem, 8vh, 6rem);
+  text-align: center;
+}
+.chron__eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--gold);
+  margin: 0 0 1.2rem;
+}
+.chron__title {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(2.6rem, 6vw, 4.6rem);
+  line-height: 1.02;
+  color: var(--charcoal);
+  margin: 0 0 1.4rem;
+}
+.chron__deck {
+  font-family: var(--font-serif);
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+  line-height: 1.5;
+  color: var(--slate);
+  margin: 0 auto;
+  max-width: 560px;
+}
+
+/* ── Body: rail + article ── */
+.chron__body {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 680px);
+  justify-content: center;
+  gap: clamp(2.5rem, 6vw, 6rem);
+  align-items: start;
+}
+
+/* ── Timeline spine ── */
+.chron__rail {
+  position: sticky;
+  top: 22vh;
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+  padding-left: 1.2rem;
+}
+.chron__rail::before {
+  content: '';
+  position: absolute;
+  left: 4px; top: 6px; bottom: 6px;
+  width: 1px;
+  background: rgba(42, 42, 42, 0.14);
+}
+.chron__rail-fill {
+  position: absolute;
+  left: 4px; top: 6px;
+  width: 1px;
+  background: var(--gold);
+  transition: height 0.5s var(--ease-out);
+}
+.chron__marker {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+.chron__dot {
+  position: absolute;
+  left: -1.2rem; top: 0.35rem;
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--parchment);
+  border: 1px solid rgba(42, 42, 42, 0.3);
+  transition: all 0.4s var(--ease-out);
+}
+.chron__marker.is-active .chron__dot {
+  background: var(--gold);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px rgba(168, 130, 60, 0.16);
+}
+.chron__marker-text { display: flex; flex-direction: column; gap: 0.15rem; }
+.chron__marker-num {
+  font-family: var(--font-sans);
+  font-size: 0.68rem; font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--warm-gray);
+}
+.chron__marker-title {
+  font-family: var(--font-serif);
+  font-size: 1.08rem;
+  color: var(--slate);
+  transition: color 0.4s var(--ease-out);
+}
+.chron__marker.is-active .chron__marker-title { color: var(--charcoal); }
+
+/* ── Article ── */
+.chron__chapter {
+  padding-bottom: clamp(3.5rem, 8vh, 6rem);
+}
+.chron__chapter:last-child { padding-bottom: 0; }
+.chron__chapter-head {
+  margin-bottom: 1.8rem;
+}
+.chron__chapter-era {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.7rem;
+}
+.chron__chapter-title {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(1.9rem, 3.4vw, 2.7rem);
+  line-height: 1.08;
+  color: var(--charcoal);
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+.chron__chapter-num {
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+}
+
+.chron__p {
+  font-family: var(--font-serif);
+  font-size: clamp(1.2rem, 1.5vw, 1.35rem);
+  line-height: 1.72;
+  color: var(--charcoal);
+  margin: 0 0 1.5rem;
+}
+.chron__p:last-child { margin-bottom: 0; }
+.chron__p--lead::first-letter {
+  initial-letter: 3;
+  -webkit-initial-letter: 3;
+  font-family: var(--font-serif);
+  color: var(--gold);
+  font-weight: 400;
+  margin-right: 0.7rem;
+}
+.chron__p--emph {
+  font-size: clamp(1.3rem, 1.7vw, 1.5rem);
+  line-height: 1.55;
+  color: var(--charcoal);
+  font-style: italic;
+  padding-top: 0.5rem;
+}
+
+.chron__quote {
+  margin: 2.4rem 0;
+  padding: 0.3rem 0 0.3rem 2rem;
+  border-left: 2px solid var(--gold);
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 2.6vw, 2.2rem);
+  line-height: 1.32;
+  color: var(--charcoal);
+}
+
+/* ── Responsive ── */
+@media (max-width: 880px) {
+  .chron__body { grid-template-columns: minmax(0, 680px); justify-content: center; }
+  .chron__rail { display: none; }
+}
