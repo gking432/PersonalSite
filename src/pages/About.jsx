@@ -24,20 +24,29 @@ const staggerItem = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: ndsEase } }
 }
 
-const toolkitRow1 = [
-  'React', 'JavaScript', 'Python', 'Figma', 'Claude AI', 'Power BI',
-  'Google Analytics', 'Shopify', 'WordPress', 'Git', 'Node.js', 'Framer Motion',
+// Operating thesis — the point of view that drives the work.
+// Accent words light up gold; the rest reveal charcoal word-by-word on scroll.
+const thesisWords = [
+  'Tools', 'made', 'everyone', 'fast.', { w: 'Judgment', accent: true },
+  'is', 'the', { w: 'lever', accent: true }, "that's", 'left.',
 ]
 
-const toolkitRow2 = [
-  'Photoshop', 'Illustrator', 'Meta Ads', 'Google Ads', 'Mailchimp',
-  'HubSpot', 'Aptos SDK', 'Vite', 'CSS/SASS', 'SEO', 'Midjourney', 'Canva',
-]
-
-const processSteps = [
-  { number: '01', title: 'Understand', desc: 'Get close to the customer, the business, and the constraints. Most bad strategy starts too far away from the people it is supposed to move.' },
-  { number: '02', title: 'Build', desc: 'Turn the idea into something people can react to. A sketch, a page, a prototype, a launch flow - whatever gets the question into the real world.' },
-  { number: '03', title: 'Deliver', desc: 'Ship it, measure it, and improve it. The work is not done when it looks good. It is done when it starts teaching us something.' },
+const capabilities = [
+  {
+    group: 'Strategy',
+    desc: 'Find the real problem and shape the offer before anyone writes a line of code.',
+    tools: ['Customer Research', 'Positioning', 'GTM', 'Analytics', 'Power BI', 'SEO'],
+  },
+  {
+    group: 'Build',
+    desc: 'Turn the idea into something people can actually use and react to.',
+    tools: ['React', 'TypeScript', 'Python', 'Figma', 'Claude Code', 'Vite'],
+  },
+  {
+    group: 'Growth',
+    desc: 'Connect the work to distribution, traction, and revenue.',
+    tools: ['Paid Media', 'Content', 'eCommerce', 'Shopify', 'Email', 'Conversion'],
+  },
 ]
 
 const builderProfile = [
@@ -59,44 +68,51 @@ const builderProfile = [
   }
 ]
 
-const STEP_HEIGHTS = [0, 200, 368] // px per step - tighter gap between 2 and 3 to match 0-1
-const HEADER_SCROLL = 0.2 // Label + heading animate first, steps start after
+// ── OPERATING THESIS — pinned, scroll-driven word reveal ──
+// A single opinionated statement that lights up word-by-word as you scroll,
+// with the point-of-view paragraph resolving underneath it.
+function ThesisReveal({ progress }) {
+  const total = thesisWords.length
+  const colors = thesisWords.map((_, i) => {
+    const start = 0.14 + (i / total) * 0.5
+    const end = start + 0.1
+    const accent = typeof thesisWords[i] === 'object' && thesisWords[i].accent
+    return useTransform(
+      progress,
+      [start, end],
+      accent
+        ? ['rgba(168, 130, 60, 0.18)', 'rgba(168, 130, 60, 1)']
+        : ['rgba(42, 42, 42, 0.14)', 'rgba(42, 42, 42, 1)']
+    )
+  })
 
-// Label + heading animate in first, before process steps
-function ProcessLabelHeading({ processScroll }) {
-  const labelRotateX = useTransform(processScroll, [0, 0.07], [60, 0])
-  const labelOpacity = useTransform(processScroll, [0, 0.05], [0, 1])
-  const labelY = useTransform(processScroll, [0, 0.07], [40, 0])
-
-  const headingRotateX = useTransform(processScroll, [0.06, 0.14], [60, 0])
-  const headingOpacity = useTransform(processScroll, [0.07, 0.12], [0, 1])
-  const headingY = useTransform(processScroll, [0.06, 0.14], [50, 0])
+  const kickerOpacity = useTransform(progress, [0, 0.08], [0, 1])
+  const kickerY = useTransform(progress, [0, 0.1], [24, 0])
+  const supportOpacity = useTransform(progress, [0.7, 0.86], [0, 1])
+  const supportY = useTransform(progress, [0.7, 0.9], [30, 0])
 
   return (
-    <>
-      <motion.p
-        className="label"
-        style={{
-          rotateX: labelRotateX,
-          opacity: labelOpacity,
-          y: labelY,
-          transformOrigin: 'center center'
-        }}
-      >
-        Process
+    <div className="thesis-inner">
+      <motion.p className="thesis-kicker" style={{ opacity: kickerOpacity, y: kickerY }}>
+        Point of View
       </motion.p>
-      <motion.h2
-        className="section-heading"
-        style={{
-          rotateX: headingRotateX,
-          opacity: headingOpacity,
-          y: headingY,
-          transformOrigin: 'center center'
-        }}
-      >
-        How I Work
-      </motion.h2>
-    </>
+      <h2 className="thesis-statement">
+        {thesisWords.map((item, i) => {
+          const word = typeof item === 'object' ? item.w : item
+          return (
+            <span key={i}>
+              <motion.span style={{ color: colors[i] }}>{word}</motion.span>
+              {i < total - 1 ? ' ' : ''}
+            </span>
+          )
+        })}
+      </h2>
+      <motion.p className="thesis-support" style={{ opacity: supportOpacity, y: supportY }}>
+        The teams that win won't make the most. They'll know what's worth making,
+        why it should exist, and how to execute above the noise. That's the work
+        I want to be in the room for.
+      </motion.p>
+    </div>
   )
 }
 
@@ -129,52 +145,6 @@ function StatementGiantText({ children, scrollYProgress, lineBreakAfter }) {
         </span>
       ))}
     </p>
-  )
-}
-
-function ProcessStep({ step, scrollYProgress, index, total }) {
-  const segment = (1 - HEADER_SCROLL) / total
-  const start = HEADER_SCROLL + index * segment
-  const arrive = start + segment * 0.5
-  const landedY = STEP_HEIGHTS[index]
-
-  // Roll in from below, land at stacked position, stay (starts after label+heading)
-  const rotateX = useTransform(
-    scrollYProgress,
-    [start, arrive],
-    [70, 0]
-  )
-
-  const opacity = useTransform(
-    scrollYProgress,
-    [start, start + segment * 0.25],
-    [0, 1]
-  )
-
-  // Slide up from below into stacked position, then hold
-  const y = useTransform(
-    scrollYProgress,
-    [start, arrive],
-    [landedY + 100, landedY]
-  )
-
-  const scale = useTransform(
-    scrollYProgress,
-    [start, arrive],
-    [0.9, 1]
-  )
-
-  return (
-    <motion.div
-      className="process-step"
-      style={{ rotateX, opacity, y, scale, transformOrigin: 'center center' }}
-    >
-      <span className="process-number">{step.number}</span>
-      <div className="process-content">
-        <h3>{step.title}</h3>
-        <p>{step.desc}</p>
-      </div>
-    </motion.div>
   )
 }
 
@@ -248,7 +218,7 @@ function About() {
     return () => { clearTimeout(t); window.removeEventListener('resize', update) }
   }, [])
 
-  const { scrollYProgress: processScroll } = useScroll({
+  const { scrollYProgress: thesisScroll } = useScroll({
     target: processRef,
     offset: ["start start", "end end"]
   })
@@ -393,22 +363,11 @@ function About() {
       {/* ═══════ MY STORY — Editorial chronicle ═══════ */}
       <StoryChronicle />
 
-      {/* ═══════ HOW I WORK — Scroll-driven cylinder picker ═══════ */}
-      <section className="how-i-work-scroll" ref={processRef}>
-        <div className="process-sticky">
+      {/* ═══════ OPERATING THESIS — pinned word reveal ═══════ */}
+      <section className="thesis-scroll" ref={processRef}>
+        <div className="thesis-sticky">
           <div className="container">
-            <ProcessLabelHeading processScroll={processScroll} />
-            <div className="process-cylinder">
-              {processSteps.map((step, i) => (
-                <ProcessStep
-                  key={i}
-                  step={step}
-                  scrollYProgress={processScroll}
-                  index={i}
-                  total={processSteps.length}
-                />
-              ))}
-            </div>
+            <ThesisReveal progress={thesisScroll} />
           </div>
         </div>
       </section>
@@ -443,8 +402,8 @@ function About() {
         </div>
       </div>
 
-      {/* ═══════ TOOLKIT MARQUEE — full viewport ═══════ */}
-      <section className="toolkit-section">
+      {/* ═══════ CAPABILITIES — what I actually do ═══════ */}
+      <section className="capabilities-section section">
         <div className="container">
           <motion.p
             className="label"
@@ -453,7 +412,7 @@ function About() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, ease: ndsEase }}
           >
-            Toolkit
+            Capabilities
           </motion.p>
           <motion.h2
             className="section-heading"
@@ -462,18 +421,35 @@ function About() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1, ease: ndsEase }}
           >
-            What I Use
+            Strategy, build, and growth — under one roof.
           </motion.h2>
-        </div>
-        <div className="marquee-wrap">
-          <div className="marquee-track marquee-forward">
-            {[...toolkitRow1, ...toolkitRow1].map((tool, i) => (
-              <span className="marquee-item" key={i}>{tool}</span>
-            ))}
-          </div>
-          <div className="marquee-track marquee-reverse">
-            {[...toolkitRow2, ...toolkitRow2].map((tool, i) => (
-              <span className="marquee-item" key={i}>{tool}</span>
+          <div className="capabilities-grid">
+            {capabilities.map((cap, i) => (
+              <motion.div
+                className="capability"
+                key={cap.group}
+                initial={{ opacity: 0, y: 44 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ duration: 0.6, delay: i * 0.12, ease: ndsEase }}
+              >
+                <span className="capability-index">{String(i + 1).padStart(2, '0')}</span>
+                <h3>{cap.group}</h3>
+                <p className="capability-desc">{cap.desc}</p>
+                <ul className="capability-tools">
+                  {cap.tools.map((tool, ti) => (
+                    <motion.li
+                      key={tool}
+                      initial={{ opacity: 0, y: 12 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: '-40px' }}
+                      transition={{ duration: 0.4, delay: i * 0.12 + 0.2 + ti * 0.05, ease: ndsEase }}
+                    >
+                      {tool}
+                    </motion.li>
+                  ))}
+                </ul>
+              </motion.div>
             ))}
           </div>
         </div>

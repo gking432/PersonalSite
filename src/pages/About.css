@@ -271,94 +271,52 @@ Reads like a biography in a private club's member directory
   color: var(--slate);
 }
 
-/* ═══════ HOW I WORK — Scroll-driven cylinder ═══════ */
-.how-i-work-scroll {
-  height: 350vh; /* Scroll runway for label + heading + 3 steps */
+/* ═══════ OPERATING THESIS — pinned word reveal ═══════ */
+.thesis-scroll {
+  height: 260vh; /* runway for the word-by-word reveal */
   position: relative;
+  background: var(--parchment);
 }
 
-.process-sticky {
+.thesis-sticky {
   position: sticky;
-  top: 101px;
-  height: calc(100vh - 101px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  padding: var(--space-md) var(--space-lg) 0;
-  overflow: hidden;
-}
-
-.how-i-work-scroll .label {
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--slate);
-  margin-bottom: var(--space-sm);
-}
-
-.how-i-work-scroll .section-heading {
-  font-family: var(--font-serif);
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  color: var(--charcoal);
-  margin-bottom: var(--space-xl);
-  line-height: 1.1;
-}
-
-.how-i-work-scroll .container {
-  perspective: 1000px;
-  padding-top: var(--space-md);
-}
-
-.process-cylinder {
-  position: relative;
-  width: 100%;
-  max-width: 700px;
-  height: 560px; /* Fits 3 steps with adjusted spacing */
-  perspective: 1000px;
-}
-
-.process-step {
-  position: absolute;
   top: 0;
-  left: 0;
-  width: 100%;
+  height: 100vh;
   display: flex;
-  align-items: flex-start;
-  gap: var(--space-lg);
-  padding-bottom: var(--space-md);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  will-change: transform, opacity;
-  backface-visibility: hidden;
+  align-items: center;
 }
 
-.process-number {
-  font-family: var(--font-display);
-  font-size: clamp(3.5rem, 8vw, 6rem);
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: -0.03em;
-  color: var(--forest-green);
-  opacity: 0.15;
-  flex-shrink: 0;
-  min-width: 120px;
+.thesis-inner {
+  max-width: 1000px;
 }
 
-.process-content h3 {
+.thesis-kicker {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 0 0 var(--space-lg);
+}
+
+.thesis-statement {
   font-family: var(--font-serif);
-  font-size: clamp(1.5rem, 3vw, 2.2rem);
-  color: var(--charcoal);
-  margin-bottom: var(--space-xs);
-  line-height: 1.2;
+  font-weight: 400;
+  font-size: clamp(2.6rem, 7vw, 5.6rem);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  margin: 0;
 }
+.thesis-statement span { display: inline; }
 
-.process-content p {
+.thesis-support {
+  margin: var(--space-xl) 0 0;
+  max-width: 620px;
+  font-family: var(--font-serif);
+  font-size: clamp(1.15rem, 1.7vw, 1.4rem);
+  line-height: 1.6;
   color: var(--slate);
-  line-height: 1.7;
-  font-size: 1.05rem;
-  max-width: 480px;
 }
 
 /* ═══════ STATEMENT MOMENT ═══════ */
@@ -405,6 +363,21 @@ Reads like a biography in a private club's member directory
   height: 100%;
   object-fit: cover;
   z-index: 0;
+  /* Shift the warm/brown footage toward the brand's cool green while
+     keeping the interview clearly visible */
+  filter: saturate(0.6) contrast(1.05) brightness(1.04) hue-rotate(48deg);
+}
+
+/* Light green grade — darker on the left for text legibility, lighter on
+   the right so the person stays in view */
+.statement-section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(105deg, rgba(15, 38, 30, 0.74) 0%, rgba(15, 38, 30, 0.46) 45%, rgba(26, 58, 46, 0.24) 100%);
+  mix-blend-mode: multiply;
+  pointer-events: none;
 }
 
 .statement-section .container {
@@ -512,20 +485,12 @@ Reads like a biography in a private club's member directory
   margin-top: 28px;
 }
 
-/* ═══════ TOOLKIT MARQUEE — full viewport, no bleed from adjacent sections ═══════ */
-.toolkit-section {
-  height: 100vh;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--header-height) var(--gutter) var(--gutter);
-  box-sizing: border-box;
-  overflow: hidden;
+/* ═══════ CAPABILITIES — strategy / build / growth ═══════ */
+.capabilities-section {
+  padding: var(--space-2xl) 0;
 }
 
-.toolkit-section .label {
+.capabilities-section .label {
   font-family: var(--font-sans);
   font-size: 0.85rem;
   font-weight: 600;
@@ -535,71 +500,72 @@ Reads like a biography in a private club's member directory
   margin-bottom: var(--space-sm);
 }
 
-.toolkit-section .section-heading {
+.capabilities-section .section-heading {
   font-family: var(--font-serif);
   font-size: clamp(2rem, 5vw, 3.5rem);
   color: var(--charcoal);
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-2xl);
   line-height: 1.1;
+  max-width: 18ch;
 }
 
-.toolkit-section .container {
-  width: 100%;
-  flex-shrink: 0;
+.capabilities-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-xl);
 }
 
-.toolkit-section .marquee-wrap {
-  width: 100%;
+.capability {
+  min-width: 0;
+  padding-top: var(--space-md);
+  border-top: 1px solid rgba(26, 58, 46, 0.22);
 }
 
-.marquee-wrap {
+.capability-index {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--gold);
+  margin-bottom: var(--space-sm);
+}
+
+.capability h3 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+  font-weight: 400;
+  color: var(--charcoal);
+  margin: 0 0 0.6rem;
+}
+
+.capability-desc {
+  color: var(--slate);
+  font-size: 0.98rem;
+  line-height: 1.6;
+  margin: 0 0 var(--space-md);
+}
+
+.capability-tools {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  margin-top: var(--space-md);
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.marquee-track {
-  display: flex;
-  gap: var(--space-md);
-  width: max-content;
-  will-change: transform;
-}
-
-.marquee-forward {
-  animation: marquee-scroll 40s linear infinite;
-}
-
-.marquee-reverse {
-  animation: marquee-scroll-reverse 35s linear infinite;
-}
-
-@keyframes marquee-scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-@keyframes marquee-scroll-reverse {
-  0% { transform: translateX(-50%); }
-  100% { transform: translateX(0); }
-}
-
-.marquee-item {
+.capability-tools li {
   font-family: var(--font-sans);
-  font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+  font-size: 0.8rem;
   font-weight: 500;
   color: var(--charcoal);
-  white-space: nowrap;
-  padding: 14px 28px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 7px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 100px;
-  transition: all 0.3s ease;
-  user-select: none;
+  white-space: nowrap;
 }
 
-.marquee-item:hover {
-  border-color: var(--forest-green);
-  color: var(--forest-green);
+@media (max-width: 860px) {
+  .capabilities-grid { grid-template-columns: 1fr; gap: var(--space-lg); }
 }
 
 /* ═══════ CTA ═══════ */
