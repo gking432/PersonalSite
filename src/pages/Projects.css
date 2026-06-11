@@ -111,7 +111,7 @@ Client Work-inspired portfolio layout for dev projects.
 }
 
 .dev-project-screenshot,
-.dev-project-preview {
+.dev-project-concept {
   overflow: hidden;
   border: 1px solid rgba(42, 42, 42, 0.08);
   background: var(--cream);
@@ -121,8 +121,7 @@ Client Work-inspired portfolio layout for dev projects.
   aspect-ratio: 16 / 10;
 }
 
-.dev-project-alt .dev-project-screenshot,
-.dev-project-alt .dev-project-preview {
+.dev-project-alt .dev-project-screenshot {
   background: var(--parchment);
 }
 
@@ -140,96 +139,72 @@ Client Work-inspired portfolio layout for dev projects.
   filter: saturate(1.03) contrast(1.02);
 }
 
-.dev-project-preview {
+/* ── Concept tiles — confident branded placeholders for prototypes ── */
+.dev-project-concept {
   position: relative;
   aspect-ratio: 16 / 10;
-  background:
-    linear-gradient(135deg, rgba(26, 58, 46, 0.08), rgba(244, 241, 234, 0.86)),
-    var(--cream);
-}
-
-.dev-project-preview-prepme {
-  background:
-    radial-gradient(circle at 80% 18%, rgba(26, 58, 46, 0.18), transparent 30%),
-    linear-gradient(135deg, #f4f1ea, #e4ded2);
-}
-
-.dev-project-preview-dashboard {
-  background:
-    linear-gradient(90deg, rgba(26, 58, 46, 0.1) 1px, transparent 1px),
-    linear-gradient(rgba(26, 58, 46, 0.1) 1px, transparent 1px),
-    linear-gradient(135deg, #f3efe5, #e9e2d5);
-  background-size: 34px 34px, 34px 34px, auto;
-}
-
-.dev-project-preview-portfolio {
-  background:
-    radial-gradient(circle at 18% 24%, rgba(26, 58, 46, 0.2), transparent 28%),
-    linear-gradient(145deg, #ece4d7, #f7f3eb);
-}
-
-.dev-preview-browser {
-  position: absolute;
-  top: 18px;
-  left: 18px;
-  right: 18px;
-  height: 34px;
   display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 0 14px;
-  border: 1px solid rgba(26, 58, 46, 0.16);
-  border-radius: 8px;
-  background: rgba(244, 241, 234, 0.68);
+  align-items: flex-end;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  background: var(--forest-green);
+  border-color: transparent;
 }
 
-.dev-preview-browser span {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: rgba(26, 58, 46, 0.44);
-}
-
-.dev-preview-content {
+/* Subtle large monogram motif behind the label */
+.dev-project-concept::before {
+  content: '';
   position: absolute;
-  left: 28px;
-  right: 28px;
-  bottom: 26px;
+  inset: 0;
+  background:
+    radial-gradient(120% 90% at 85% 12%, rgba(244, 241, 234, 0.12), transparent 55%),
+    linear-gradient(150deg, rgba(244, 241, 234, 0.06), transparent 60%);
+  pointer-events: none;
 }
 
-.dev-preview-content span {
+.dev-project-concept-prepme { background: linear-gradient(150deg, #234034, var(--forest-green)); }
+.dev-project-concept-dashboard { background: linear-gradient(150deg, var(--forest-green), #14241c); }
+.dev-project-concept-portfolio { background: linear-gradient(150deg, #2b4a3b, #1a3a2e); }
+
+.dev-concept-status {
+  position: absolute;
+  top: clamp(1.25rem, 3vw, 2.25rem);
+  left: clamp(1.5rem, 3vw, 2.5rem);
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 234, 0.7);
+  padding: 6px 12px;
+  border: 1px solid rgba(244, 241, 234, 0.25);
+  border-radius: 999px;
+}
+
+.dev-concept-body {
+  position: relative;
+  z-index: 1;
+}
+
+.dev-concept-eyebrow {
   display: block;
   margin-bottom: 10px;
-  color: var(--forest-green);
+  color: var(--gold);
   font-family: var(--font-sans);
   font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   line-height: 1;
   text-transform: uppercase;
 }
 
-.dev-preview-content strong {
+.dev-concept-name {
   display: block;
-  max-width: 360px;
-  margin-bottom: 18px;
-  color: var(--charcoal);
+  color: var(--cream);
   font-family: var(--font-serif);
-  font-size: clamp(1.7rem, 3.4vw, 2.7rem);
+  font-size: clamp(2rem, 4vw, 3.2rem);
   font-weight: 400;
-  line-height: 1.02;
-}
-
-.dev-preview-line {
-  width: 52%;
-  height: 10px;
-  margin-top: 10px;
-  border-radius: 999px;
-  background: rgba(26, 58, 46, 0.14);
-}
-
-.dev-preview-line-long {
-  width: 84%;
+  line-height: 1.0;
+  letter-spacing: -0.02em;
 }
 
 .dev-project-details {
@@ -314,4 +289,72 @@ Client Work-inspired portfolio layout for dev projects.
   .dev-project-desc {
     font-size: 1rem;
   }
+
+  .projects-cta-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* ═══════ CLOSING CTA — green squeeze panel ═══════ */
+.projects-cta {
+  background-color: var(--forest-green);
+  padding: clamp(var(--space-2xl), 12vh, var(--space-3xl)) 0;
+  text-align: center;
+}
+
+.projects-cta-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.projects-cta-eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: var(--space-md);
+}
+
+.projects-cta-heading {
+  font-family: var(--font-serif);
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  color: var(--cream);
+  margin-bottom: var(--space-md);
+}
+
+.projects-cta-sub {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: rgba(244, 241, 234, 0.82);
+  max-width: 520px;
+  margin-bottom: var(--space-xl);
+}
+
+.projects-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  justify-content: center;
+}
+
+.projects-cta .btn-primary {
+  background-color: var(--cream);
+  color: var(--forest-green);
+  border-color: var(--cream);
+}
+
+.projects-cta .btn-primary:hover {
+  background-color: transparent;
+  color: var(--cream);
+  border-color: var(--cream);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }

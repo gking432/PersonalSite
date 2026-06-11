@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import PageTransition from '../components/PageTransition'
 import SqueezeSection from '../components/SqueezeSection'
 import './Projects.css'
@@ -81,17 +82,11 @@ function ProjectVisual({ project }) {
   }
 
   return (
-    <div className={`dev-project-preview dev-project-preview-${project.preview || 'default'}`} aria-hidden="true">
-      <div className="dev-preview-browser">
-        <span />
-        <span />
-        <span />
-      </div>
-      <div className="dev-preview-content">
-        <span>{project.type}</span>
-        <strong>{project.name}</strong>
-        <div className="dev-preview-line dev-preview-line-long" />
-        <div className="dev-preview-line" />
+    <div className={`dev-project-concept dev-project-concept-${project.preview || 'default'}`} aria-hidden="true">
+      <span className="dev-concept-status">{project.status}</span>
+      <div className="dev-concept-body">
+        <span className="dev-concept-eyebrow">{project.type}</span>
+        <strong className="dev-concept-name">{project.name}</strong>
       </div>
     </div>
   )
@@ -242,6 +237,37 @@ function Projects() {
         {projects.map((project, index) => (
           <ProjectSection key={project.name} project={project} index={index} />
         ))}
+
+        {/* ═══════ CLOSING CTA — green squeeze panel ═══════ */}
+        <SqueezeSection className="projects-cta section">
+          <div className="container">
+            <motion.div
+              className="projects-cta-content"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-80px" }}
+              variants={staggerContainer}
+            >
+              <motion.p className="projects-cta-eyebrow" variants={fadeUp}>
+                More where this came from
+              </motion.p>
+              <motion.h2 className="projects-cta-heading" variants={fadeUp}>
+                Let's build the next one together.
+              </motion.h2>
+              <motion.p className="projects-cta-sub" variants={fadeUp}>
+                These started as questions I wanted answered. If you have one worth building around, I'd like to hear it.
+              </motion.p>
+              <motion.div className="projects-cta-actions" variants={fadeUp}>
+                <Link to="/contact" className="btn btn-primary">
+                  Get in Touch
+                </Link>
+                <Link to="/client-work" className="btn btn-outline-light">
+                  See Client Work
+                </Link>
+              </motion.div>
+            </motion.div>
+          </div>
+        </SqueezeSection>
       </div>
     </PageTransition>
   )
