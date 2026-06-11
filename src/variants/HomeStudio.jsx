@@ -220,19 +220,15 @@ function HomeStudio() {
   return (
     <div className="studio">
       <header className={`studio-topbar ${barHidden ? 'is-hidden' : ''}`}>
-        <Link to="/" className="studio-mark">Gunnar&nbsp;Neuman</Link>
-        <nav className="studio-nav">
-          <Link to="/about">About</Link>
-          <div className="studio-dropdown">
-            <span className="studio-dropdown__trigger" tabIndex={0}>Work</span>
-            <div className="studio-dropdown__menu">
-              <Link to="/projects">Dev Projects</Link>
-              <Link to="/client-work">Client Work</Link>
-            </div>
-          </div>
-          <Link to="/writing">Writing</Link>
-          <Link to="/contact" className="studio-nav__cta">Contact</Link>
-        </nav>
+        <div className="studio-topbar__inner">
+          <Link to="/" className="studio-mark">Gunnar&nbsp;Neuman</Link>
+          <nav className="studio-nav">
+            <Link to="/about">About</Link>
+            <Link to="/projects">Projects</Link>
+            <Link to="/client-work">Client Work</Link>
+            <Link to="/contact">Contact</Link>
+          </nav>
+        </div>
       </header>
 
       {/* ─── HERO ─── */}

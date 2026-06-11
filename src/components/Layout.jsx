@@ -71,7 +71,7 @@ function Layout({ children }) {
     { path: '/about', label: 'About' },
     { path: '/projects', label: 'Projects' },
     { path: '/client-work', label: 'Client Work' },
-    { path: '/contact', label: 'Contact', cta: true },
+    { path: '/contact', label: 'Contact' },
   ]
 
   // Flat list for mobile menu
