@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
 import SqueezeSection from '../components/SqueezeSection'
-import TheBook from '../components/TheBook'
 import './About.css'
 
 const ndsEase = [0.22, 1, 0.36, 1]
@@ -390,8 +389,30 @@ function About() {
         </div>
       </section>
 
-      {/* ═══════ MY STORY — The Book (two-column, page-turn) ═══════ */}
-      <TheBook />
+      {/* ═══════ MY STORY — Scroll-through squeeze container ═══════ */}
+      <div ref={storyRunwayRef} className="story-scroll-runway" id="my-story">
+        <div className="story-sticky-wrapper">
+          <SqueezeSection className="my-story-section">
+            <motion.div
+              className="my-story-inner"
+              ref={storyContentRef}
+              style={{ y: storyContentY }}
+            >
+              <div className="my-story-header">
+                <p className="my-story-label">The Full Story</p>
+                <h2 className="my-story-headline">My Story</h2>
+                <div className="my-story-divider" />
+              </div>
+
+              {storyBlocks.map((block, i) => (
+                <p key={i} className={`story-body${block.first ? ' story-first' : ''}`}>
+                  {renderStoryText(block.text, block.highlight)}
+                </p>
+              ))}
+            </motion.div>
+          </SqueezeSection>
+        </div>
+      </div>
 
       {/* ═══════ HOW I WORK — Scroll-driven cylinder picker ═══════ */}
       <section className="how-i-work-scroll" ref={processRef}>
