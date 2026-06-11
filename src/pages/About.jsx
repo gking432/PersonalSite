@@ -389,12 +389,12 @@ function About() {
               className="statement-inner"
               style={{ y: statementY }}
             >
-              <p className="statement-subtitle">Philosophy</p>
-              <StatementGiantText scrollYProgress={statementTextScroll} lineBreakAfter={2}>
-                Zero to one. That's the job.
+              <p className="statement-subtitle">What's Next</p>
+              <StatementGiantText scrollYProgress={statementTextScroll} lineBreakAfter={3}>
+                I want in on problems that actually matter.
               </StatementGiantText>
               <p className="statement-paragraph">
-                Find the problem, shape the offer, build the first version, and learn from the market.
+                A team with a high bar, a real product instinct, and the ambition to build things worth building.
               </p>
             </motion.div>
           </div>
@@ -500,8 +500,8 @@ function About() {
       </div>
       )}
 
-      {/* ═══════ LET'S WORK TOGETHER CTA ═══════ */}
-      <section className="cta-section section">
+      {/* ═══════ LET'S WORK TOGETHER CTA — green squeeze panel ═══════ */}
+      <SqueezeSection className="cta-section section">
         <div className="container">
           <motion.div
             className="cta-content"
@@ -523,7 +523,7 @@ function About() {
             </motion.div>
           </motion.div>
         </div>
-      </section>
+      </SqueezeSection>
     </div>
     </PageTransition>
   )

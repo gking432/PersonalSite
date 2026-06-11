@@ -363,20 +363,17 @@ Reads like a biography in a private club's member directory
   height: 100%;
   object-fit: cover;
   z-index: 0;
-  /* Shift the warm/brown footage toward the brand's cool green while
-     keeping the interview clearly visible */
-  filter: saturate(0.6) contrast(1.05) brightness(1.04) hue-rotate(48deg);
+  /* Keep the warm brown footage, nudge it slightly toward amber/gold */
+  filter: sepia(0.22) saturate(1.08) contrast(1.02);
 }
 
-/* Light green grade — darker on the left for text legibility, lighter on
-   the right so the person stays in view */
+/* Warm left-side scrim purely for text legibility — fades to clear footage */
 .statement-section::after {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: linear-gradient(105deg, rgba(15, 38, 30, 0.74) 0%, rgba(15, 38, 30, 0.46) 45%, rgba(26, 58, 46, 0.24) 100%);
-  mix-blend-mode: multiply;
+  background: linear-gradient(105deg, rgba(26, 16, 6, 0.66) 0%, rgba(26, 16, 6, 0.3) 42%, rgba(26, 16, 6, 0) 72%);
   pointer-events: none;
 }
 
@@ -568,10 +565,11 @@ Reads like a biography in a private club's member directory
   .capabilities-grid { grid-template-columns: 1fr; gap: var(--space-lg); }
 }
 
-/* ═══════ CTA ═══════ */
+/* ═══════ CTA — green squeeze panel ═══════ */
 .cta-section {
-  padding: var(--space-2xl) 0;
+  padding: clamp(var(--space-2xl), 12vh, var(--space-3xl)) 0;
   text-align: center;
+  background-color: var(--forest-green);
 }
 
 .cta-content {
@@ -587,14 +585,28 @@ Reads like a biography in a private club's member directory
   font-weight: 400;
   line-height: 1.0;
   letter-spacing: -0.04em;
-  color: var(--charcoal);
+  color: var(--cream);
 }
 
 .cta-sub {
   font-size: 1.1rem;
   line-height: 1.7;
-  color: var(--slate);
+  color: rgba(244, 241, 234, 0.82);
   max-width: 500px;
+}
+
+.cta-section .btn-primary {
+  background-color: var(--cream);
+  color: var(--forest-green);
+  border-color: var(--cream);
+  margin-top: var(--space-sm);
+}
+
+.cta-section .btn-primary:hover {
+  background-color: transparent;
+  color: var(--cream);
+  border-color: var(--cream);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
 /* ═══════ RESPONSIVE ═══════ */
