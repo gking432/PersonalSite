@@ -34,24 +34,24 @@ export const approachPrinciples = [
 
 export const resumeHighlights = [
   {
-    value: '0 to 1',
-    label: 'Product Development',
-    detail: 'MoveMint, Terralis Print Studio, interview practice, and dashboard concepts moved from rough idea to working product surfaces.'
+    value: 'CRM',
+    label: 'AI demo for this role',
+    detail: 'An AI-assisted CRM demo built to show, not tell — lead capture, job tracking, and an assistant that handles the busywork.'
   },
   {
-    value: 'Full-cycle',
-    label: 'Client Strategy',
-    detail: 'Discovery, strategy, execution, reporting, and iteration across websites, acquisition campaigns, and conversion work.'
+    value: 'AI-built',
+    label: 'Products & prototypes',
+    detail: 'MoveMint, Terralis Print Studio, an interview tool, and this site — built hands-on with AI-assisted development.'
   },
   {
-    value: '2.5 yrs',
-    label: 'Rotational Training',
-    detail: 'Sales operations, product marketing, launches, showroom sales, and dealer sales inside a premium brand.'
+    value: 'Power BI',
+    label: 'Dashboards & KPIs',
+    detail: 'Comfortable turning scattered data into dashboards, KPIs, and reporting that people can actually act on.'
   },
   {
-    value: 'AI + Ops',
-    label: 'Role Fit',
-    detail: 'Roles where I can put AI to work — automating the busywork, wiring tools together, and turning data into decisions.'
+    value: 'Operator',
+    label: 'Built & ran a company',
+    detail: 'Ran a company end to end — strategy, delivery, clients, and the operational reality of a small business.'
   }
 ]
 
