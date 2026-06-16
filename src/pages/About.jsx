@@ -51,20 +51,20 @@ const capabilities = [
 
 const builderProfile = [
   {
-    stage: 'Customer Insight',
-    proof: 'Showroom sales, client discovery, analytics, and market research taught me to look for behavior before opinions.'
+    stage: 'Find the Problem',
+    proof: 'Showroom sales, client discovery, and analytics taught me to look for the behavior and the bottleneck before the opinion.'
   },
   {
-    stage: 'Positioning',
-    proof: 'Product launches, campaign strategy, naming, copy, and brand work taught me how to make a market understand why something matters now.'
+    stage: 'Build the Tool',
+    proof: 'React, TypeScript, Python, and AI-assisted development let me turn an idea into a working app, assistant, or internal tool — fast.'
   },
   {
-    stage: 'Prototype',
-    proof: 'React, TypeScript, modern development tools, and rapid iteration let me make ideas testable without waiting for a giant handoff.'
+    stage: 'Automate the Workflow',
+    proof: 'The goal is less busywork: connecting the tools a team already uses so data and tasks move without the manual copy-paste.'
   },
   {
-    stage: 'Launch',
-    proof: 'eCommerce, SEO, paid media, content, and reporting keep the work connected to distribution, learning, and revenue.'
+    stage: 'Measure & Run',
+    proof: 'Dashboards, KPIs, and reporting keep the system honest, so people can see what is working and decide from it.'
   }
 ]
 
@@ -346,7 +346,7 @@ function About() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1, ease: ndsEase }}
           >
-            The useful version of me is the person who can move between the customer, the market, and the build.
+            The useful version of me is the person who can find the manual work, build the fix, and make it run without babysitting.
           </motion.h2>
           <motion.div
             className="builder-dossier-grid"

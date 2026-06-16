@@ -39,7 +39,7 @@ const CHAPTERS = [
     title: 'The Lever',
     blocks: [
       { type: 'quote', text: 'In a world where tools make everyone fast, judgment becomes the real lever.' },
-      { type: 'p', text: 'The winners will not be the teams that make the most stuff. They will be the teams that know what is worth making, why it should exist, and how to execute above the noise.' },
+      { type: 'p', text: 'The winners will not be the teams that make the most stuff. They will be the teams that know what is worth building, what is worth automating, and how to execute above the noise.' },
       { type: 'p', text: 'So I went deeper into the technology behind the shift — large language models, data infrastructure, compute economics, adoption cycles, and the cultural questions that come with powerful tools becoming ordinary.' },
     ],
   },
@@ -48,8 +48,8 @@ const CHAPTERS = [
     era: 'Today',
     title: 'Building Now',
     blocks: [
-      { type: 'p', text: 'More importantly, I started building. I created Terralis Print Studio, MoveMint, an interview practice platform, and this portfolio as a living product. Each one forced the same questions: who is this for, why now, what should it feel like, how does it launch, and what would make it worth using?' },
-      { type: 'emph', text: 'I’m looking for a team with serious problems, a strong product instinct, and the ambition to build things that matter. That is where I do my best work.' },
+      { type: 'p', text: 'More importantly, I started building. I created Terralis Print Studio, MoveMint, an interview practice tool, and an AI-assisted CRM — using AI to go from idea to working software fast. Each one taught me the same thing: the leverage is in building the system, not just talking about it.' },
+      { type: 'emph', text: 'Now I want to point that at a business — using AI to automate the busywork, connect the tools a team already uses, and turn scattered data into decisions. That is the work I want to be in the room for.' },
     ],
   },
 ]
@@ -141,8 +141,8 @@ export default function StoryChronicle() {
           <p className="chron__eyebrow">My Story</p>
           <h2 className="chron__title">How I got here.</h2>
           <p className="chron__deck">
-            A path from inside a premium brand, to building on my own, to making
-            judgment the thing I lead with.
+            A path from inside a premium brand, to building on my own, to building
+            with AI and the systems that make a business run.
           </p>
         </motion.div>
 

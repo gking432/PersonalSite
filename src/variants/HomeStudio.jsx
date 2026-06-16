@@ -325,7 +325,7 @@ function HomeStudio() {
               <motion.h2
                 initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }} transition={{ duration: 0.8, ease }}>
-                Built across product, growth, and market execution.
+                Built across products, data, and operations.
               </motion.h2>
             </div>
             <div className="studio-exp__list">

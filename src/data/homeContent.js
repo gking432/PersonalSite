@@ -61,24 +61,24 @@ export const resumeTimeline = [
     title: 'GunnarNeuman.com',
     role: 'Product Developer',
     location: 'Milwaukee, WI',
-    desc: 'Created and launched early-stage products while sharpening a product direction around customer problems, launch mechanics, and measurable growth.',
-    tags: ['React', 'TypeScript', 'AI Workflows', 'Prototyping']
+    desc: 'Building products end to end with AI-assisted development, and turning that into a focus on the automations, workflows, and systems that make a business run better.',
+    tags: ['AI Workflows', 'Automation', 'React', 'TypeScript']
   },
   {
     year: 'Mar 2023-Oct 2025',
     title: 'TouchPoint Marketing Solutions',
     role: 'Founder',
     location: 'Denver, CO',
-    desc: 'Managed the full client lifecycle across strategy, execution, reporting, and optimization for businesses turning marketing spend into measurable outcomes.',
-    tags: ['Customer Acquisition', 'Analytics', 'SEO', 'Paid Media']
+    desc: 'Ran a company end to end — strategy, delivery, client management, reporting, and the day-to-day operational reality of keeping a small business running.',
+    tags: ['Operations', 'Analytics', 'Reporting', 'Client Management']
   },
   {
     year: 'Jun 2020-Feb 2023',
     title: 'Sub-Zero Group, Inc.',
     role: 'Sales Rotational Program',
     location: 'Madison, WI',
-    desc: 'Selected as the inaugural candidate for a 2.5-year rotational program across sales operations, product marketing, product launch, showroom sales, and dealer sales.',
-    tags: ['Product Marketing', 'Launches', 'Power BI', 'Premium Brand']
+    desc: 'Inaugural candidate in a 2.5-year rotational program across sales operations, product marketing, launches, and dealer sales — including training teams on custom Power BI dashboards and reporting.',
+    tags: ['Sales Operations', 'Power BI', 'Dashboards', 'Launches']
   }
 ]
 
