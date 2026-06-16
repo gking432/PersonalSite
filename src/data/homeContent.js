@@ -34,24 +34,24 @@ export const approachPrinciples = [
 
 export const resumeHighlights = [
   {
-    value: 'CRM',
-    label: 'AI demo for this role',
-    detail: 'An AI-assisted CRM demo built to show, not tell — lead capture, job tracking, and an assistant that handles the busywork.'
+    value: '0 to 1',
+    label: 'Idea to working build',
+    detail: 'I take ideas from nothing to a working build — research, design, code, and launch.'
   },
   {
-    value: 'AI-built',
-    label: 'Products & prototypes',
-    detail: 'MoveMint, Terralis Print Studio, an interview tool, and this site — built hands-on with AI-assisted development.'
+    value: 'Automation',
+    label: 'Workflows, less busywork',
+    detail: 'Focused on using AI to automate the repetitive workflows that slow a business down.'
   },
   {
-    value: 'Power BI',
-    label: 'Dashboards & KPIs',
-    detail: 'Comfortable turning scattered data into dashboards, KPIs, and reporting that people can actually act on.'
+    value: 'Systems',
+    label: 'Integrations & dashboards',
+    detail: 'Connecting the tools a team already uses and turning scattered data into clear dashboards.'
   },
   {
-    value: 'Operator',
-    label: 'Built & ran a company',
-    detail: 'Ran a company end to end — strategy, delivery, clients, and the operational reality of a small business.'
+    value: 'AI + Ops',
+    label: 'The role I want',
+    detail: 'AI, automation, and operations roles where I can put this to work.'
   }
 ]
 
