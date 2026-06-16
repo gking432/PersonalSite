@@ -237,7 +237,7 @@ function HomeStudio() {
           <motion.span className="studio-status"
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease, delay: 0.1 }}>
-            <i /> Available for product &amp; growth roles
+            <i /> Available for AI, systems &amp; operations roles
           </motion.span>
 
           <motion.h1 className="studio-headline"
@@ -249,9 +249,9 @@ function HomeStudio() {
           <motion.p className="studio-sub"
             initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease, delay: 0.35 }}>
-            I&apos;m Gunnar — a product-minded marketer, builder, and operator. I turn
-            customer insight and product strategy into products, campaigns, and
-            measurable growth.
+            I&apos;m Gunnar — a builder and operator who wants to put AI to work inside a
+            business: turning manual work into automations, assistants, and dashboards,
+            and connecting the systems a team already runs on.
           </motion.p>
 
           <motion.div className="studio-hero__actions"

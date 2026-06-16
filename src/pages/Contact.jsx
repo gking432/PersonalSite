@@ -23,6 +23,7 @@ const staggerItem = {
 
 const subjectOptions = [
   { value: 'fulltime', label: 'Full-time role' },
+  { value: 'ai-systems', label: 'AI / automation / systems' },
   { value: 'product-gtm', label: 'Product / GTM challenge' },
   { value: 'workshop', label: 'Workshop / briefing' },
   { value: 'client-project', label: 'Client project' },
@@ -36,8 +37,8 @@ const contactIntents = [
     text: 'Product marketing, growth, strategy, or operator roles where customer understanding and builder fluency both matter.'
   },
   {
-    title: 'Product / GTM Problem',
-    text: 'A product, launch, positioning, funnel, or customer behavior problem that needs a practical outside read.'
+    title: 'Process / Systems Problem',
+    text: 'Manual work, scattered data, or disconnected tools that could be automated, tracked on a dashboard, or turned into a smarter system.'
   },
   {
     title: 'Briefing or Workshop',
@@ -140,7 +141,7 @@ function Contact() {
               </div>
               <div className="hero-meta-item">
                 <span className="hero-meta-label">Open to</span>
-                <span className="hero-meta-value hero-meta-status">Relocation & remote</span>
+                <span className="hero-meta-value hero-meta-status">On-site in SE Wisconsin</span>
               </div>
             </motion.div>
           </div>
@@ -272,7 +273,7 @@ function Contact() {
                 <div className="info-item">
                   <h3>Location</h3>
                   <p>Milwaukee, WI</p>
-                  <p className="location-note">Open to relocation/remote</p>
+                  <p className="location-note">On-site in SE Wisconsin · open to hybrid</p>
                 </div>
               </div>
 
@@ -280,7 +281,7 @@ function Contact() {
                 <h2>Availability</h2>
                 <div className="availability-content">
                   <p className="availability-text">
-                    <strong>Currently seeking:</strong> Full-time roles in product marketing, growth, strategy, or product-adjacent operator work
+                    <strong>Currently seeking:</strong> Full-time roles in AI, business systems, operations, or product — where I can automate the busywork and turn data into decisions
                   </p>
                   <p className="availability-text">
                     <strong>Also available for:</strong> Product/GTM consulting, briefings, workshops, and selective build projects

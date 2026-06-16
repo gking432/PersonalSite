@@ -161,6 +161,7 @@ Client Work-inspired portfolio layout for dev projects.
   pointer-events: none;
 }
 
+.dev-project-concept-crm { background: linear-gradient(150deg, #2f4a3b, #14241c 70%, #3a2f16); }
 .dev-project-concept-prepme { background: linear-gradient(150deg, #234034, var(--forest-green)); }
 .dev-project-concept-dashboard { background: linear-gradient(150deg, var(--forest-green), #14241c); }
 .dev-project-concept-portfolio { background: linear-gradient(150deg, #2b4a3b, #1a3a2e); }

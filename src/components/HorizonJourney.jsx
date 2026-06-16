@@ -91,8 +91,8 @@ const CONTENT_STOPS = [
   {
     at: 0.36, duration: 0.18, reveal: 'sunbeam',
     label: 'IDENTITY',
-    text: ['Marketing. Product. Tools.'],
-    sub: 'The best work happens when the handoffs disappear.',
+    text: ['Systems. Data. AI.'],
+    sub: 'The best work happens when the busywork disappears.',
   },
   {
     at: 0.48, duration: 0.20, reveal: 'mist',

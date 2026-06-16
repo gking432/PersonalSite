@@ -35,17 +35,17 @@ const capabilities = [
   {
     group: 'Strategy',
     desc: 'Find the real problem and shape the offer before anyone writes a line of code.',
-    tools: ['Customer Research', 'Positioning', 'GTM', 'Analytics', 'Power BI', 'SEO'],
+    tools: ['Customer Research', 'Positioning', 'GTM', 'Analytics', 'Power BI', 'KPIs'],
   },
   {
     group: 'Build',
     desc: 'Turn the idea into something people can actually use and react to.',
-    tools: ['React', 'TypeScript', 'Python', 'Figma', 'Claude Code', 'Vite'],
+    tools: ['React', 'TypeScript', 'Python', 'APIs', 'Claude Code', 'Vite'],
   },
   {
-    group: 'Growth',
-    desc: 'Connect the work to distribution, traction, and revenue.',
-    tools: ['Paid Media', 'Content', 'eCommerce', 'Shopify', 'Email', 'Conversion'],
+    group: 'Operate',
+    desc: 'Wire the work into daily operations so it runs without babysitting.',
+    tools: ['AI Assistants', 'Workflow Automation', 'CRM', 'Integrations', 'Dashboards', 'Reporting'],
   },
 ]
 
@@ -108,8 +108,8 @@ function ThesisReveal({ progress }) {
         })}
       </h2>
       <motion.p className="thesis-support" style={{ opacity: supportOpacity, y: supportY }}>
-        The teams that win won't make the most. They'll know what's worth making,
-        why it should exist, and how to execute above the noise. That's the work
+        The teams that win won't make the most. They'll know what's worth building,
+        what's worth automating, and how to execute above the noise. That's the work
         I want to be in the room for.
       </motion.p>
     </div>
@@ -278,7 +278,7 @@ function About() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
               >
-                I work best when the problem is still messy and someone needs to turn it into a product, a story, and a plan.
+                I work best when the problem is still messy and someone needs to turn it into a working system — an automation, a dashboard, a tool the team actually uses.
               </motion.p>
               <motion.a
                 href="#my-story"
@@ -316,7 +316,7 @@ function About() {
               </div>
               <div className="hero-meta-item">
                 <span className="hero-meta-label">Operating Range</span>
-                <span className="hero-meta-value">Insight · Positioning · Prototype · Launch</span>
+                <span className="hero-meta-value">Problem · Build · Automate · Measure</span>
               </div>
               <div className="hero-meta-item">
                 <span className="hero-meta-label">Status</span>

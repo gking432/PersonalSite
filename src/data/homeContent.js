@@ -1,16 +1,16 @@
 // Shared homepage content — rendered three different ways across the design variants.
 export const identity = {
   name: 'Gunnar Neuman',
-  eyebrow: ['Product-minded marketer', 'builder', 'operator'],
+  eyebrow: ['Builder', 'operator', 'systems thinker'],
   statement:
-    'I build the path from idea to launch — turning customer insight and product strategy into products, campaigns, and measurable growth.',
-  roles: ['Product Marketing', 'Growth', '0-to-1 Building', 'Customer Acquisition', 'AI-Assisted Development']
+    'I build the path from idea to launch — and I want to put AI to work inside a business, turning manual work into automations, assistants, and dashboards.',
+  roles: ['AI & Automation', 'Business Systems', 'Data & Dashboards', '0-to-1 Building', 'AI-Assisted Development']
 }
 
 export const proofItems = [
-  { key: 'Now', value: 'Building MoveMint, Terralis Print Studio & product concepts' },
+  { key: 'Now', value: 'Building an AI-assisted CRM demo, MoveMint & Terralis Print Studio' },
   { key: 'Founded', value: 'TouchPoint Marketing Solutions — full client lifecycle' },
-  { key: 'Shipped', value: 'Brand, web & acquisition for premium local businesses' },
+  { key: 'Shipped', value: 'Brand, web & acquisition for local businesses' },
   { key: 'Trained', value: '2.5-yr rotation across a premium product brand' }
 ]
 
@@ -27,8 +27,8 @@ export const approachPrinciples = [
   },
   {
     number: '03',
-    title: 'Connect it to traction',
-    desc: 'Launch only counts when the market can respond. SEO, paid media, content, eCommerce, and reporting all serve that feedback loop.'
+    title: 'Wire it into the business',
+    desc: 'A build only counts when it runs day to day. Automations, integrations, dashboards, and clean reporting keep it connected to the people and tools that use it.'
   }
 ]
 
@@ -49,9 +49,9 @@ export const resumeHighlights = [
     detail: 'Sales operations, product marketing, launches, showroom sales, and dealer sales inside a premium brand.'
   },
   {
-    value: 'GTM',
+    value: 'AI + Ops',
     label: 'Role Fit',
-    detail: 'Product marketing, growth, or operator roles that need someone comfortable between the customer, the market, and the build.'
+    detail: 'Roles where I can put AI to work — automating the busywork, wiring tools together, and turning data into decisions.'
   }
 ]
 
@@ -62,7 +62,7 @@ export const resumeTimeline = [
     role: 'Product Developer',
     location: 'Milwaukee, WI',
     desc: 'Created and launched early-stage products while sharpening a product direction around customer problems, launch mechanics, and measurable growth.',
-    tags: ['React', 'TypeScript', 'Prototyping', 'Product Strategy']
+    tags: ['React', 'TypeScript', 'AI Workflows', 'Prototyping']
   },
   {
     year: 'Mar 2023-Oct 2025',

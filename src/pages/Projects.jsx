@@ -18,16 +18,35 @@ const staggerContainer = {
 
 const projects = [
   {
-    name: 'MoveMint',
-    type: 'Token Launcher',
-    status: 'Live Product',
+    name: 'AI-Assisted CRM',
+    type: 'Business Systems',
+    status: 'Live Demo',
     shortDesc:
-      'A live Aptos token launcher built around bonding curve mechanics, graduation logic, and a cleaner path from token idea to public market.',
-    image: '/images/project-movemint.png',
-    imageAlt: 'MoveMint landing page preview',
-    url: 'https://movemint.fun',
-    buttonLabel: 'Visit MoveMint',
-    tech: ['Aptos', 'Bonding Curves', 'Launch Systems']
+      'An AI-assisted CRM demo showing how a home-improvement business can capture leads, track jobs, and let an assistant handle the busywork — from first call to closed project.',
+    preview: 'crm',
+    // TODO: once the demo is live, set `url` (and optional `image` / `imageAlt`) below.
+    url: '',
+    buttonLabel: 'View the CRM Demo',
+    pendingLabel: 'Demo link coming soon',
+    tech: ['AI Assistant', 'CRM', 'Workflow Automation', 'Dashboards']
+  },
+  {
+    name: 'Productivity Dashboard',
+    type: 'Decision Surface',
+    status: 'Concept Build',
+    shortDesc:
+      'A dashboard concept for turning scattered tasks, data, and signals into clear KPIs and a single surface for daily decisions.',
+    preview: 'dashboard',
+    tech: ['Dashboards', 'KPIs', 'Automation']
+  },
+  {
+    name: 'PrepMe',
+    type: 'Interview Practice',
+    status: 'Private Prototype',
+    shortDesc:
+      'An interview practice concept built around realistic reps, structured feedback, and the nervous gap before high-stakes conversations.',
+    preview: 'prepme',
+    tech: ['AI Assistant', 'Feedback Loops', 'AI Workflow']
   },
   {
     name: 'Terralis Print Studio',
@@ -39,25 +58,19 @@ const projects = [
     imageAlt: 'Terralis landing page preview',
     url: 'https://terralis.space',
     buttonLabel: 'Visit Terralis',
-    tech: ['eCommerce', 'Cartography', 'Brand']
+    tech: ['eCommerce', 'Full-Stack Build', 'Brand']
   },
   {
-    name: 'PrepMe',
-    type: 'Interview Practice',
-    status: 'Private Prototype',
+    name: 'MoveMint',
+    type: 'Token Launcher',
+    status: 'Live Product',
     shortDesc:
-      'An interview practice concept built around realistic reps, structured feedback, and the nervous gap before high-stakes conversations.',
-    preview: 'prepme',
-    tech: ['Interview Prep', 'Feedback Loops', 'AI Workflow']
-  },
-  {
-    name: 'Productivity Dashboard',
-    type: 'Decision Surface',
-    status: 'Concept Build',
-    shortDesc:
-      'A workflow dashboard concept for turning scattered priorities, tasks, and signals into a calmer surface for daily decisions.',
-    preview: 'dashboard',
-    tech: ['Dashboard', 'Workflow', 'UX']
+      'A live Aptos token launcher built around bonding curve mechanics, graduation logic, and a cleaner path from token idea to public market.',
+    image: '/images/project-movemint.png',
+    imageAlt: 'MoveMint landing page preview',
+    url: 'https://movemint.fun',
+    buttonLabel: 'Visit MoveMint',
+    tech: ['Full-Stack Build', 'Payments', 'Launch Systems']
   },
   {
     name: 'This Portfolio',
@@ -147,7 +160,7 @@ function ProjectSection({ project, index }) {
               {project.buttonLabel}
             </a>
           ) : (
-            <span className="btn btn-secondary dev-project-disabled">Private Prototype</span>
+            <span className="btn btn-secondary dev-project-disabled">{project.pendingLabel || 'Private Prototype'}</span>
           )}
         </div>
       </motion.div>
@@ -204,7 +217,7 @@ function Projects() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
                 >
-                  A small collection of products and prototypes. Each one started as a question, became a working surface, and taught me something about building for a market.
+                  A small collection of products and prototypes. Each one started as a question, became a working surface, and taught me something about building systems people actually use.
                 </motion.p>
               </div>
               <motion.div
@@ -223,7 +236,7 @@ function Projects() {
                 </div>
                 <div className="hero-meta-item">
                   <span className="hero-meta-label">Focus</span>
-                  <span className="hero-meta-value">Product, UX, GTM</span>
+                  <span className="hero-meta-value">AI, systems, dashboards</span>
                 </div>
                 <div className="hero-meta-item">
                   <span className="hero-meta-label">Live</span>
