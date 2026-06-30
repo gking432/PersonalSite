@@ -24,7 +24,7 @@ const projects = [
     shortDesc:
       'An AI-assisted CRM demo showing how a home-improvement business can capture leads, track jobs, and let an assistant handle the busywork — from first call to closed project.',
     preview: 'crm',
-    url: 'https://new-71hdxjklu-gking432s-projects.vercel.app/app',
+    url: 'https://new-gking432s-projects.vercel.app/app',
     buttonLabel: 'View the CRM Demo',
     tech: ['AI Assistant', 'CRM', 'Workflow Automation', 'Dashboards']
   },
