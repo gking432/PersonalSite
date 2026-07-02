@@ -14,24 +14,104 @@ import './HomeStudio.css'
 
 const ease = [0.22, 1, 0.36, 1]
 
-const places = [
-  { name: 'Milwaukee', lat: 43.04, lon: -87.91, home: true },
-  { name: 'Madison', lat: 43.07, lon: -89.4 },
-  { name: 'Denver', lat: 39.74, lon: -104.99 },
-  { name: 'Rome', lat: 41.9, lon: 12.5 }
+const fallbackLand = [
+  [[[-168, 72], [-140, 70], [-120, 58], [-103, 52], [-96, 42], [-82, 31], [-82, 24], [-98, 18], [-116, 23], [-128, 42], [-151, 58], [-168, 72]]],
+  [[[-82, 12], [-68, 8], [-52, -6], [-40, -24], [-54, -55], [-72, -52], [-80, -22], [-82, 12]]],
+  [[[-18, 35], [5, 37], [30, 31], [44, 12], [37, -35], [15, -35], [-5, -10], [-18, 35]]],
+  [[[-10, 58], [22, 70], [52, 58], [100, 62], [144, 48], [132, 24], [78, 8], [45, 26], [12, 45], [-10, 58]]],
+  [[[112, -10], [154, -23], [146, -43], [116, -35], [112, -10]]],
+  [[[-45, 82], [-20, 74], [-35, 60], [-55, 64], [-45, 82]]]
 ]
 
-// A clean, gilded wireframe globe — slowly rotating, marking the places.
-// NDS's signature delightful object, done light on warm white.
+const cityLights = [
+  [40.71, -74.01, 1], [34.05, -118.24, 0.95], [41.88, -87.63, 0.82],
+  [29.76, -95.37, 0.7], [33.75, -84.39, 0.68], [25.76, -80.19, 0.66],
+  [19.43, -99.13, 0.95], [-23.55, -46.63, 0.92], [-34.6, -58.38, 0.82],
+  [51.51, -0.13, 0.95], [48.86, 2.35, 0.9], [52.52, 13.4, 0.78],
+  [40.42, -3.7, 0.74], [41.9, 12.5, 0.72], [55.76, 37.62, 0.82],
+  [30.04, 31.24, 0.86], [6.52, 3.38, 0.78], [-26.2, 28.05, 0.7],
+  [25.2, 55.27, 0.8], [24.71, 46.68, 0.64], [28.61, 77.21, 1],
+  [19.08, 72.88, 0.95], [13.08, 80.27, 0.82], [23.81, 90.41, 0.9],
+  [13.76, 100.5, 0.82], [1.35, 103.82, 0.85], [-6.21, 106.85, 0.88],
+  [14.6, 120.98, 0.86], [22.32, 114.17, 0.88], [31.23, 121.47, 1],
+  [39.9, 116.41, 0.94], [35.68, 139.69, 1], [37.57, 126.98, 0.94],
+  [-33.87, 151.21, 0.78], [-37.81, 144.96, 0.68]
+]
+
+const cloudBands = [
+  { lat: 52, lon: -145, width: 44, height: 9, speed: 0.55 },
+  { lat: 34, lon: -55, width: 36, height: 8, speed: 0.72 },
+  { lat: 11, lon: 28, width: 54, height: 7, speed: 1 },
+  { lat: -18, lon: 92, width: 42, height: 9, speed: 0.82 },
+  { lat: -42, lon: -12, width: 48, height: 8, speed: 0.48 },
+  { lat: 68, lon: 70, width: 32, height: 7, speed: 0.38 }
+]
+
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value))
+const radians = (value) => (value * Math.PI) / 180
+const normalizeLongitude = (lon) => ((((lon + 180) % 360) + 360) % 360) - 180
+const smoothstep = (edge0, edge1, value) => {
+  const x = clamp((value - edge0) / (edge1 - edge0), 0, 1)
+  return x * x * (3 - 2 * x)
+}
+const formatUtc = (date) => `${date.toISOString().slice(11, 19)} UTC`
+
+const getSubsolarPoint = (date) => {
+  const start = Date.UTC(date.getUTCFullYear(), 0, 0)
+  const day = (date.getTime() - start) / 86400000
+  const hour = date.getUTCHours() + date.getUTCMinutes() / 60 + date.getUTCSeconds() / 3600
+  return {
+    lat: 23.44 * Math.sin(radians((360 / 365) * (day - 81))),
+    lon: normalizeLongitude((12 - hour) * 15)
+  }
+}
+
+const decodeWorld = (topology) => {
+  const { scale, translate } = topology.transform
+  const arcs = topology.arcs.map((arc) => {
+    let x = 0
+    let y = 0
+    return arc.map(([dx, dy]) => {
+      x += dx
+      y += dy
+      return [x * scale[0] + translate[0], y * scale[1] + translate[1]]
+    })
+  })
+  const readArc = (index) => {
+    const arc = arcs[index < 0 ? ~index : index]
+    return index < 0 ? [...arc].reverse() : arc
+  }
+  const readRing = (ring) => ring.flatMap((index, i) => {
+    const arc = readArc(index)
+    return i === 0 ? arc : arc.slice(1)
+  })
+  return topology.objects.countries.geometries.flatMap((geometry) => {
+    const polygons = geometry.type === 'Polygon' ? [geometry.arcs] : geometry.arcs
+    return polygons.map((polygon) => polygon.map(readRing))
+  })
+}
+
+// Live Earth: country outlines, UTC sunlight, city lights and drifting clouds.
 function Globe() {
   const canvasRef = useRef(null)
   const pointer = useRef({ x: 0, y: 0 })
+  const landRef = useRef(fallbackLand)
+  const [utcTime, setUtcTime] = useState(() => formatUtc(new Date()))
+
+  useEffect(() => {
+    const tick = () => setUtcTime(formatUtc(new Date()))
+    tick()
+    const timer = window.setInterval(tick, 1000)
+    return () => window.clearInterval(timer)
+  }, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
     const ctx = canvas.getContext('2d')
     const dpr = Math.min(window.devicePixelRatio || 1, 2)
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const shadeCanvas = document.createElement('canvas')
+    const shadeCtx = shadeCanvas.getContext('2d')
     let raf, w, h, R, cx, cy
 
     const resize = () => {
@@ -43,146 +123,177 @@ function Globe() {
     }
     resize(); window.addEventListener('resize', resize)
 
-    const toXYZ = (lat, lon, ry, rx) => {
-      const la = (lat * Math.PI) / 180
-      const lo = (lon * Math.PI) / 180 + ry
-      const x = Math.cos(la) * Math.sin(lo)
-      const y = Math.sin(la)
-      const z = Math.cos(la) * Math.cos(lo)
-      const y2 = y * Math.cos(rx) - z * Math.sin(rx)
-      const z2 = y * Math.sin(rx) + z * Math.cos(rx)
-      return { x, y: y2, z: z2 }
+    fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+      .then((response) => response.json())
+      .then((topology) => { landRef.current = decodeWorld(topology) })
+      .catch(() => {})
+
+    const project = (lat, lon, centerLat, centerLng) => {
+      const la = radians(lat)
+      const dlon = radians(normalizeLongitude(lon - centerLng))
+      const center = radians(centerLat)
+      const cosLa = Math.cos(la)
+      const x = cosLa * Math.sin(dlon)
+      const y = Math.cos(center) * Math.sin(la) - Math.sin(center) * cosLa * Math.cos(dlon)
+      const z = Math.sin(center) * Math.sin(la) + Math.cos(center) * cosLa * Math.cos(dlon)
+      return { x, y, z, sx: cx + x * R, sy: cy - y * R }
     }
-    const baseVec = (lat, lon) => {
-      const la = (lat * Math.PI) / 180, lo = (lon * Math.PI) / 180
-      return { x: Math.cos(la) * Math.sin(lo), y: Math.sin(la), z: Math.cos(la) * Math.cos(lo) }
+
+    const clipSphere = () => {
+      ctx.beginPath()
+      ctx.arc(cx, cy, R, 0, Math.PI * 2)
+      ctx.clip()
     }
-    const rot = (v, ry, rx) => {
-      const x = v.x * Math.cos(ry) + v.z * Math.sin(ry)
-      const z0 = -v.x * Math.sin(ry) + v.z * Math.cos(ry)
-      const y2 = v.y * Math.cos(rx) - z0 * Math.sin(rx)
-      const z2 = v.y * Math.sin(rx) + z0 * Math.cos(rx)
-      return { x, y: y2, z: z2 }
+
+    const drawLand = (centerLat, centerLng) => {
+      ctx.save()
+      clipSphere()
+      landRef.current.forEach((polygon) => {
+        polygon.forEach((ring) => {
+          ctx.beginPath()
+          let started = false
+          ring.forEach(([lon, lat]) => {
+            const p = project(lat, lon, centerLat, centerLng)
+            if (p.z < -0.02) {
+              started = false
+              return
+            }
+            if (!started) {
+              ctx.moveTo(p.sx, p.sy)
+              started = true
+            } else {
+              ctx.lineTo(p.sx, p.sy)
+            }
+          })
+          ctx.closePath()
+          ctx.fillStyle = 'rgba(72, 126, 82, 0.92)'
+          ctx.fill()
+          ctx.strokeStyle = 'rgba(233, 245, 218, 0.22)'
+          ctx.lineWidth = 0.55
+          ctx.stroke()
+        })
+      })
+      ctx.restore()
     }
-    const slerp = (a, b, tt) => {
-      let d = a.x * b.x + a.y * b.y + a.z * b.z
-      d = Math.max(-1, Math.min(1, d))
-      const o = Math.acos(d)
-      if (o < 1e-4) return a
-      const s = Math.sin(o), k0 = Math.sin((1 - tt) * o) / s, k1 = Math.sin(tt * o) / s
-      return { x: a.x * k0 + b.x * k1, y: a.y * k0 + b.y * k1, z: a.z * k0 + b.z * k1 }
-    }
-    // gilded travel arcs tracing the path between places
-    const placeBase = places.map((p) => baseVec(p.lat, p.lon))
-    const arcs = []
-    for (let i = 0; i < placeBase.length - 1; i++) {
-      const seg = []
-      for (let s = 0; s <= 44; s++) {
-        const tt = s / 44
-        const m = slerp(placeBase[i], placeBase[i + 1], tt)
-        const lift = 1 + 0.17 * Math.sin(Math.PI * tt)
-        seg.push({ x: m.x * lift, y: m.y * lift, z: m.z * lift })
+
+    const drawNight = (sunCam) => {
+      const size = 220
+      shadeCanvas.width = size
+      shadeCanvas.height = size
+      const image = shadeCtx.createImageData(size, size)
+      const data = image.data
+      const half = size / 2
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          const nx = (x + 0.5 - half) / half
+          const ny = -(y + 0.5 - half) / half
+          const rr = nx * nx + ny * ny
+          const offset = (y * size + x) * 4
+          if (rr > 1) continue
+          const nz = Math.sqrt(1 - rr)
+          const light = nx * sunCam.x + ny * sunCam.y + nz * sunCam.z
+          const night = smoothstep(0.12, -0.08, light)
+          const edge = smoothstep(1, 0.74, rr)
+          data[offset] = 5
+          data[offset + 1] = 12
+          data[offset + 2] = 22
+          data[offset + 3] = Math.round(188 * night * edge)
+        }
       }
-      arcs.push(seg)
+      shadeCtx.putImageData(image, 0, 0)
+      ctx.save()
+      clipSphere()
+      ctx.drawImage(shadeCanvas, cx - R, cy - R, R * 2, R * 2)
+      ctx.restore()
+    }
+
+    const drawLights = (centerLat, centerLng, sun) => {
+      cityLights.forEach(([lat, lon, strength]) => {
+        const p = project(lat, lon, centerLat, centerLng)
+        if (p.z < 0) return
+        const sunHit = Math.sin(radians(lat)) * Math.sin(radians(sun.lat)) +
+          Math.cos(radians(lat)) * Math.cos(radians(sun.lat)) * Math.cos(radians(lon - sun.lon))
+        const night = smoothstep(0.05, -0.2, sunHit)
+        if (night <= 0.05) return
+        const alpha = night * (0.35 + p.z * 0.65) * strength
+        ctx.fillStyle = `rgba(255, 202, 108, ${alpha})`
+        ctx.beginPath()
+        ctx.arc(p.sx, p.sy, 1.15 + strength * 1.6, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.fillStyle = `rgba(255, 226, 166, ${alpha * 0.24})`
+        ctx.beginPath()
+        ctx.arc(p.sx, p.sy, 5 + strength * 4, 0, Math.PI * 2)
+        ctx.fill()
+      })
+    }
+
+    const drawClouds = (centerLat, centerLng, elapsed) => {
+      ctx.save()
+      clipSphere()
+      cloudBands.forEach((cloud, index) => {
+        const lon = normalizeLongitude(cloud.lon + elapsed * cloud.speed)
+        for (let i = 0; i < 12; i++) {
+          const progress = i / 11
+          const pointLon = normalizeLongitude(lon + (progress - 0.5) * cloud.width)
+          const pointLat = cloud.lat + Math.sin((progress + index) * Math.PI * 2) * cloud.height * 0.35
+          const p = project(pointLat, pointLon, centerLat, centerLng)
+          if (p.z < 0.03) continue
+          ctx.fillStyle = `rgba(255, 255, 255, ${0.15 + p.z * 0.13})`
+          ctx.beginPath()
+          ctx.ellipse(p.sx, p.sy, R * 0.035, R * 0.012, radians(pointLon), 0, Math.PI * 2)
+          ctx.fill()
+        }
+      })
+      ctx.restore()
     }
 
     let t = 0
     const draw = () => {
-      if (!reduce) t += 0.0016
-      const ry = t + pointer.current.x * 0.6
-      const rx = -0.35 + pointer.current.y * 0.25
+      if (!reduce) t += 0.012
+      const sun = getSubsolarPoint(new Date())
+      const centerLng = normalizeLongitude(sun.lon + 92 + pointer.current.x * 18)
+      const centerLat = clamp(sun.lat * 0.35 - pointer.current.y * 12, -24, 24)
+      const sunCam = project(sun.lat, sun.lon, centerLat, centerLng)
       ctx.clearRect(0, 0, w, h)
 
-      // soft sphere shading
-      const grad = ctx.createRadialGradient(cx - R * 0.3, cy - R * 0.35, R * 0.1, cx, cy, R * 1.1)
-      grad.addColorStop(0, 'rgba(255, 252, 244, 0.9)')
-      grad.addColorStop(0.7, 'rgba(244, 240, 230, 0.55)')
-      grad.addColorStop(1, 'rgba(232, 226, 212, 0)')
-      ctx.fillStyle = grad
-      ctx.beginPath(); ctx.arc(cx, cy, R * 1.04, 0, Math.PI * 2); ctx.fill()
+      const halo = ctx.createRadialGradient(cx - R * 0.14, cy - R * 0.18, R * 0.4, cx, cy, R * 1.45)
+      halo.addColorStop(0, 'rgba(196, 225, 242, 0.58)')
+      halo.addColorStop(0.55, 'rgba(80, 137, 161, 0.14)')
+      halo.addColorStop(1, 'rgba(21, 57, 77, 0)')
+      ctx.fillStyle = halo
+      ctx.beginPath()
+      ctx.arc(cx, cy, R * 1.35, 0, Math.PI * 2)
+      ctx.fill()
 
-      // outline ring (gilded)
-      ctx.strokeStyle = 'rgba(160, 130, 70, 0.45)'
-      ctx.lineWidth = 1.2
-      ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.stroke()
+      const ocean = ctx.createRadialGradient(cx - R * 0.36, cy - R * 0.42, R * 0.12, cx, cy, R)
+      ocean.addColorStop(0, '#b9dceb')
+      ocean.addColorStop(0.32, '#4f9fc4')
+      ocean.addColorStop(0.78, '#176487')
+      ocean.addColorStop(1, '#0b3550')
+      ctx.fillStyle = ocean
+      ctx.beginPath()
+      ctx.arc(cx, cy, R, 0, Math.PI * 2)
+      ctx.fill()
 
-      // meridians + parallels
-      const line = (pts) => {
-        ctx.beginPath()
-        let started = false
-        pts.forEach((p) => {
-          const sx = cx + p.x * R
-          const sy = cy - p.y * R
-          const front = p.z >= -0.02
-          if (front) {
-            if (!started) { ctx.moveTo(sx, sy); started = true } else ctx.lineTo(sx, sy)
-          } else { started = false }
-        })
-        ctx.stroke()
-      }
-      ctx.strokeStyle = 'rgba(26, 26, 23, 0.13)'
+      drawLand(centerLat, centerLng)
+      drawClouds(centerLat, centerLng, t)
+      drawNight(sunCam)
+      drawLights(centerLat, centerLng, sun)
+
+      const rim = ctx.createRadialGradient(cx, cy, R * 0.7, cx, cy, R * 1.04)
+      rim.addColorStop(0, 'rgba(255,255,255,0)')
+      rim.addColorStop(0.72, 'rgba(255,255,255,0)')
+      rim.addColorStop(1, 'rgba(218, 245, 255, 0.5)')
+      ctx.fillStyle = rim
+      ctx.beginPath()
+      ctx.arc(cx, cy, R, 0, Math.PI * 2)
+      ctx.fill()
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)'
       ctx.lineWidth = 1
-      for (let lon = -180; lon < 180; lon += 30) {
-        const pts = []
-        for (let lat = -90; lat <= 90; lat += 4) pts.push(toXYZ(lat, lon, ry, rx))
-        line(pts)
-      }
-      for (let lat = -60; lat <= 60; lat += 30) {
-        const pts = []
-        for (let lon = -180; lon <= 180; lon += 4) pts.push(toXYZ(lat, lon, ry, rx))
-        line(pts)
-      }
-
-      // gilded travel arcs
-      ctx.lineWidth = 1.4
-      arcs.forEach((seg) => {
-        ctx.beginPath()
-        let started = false
-        seg.forEach((bp) => {
-          const p = rot(bp, ry, rx)
-          const sx = cx + p.x * R, sy = cy - p.y * R
-          if (p.z >= -0.02) {
-            if (!started) { ctx.moveTo(sx, sy); started = true } else ctx.lineTo(sx, sy)
-          } else started = false
-        })
-        ctx.strokeStyle = 'rgba(168, 130, 60, 0.6)'
-        ctx.stroke()
-      })
-      // travelling glint along the path
-      if (arcs.length) {
-        const prog = (t * 0.05) % 1
-        const ai = Math.min(arcs.length - 1, Math.floor(prog * arcs.length))
-        const seg = arcs[ai]
-        const local = prog * arcs.length - ai
-        const bp = seg[Math.floor(local * (seg.length - 1))]
-        const p = rot(bp, ry, rx)
-        if (p.z >= -0.02) {
-          const sx = cx + p.x * R, sy = cy - p.y * R
-          ctx.fillStyle = 'rgba(206, 166, 86, 0.95)'
-          ctx.beginPath(); ctx.arc(sx, sy, 2.8, 0, Math.PI * 2); ctx.fill()
-        }
-      }
-
-      // place markers
-      places.forEach((pl) => {
-        const p = toXYZ(pl.lat, pl.lon, ry, rx)
-        if (p.z < -0.05) return
-        const sx = cx + p.x * R
-        const sy = cy - p.y * R
-        const alpha = 0.4 + (p.z + 1) * 0.3
-        ctx.fillStyle = pl.home ? `rgba(180, 140, 60, ${alpha})` : `rgba(31, 64, 52, ${alpha})`
-        ctx.beginPath(); ctx.arc(sx, sy, pl.home ? 5 : 3.5, 0, Math.PI * 2); ctx.fill()
-        if (pl.home) {
-          ctx.strokeStyle = `rgba(180, 140, 60, ${alpha * 0.5})`
-          ctx.lineWidth = 1
-          ctx.beginPath(); ctx.arc(sx, sy, 9 + Math.sin(t * 60) * 1.5, 0, Math.PI * 2); ctx.stroke()
-        }
-        if (p.z > 0.2) {
-          ctx.fillStyle = `rgba(26, 26, 23, ${alpha})`
-          ctx.font = '600 12px Inter, sans-serif'
-          ctx.fillText(pl.name, sx + 10, sy + 4)
-        }
-      })
+      ctx.beginPath()
+      ctx.arc(cx, cy, R, 0, Math.PI * 2)
+      ctx.stroke()
 
       raf = requestAnimationFrame(draw)
     }
@@ -197,7 +308,12 @@ function Globe() {
     return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); canvas.removeEventListener('pointermove', onMove) }
   }, [])
 
-  return <canvas ref={canvasRef} className="studio-globe" aria-label="Globe marking Milwaukee, Madison, Denver and Rome" />
+  return (
+    <>
+      <canvas ref={canvasRef} className="studio-globe" aria-label="Live Earth view with real-time daylight and city lights" />
+      <span className="studio-hero__globe-cap">{utcTime}</span>
+    </>
+  )
 }
 
 function HomeStudio() {
@@ -266,7 +382,6 @@ function HomeStudio() {
           initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.1, ease, delay: 0.3 }}>
           <Globe />
-          <span className="studio-hero__globe-cap">Midwest roots · building for everywhere</span>
         </motion.div>
       </section>
 
