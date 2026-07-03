@@ -129,14 +129,13 @@
 }
 .studio-hero__globe-cap {
   position: absolute;
-  bottom: -0.2rem;
+  bottom: 0.18rem;
   left: 50%;
   transform: translateX(-50%);
-  font-family: var(--font-display);
-  font-size: clamp(1.2rem, 2.3vw, 1.85rem);
-  font-weight: 400;
-  letter-spacing: 0;
-  color: var(--ink);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
   white-space: nowrap;
 }
 

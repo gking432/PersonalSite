@@ -251,19 +251,10 @@ function Globe() {
     const draw = () => {
       if (!reduce) t += 0.012
       const sun = getSubsolarPoint(new Date())
-      const centerLng = normalizeLongitude(sun.lon + 92 + pointer.current.x * 18)
+      const centerLng = normalizeLongitude(sun.lon + 92 + t * 1.15 + pointer.current.x * 18)
       const centerLat = clamp(sun.lat * 0.35 - pointer.current.y * 12, -24, 24)
       const sunCam = project(sun.lat, sun.lon, centerLat, centerLng)
       ctx.clearRect(0, 0, w, h)
-
-      const halo = ctx.createRadialGradient(cx - R * 0.14, cy - R * 0.18, R * 0.4, cx, cy, R * 1.45)
-      halo.addColorStop(0, 'rgba(196, 225, 242, 0.58)')
-      halo.addColorStop(0.55, 'rgba(80, 137, 161, 0.14)')
-      halo.addColorStop(1, 'rgba(21, 57, 77, 0)')
-      ctx.fillStyle = halo
-      ctx.beginPath()
-      ctx.arc(cx, cy, R * 1.35, 0, Math.PI * 2)
-      ctx.fill()
 
       const ocean = ctx.createRadialGradient(cx - R * 0.36, cy - R * 0.42, R * 0.12, cx, cy, R)
       ocean.addColorStop(0, '#b9dceb')
