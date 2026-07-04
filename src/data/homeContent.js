@@ -45,7 +45,7 @@ export const resumeHighlights = [
   },
   {
     value: '2.5 yrs',
-    label: 'Rotational Training',
+    label: 'Market Execution',
     detail: 'Sales operations, product marketing, launches, showroom sales, and dealer sales inside a premium brand.'
   },
   {
