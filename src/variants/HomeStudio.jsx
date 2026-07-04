@@ -166,9 +166,9 @@ function Globe() {
             }
           })
           ctx.closePath()
-          ctx.fillStyle = 'rgba(72, 126, 82, 0.92)'
+          ctx.fillStyle = 'rgba(31, 78, 57, 0.95)'
           ctx.fill()
-          ctx.strokeStyle = 'rgba(233, 245, 218, 0.22)'
+          ctx.strokeStyle = 'rgba(201, 184, 139, 0.2)'
           ctx.lineWidth = 0.55
           ctx.stroke()
         })
@@ -194,10 +194,10 @@ function Globe() {
           const light = nx * sunCam.x + ny * sunCam.y + nz * sunCam.z
           const night = smoothstep(0.12, -0.08, light)
           const edge = smoothstep(1, 0.74, rr)
-          data[offset] = 5
+          data[offset] = 4
           data[offset + 1] = 12
-          data[offset + 2] = 22
-          data[offset + 3] = Math.round(188 * night * edge)
+          data[offset + 2] = 20
+          data[offset + 3] = Math.round(176 * night * edge)
         }
       }
       shadeCtx.putImageData(image, 0, 0)
@@ -216,11 +216,11 @@ function Globe() {
         const night = smoothstep(0.05, -0.2, sunHit)
         if (night <= 0.05) return
         const alpha = night * (0.35 + p.z * 0.65) * strength
-        ctx.fillStyle = `rgba(255, 202, 108, ${alpha})`
+        ctx.fillStyle = `rgba(194, 151, 76, ${alpha * 0.92})`
         ctx.beginPath()
         ctx.arc(p.sx, p.sy, 1.15 + strength * 1.6, 0, Math.PI * 2)
         ctx.fill()
-        ctx.fillStyle = `rgba(255, 226, 166, ${alpha * 0.24})`
+        ctx.fillStyle = `rgba(212, 179, 107, ${alpha * 0.18})`
         ctx.beginPath()
         ctx.arc(p.sx, p.sy, 5 + strength * 4, 0, Math.PI * 2)
         ctx.fill()
@@ -238,7 +238,7 @@ function Globe() {
           const pointLat = cloud.lat + Math.sin((progress + index) * Math.PI * 2) * cloud.height * 0.35
           const p = project(pointLat, pointLon, centerLat, centerLng)
           if (p.z < 0.03) continue
-          ctx.fillStyle = `rgba(255, 255, 255, ${0.15 + p.z * 0.13})`
+          ctx.fillStyle = `rgba(252, 250, 244, ${0.11 + p.z * 0.1})`
           ctx.beginPath()
           ctx.ellipse(p.sx, p.sy, R * 0.035, R * 0.012, radians(pointLon), 0, Math.PI * 2)
           ctx.fill()
@@ -257,10 +257,10 @@ function Globe() {
       ctx.clearRect(0, 0, w, h)
 
       const ocean = ctx.createRadialGradient(cx - R * 0.36, cy - R * 0.42, R * 0.12, cx, cy, R)
-      ocean.addColorStop(0, '#b9dceb')
-      ocean.addColorStop(0.32, '#4f9fc4')
-      ocean.addColorStop(0.78, '#176487')
-      ocean.addColorStop(1, '#0b3550')
+      ocean.addColorStop(0, '#386f75')
+      ocean.addColorStop(0.34, '#16475c')
+      ocean.addColorStop(0.78, '#092d43')
+      ocean.addColorStop(1, '#061a2a')
       ctx.fillStyle = ocean
       ctx.beginPath()
       ctx.arc(cx, cy, R, 0, Math.PI * 2)
@@ -274,13 +274,13 @@ function Globe() {
       const rim = ctx.createRadialGradient(cx, cy, R * 0.7, cx, cy, R * 1.04)
       rim.addColorStop(0, 'rgba(255,255,255,0)')
       rim.addColorStop(0.72, 'rgba(255,255,255,0)')
-      rim.addColorStop(1, 'rgba(218, 245, 255, 0.5)')
+      rim.addColorStop(1, 'rgba(232, 222, 194, 0.32)')
       ctx.fillStyle = rim
       ctx.beginPath()
       ctx.arc(cx, cy, R, 0, Math.PI * 2)
       ctx.fill()
 
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)'
+      ctx.strokeStyle = 'rgba(232, 222, 194, 0.38)'
       ctx.lineWidth = 1
       ctx.beginPath()
       ctx.arc(cx, cy, R, 0, Math.PI * 2)

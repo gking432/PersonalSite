@@ -125,7 +125,7 @@
   height: 100%;
   display: block;
   touch-action: none;
-  filter: drop-shadow(0 28px 54px rgba(17, 52, 67, 0.2));
+  filter: drop-shadow(0 26px 48px rgba(13, 39, 34, 0.2));
 }
 .studio-hero__globe-cap {
   position: absolute;
