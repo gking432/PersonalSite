@@ -168,9 +168,6 @@ function Globe() {
           ctx.closePath()
           ctx.fillStyle = 'rgba(31, 78, 57, 0.95)'
           ctx.fill()
-          ctx.strokeStyle = 'rgba(201, 184, 139, 0.2)'
-          ctx.lineWidth = 0.55
-          ctx.stroke()
         })
       })
       ctx.restore()
@@ -251,8 +248,8 @@ function Globe() {
     const draw = () => {
       if (!reduce) t += 0.012
       const sun = getSubsolarPoint(new Date())
-      const centerLng = normalizeLongitude(sun.lon + 92 + t * 1.15 + pointer.current.x * 18)
-      const centerLat = clamp(sun.lat * 0.35 - pointer.current.y * 12, -24, 24)
+      const centerLng = normalizeLongitude(-98 + t * 1.15 + pointer.current.x * 18)
+      const centerLat = clamp(37 - pointer.current.y * 12, -24, 42)
       const sunCam = project(sun.lat, sun.lon, centerLat, centerLng)
       ctx.clearRect(0, 0, w, h)
 
