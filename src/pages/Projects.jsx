@@ -18,15 +18,16 @@ const staggerContainer = {
 
 const projects = [
   {
-    name: 'AI-Assisted CRM',
+    name: 'Northstar',
     type: 'Business Systems',
     status: 'Live Demo',
     shortDesc:
-      'An AI-assisted CRM demo showing how a home-improvement business can capture leads, track jobs, and let an assistant handle the busywork — from first call to closed project.',
-    image: '/images/project-crm.png',
-    imageAlt: 'AI-Assisted CRM dashboard showing pipeline, AI insights, and task management',
+      'An AI-assisted command center showing how a home-improvement business can capture leads, prioritize follow-up, track jobs, and turn scattered customer signals into daily action.',
+    image: '/images/project-northstar.png',
+    imageFit: 'contain',
+    imageAlt: 'Northstar command center dashboard showing lead pipeline, task management, AI insights, and business metrics',
     url: 'https://new-gking432s-projects.vercel.app/app',
-    buttonLabel: 'View the CRM Demo',
+    buttonLabel: 'View Northstar',
     tech: ['AI Assistant', 'CRM', 'Workflow Automation', 'Dashboards']
   },
   {
@@ -87,7 +88,7 @@ const projects = [
 function ProjectVisual({ project }) {
   if (project.image) {
     return (
-      <div className="dev-project-screenshot">
+      <div className={`dev-project-screenshot${project.imageFit === 'contain' ? ' dev-project-screenshot-contain' : ''}`}>
         <img src={project.image} alt={project.imageAlt} loading="lazy" />
       </div>
     )
