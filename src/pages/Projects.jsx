@@ -25,19 +25,23 @@ const projects = [
       'An AI-assisted command center showing how a home-improvement business can capture leads, prioritize follow-up, track jobs, and turn scattered customer signals into daily action.',
     image: '/images/project-northstar.png',
     imageFit: 'contain',
+    imageRatio: 'wide',
     imageAlt: 'Northstar command center dashboard showing lead pipeline, task management, AI insights, and business metrics',
     url: 'https://new-gking432s-projects.vercel.app/app',
     buttonLabel: 'View Northstar',
     tech: ['AI Assistant', 'CRM', 'Workflow Automation', 'Dashboards']
   },
   {
-    name: 'Productivity Dashboard',
-    type: 'Decision Surface',
-    status: 'Concept Build',
+    name: 'MoveMint',
+    type: 'Token Launcher',
+    status: 'Live Product',
     shortDesc:
-      'A dashboard concept for turning scattered tasks, data, and signals into clear KPIs and a single surface for daily decisions.',
-    preview: 'dashboard',
-    tech: ['Dashboards', 'KPIs', 'Automation']
+      'A live Aptos token launcher built around bonding curve mechanics, graduation logic, and a cleaner path from token idea to public market.',
+    image: '/images/project-movemint.png',
+    imageAlt: 'MoveMint landing page preview',
+    url: 'https://movemint.fun',
+    buttonLabel: 'Visit MoveMint',
+    tech: ['Full-Stack Build', 'Payments', 'Launch Systems']
   },
   {
     name: 'PrepMe',
@@ -61,16 +65,13 @@ const projects = [
     tech: ['eCommerce', 'Full-Stack Build', 'Brand']
   },
   {
-    name: 'MoveMint',
-    type: 'Token Launcher',
-    status: 'Live Product',
+    name: 'Productivity Dashboard',
+    type: 'Decision Surface',
+    status: 'Concept Build',
     shortDesc:
-      'A live Aptos token launcher built around bonding curve mechanics, graduation logic, and a cleaner path from token idea to public market.',
-    image: '/images/project-movemint.png',
-    imageAlt: 'MoveMint landing page preview',
-    url: 'https://movemint.fun',
-    buttonLabel: 'Visit MoveMint',
-    tech: ['Full-Stack Build', 'Payments', 'Launch Systems']
+      'A dashboard concept for turning scattered tasks, data, and signals into clear KPIs and a single surface for daily decisions.',
+    preview: 'dashboard',
+    tech: ['Dashboards', 'KPIs', 'Automation']
   },
   {
     name: 'This Portfolio',
@@ -87,8 +88,14 @@ const projects = [
 
 function ProjectVisual({ project }) {
   if (project.image) {
+    const screenshotClasses = [
+      'dev-project-screenshot',
+      project.imageFit === 'contain' ? 'dev-project-screenshot-contain' : '',
+      project.imageRatio === 'wide' ? 'dev-project-screenshot-wide' : ''
+    ].filter(Boolean).join(' ')
+
     return (
-      <div className={`dev-project-screenshot${project.imageFit === 'contain' ? ' dev-project-screenshot-contain' : ''}`}>
+      <div className={screenshotClasses}>
         <img src={project.image} alt={project.imageAlt} loading="lazy" />
       </div>
     )

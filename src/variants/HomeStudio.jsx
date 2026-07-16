@@ -362,6 +362,7 @@ function HomeStudio() {
             initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease, delay: 0.5 }}>
             <Link to="/projects" className="studio-btn studio-btn--primary">View the work</Link>
+            <a href="/Gunnar-Neuman-Resume.pdf" className="studio-btn studio-btn--ghost" target="_blank" rel="noreferrer">Resume</a>
             <Link to="/contact" className="studio-btn studio-btn--ghost">Get in touch &rarr;</Link>
           </motion.div>
         </div>
@@ -469,8 +470,6 @@ function HomeStudio() {
       <footer className="studio-footer">
         <span>© {new Date().getFullYear()} Gunnar Neuman</span>
         <div className="studio-footer__links">
-          <a href="https://linkedin.com" target="_blank" rel="noreferrer">LinkedIn</a>
-          <a href="https://github.com" target="_blank" rel="noreferrer">GitHub</a>
           <a href="mailto:gunnarneuman14@gmail.com">Email</a>
         </div>
       </footer>
