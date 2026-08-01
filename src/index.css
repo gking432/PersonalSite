@@ -660,7 +660,7 @@ button.btn {
   color: var(--charcoal);
   border-top: 1px solid var(--gray-200);
   padding: 2.4rem 0;
-  margin-top: var(--space-2xl);
+  margin-top: 0;
 }
 
 .footer-content {

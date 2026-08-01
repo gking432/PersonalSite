@@ -468,9 +468,11 @@ function HomeStudio() {
       </section>
 
       <footer className="studio-footer">
-        <span>© {new Date().getFullYear()} Gunnar Neuman</span>
-        <div className="studio-footer__links">
-          <a href="mailto:gunnarneuman14@gmail.com">Email</a>
+        <div className="studio-footer__inner">
+          <span>© {new Date().getFullYear()} Gunnar Neuman</span>
+          <div className="studio-footer__links">
+            <a href="mailto:gunnarneuman14@gmail.com">Email</a>
+          </div>
         </div>
       </footer>
     </div>
