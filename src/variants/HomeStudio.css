@@ -35,7 +35,7 @@
   background: rgba(252, 250, 244, 0.86);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--line);
+  border-bottom: none;
   transition: opacity 0.45s var(--ease-out), transform 0.45s var(--ease-out);
 }
 .studio-topbar__inner {

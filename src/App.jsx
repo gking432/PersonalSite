@@ -1,5 +1,6 @@
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
+import { useEffect } from 'react'
 import Layout from './components/Layout'
 import About from './pages/About'
 import Projects from './pages/Projects'
@@ -13,6 +14,12 @@ import HomeStudio from './variants/HomeStudio'
 
 function App() {
   const location = useLocation()
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
+  }, [location.pathname])
 
   // Home + standalone design directions; rendered with their own chrome.
   if (location.pathname === '/' || location.pathname === '/v1' || location.pathname === '/v2') {

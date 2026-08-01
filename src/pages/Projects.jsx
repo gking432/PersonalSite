@@ -70,15 +70,6 @@ const projects = [
     tech: ['eCommerce', 'Full-Stack Build', 'Brand']
   },
   {
-    name: 'Productivity Dashboard',
-    type: 'Decision Surface',
-    status: 'Concept Build',
-    shortDesc:
-      'A dashboard concept for turning scattered tasks, data, and signals into clear KPIs and a single surface for daily decisions.',
-    preview: 'dashboard',
-    tech: ['Dashboards', 'KPIs', 'Automation']
-  },
-  {
     name: 'This Portfolio',
     type: 'Personal Site',
     status: 'Live Build',
