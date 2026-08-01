@@ -166,7 +166,7 @@ function GunnarNeumanProfile() {
             <li style={{ marginBottom: '10px' }}>
               <strong>Terralis Print Studio</strong>: A live custom topography print studio combining
               cartography, design, and eCommerce product development. Available at{' '}
-              <a href="https://terralis.space" target="_blank" rel="noopener noreferrer">terralis.space</a>.
+              <a href="https://cartoprint.vercel.app/" target="_blank" rel="noopener noreferrer">cartoprint.vercel.app</a>.
             </li>
           </ul>
         </section>

@@ -62,7 +62,7 @@ const projects = [
       'A topographic print studio that turns meaningful places into custom wall art, with the product, brand, and buying flow designed as one system.',
     image: '/images/project-terralis.png',
     imageAlt: 'Terralis landing page preview',
-    url: 'https://terralis.space',
+    url: 'https://cartoprint.vercel.app/',
     buttonLabel: 'Visit Terralis',
     tech: ['eCommerce', 'Full-Stack Build', 'Brand']
   },
