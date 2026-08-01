@@ -49,7 +49,9 @@ const projects = [
     status: 'Private Prototype',
     shortDesc:
       'An interview practice concept built around realistic reps, structured feedback, and the nervous gap before high-stakes conversations.',
-    preview: 'prepme',
+    image: '/images/project-prepme.png',
+    imageRatio: 'prepme',
+    imageAlt: 'PrepMe dashboard showing interview setup flow',
     url: 'https://prep-lmjhbq6y2-gking432s-projects.vercel.app/dashboard',
     buttonLabel: 'View PrepMe',
     tech: ['AI Assistant', 'Feedback Loops', 'AI Workflow']
@@ -95,6 +97,7 @@ function ProjectVisual({ project }) {
       'dev-project-screenshot',
       project.imageFit === 'contain' ? 'dev-project-screenshot-contain' : '',
       project.imageRatio === 'wide' ? 'dev-project-screenshot-wide' : '',
+      project.imageRatio === 'prepme' ? 'dev-project-screenshot-prepme' : '',
       project.imageRatio === 'ultrawide' ? 'dev-project-screenshot-ultrawide' : ''
     ].filter(Boolean).join(' ')
 
