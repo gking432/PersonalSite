@@ -1,5 +1,5 @@
 /*
-HOME PAGE — NDS + PRESTIGE + FAUX-3D
+HOME PAGE; NDS + PRESTIGE + FAUX-3D
 Squeeze sections, horizontal scroll, tilt cards, parallax
 One cohesive piece. Generous whitespace. Parchment base.
 */
@@ -32,7 +32,7 @@ One cohesive piece. Generous whitespace. Parchment base.
 }
 
 /* ═══════════════════════════════════════════
-   SQUEEZE SECTION — NDS SIGNATURE ANIMATION
+   SQUEEZE SECTION; NDS SIGNATURE ANIMATION
    Colored sections emerge from the parchment base.
    Start at 88% scale + rounded corners, expand to full.
    ═══════════════════════════════════════════ */
@@ -48,7 +48,7 @@ One cohesive piece. Generous whitespace. Parchment base.
 }
 
 /* ═══════════════════════════════════════════
-   HERO — 3D PERSPECTIVE + LETTER ANIMATION
+   HERO; 3D PERSPECTIVE + LETTER ANIMATION
    ═══════════════════════════════════════════ */
 .hero {
   min-height: 100vh;
@@ -141,7 +141,7 @@ One cohesive piece. Generous whitespace. Parchment base.
   transform: translateX(4px);
 }
 
-/* Scroll indicator — directly under buttons, centered */
+/* Scroll indicator; directly under buttons, centered */
 .scroll-indicator {
   display: flex;
   flex-direction: column;
@@ -168,7 +168,7 @@ One cohesive piece. Generous whitespace. Parchment base.
 }
 
 /* ═══════════════════════════════════════════
-   APPROACH — EDITORIAL TYPOGRAPHY SECTION
+   APPROACH; EDITORIAL TYPOGRAPHY SECTION
    Lives on parchment. Breathes between colored sections.
    ═══════════════════════════════════════════ */
 .approach {
@@ -230,7 +230,7 @@ One cohesive piece. Generous whitespace. Parchment base.
 }
 
 /* ═══════════════════════════════════════════
-   PHOTO SECTIONS — SQUEEZE + PARALLAX + GIANT TEXT
+   PHOTO SECTIONS; SQUEEZE + PARALLAX + GIANT TEXT
    ═══════════════════════════════════════════ */
 .photo-section {
   position: relative;
@@ -339,10 +339,10 @@ One cohesive piece. Generous whitespace. Parchment base.
 }
 
 /* ═══════════════════════════════════════════
-   TIMELINE — FLOWS NATURALLY ON PARCHMENT/CREAM
+   TIMELINE; FLOWS NATURALLY ON PARCHMENT/CREAM
    ═══════════════════════════════════════════ */
 .background {
-  padding: 160px 0; /* very generous top/bottom — one cohesive piece */
+  padding: 160px 0; /* very generous top/bottom; one cohesive piece */
   background-color: var(--parchment);
   position: relative;
   perspective: 1000px;
@@ -578,7 +578,7 @@ One cohesive piece. Generous whitespace. Parchment base.
 }
 
 /* ═══════════════════════════════════════════
-   FINAL CTA — SQUEEZE + SCALE-IN
+   FINAL CTA; SQUEEZE + SCALE-IN
    ═══════════════════════════════════════════ */
 .cta {
   padding: var(--space-3xl) 0;

@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   VAULT DOOR — CSS 3D
+   VAULT DOOR; CSS 3D
    No canvas. Real perspective transforms.
    Door swings outward, reveals dark room,
    walk-in POV to bird's-eye table.
@@ -288,7 +288,7 @@
   backface-visibility: hidden;
   border-radius: 2px;
 
-  /* Layered brushed steel — no canvas, no flicker */
+  /* Layered brushed steel; no canvas, no flicker */
   background:
     /* Horizontal brush lines */
     repeating-linear-gradient(

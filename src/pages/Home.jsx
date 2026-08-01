@@ -110,7 +110,7 @@ function ScrollProgress() {
   )
 }
 
-// ─── SQUEEZE SECTION — NDS SIGNATURE ───
+// ─── SQUEEZE SECTION; NDS SIGNATURE ───
 // Squeeze starts as soon as the top ~15% of the section is visible on screen.
 function SqueezeSection({ children, className, as: Tag = 'section' }) {
   const ref = useRef(null)
@@ -347,7 +347,7 @@ function Home() {
       {/* ═══════ HERO ═══════ */}
       <EditorialHero />
 
-      {/* ═══════ APPROACH — EDITORIAL ═══════ */}
+      {/* ═══════ APPROACH; EDITORIAL ═══════ */}
       <section className="approach" id="approach">
         <div className="container">
           <motion.p
@@ -387,7 +387,7 @@ function Home() {
         </div>
       </section>
 
-      {/* ═══════ HORIZON JOURNEY — Full day-cycle scroll experience ═══════ */}
+      {/* ═══════ HORIZON JOURNEY; Full day-cycle scroll experience ═══════ */}
       <div className="home-anchor" id="builds">
         <HorizonJourney />
       </div>
@@ -481,7 +481,7 @@ function Home() {
         </div>
       </section>
 
-      {/* ═══════ FINAL CTA — SQUEEZE ═══════ */}
+      {/* ═══════ FINAL CTA; SQUEEZE ═══════ */}
       <SqueezeSection className="cta">
         <div className="container">
           <div className="cta-content">

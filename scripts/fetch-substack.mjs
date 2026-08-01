@@ -84,7 +84,7 @@ async function main() {
     await writeFile(OUT, JSON.stringify(posts, null, 2) + '\n')
     console.log(`[substack] wrote ${posts.length} posts from ${FEED_URL}`)
   } catch (err) {
-    // Never fail the build — keep whatever is already committed.
+    // Never fail the build; keep whatever is already committed.
     if (!existsSync(OUT)) {
       await writeFile(OUT, '[]\n')
       console.warn(`[substack] ${err.message}; wrote empty list (no existing file)`)

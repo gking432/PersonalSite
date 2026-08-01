@@ -7,7 +7,7 @@
 
 **"Old Money Meets New Capability"**
 
-This is not a tech portfolio—it's a prestige piece. The design evokes:
+This is not a tech portfolio; it's a prestige piece. The design evokes:
 - Private clubs where serious people do serious work
 - 1960s Esquire magazine editorial layouts
 - Mad Men offices with dark wood paneling

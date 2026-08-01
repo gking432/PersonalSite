@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { motion, useScroll, useTransform, useMotionTemplate, useMotionValueEvent } from 'framer-motion'
 import './StoryChronicle.css'
 
-// The full story — preserved, organized as a chronicle.
+// The full story; preserved, organized as a chronicle.
 const CHAPTERS = [
   {
     id: 'foundation',
@@ -40,7 +40,7 @@ const CHAPTERS = [
     blocks: [
       { type: 'quote', text: 'In a world where tools make everyone fast, judgment becomes the real lever.' },
       { type: 'p', text: 'The winners will not be the teams that make the most stuff. They will be the teams that know what is worth making, why it should exist, and how to execute above the noise.' },
-      { type: 'p', text: 'So I went deeper into the technology behind the shift — large language models, data infrastructure, compute economics, adoption cycles, and the cultural questions that come with powerful tools becoming ordinary.' },
+      { type: 'p', text: 'So I went deeper into the technology behind the shift: large language models, data infrastructure, compute economics, adoption cycles, and the cultural questions that come with powerful tools becoming ordinary.' },
     ],
   },
   {
@@ -136,7 +136,7 @@ export default function StoryChronicle() {
   return (
     <section className="chron" id="my-story" aria-label="My story" ref={ref} style={{ height: `${(N + 1) * 95}vh` }}>
       <div className="chron__stage">
-        {/* Intro heading — blooms in, dissolves away */}
+        {/* Intro heading; blooms in, dissolves away */}
         <motion.div className="chron__intro" style={{ opacity: introOpacity, scale: introScale, filter: introBlur, y: introY }}>
           <p className="chron__eyebrow">My Story</p>
           <h2 className="chron__title">How I got here.</h2>

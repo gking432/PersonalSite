@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════
-   STUDIO — National Design Studio language
+   STUDIO; National Design Studio language
    Light, crisp, Instrument Serif, huge whitespace, one delightful object.
-   "Government should feel like an Apple Store." — clear, beautiful, delightful.
+   "Government should feel like an Apple Store."; clear, beautiful, delightful.
    ═══════════════════════════════════════════ */
 .studio {
   --paper: #fcfaf4;
@@ -205,7 +205,7 @@
 .studio-cta h2 { margin: 0 auto; max-width: 16ch; font-family: var(--font-display); font-size: clamp(2.6rem, 7vw, 5rem); font-weight: 400; line-height: 1; letter-spacing: -0.02em; color: var(--ink); }
 .studio-cta p { max-width: 36rem; margin: 1.4rem auto 2.4rem; font-size: 1.12rem; line-height: 1.65; color: var(--ink-soft); }
 
-/* ─── SQUEEZE PANELS (NDS) — sections pull into rounded, inset cards on scroll ─── */
+/* ─── SQUEEZE PANELS (NDS); sections pull into rounded, inset cards on scroll ─── */
 .studio-band { padding: clamp(1.5rem, 4vh, 3.5rem) 0; }
 .studio-panel { padding: clamp(3.5rem, 8vh, 7rem) 0; }
 .studio-panel__inner {

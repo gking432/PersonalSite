@@ -214,7 +214,7 @@ function HomeOpus() {
         </nav>
       </header>
 
-      {/* ═══════ HERO — THE OVERTURE ═══════ */}
+      {/* ═══════ HERO; THE OVERTURE ═══════ */}
       <section className="opus-hero" ref={heroRef}>
         <motion.div className="opus-hero__scene" style={{ scale: sceneScale }}>
           <VespersCanvas />
@@ -265,7 +265,7 @@ function HomeOpus() {
         </div>
       </section>
 
-      {/* ═══════ CHAPTER I — THE TENETS ═══════ */}
+      {/* ═══════ CHAPTER I; THE TENETS ═══════ */}
       <section className="opus-chapter opus-tenets">
         <div className="opus-wrap">
           <div className="opus-chapter__head">
@@ -295,7 +295,7 @@ function HomeOpus() {
         </div>
       </section>
 
-      {/* ═══════ CHAPTER II — THE RECORD ═══════ */}
+      {/* ═══════ CHAPTER II; THE RECORD ═══════ */}
       <section className="opus-chapter opus-record">
         <div className="opus-wrap">
           <div className="opus-chapter__head">

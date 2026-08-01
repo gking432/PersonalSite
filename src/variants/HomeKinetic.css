@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   V2 — KINETIC MAXIMALISM · "Inferno Type"
+   V2; KINETIC MAXIMALISM · "Inferno Type"
    Oversized serif, firelight sweeping the letters, ember marquee.
    ═══════════════════════════════════════════ */
 .v-kinetic {
@@ -148,7 +148,7 @@
   100% { transform: translateX(-50%); }
 }
 
-/* ─── Section theming — kinetic ─── */
+/* ─── Section theming; kinetic ─── */
 .v-kinetic .v-section { border-top: 1px solid rgba(255, 138, 61, 0.12); }
 
 .v-kinetic .v-eyebrow { color: var(--ember-bright); }

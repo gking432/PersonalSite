@@ -117,7 +117,7 @@ function Contact() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
               >
-                Full-time, contract, or consulting — send the role, product, or problem. I&apos;ll read the context and respond with a useful next step.
+                Full-time, contract, or consulting. Send the role, product, or problem. I&apos;ll read the context and respond with a useful next step.
               </motion.p>
             </div>
             <motion.div
@@ -147,7 +147,7 @@ function Contact() {
         </div>
       </section>
 
-      {/* Contact Content — Squeezed */}
+      {/* Contact Content; Squeezed */}
       <SqueezeSection className="contact-content section">
         <div className="container">
           <motion.div

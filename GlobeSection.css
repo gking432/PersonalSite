@@ -1,5 +1,5 @@
 /*
-GLOBE SECTION — Real continent outlines + sequential zoom storytelling
+GLOBE SECTION; Real continent outlines + sequential zoom storytelling
 Canvas renders the globe with GeoJSON data. Story cards appear per stop.
 Dark background, prestige palette, NDS easing.
 */
@@ -11,7 +11,7 @@ Dark background, prestige palette, NDS easing.
   background-color: var(--parchment);
 }
 
-/* ── BLACK BACKGROUND — only during outro. Absolute so it scrolls with section, not fixed. ── */
+/* ── BLACK BACKGROUND; only during outro. Absolute so it scrolls with section, not fixed. ── */
 .globe-bg {
   position: absolute;
   inset: 0;
@@ -162,7 +162,7 @@ Dark background, prestige palette, NDS easing.
 }
 
 /* ═══════════════════════════════════════════
-   STORY CARD — bottom-left of viewport
+   STORY CARD; bottom-left of viewport
    Shows during dwell phases
    ═══════════════════════════════════════════ */
 .globe-story-card {
@@ -222,7 +222,7 @@ Dark background, prestige palette, NDS easing.
   max-width: none;
 }
 
-/* Outro — black squeeze section, only when "The common thread?" shows. Inset so all 4 corners visible. */
+/* Outro; black squeeze section, only when "The common thread?" shows. Inset so all 4 corners visible. */
 .globe-outro-squeeze {
   position: absolute;
   top: calc(var(--header-height) + 24px);

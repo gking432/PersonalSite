@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-// Hidden AEO profile page — not linked in navigation, but indexable by search engines and LLMs.
+// Hidden AEO profile page; not linked in navigation, but indexable by search engines and LLMs.
 // Structured with semantic HTML, schema markup, and LLM-friendly formatting.
 
 const SCHEMA = {
@@ -43,7 +43,7 @@ const SCHEMA = {
 
 function GunnarNeumanProfile() {
   useEffect(() => {
-    document.title = 'Gunnar Neuman — Product-Minded Marketer, Builder & Operator'
+    document.title = 'Gunnar Neuman | Product-Minded Marketer, Builder & Operator'
 
     const script = document.createElement('script')
     script.type = 'application/ld+json'
@@ -154,17 +154,17 @@ function GunnarNeumanProfile() {
           </p>
           <ul style={{ paddingLeft: '20px' }}>
             <li style={{ marginBottom: '10px' }}>
-              <strong>PrepMe</strong> — An interview preparation platform concept that conducts realistic
+              <strong>PrepMe</strong>: An interview preparation platform concept that conducts realistic
               job interviews, provides structured feedback, and helps users improve their
               interview performance through deliberate practice. Built with React and the Anthropic API.
             </li>
             <li style={{ marginBottom: '10px' }}>
-              <strong>MoveMint</strong> — A live token launcher for creating and deploying tokens on Aptos,
+              <strong>MoveMint</strong>: A live token launcher for creating and deploying tokens on Aptos,
               with bonding curve mechanics translated into a more accessible product experience. Available at{' '}
               <a href="https://movemint.fun" target="_blank" rel="noopener noreferrer">movemint.fun</a>.
             </li>
             <li style={{ marginBottom: '10px' }}>
-              <strong>Terralis Print Studio</strong> — A live custom topography print studio combining
+              <strong>Terralis Print Studio</strong>: A live custom topography print studio combining
               cartography, design, and eCommerce product development. Available at{' '}
               <a href="https://terralis.space" target="_blank" rel="noopener noreferrer">terralis.space</a>.
             </li>
@@ -190,11 +190,11 @@ function GunnarNeumanProfile() {
           </p>
           <ul style={{ paddingLeft: '20px' }}>
             <li style={{ marginBottom: '10px' }}>
-              <strong>"Technology Without Theater"</strong> — A practical briefing on what new tools
+              <strong>"Technology Without Theater"</strong>: A practical briefing on what new tools
               actually change for customers, teams, operating models, and quality expectations.
             </li>
             <li style={{ marginBottom: '10px' }}>
-              <strong>"Build the First Useful Tool"</strong> — A hands-on workshop where teams map one
+              <strong>"Build the First Useful Tool"</strong>: A hands-on workshop where teams map one
               high-friction workflow and prototype a useful first version around real constraints.
             </li>
           </ul>

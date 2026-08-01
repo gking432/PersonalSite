@@ -24,7 +24,7 @@ const staggerItem = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: ndsEase } }
 }
 
-// Operating thesis — the point of view that drives the work.
+// Operating thesis; the point of view that drives the work.
 // Accent words light up gold; the rest reveal charcoal word-by-word on scroll.
 const thesisWords = [
   'Tools', 'made', 'everyone', 'fast.', { w: 'Judgment', accent: true },
@@ -68,7 +68,7 @@ const builderProfile = [
   }
 ]
 
-// ── OPERATING THESIS — pinned, scroll-driven word reveal ──
+// ── OPERATING THESIS; pinned, scroll-driven word reveal ──
 // A single opinionated statement that lights up word-by-word as you scroll,
 // with the point-of-view paragraph resolving underneath it.
 function ThesisReveal({ progress }) {
@@ -148,7 +148,7 @@ function StatementGiantText({ children, scrollYProgress, lineBreakAfter }) {
   )
 }
 
-// Story content — each item is either a paragraph, a pullQuote (breakout), or a moment (big display text)
+// Story content; each item is either a paragraph, a pullQuote (breakout), or a moment (big display text)
 const storyBlocks = [
   { text: 'I started my career at Sub-Zero Group, Inc. in a rotational program that moved through sales operations, product marketing, product launch, showroom sales, and external dealer sales. It was an unusually good seat for learning how premium products move through a market.', first: true },
   { text: 'I saw the parts most people only talk about in pieces: the product story, the sales team, the dealer network, the showroom experience, the launch material, and the discipline required to make a brand feel consistent at every touchpoint.' },
@@ -190,7 +190,7 @@ function About() {
   const statementRef = useRef(null)
   const philosophyRef = useRef(null)
 
-  // Story scroll — content scrolls through pinned squeeze container
+  // Story scroll; content scrolls through pinned squeeze container
   const { scrollYProgress: storyScroll } = useScroll({
     target: storyRunwayRef,
     offset: ["start start", "end end"]
@@ -233,7 +233,7 @@ function About() {
   })
   const statementY = useTransform(statementScroll, [0, 1], [60, -60])
 
-  // PhotoSection1 — Philosophy (moved from Home)
+  // PhotoSection1; Philosophy (moved from Home)
   const { scrollYProgress: philosophyScroll } = useScroll({
     target: philosophyRef,
     offset: ["start end", "end start"]
@@ -327,7 +327,7 @@ function About() {
         </div>
       </section>
 
-      {/* ═══════ BUILDER DOSSIER — colored squeeze ═══════ */}
+      {/* ═══════ BUILDER DOSSIER; colored squeeze ═══════ */}
       <SqueezeSection className="builder-dossier section">
         <div className="container">
           <motion.p
@@ -366,10 +366,10 @@ function About() {
         </div>
       </SqueezeSection>
 
-      {/* ═══════ MY STORY — Editorial chronicle ═══════ */}
+      {/* ═══════ MY STORY; Editorial chronicle ═══════ */}
       <StoryChronicle />
 
-      {/* ═══════ OPERATING THESIS — pinned word reveal ═══════ */}
+      {/* ═══════ OPERATING THESIS; pinned word reveal ═══════ */}
       <section className="thesis-scroll" ref={processRef}>
         <div className="thesis-sticky">
           <div className="container">
@@ -408,7 +408,7 @@ function About() {
         </div>
       </div>
 
-      {/* ═══════ CAPABILITIES — what I actually do ═══════ */}
+      {/* ═══════ CAPABILITIES; what I actually do ═══════ */}
       <section className="capabilities-section section">
         <div className="container">
           <motion.p
@@ -427,7 +427,7 @@ function About() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1, ease: ndsEase }}
           >
-            Strategy, build, and growth — under one roof.
+            Strategy, build, and growth under one roof.
           </motion.h2>
           <div className="capabilities-grid">
             {capabilities.map((cap, i) => (
@@ -506,7 +506,7 @@ function About() {
       </div>
       )}
 
-      {/* ═══════ LET'S WORK TOGETHER CTA — green squeeze panel ═══════ */}
+      {/* ═══════ LET'S WORK TOGETHER CTA; green squeeze panel ═══════ */}
       <SqueezeSection className="cta-section section">
         <div className="container">
           <motion.div
@@ -520,7 +520,7 @@ function About() {
               Let's Work Together
             </motion.h2>
             <motion.p className="cta-sub" variants={fadeUp}>
-              I'm looking for my next role — full-time, contract, or consulting. If you have a problem worth solving and a high bar for the people solving it, let's talk.
+              I'm looking for my next role: full-time, contract, or consulting. If you have a problem worth solving and a high bar for the people solving it, let's talk.
             </motion.p>
             <motion.div variants={fadeUp}>
               <Link to="/contact" className="btn btn-primary">

@@ -246,7 +246,7 @@ function VaultDoor() {
                   </div>
                 </div>
 
-                {/* ── DOOR EDGE (thickness — the money detail) ── */}
+                {/* ── DOOR EDGE (thickness; the money detail) ── */}
                 <div className="vault-door-edge">
                   {[0.18, 0.36, 0.64, 0.82].map((pos, i) => (
                     <div

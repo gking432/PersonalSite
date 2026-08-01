@@ -1,5 +1,5 @@
 /*
-CLIENT WORK PAGE — NDS Editorial Inline Expansion
+CLIENT WORK PAGE; NDS Editorial Inline Expansion
 No modals. Progressive disclosure on-page.
 */
 
@@ -46,7 +46,7 @@ No modals. Progressive disclosure on-page.
 }
 
 /* ==========================================
-   FEATURED PROJECTS — Editorial Layout
+   FEATURED PROJECTS; Editorial Layout
    ========================================== */
 .client-feature {
   padding: var(--space-3xl) 0;
@@ -57,7 +57,7 @@ No modals. Progressive disclosure on-page.
   padding: var(--space-3xl) 0;
 }
 
-/* Header — number sits left of title + tagline */
+/* Header; number sits left of title + tagline */
 .client-feature-header-left {
   display: flex;
   flex-direction: row;
@@ -103,14 +103,14 @@ No modals. Progressive disclosure on-page.
   color: var(--warm-gray);
 }
 
-/* Viewport-fill layout when expanded — header grows, modules at bottom */
+/* Viewport-fill layout when expanded; header grows, modules at bottom */
 .client-expand-viewport {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
 
-/* Snap scroll targets the number — position it fully below the header */
+/* Snap scroll targets the number; position it fully below the header */
 .client-expand-viewport .client-feature-number {
   scroll-margin-top: calc(var(--header-height) + 40px);
 }
@@ -127,7 +127,7 @@ No modals. Progressive disclosure on-page.
   flex-shrink: 0;
 }
 
-/* Header with About — expanded: (number + title) | About */
+/* Header with About; expanded: (number + title) | About */
 .client-feature-header-with-about {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -162,7 +162,7 @@ No modals. Progressive disclosure on-page.
   margin: 0;
 }
 
-/* Body — preview on left, details on right */
+/* Body; preview on left, details on right */
 .client-feature-body {
   display: grid;
   grid-template-columns: 1fr 2fr;
@@ -182,7 +182,7 @@ No modals. Progressive disclosure on-page.
 
 /*
  * Screenshot projects (Elevate, WeatherFixers): row height = details content only;
- * left column stretches to match — no extra empty space inside .client-feature-details.
+ * left column stretches to match; no extra empty space inside .client-feature-details.
  */
 .client-feature-body--screenshot {
   align-items: stretch;
@@ -218,7 +218,7 @@ No modals. Progressive disclosure on-page.
   display: block;
 }
 
-/* Left column — preview images or scope */
+/* Left column; preview images or scope */
 .client-feature-preview {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -281,7 +281,7 @@ No modals. Progressive disclosure on-page.
   border-bottom: 1px solid var(--gray-200);
 }
 
-/* Right column — description, tech, CTA */
+/* Right column; description, tech, CTA */
 .client-feature-desc {
   color: var(--slate);
   line-height: 1.8;
@@ -315,7 +315,7 @@ No modals. Progressive disclosure on-page.
 }
 
 /* ==========================================
-   EXPANDED VIEW — Replaces body in-place
+   EXPANDED VIEW; Replaces body in-place
    ========================================== */
 .client-expand {
   padding-top: var(--space-xl);
@@ -348,7 +348,7 @@ No modals. Progressive disclosure on-page.
   margin: 0;
 }
 
-/* Brief / Strategy / Scope — 3-column */
+/* Brief / Strategy / Scope; 3-column */
 .client-expand-meta {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -386,7 +386,7 @@ No modals. Progressive disclosure on-page.
 }
 
 /* ==========================================
-   IFRAME — Website preview inside module
+   IFRAME; Website preview inside module
    ========================================== */
 .client-module-iframe-container {
   position: relative;
@@ -464,7 +464,7 @@ No modals. Progressive disclosure on-page.
 }
 
 /* ==========================================
-   MODULES — Expandable Subsections
+   MODULES; Expandable Subsections
    ========================================== */
 .client-expand-modules {
   margin-bottom: var(--space-lg);
@@ -481,7 +481,7 @@ No modals. Progressive disclosure on-page.
   margin-bottom: var(--space-sm);
 }
 
-/* Module row — the clickable header */
+/* Module row; the clickable header */
 .client-module-section {
   border-top: 1px solid var(--gray-200);
 }
@@ -562,7 +562,7 @@ No modals. Progressive disclosure on-page.
 
 
 /* ==========================================
-   MODULE CONTENT — Expanded
+   MODULE CONTENT; Expanded
    ========================================== */
 .client-module-content {
   overflow: hidden;
@@ -619,7 +619,7 @@ No modals. Progressive disclosure on-page.
 }
 
 /* ==========================================
-   MASONRY — Ads images
+   MASONRY; Ads images
    ========================================== */
 .client-module-masonry {
   column-count: 3;
@@ -643,7 +643,7 @@ No modals. Progressive disclosure on-page.
 }
 
 /* ==========================================
-   POSTCARDS — 2-column grid
+   POSTCARDS; 2-column grid
    ========================================== */
 .client-module-postcards {
   display: grid;
@@ -663,7 +663,7 @@ No modals. Progressive disclosure on-page.
 }
 
 /* ==========================================
-   MERCHANDISING TABS — Tabbed gallery
+   MERCHANDISING TABS; Tabbed gallery
    ========================================== */
 .merch-tabs {
   border: 1px solid var(--gray-200);
@@ -734,7 +734,7 @@ No modals. Progressive disclosure on-page.
 }
 
 /* ==========================================
-   DESIGN FILES — Small grid by team
+   DESIGN FILES; Small grid by team
    ========================================== */
 .client-module-design-team {
   margin-bottom: var(--space-lg);
@@ -771,7 +771,7 @@ No modals. Progressive disclosure on-page.
 }
 
 /* ==========================================
-   CLOSE BUTTON — Bottom of expansion
+   CLOSE BUTTON; Bottom of expansion
    ========================================== */
 /* Close uses global .btn.btn-secondary; keep spacing only */
 .client-expand-close {
@@ -886,7 +886,7 @@ No modals. Progressive disclosure on-page.
 }
 
 /* ==========================================
-   REIMAGINED CLIENT WORK — live-site-forward
+   REIMAGINED CLIENT WORK; live-site-forward
    ========================================== */
 
 /* ── Featured case ── */

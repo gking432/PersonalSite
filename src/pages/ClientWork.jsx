@@ -65,7 +65,7 @@ const clientProjects = [
     shortDesc: 'NFL-inspired dog uniforms with a complete brand, storefront, product catalog, and ad system across all 32 teams.',
     about: 'A full brand and eCommerce build from zero: logo, identity system, 32 team designs, storefront, and ad creative for a print-on-demand dog apparel concept.',
     description: 'Create a complete brand identity and eCommerce presence for a print-on-demand dog apparel line featuring NFL team-inspired designs across all 32 franchises.',
-    brief: 'Build a cohesive brand from scratch — logo, identity system, product designs for all 32 NFL teams, and a full eCommerce storefront ready for print-on-demand fulfillment.',
+    brief: 'Build a cohesive brand from scratch: logo, identity system, product designs for all 32 NFL teams, and a full eCommerce storefront ready for print-on-demand fulfillment.',
     strategy: 'Built the concept around an easy customer truth: pet owners who are sports fans love visible team identity. The work turned that into team-specific product mockups, a storefront, and social creative.',
     scope: '32 unique team designs, complete brand guidelines, full eCommerce site, social ad campaigns, and print-on-demand integration.',
     screenshotLabel: 'PetUnis Storefront',
@@ -221,7 +221,7 @@ const clientProjects = [
     description:
       'Design and launch a shoppable merch site for a social-first brand: clear product storytelling, drop-friendly layout, and a path from Instagram to purchase.',
     brief:
-      'Ship a merch eCommerce experience aligned to an existing Instagram audience—fast to scan, easy to buy, and consistent with the account’s look and voice.',
+      'Ship a merch eCommerce experience aligned to an existing Instagram audience: fast to scan, easy to buy, and consistent with the account’s look and voice.',
     strategy:
       'Structured the store around social discovery: strong visuals, simple navigation, and a short path from Instagram interest to mobile checkout.',
     scope: 'Merch storefront build, collection and product presentation, and supporting merchandising imagery for the catalog.',
@@ -267,7 +267,7 @@ const clientProjects = [
     about:
       'Patti Means Ministry was the first real project I landed outside family and friends. I would make different choices today, but it belongs here because it shows the beginning of the story.',
     description:
-      'Patti Means Ministry was my first paid freelance project outside family and friends. The work itself isn’t what I’d highlight today, but it matters to my story—so it stays in the lineup.',
+      'Patti Means Ministry was my first paid freelance project outside family and friends. The work itself isn’t what I’d highlight today, but it matters to my story, so it stays in the lineup.',
     brief: 'Modernize a dated nonprofit website to better serve families seeking hospice care information while also improving the donation experience.',
     strategy: 'Focused on warmth, clarity, and trust. Redesigned the information architecture to prioritize the most common visitor needs: understanding services, contacting the organization, and donating.',
     scope: 'Modernized visual identity, clearer navigation, better mobile experience, improved donation flow, and professional credibility.',
@@ -331,9 +331,9 @@ const clientProjects = [
       'This was a sales pitch, not shipped client work. I am including it because a clickable spec site is one of the clearest ways to show direction in the room.',
     description:
       'Unsold website redesign pitch for a bar & grill, built as a live hosted site to demonstrate layout, tone, and flow during sales conversations.',
-    brief: 'Pitch a full restaurant website redesign—homepage, menu, hours, reviews, and contact—without a signed engagement.',
-    strategy: 'Treat the site as a leave-behind: clear navigation, appetizing visuals, and obvious paths to menu, location, and third-party ordering—so a prospect can feel the direction before committing.',
-    scope: 'Website redesign concept only (pitch). No menu design or branding packages—just the proposed site.',
+    brief: 'Pitch a full restaurant website redesign covering the homepage, menu, hours, reviews, and contact flow without a signed engagement.',
+    strategy: 'Treat the site as a leave-behind: clear navigation, appetizing visuals, and obvious paths to menu, location, and third-party ordering, so a prospect can feel the direction before committing.',
+    scope: 'Website redesign concept only (pitch). No menu design or branding packages, just the proposed site.',
     screenshotLabel: 'Blue Lizard pitch site',
     screenshotImage: '/Blue%20Lizard/Blue%20Lizard%20Site%20shot.png',
     modules: [
@@ -646,7 +646,7 @@ function PostcardGallery({ mod }) {
   )
 }
 
-/* ─── Browser frame — the live site, made to feel deliberate ───
+/* ─── Browser frame; the live site, made to feel deliberate ───
    Render the iframe at a full desktop width and scale it down so the embedded
    site uses its DESKTOP layout (no mobile breakpoint, no horizontal scroll),
    then fits whatever column it lives in. */
@@ -688,7 +688,7 @@ function BrowserFrame({ project, url }) {
         >
           <iframe
             src={url}
-            title={`${project.name} — live site`}
+            title={`${project.name}: live site`}
             className="bf-iframe"
             loading="lazy"
             style={{ width: BF_DESKTOP_W, height: BF_VIS_H + cover, marginTop: -cover }}
@@ -699,7 +699,7 @@ function BrowserFrame({ project, url }) {
   )
 }
 
-/* ─── Surface renderer — one module = one surface in the viewer ─── */
+/* ─── Surface renderer; one module = one surface in the viewer ─── */
 function renderSurface(project, mod) {
   if (mod.websiteUrl) return <BrowserFrame project={project} url={mod.websiteUrl} />
   if (mod.adsImagesFolder) return <AdsGallery project={project} mod={mod} />
@@ -722,7 +722,7 @@ function renderSurface(project, mod) {
   return null
 }
 
-/* ─── Surface viewer — flat tabs, live site shown first ─── */
+/* ─── Surface viewer; flat tabs, live site shown first ─── */
 function SurfaceViewer({ project }) {
   const mods = project.modules
   const siteIdx = mods.findIndex((m) => m.websiteUrl)
@@ -762,7 +762,7 @@ function SurfaceViewer({ project }) {
   )
 }
 
-/* ─── Featured case — full, live-site-forward treatment ─── */
+/* ─── Featured case; full, live-site-forward treatment ─── */
 function FeaturedCase({ project, index, alt }) {
   const number = String(index + 1).padStart(2, '0')
 
@@ -825,7 +825,7 @@ function FeaturedCase({ project, index, alt }) {
   return <section className="cw-case">{content}</section>
 }
 
-/* ─── Index card — compact, expands into the same surface viewer ─── */
+/* ─── Index card; compact, expands into the same surface viewer ─── */
 function IndexCard({ project, number }) {
   const [open, setOpen] = useState(false)
 
@@ -913,7 +913,7 @@ function ClientWork() {
                   transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
                 >
                   Before the products, there were clients. This is where I learned the full
-                  lifecycle — brand, storefront, ads, direct mail, and merchandising — for real
+                  lifecycle: brand, storefront, ads, direct mail, and merchandising for real
                   businesses with real constraints. You can click into the sites I built and use them.
                 </motion.p>
               </div>
@@ -949,7 +949,7 @@ function ClientWork() {
           <FeaturedCase key={project.id} project={project} index={i} alt={i % 2 !== 0} />
         ))}
 
-        {/* The rest — compact index */}
+        {/* The rest; compact index */}
         <section className="cw-index-section section">
           <div className="container">
             <motion.p
@@ -977,7 +977,7 @@ function ClientWork() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.14, ease: ndsEase }}
             >
-              Smaller builds, pitches, and early work. Kept honest — open any of them to browse the live site.
+              Smaller builds, pitches, and early work. Kept honest: open any of them to browse the live site.
             </motion.p>
             <div className="cw-index-grid">
               {indexed.map((project, i) => (

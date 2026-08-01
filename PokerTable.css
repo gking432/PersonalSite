@@ -1,5 +1,5 @@
 /*
-POKER TABLE — NDS EDITORIAL CARD DEAL
+POKER TABLE; NDS EDITORIAL CARD DEAL
 3D card flip with prestige styling.
 Cards on forest-green surface, NDS card backs, editorial fronts.
 */
@@ -38,7 +38,7 @@ Cards on forest-green surface, NDS card backs, editorial fronts.
 }
 
 /* ==========================================
-   LEFT COLUMN — Text
+   LEFT COLUMN; Text
    ========================================== */
 .poker-content-column {
   flex: 0 0 40%;
@@ -97,7 +97,7 @@ Cards on forest-green surface, NDS card backs, editorial fronts.
 }
 
 /* ==========================================
-   RIGHT COLUMN — Card Surface
+   RIGHT COLUMN; Card Surface
    ========================================== */
 .poker-table-column {
   flex: 0 0 60%;
@@ -180,7 +180,7 @@ Cards on forest-green surface, NDS card backs, editorial fronts.
     0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
-/* White edge — like a real card */
+/* White edge; like a real card */
 .card-back-edge {
   position: absolute;
   inset: 4px;
@@ -243,7 +243,7 @@ Cards on forest-green surface, NDS card backs, editorial fronts.
   line-height: 1;
 }
 
-/* Corner pips — small stars in each corner */
+/* Corner pips; small stars in each corner */
 .card-back-pip {
   position: absolute;
   width: 12px;
@@ -257,7 +257,7 @@ Cards on forest-green surface, NDS card backs, editorial fronts.
 .card-back-pip-br { bottom: 6px; right: 6px; }
 
 /* ==========================================
-   INSPECTION — 3D CARD FLIP
+   INSPECTION; 3D CARD FLIP
    ========================================== */
 
 /* Parchment blur overlay */
@@ -301,7 +301,7 @@ Cards on forest-green surface, NDS card backs, editorial fronts.
   border-radius: 12px;
 }
 
-/* Front face — NDS editorial */
+/* Front face; NDS editorial */
 .inspected-face-front {
   transform: rotateY(180deg);
   background: var(--parchment);
@@ -346,7 +346,7 @@ Cards on forest-green surface, NDS card backs, editorial fronts.
 }
 
 /* ==========================================
-   PROJECT INFO — Editorial card content
+   PROJECT INFO; Editorial card content
    ========================================== */
 .project-info {
   width: 100%;

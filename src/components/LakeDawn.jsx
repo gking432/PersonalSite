@@ -89,7 +89,7 @@ function drawTreeLayer(ctx, w, horizonY, layer, h) {
 
 // ═══════════════════════════════════════════
 // MAIN RENDER FUNCTION
-// Entirely deterministic — no randomness per frame
+// Entirely deterministic; no randomness per frame
 // ═══════════════════════════════════════════
 function drawLakeDawn(ctx, w, h, progress, trees) {
   ctx.clearRect(0, 0, w, h)
@@ -194,7 +194,7 @@ function drawLakeDawn(ctx, w, h, progress, trees) {
     ctx.fillRect(0, horizonY, w, h - horizonY)
   }
 
-  // Sun reflection — shimmering vertical column
+  // Sun reflection; shimmering vertical column
   if (sunP > 0) {
     const sunX = w * 0.5
     const colW = Math.min(w, h) * 0.035
@@ -297,7 +297,7 @@ function LakeDawn() {
     offset: ['start end', 'end start'],
   })
 
-  // Generate all random data ONCE — deterministic, no flicker
+  // Generate all random data ONCE; deterministic, no flicker
   const trees = useMemo(() => {
     const bg = []
     const fg = []

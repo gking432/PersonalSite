@@ -260,7 +260,7 @@ function Projects() {
           <ProjectSection key={project.name} project={project} index={index} />
         ))}
 
-        {/* ═══════ CLOSING CTA — green squeeze panel ═══════ */}
+        {/* ═══════ CLOSING CTA; green squeeze panel ═══════ */}
         <SqueezeSection className="projects-cta section">
           <div className="container">
             <motion.div

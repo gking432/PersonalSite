@@ -1,29 +1,29 @@
-# The Void — hidden time-loop easter egg
+# The Void; hidden time-loop easter egg
 
 > Status: **idea / parked.** Captured so we don't lose it. Not started. We'll revisit.
 
 A secret, self-contained experience hidden inside the personal site. Completely
-separate from the Horizon Journey and the main portfolio — its own page / route,
+separate from the Horizon Journey and the main portfolio; its own page / route,
 its own rules. The portfolio stays clean and fast for normal visitors; this is a
 rabbit hole for the curious who stumble into it.
 
 ## The feeling we're chasing
 
-The same magic as the portal circle blooming out of nothing — "blank canvas, then
+The same magic as the portal circle blooming out of nothing; "blank canvas, then
 something appears and it's alive." Take that feeling and turn it into a small
 point-and-click adventure / **escape room with a time loop**. It should feel like
 accidentally falling into a video game that was hiding inside a résumé.
 
 Reference vibe: old Flash / NDS-era interactive sites (e.g. the food-pyramid site)
-— a blank stage where elements appear and respond to you.
+; a blank stage where elements appear and respond to you.
 
 ## The flow (rough)
 
 1. **The misclick.** You click something innocuous on the normal site and instead
-   of the expected thing — the screen fades to **blank**. No nav, no chrome. Just void.
+   of the expected thing; the screen fades to **blank**. No nav, no chrome. Just void.
 2. **Scroll.** As you scroll into the emptiness, **portals bloom in** (reuse the
    circle bloom/collapse animation). A few of them, floating in the dark.
-3. **Enter a portal → BAM.** Click one and you're dropped *inside a scene* — e.g. a
+3. **Enter a portal → BAM.** Click one and you're dropped *inside a scene*; e.g. a
    **log cabin**. It's an explorable space; you hunt around and **click objects to
    find clues** (a book on a table, a notepad by the fireplace, a letter on the
    stairs, etc.).
@@ -36,21 +36,20 @@ Reference vibe: old Flash / NDS-era interactive sites (e.g. the food-pyramid sit
 7. **Inventory → terminal.** Open the inventory: it holds the clues you gathered. One
    clue is a **password**. Enter it at the cursor → you're in a **computer terminal**,
    where you have to crack another code using the clues.
-8. **The loop.** Solve it the "obvious" way and — **BAM** — you're back in the cabin.
+8. **The loop.** Solve it the "obvious" way and; **BAM**; you're back in the cabin.
    You open the door, walk forward, everything goes white… and you're **back at the
    blinking cursor**. You realize: repeating the same steps just loops you back to the
    start. The same password + same hack = same cabin = same loop.
 9. **Breaking out.** Knowing the loop, you now have to **hack the terminal a different
    way**, using the clues differently. Wrong approaches re-trigger the loop. Keep
    trying until you do it *right*.
-10. **Escape.** When you finally crack it correctly — **BAM** — you're back on the
+10. **Escape.** When you finally crack it correctly; **BAM**; you're back on the
     normal homepage, like nothing ever happened. Total trip.
 
 ## Why it fits Gunnar
 
 It literally enacts "find the pattern." The whole puzzle is noticing you're in a loop
-and finding the pattern that breaks it. It also rewards curiosity and persistence —
-the exact traits the portfolio is trying to signal — without ever saying so.
+and finding the pattern that breaks it. It also rewards curiosity and persistence; the exact traits the portfolio is trying to signal; without ever saying so.
 
 ## How it's built (high level)
 
@@ -93,11 +92,11 @@ loop's wrong-path vs. right-path logic works). That's where the real time goes.
 
 ## Open questions to settle later
 
-- What are the three scenes? (Cabin + graveyard + ? — should connect into one story.)
-- What's the actual puzzle chain — what do the clues unlock, and what's the "right"
+- What are the three scenes? (Cabin + graveyard + ?; should connect into one story.)
+- What's the actual puzzle chain; what do the clues unlock, and what's the "right"
   way to break the loop vs. the wrong ways?
 - Where is the secret entrance hidden on the main site, and how discoverable should it
   be? (Truly accidental, or a faint nudge for the observant?)
 - Art approach per scene: procedural canvas (like the Horizon Journey) vs. illustrated
   SVG/layers vs. hybrid.
-- How long should a full playthrough take? (Keep it tight — a few minutes, not an epic.)
+- How long should a full playthrough take? (Keep it tight; a few minutes, not an epic.)

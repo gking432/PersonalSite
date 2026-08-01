@@ -43,14 +43,14 @@ function Home() {
               <h4>Building & Shipping</h4>
               <p>
                 Created production apps: blockchain token launcher, AI interview simulator, productivity tools. 
-                Comfortable with React, Python, APIs. I don't just strategize—I ship.
+                Comfortable with React, Python, APIs. I don't just strategize; I ship.
               </p>
             </div>
             <div className="capability-item">
               <h4>AI Applications</h4>
               <p>
                 Daily AI user since ChatGPT launch. Created educational programs teaching practical AI use. 
-                Not an expert—an observer who knows how real people actually use these tools.
+                Not an expert; an observer who knows how real people actually use these tools.
               </p>
             </div>
           </div>
@@ -72,7 +72,7 @@ function Home() {
             <p>
               I don't wait for permission to learn something new. When I wanted to understand blockchain, 
               I built a token launcher. When I saw AI transforming how people work, I created a lecture 
-              series. The last three years weren't a gap—they were deliberate exploration.
+              series. The last three years weren't a gap; they were deliberate exploration.
             </p>
           </div>
         </div>
@@ -142,7 +142,7 @@ function Home() {
             <h2>Think big picture. Compartmentalize. Execute.</h2>
             <p>
               I see systems, not just tasks. Whether it's a product launch, a marketing campaign, 
-              or a new application—I break complex goals into clear deliverables and ship them.
+              or a new application; I break complex goals into clear deliverables and ship them.
             </p>
           </div>
         </div>
@@ -200,7 +200,7 @@ function Home() {
           <p>
             I want to join a growing company where I can combine strategic thinking with 
             hands-on execution. If you're building something ambitious and need someone 
-            who can plan it, build it, and market it—let's talk.
+            who can plan it, build it, and market it; let's talk.
           </p>
           <Link to="/contact" className="btn btn-primary">
             Get in Touch

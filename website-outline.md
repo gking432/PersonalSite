@@ -24,14 +24,14 @@
 
 **Hero Section**
 - **Headline**: "Marketing Strategist. Builder. AI Explorer."
-- **Subheadline**: "I don't just theorize—I build, test, and execute. From launching tokens on blockchain to teaching AI literacy, I turn curiosity into capability."
+- **Subheadline**: "I don't just theorize; I build, test, and execute. From launching tokens on blockchain to teaching AI literacy, I turn curiosity into capability."
 - **CTA Buttons**: 
   - Primary: "View My Work" → Projects
   - Secondary: "Book a Speaking Event" → Speaking page
 - **Visual**: Professional headshot or action shot (presenting, coding, etc.)
 
 **Quick Proof Points** (3-column grid)
-- **Built**: "Developed applications from scratch—Aptos token launcher, AI interview simulator, productivity tools"
+- **Built**: "Developed applications from scratch; Aptos token launcher, AI interview simulator, productivity tools"
 - **Marketed**: "Drove customer acquisition campaigns generating high-quality leads across digital, audio, and direct mail channels"
 - **Taught**: "Created comprehensive AI education programs helping everyday users navigate emerging technology"
 
@@ -78,7 +78,7 @@
 - Highlight transitions: "Moved from doing the work → outsourcing → strategic management"
 
 **Section 4: What I Bring Now**
-- Not just marketing—building, coding, AI literacy, strategic thinking
+- Not just marketing; building, coding, AI literacy, strategic thinking
 - "I'm not just pitching ideas. I'm shipping them."
 - The value prop: A marketing leader who can:
   - Conceptualize campaigns
@@ -89,7 +89,7 @@
 **Personal Philosophy Section**
 - "Curiosity + execution = capability"
 - "I don't wait for permission to learn something new"
-- Brief mention of AI perspective: "I'm not an AI expert—I'm an observer and user. That gives me something valuable: I understand how normal people interact with this technology."
+- Brief mention of AI perspective: "I'm not an AI expert; I'm an observer and user. That gives me something valuable: I understand how normal people interact with this technology."
 
 **Skills Grid** (Visual, not boring list)
 - Marketing Strategy & Execution
@@ -99,7 +99,7 @@
 - AI Tools & Applications
 - Product Launch & Go-to-Market
 - Content Creation & Branding
-- Code (Python, JavaScript, etc.—whatever you actually use)
+- Code (Python, JavaScript, etc.; whatever you actually use)
 
 **Timeline** (Optional visual element)
 - 2015-2020: Education
@@ -167,7 +167,7 @@ Each project gets a card with:
 
 **Hero Section**
 - "AI for Everyday Users"
-- "I'm not a computer scientist—I'm an observer, user, and translator. I help normal people understand what AI means for their lives and businesses."
+- "I'm not a computer scientist; I'm an observer, user, and translator. I help normal people understand what AI means for their lives and businesses."
 
 **The Lecture Series**
 
@@ -225,7 +225,7 @@ Each project gets a card with:
 
 **Header**
 - "Thoughts on Marketing, AI, and Building"
-- "I write about whatever I'm curious about—usually at the intersection of technology and human behavior."
+- "I write about whatever I'm curious about; usually at the intersection of technology and human behavior."
 
 **Substack Integration**
 - Embedded Substack feed (if possible) OR
@@ -343,10 +343,10 @@ Each project gets a card with:
 ## Key Strategic Decisions
 
 ### What Makes This Different
-1. **Projects-first mentality**: You're not just talking about what you can do—you're showing it
+1. **Projects-first mentality**: You're not just talking about what you can do; you're showing it
 2. **AI positioning**: You're not claiming to be an expert, you're positioned as the practical translator
-3. **Explorer narrative**: The last 3 years aren't a gap, they're a feature—you chose to build capability
-4. **Multi-dimensional**: Not just marketing OR building OR speaking—you do all three
+3. **Explorer narrative**: The last 3 years aren't a gap, they're a feature; you chose to build capability
+4. **Multi-dimensional**: Not just marketing OR building OR speaking; you do all three
 
 ### Calls-to-Action Priority
 1. View Projects (prove capability)

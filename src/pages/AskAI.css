@@ -1,5 +1,5 @@
 /*
-ASK AI PAGE — NDS Editorial Design
+ASK AI PAGE; NDS Editorial Design
 Minimal, confident, mysterious. Let the results do the talking.
 */
 
@@ -9,7 +9,7 @@ Minimal, confident, mysterious. Let the results do the talking.
 }
 
 /* ==========================================
-   HERO — Split layout (matches Projects)
+   HERO; Split layout (matches Projects)
    ========================================== */
 .ask-ai-hero {
   min-height: 60vh;
@@ -47,7 +47,7 @@ Minimal, confident, mysterious. Let the results do the talking.
 }
 
 /* ==========================================
-   PROMPT SECTION — Squeezed cream band
+   PROMPT SECTION; Squeezed cream band
    ========================================== */
 .ask-ai-prompt-section {
   background-color: var(--cream);
@@ -83,7 +83,7 @@ Minimal, confident, mysterious. Let the results do the talking.
 }
 
 /* ==========================================
-   LLM CARDS — Grid layout
+   LLM CARDS; Grid layout
    ========================================== */
 .ask-ai-links {
   padding: var(--space-2xl) 0 var(--space-3xl);
@@ -146,7 +146,7 @@ Minimal, confident, mysterious. Let the results do the talking.
 }
 
 /* ==========================================
-   BOTTOM CTA — Forest green band
+   BOTTOM CTA; Forest green band
    ========================================== */
 .ask-ai-cta-section {
   background-color: var(--forest-green);

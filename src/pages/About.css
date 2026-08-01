@@ -1,5 +1,5 @@
 /*
-ABOUT PAGE — Prestige Editorial + NDS Patterns
+ABOUT PAGE; Prestige Editorial + NDS Patterns
 Reads like a biography in a private club's member directory
 */
 
@@ -140,7 +140,7 @@ Reads like a biography in a private club's member directory
   line-height: 1.65;
 }
 
-/* ═══════ MY STORY — Scroll-through squeeze ═══════ */
+/* ═══════ MY STORY; Scroll-through squeeze ═══════ */
 .story-scroll-runway {
   position: relative;
   min-height: 300vh; /* fallback before JS measurement */
@@ -212,7 +212,7 @@ Reads like a biography in a private club's member directory
   margin: var(--space-lg) auto 0;
 }
 
-/* Body paragraphs — default text on cream */
+/* Body paragraphs; default text on cream */
 .story-body {
   font-size: 1.05rem;
   line-height: 1.85;
@@ -220,7 +220,7 @@ Reads like a biography in a private club's member directory
   margin-bottom: var(--space-md);
 }
 
-/* First paragraph — serif, larger, drop cap */
+/* First paragraph; serif, larger, drop cap */
 .story-body.story-first {
   font-family: var(--font-serif);
   font-size: 1.25rem;
@@ -239,7 +239,7 @@ Reads like a biography in a private club's member directory
   font-weight: 400;
 }
 
-/* Inline highlights — big text exactly where it appears in the story */
+/* Inline highlights; big text exactly where it appears in the story */
 .story-inline-pullQuote {
   display: block;
   font-family: var(--font-serif);
@@ -271,7 +271,7 @@ Reads like a biography in a private club's member directory
   color: var(--slate);
 }
 
-/* ═══════ OPERATING THESIS — pinned word reveal ═══════ */
+/* ═══════ OPERATING THESIS; pinned word reveal ═══════ */
 .thesis-scroll {
   height: 260vh; /* runway for the word-by-word reveal */
   position: relative;
@@ -367,7 +367,7 @@ Reads like a biography in a private club's member directory
   filter: sepia(0.22) saturate(1.08) contrast(1.02);
 }
 
-/* Warm left-side scrim purely for text legibility — fades to clear footage */
+/* Warm left-side scrim purely for text legibility; fades to clear footage */
 .statement-section::after {
   content: '';
   position: absolute;
@@ -419,7 +419,7 @@ Reads like a biography in a private club's member directory
   max-width: 560px;
 }
 
-/* ═══════ PHOTO SECTION 1 — PHILOSOPHY ═══════ */
+/* ═══════ PHOTO SECTION 1; PHILOSOPHY ═══════ */
 .philosophy-photo-scroll-runway {
   height: 200vh;
   position: relative;
@@ -482,7 +482,7 @@ Reads like a biography in a private club's member directory
   margin-top: 28px;
 }
 
-/* ═══════ CAPABILITIES — strategy / build / growth ═══════ */
+/* ═══════ CAPABILITIES; strategy / build / growth ═══════ */
 .capabilities-section {
   padding: var(--space-2xl) 0;
 }
@@ -565,7 +565,7 @@ Reads like a biography in a private club's member directory
   .capabilities-grid { grid-template-columns: 1fr; gap: var(--space-lg); }
 }
 
-/* ═══════ CTA — green squeeze panel ═══════ */
+/* ═══════ CTA; green squeeze panel ═══════ */
 .cta-section {
   padding: clamp(var(--space-2xl), 12vh, var(--space-3xl)) 0;
   text-align: center;

@@ -14,7 +14,7 @@ import HomeStudio from './variants/HomeStudio'
 function App() {
   const location = useLocation()
 
-  // Home + standalone design directions — rendered with their own chrome.
+  // Home + standalone design directions; rendered with their own chrome.
   if (location.pathname === '/' || location.pathname === '/v1' || location.pathname === '/v2') {
     return (
       <Routes location={location} key={location.pathname}>

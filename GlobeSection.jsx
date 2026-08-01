@@ -5,7 +5,7 @@ import './GlobeSection.css'
 const ndsEase = [0.22, 1, 0.36, 1]
 
 // ═══════════════════════════════════════════
-// JOURNEY STOPS — sequential zoom storytelling
+// JOURNEY STOPS; sequential zoom storytelling
 // ═══════════════════════════════════════════
 const journeyStops = [
   {
@@ -67,7 +67,7 @@ const journeyStops = [
 ]
 
 // ═══════════════════════════════════════════
-// SCROLL TIMING — wider ranges = more scroll per phase
+// SCROLL TIMING; wider ranges = more scroll per phase
 // ═══════════════════════════════════════════
 const INTRO_START = 0.02
 const INTRO_END = 0.22
@@ -424,7 +424,7 @@ function GlobeSection() {
     [0, 1, 1, 0]
   )
 
-  // Scroll-driven text animations — spread over outro runway so scroll "pauses" while they play
+  // Scroll-driven text animations; spread over outro runway so scroll "pauses" while they play
   const outroLabelY = useTransform(scrollYProgress, [0.78, 0.82], [24, 0])
   const outroLabelOpacity = useTransform(scrollYProgress, [0.78, 0.82], [0, 1])
   const outroParagraphY = useTransform(scrollYProgress, [0.82, 0.88], [24, 0])
@@ -793,7 +793,7 @@ function GlobeSection() {
           <canvas ref={canvasRef} />
         </div>
 
-        {/* Story Card — positioned bottom-left */}
+        {/* Story Card; positioned bottom-left */}
         <AnimatePresence mode="wait">
           {activeStop >= 0 && (
             <motion.div
@@ -814,7 +814,7 @@ function GlobeSection() {
           )}
         </AnimatePresence>
 
-        {/* Outro — black squeeze section only when "The common thread?" shows */}
+        {/* Outro; black squeeze section only when "The common thread?" shows */}
         <motion.div
           className="globe-outro-squeeze"
           style={{
@@ -846,7 +846,7 @@ function GlobeSection() {
               style={{ y: outroParagraphY, opacity: outroParagraphOpacity }}
             >
               Every move taught me something new. Every chapter made me more dangerous.
-              Marketing, product, AI — it all compounds.
+              Marketing, product, AI; it all compounds.
             </motion.p>
           </motion.div>
         </motion.div>

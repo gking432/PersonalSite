@@ -148,7 +148,7 @@ function Writing() {
               <p className="articles-empty-title">The first field notes are publishing soon.</p>
               <p className="articles-empty-text">
                 I'm writing about customer behavior, technology adoption, and product
-                judgment — the gap between an idea and a market. Follow along and the
+                judgment, especially the gap between an idea and a market. Follow along and the
                 posts will show up here as they go live.
               </p>
               <a
@@ -164,7 +164,7 @@ function Writing() {
         </div>
       </section>
 
-      {/* Categories — Squeezed */}
+      {/* Categories; Squeezed */}
       <SqueezeSection className="categories-section section">
         <div className="container">
           <motion.h2

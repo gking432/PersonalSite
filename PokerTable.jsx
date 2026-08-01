@@ -168,7 +168,7 @@ function PokerTable() {
           </div>
         </motion.div>
 
-        {/* Right Column — Card Surface */}
+        {/* Right Column; Card Surface */}
         <div className="poker-table-column">
           <motion.div
             className="poker-table-container"
@@ -248,7 +248,7 @@ function PokerTable() {
         </div>
       </div>
 
-      {/* ═══════ INSPECTION — 3D CARD FLIP ═══════ */}
+      {/* ═══════ INSPECTION; 3D CARD FLIP ═══════ */}
       <AnimatePresence>
         {inspectingCard !== null && cardPositionRef.current && (
           <>
@@ -262,7 +262,7 @@ function PokerTable() {
               onClick={handleDismiss}
             />
 
-            {/* Card — flies from table to center, flips */}
+            {/* Card; flies from table to center, flips */}
             <motion.div
               key={`inspect-${inspectingCard}`}
               className="inspected-card"
@@ -342,7 +342,7 @@ function PokerTable() {
                   </div>
                 </div>
 
-                {/* FRONT FACE — NDS editorial project card */}
+                {/* FRONT FACE; NDS editorial project card */}
                 <div className="inspected-face inspected-face-front">
                   <button className="close-btn" onClick={(e) => { e.stopPropagation(); handleDismiss() }}>
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">

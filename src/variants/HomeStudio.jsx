@@ -353,7 +353,7 @@ function HomeStudio() {
           <motion.p className="studio-sub"
             initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease, delay: 0.35 }}>
-            I&apos;m Gunnar — a product-minded marketer, builder, and operator. I turn
+            I&apos;m Gunnar, a product-minded marketer, builder, and operator. I turn
             customer insight and product strategy into products, campaigns, and
             measurable growth.
           </motion.p>
@@ -411,11 +411,11 @@ function HomeStudio() {
         </SqueezeSection>
       </section>
 
-      {/* ─── STATEMENT PIECE — HORIZON JOURNEY ─── */}
+      {/* ─── STATEMENT PIECE; HORIZON JOURNEY ─── */}
       <section className="studio-statement" aria-label="The build journey">
         <div className="studio-statement__intro">
           <span className="studio-kicker">The Build Journey</span>
-          <h2>From first light to launch — keep scrolling.</h2>
+          <h2>From first light to launch. Keep scrolling.</h2>
         </div>
         <HorizonJourney />
       </section>
@@ -456,7 +456,7 @@ function HomeStudio() {
         </SqueezeSection>
       </section>
 
-      {/* ─── CTA (plain, parchment — the page resolves calm) ─── */}
+      {/* ─── CTA (plain, parchment; the page resolves calm) ─── */}
       <section className="studio-section studio-cta">
         <motion.h2
           initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}

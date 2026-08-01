@@ -5,10 +5,10 @@ import './EditorialHero.css'
 
 const ndsEase = [0.22, 1, 0.36, 1]
 
-// Real proof — cycled one line at a time, calmly.
+// Real proof; cycled one line at a time, calmly.
 const proofItems = [
   { key: 'Now', value: 'Building MoveMint, Terralis Print Studio & product concepts' },
-  { key: 'Founded', value: 'TouchPoint Marketing Solutions — full client lifecycle' },
+  { key: 'Founded', value: 'TouchPoint Marketing Solutions, full client lifecycle' },
   { key: 'Shipped', value: 'Brand, web & acquisition for premium local businesses' },
   { key: 'Trained', value: '2.5-yr rotation across a premium product brand' }
 ]
@@ -86,7 +86,7 @@ function EditorialHero() {
             visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: ndsEase } }
           }}
         >
-          I build the path from idea to launch — turning customer insight and product
+          I build the path from idea to launch, turning customer insight and product
           strategy into products, campaigns, and measurable growth.
         </motion.p>
 

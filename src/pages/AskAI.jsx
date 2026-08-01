@@ -52,7 +52,7 @@ function AskAI() {
   return (
     <PageTransition>
       <div className="ask-ai">
-        {/* Hero — Split layout matching Projects/ClientWork */}
+        {/* Hero; Split layout matching Projects/ClientWork */}
         <section className="ask-ai-hero section">
           <div className="container">
             <div className="hero-split">
@@ -110,7 +110,7 @@ function AskAI() {
           </div>
         </section>
 
-        {/* Prompt instruction — Squeezed */}
+        {/* Prompt instruction; Squeezed */}
         <SqueezeSection className="ask-ai-prompt-section">
           <div className="container">
             <motion.div
@@ -158,7 +158,7 @@ function AskAI() {
           </div>
         </section>
 
-        {/* Bottom CTA — Forest green band */}
+        {/* Bottom CTA; Forest green band */}
         <SqueezeSection className="ask-ai-cta-section">
           <div className="container">
             <motion.p

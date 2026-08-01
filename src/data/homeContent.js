@@ -1,15 +1,15 @@
-// Shared homepage content — rendered three different ways across the design variants.
+// Shared homepage content; rendered three different ways across the design variants.
 export const identity = {
   name: 'Gunnar Neuman',
   eyebrow: ['Product-minded marketer', 'builder', 'operator'],
   statement:
-    'I build the path from idea to launch — turning customer insight and product strategy into products, campaigns, and measurable growth.',
+    'I build the path from idea to launch, turning customer insight and product strategy into products, campaigns, and measurable growth.',
   roles: ['Product Marketing', 'Growth', '0-to-1 Building', 'Customer Acquisition', 'AI-Assisted Development']
 }
 
 export const proofItems = [
   { key: 'Now', value: 'Building MoveMint, Terralis Print Studio & product concepts' },
-  { key: 'Founded', value: 'TouchPoint Marketing Solutions — full client lifecycle' },
+  { key: 'Founded', value: 'TouchPoint Marketing Solutions, full client lifecycle' },
   { key: 'Shipped', value: 'Brand, web & acquisition for premium local businesses' },
   { key: 'Trained', value: '2.5-yr rotation across a premium product brand' }
 ]

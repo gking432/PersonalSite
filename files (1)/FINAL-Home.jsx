@@ -179,7 +179,7 @@ function Home() {
               <h4>Building & Shipping</h4>
               <p>
                 Blockchain token launcher. AI interview simulator. Productivity tools. 
-                Comfortable with React, Python, APIs. I don't just strategize—I ship.
+                Comfortable with React, Python, APIs. I don't just strategize; I ship.
               </p>
             </motion.div>
             
@@ -187,7 +187,7 @@ function Home() {
               <h4>AI Applications</h4>
               <p>
                 Daily AI user since ChatGPT launch. Created educational programs teaching 
-                practical use. Not an expert—an observer who understands how people work.
+                practical use. Not an expert; an observer who understands how people work.
               </p>
             </motion.div>
           </motion.div>
@@ -229,7 +229,7 @@ function Home() {
             >
               When I wanted to understand blockchain, I built a token launcher. When I saw AI 
               transforming how people work, I created a lecture series. The last three years 
-              weren't a gap—they were deliberate exploration.
+              weren't a gap; they were deliberate exploration.
             </motion.p>
           </div>
         </div>
@@ -356,7 +356,7 @@ function Home() {
               transition={{ duration: 0.8, delay: 0.6 }}
             >
               I see systems, not just tasks. Whether it's a product launch, a marketing campaign, 
-              or a new application—I break complex goals into clear deliverables and ship them.
+              or a new application; I break complex goals into clear deliverables and ship them.
             </motion.p>
           </div>
         </div>
@@ -468,7 +468,7 @@ function Home() {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             I want to join a growing company where I can combine strategic thinking with 
-            hands-on execution. If you're building something ambitious—let's talk.
+            hands-on execution. If you're building something ambitious; let's talk.
           </motion.p>
           
           <motion.div

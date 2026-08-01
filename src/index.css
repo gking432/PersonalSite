@@ -64,7 +64,7 @@ Prestige portfolio warmth + colors
   --border-radius-md: 12px;
   --border-radius-lg: 16px;
 
-  /* Aliases — maps generic names used in secondary pages to prestige palette */
+  /* Aliases; maps generic names used in secondary pages to prestige palette */
   --primary: var(--charcoal);
   --secondary: var(--slate);
   --accent: var(--forest-green);
@@ -76,7 +76,7 @@ Prestige portfolio warmth + colors
 /* Base */
 html {
   font-size: 18px;
-  scroll-behavior: auto; /* no smooth scroll — preserves scroll animation surprise on nav */
+  scroll-behavior: auto; /* no smooth scroll; preserves scroll animation surprise on nav */
 }
 
 /* Lock main scroll when modal/overlay is open */
@@ -98,7 +98,7 @@ body {
 /* Typography - NDS Scale with Prestige Fonts */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-serif);
-  font-weight: 400; /* Instrument Serif reads best at its native weight — elegant, not faux-bold */
+  font-weight: 400; /* Instrument Serif reads best at its native weight; elegant, not faux-bold */
   line-height: 1.0;
   letter-spacing: -0.02em;
   color: var(--charcoal);
@@ -199,7 +199,7 @@ a:hover {
   padding: calc(var(--space-3xl) * 1.5) 0;
 }
 
-/* Buttons — site-wide: use .btn + .btn-primary | .btn-secondary | modifiers */
+/* Buttons; site-wide: use .btn + .btn-primary | .btn-secondary | modifiers */
 a.btn {
   text-decoration: none;
   box-sizing: border-box;
@@ -275,7 +275,7 @@ button.btn {
   font-size: 0.875rem;
 }
 
-/* On dark / forest backgrounds — outline cream */
+/* On dark / forest backgrounds; outline cream */
 .btn-outline-light {
   background: transparent;
   color: var(--cream);
@@ -450,7 +450,7 @@ button.btn {
   color: var(--forest-green);
 }
 
-/* Contact pill — matches the home chrome */
+/* Contact pill; matches the home chrome */
 .nav-links a.nav-cta {
   padding: 0.5rem 1.1rem;
   border: 1px solid var(--charcoal);
@@ -654,7 +654,7 @@ button.btn {
   min-height: calc(100vh - 200px);
 }
 
-/* Footer — light, matches the home chrome */
+/* Footer; light, matches the home chrome */
 .footer {
   background-color: var(--parchment);
   color: var(--charcoal);
@@ -699,7 +699,7 @@ button.btn {
 }
 
 /* ==========================================
-   HERO SPLIT — Shared across inner pages
+   HERO SPLIT; Shared across inner pages
    Headline left, contextual meta right
    ========================================== */
 .hero-split {

@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   V3 — IMMERSIVE · "Cabin Window in Winter"
+   V3; IMMERSIVE · "Cabin Window in Winter"
    Inside looking out: moon, pines, live snow, fire glow, parallax depth.
    ═══════════════════════════════════════════ */
 .v-immersive { background: #0a0f12; }
@@ -20,7 +20,7 @@
 
 .imm-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 
-/* Window frame — heavy dark wood mullions */
+/* Window frame; heavy dark wood mullions */
 .imm-frame {
   position: absolute;
   inset: 0;
@@ -106,7 +106,7 @@
   color: rgba(232, 240, 248, 0.5);
 }
 
-/* ─── Section theming — immersive (warm cabin interior) ─── */
+/* ─── Section theming; immersive (warm cabin interior) ─── */
 .v-immersive .v-sections {
   background:
     radial-gradient(100% 60% at 50% 0%, rgba(255, 138, 61, 0.08), transparent 50%),
