@@ -50,6 +50,8 @@ const projects = [
     shortDesc:
       'An interview practice concept built around realistic reps, structured feedback, and the nervous gap before high-stakes conversations.',
     preview: 'prepme',
+    url: 'https://prep-lmjhbq6y2-gking432s-projects.vercel.app/dashboard',
+    buttonLabel: 'View PrepMe',
     tech: ['AI Assistant', 'Feedback Loops', 'AI Workflow']
   },
   {
