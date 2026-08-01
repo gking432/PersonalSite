@@ -125,6 +125,10 @@ Client Work-inspired portfolio layout for dev projects.
   aspect-ratio: 1550 / 885;
 }
 
+.dev-project-screenshot-ultrawide {
+  aspect-ratio: 1899 / 876;
+}
+
 .dev-project-alt .dev-project-screenshot {
   background: var(--parchment);
 }

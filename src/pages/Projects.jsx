@@ -61,6 +61,7 @@ const projects = [
     shortDesc:
       'A topographic print studio that turns meaningful places into custom wall art, with the product, brand, and buying flow designed as one system.',
     image: '/images/project-terralis.png',
+    imageRatio: 'ultrawide',
     imageAlt: 'Terralis landing page preview',
     url: 'https://cartoprint.vercel.app/',
     buttonLabel: 'Visit Terralis',
@@ -93,7 +94,8 @@ function ProjectVisual({ project }) {
     const screenshotClasses = [
       'dev-project-screenshot',
       project.imageFit === 'contain' ? 'dev-project-screenshot-contain' : '',
-      project.imageRatio === 'wide' ? 'dev-project-screenshot-wide' : ''
+      project.imageRatio === 'wide' ? 'dev-project-screenshot-wide' : '',
+      project.imageRatio === 'ultrawide' ? 'dev-project-screenshot-ultrawide' : ''
     ].filter(Boolean).join(' ')
 
     return (
