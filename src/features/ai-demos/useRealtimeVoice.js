@@ -19,6 +19,7 @@ export default function useRealtimeVoice() {
   const audioRef = useRef(null)
   const handlersRef = useRef({})
   const transcriptRef = useRef('')
+  const failureRef = useRef('')
 
   const send = useCallback((event) => {
     const channel = channelRef.current
@@ -43,6 +44,7 @@ export default function useRealtimeVoice() {
     }
     audioRef.current = null
     transcriptRef.current = ''
+    failureRef.current = ''
     setState(initialState)
   }, [])
 
@@ -109,6 +111,7 @@ export default function useRealtimeVoice() {
     }
     if (event.type === 'error') {
       const message = event.error?.message || 'The voice session encountered an error.'
+      failureRef.current = message
       setState((current) => ({ ...current, error: message, assistantSpeaking: false }))
       handlersRef.current.onError?.(message)
     }
@@ -121,6 +124,7 @@ export default function useRealtimeVoice() {
 
     disconnect()
     handlersRef.current = handlers
+    failureRef.current = ''
     setState({ ...initialState, status: 'connecting' })
 
     try {
@@ -140,20 +144,23 @@ export default function useRealtimeVoice() {
       }
       peer.onconnectionstatechange = () => {
         if (peerRef.current !== peer || !['failed', 'disconnected'].includes(peer.connectionState)) return
-        const message = 'The live connection was interrupted. Tap the assistant bubble to reconnect.'
+        const message = failureRef.current || 'The live connection was interrupted. Tap the assistant bubble to reconnect.'
+        failureRef.current = message
         setState((current) => ({ ...current, status: 'error', error: message, assistantSpeaking: false, userSpeaking: false }))
         handlersRef.current.onError?.(message)
       }
       channel.addEventListener('message', handleServerEvent)
       channel.addEventListener('close', () => {
         if (channelRef.current !== channel) return
-        const message = 'The voice connection ended. Tap the assistant bubble to reconnect.'
+        const message = failureRef.current || 'The voice connection ended. Tap the assistant bubble to reconnect.'
+        failureRef.current = message
         setState((current) => ({ ...current, status: 'error', error: message, assistantSpeaking: false, userSpeaking: false }))
         handlersRef.current.onError?.(message)
       })
       channel.addEventListener('error', () => {
         if (channelRef.current !== channel) return
-        const message = 'The voice connection encountered a problem. Tap the assistant bubble to reconnect.'
+        const message = failureRef.current || 'The voice connection encountered a problem. Tap the assistant bubble to reconnect.'
+        failureRef.current = message
         setState((current) => ({ ...current, status: 'error', error: message, assistantSpeaking: false, userSpeaking: false }))
         handlersRef.current.onError?.(message)
       })
@@ -216,6 +223,7 @@ export default function useRealtimeVoice() {
       const message = error?.name === 'NotAllowedError'
         ? 'Microphone access is required for the live assistant.'
         : (error?.message || 'The live voice session could not be started.')
+      failureRef.current = message
       channelRef.current?.close?.()
       peerRef.current?.close?.()
       streamRef.current?.getTracks?.().forEach((track) => track.stop())

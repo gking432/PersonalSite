@@ -86,6 +86,14 @@ export default async function handler(request, response) {
     const answer = await openAIResponse.text()
     if (!openAIResponse.ok) {
       console.error('Realtime session rejected', openAIResponse.status, answer.slice(0, 500))
+      let providerError = {}
+      try { providerError = JSON.parse(answer)?.error || {} } catch { /* OpenAI can return a non-JSON upstream failure. */ }
+      if (openAIResponse.status === 429 && ['insufficient_quota', 'credit_balance_exhausted'].includes(providerError.code)) {
+        return response.status(503).json({
+          error: 'Live voice is temporarily unavailable because the OpenAI API account has no remaining credits.',
+          code: 'voice_quota_exhausted',
+        })
+      }
       return response.status(502).json({ error: 'The live voice session could not be created.' })
     }
 
