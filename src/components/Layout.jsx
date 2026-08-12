@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 
-function Layout({ children, showFooter = true }) {
+function Layout({ children }) {
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -158,15 +158,13 @@ function Layout({ children, showFooter = true }) {
       <main className="main-content">
         {children}
       </main>
-      {showFooter && (
-        <footer className="footer">
-          <div className="container">
-            <div className="footer-content">
-              <p>&copy; {new Date().getFullYear()} Gunnar Neuman</p>
-            </div>
+      <footer className="footer">
+        <div className="container">
+          <div className="footer-content">
+            <p>&copy; {new Date().getFullYear()} Gunnar Neuman</p>
           </div>
-        </footer>
-      )}
+        </div>
+      </footer>
     </div>
   )
 }

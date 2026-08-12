@@ -82,14 +82,12 @@
 .studio-headline {
   margin: 1.6rem 0 0;
   font-family: var(--font-display);
-  font-size: clamp(2.65rem, 5vw, 4.5rem);
+  font-size: clamp(2.8rem, 6.2vw, 5.6rem);
   font-weight: 400;
   line-height: 0.98;
   letter-spacing: -0.02em;
   color: var(--ink);
 }
-.studio-headline span { display: block; white-space: nowrap; }
-.studio-headline__narrow { display: none !important; }
 
 .studio-sub {
   max-width: 30rem;
@@ -144,7 +142,7 @@
 /* ─── PROOF STRIP ─── */
 .studio-proof {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   max-width: 1280px;
   margin: 0 auto;
   border-top: 1px solid var(--line);
@@ -259,36 +257,19 @@
   .studio-hero { grid-template-columns: 1fr; min-height: 0; }
   .studio-hero__globe { order: -1; max-width: 360px; }
   .studio-approach__grid { grid-template-columns: 1fr; }
-  .studio-proof { grid-template-columns: repeat(3, 1fr); }
+  .studio-proof { grid-template-columns: 1fr 1fr; }
+  .studio-proof__item:nth-child(2) { border-right: none; }
+  .studio-proof__item:nth-child(1), .studio-proof__item:nth-child(2) { border-bottom: 1px solid var(--line); }
   .studio-exp { grid-template-columns: 1fr; gap: 0.7rem; }
   .studio-nav { gap: 1.1rem; }
 }
-@media (max-width: 700px) {
-  .studio-hero__globe { display: none; }
-}
 @media (max-width: 540px) {
-  .studio-topbar__inner {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-  .studio-hero {
-    padding-top: 2.5rem;
-  }
-  .studio-nav {
-    justify-content: space-between;
-    width: 100%;
-    flex-wrap: wrap;
-  }
-  .studio-headline { font-size: clamp(2.2rem, 10vw, 2.65rem); }
-  .studio-headline__wide { display: none !important; }
-  .studio-headline__narrow { display: block !important; }
   .studio-proof { grid-template-columns: 1fr; }
   .studio-proof__item { border-right: none; border-bottom: 1px solid var(--line); }
   .studio-hero__actions .studio-btn { width: 100%; justify-content: center; }
   .studio-mark { font-size: 1.25rem; }
-  .studio-nav { gap: 0.5rem 0.8rem; }
-  .studio-nav a { font-size: 0.72rem; }
+  .studio-nav { gap: 0.85rem; }
+  .studio-nav a { font-size: 0.78rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   .studio-status i { animation: none; }

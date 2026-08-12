@@ -33,38 +33,38 @@ const thesisWords = [
 
 const capabilities = [
   {
-    group: 'Business',
-    desc: 'Understand the people, process, constraint, and outcome before deciding what should be built.',
-    tools: ['Customer Discovery', 'Workflow Analysis', 'Business Strategy', 'Analytics', 'Power BI', 'ROI'],
+    group: 'Strategy',
+    desc: 'Find the real problem and shape the offer before anyone writes a line of code.',
+    tools: ['Customer Research', 'Positioning', 'GTM', 'Analytics', 'Power BI', 'SEO'],
   },
   {
     group: 'Build',
-    desc: 'Turn the workflow into a functional product people can use, question, and improve.',
-    tools: ['AI Products', 'Business Systems', 'Prototyping', 'React', 'TypeScript', 'Python'],
+    desc: 'Turn the idea into something people can actually use and react to.',
+    tools: ['React', 'TypeScript', 'Python', 'Figma', 'Claude Code', 'Vite'],
   },
   {
-    group: 'Implementation',
-    desc: 'Fit the system to the people around it and keep the work connected to a real business result.',
-    tools: ['Stakeholders', 'Human Approval', 'Handoffs', 'Launches', 'Training', 'Iteration'],
+    group: 'Growth',
+    desc: 'Connect the work to distribution, traction, and revenue.',
+    tools: ['Paid Media', 'Content', 'eCommerce', 'Shopify', 'Email', 'Conversion'],
   },
 ]
 
 const builderProfile = [
   {
-    stage: 'Business Context',
-    proof: 'Sales operations, client discovery, analytics, and market experience taught me to understand how the work actually gets done.'
+    stage: 'Customer Insight',
+    proof: 'Showroom sales, client discovery, analytics, and market research taught me to look for behavior before opinions.'
   },
   {
-    stage: 'Workflow',
-    proof: 'I look for the decisions, handoffs, repeated work, and customer moments where a better system could make a real difference.'
+    stage: 'Positioning',
+    proof: 'Product launches, campaign strategy, naming, copy, and brand work taught me how to make a market understand why something matters now.'
   },
   {
-    stage: 'Working System',
-    proof: 'I can build enough of the product myself to make the idea testable instead of leaving it trapped in a presentation.'
+    stage: 'Prototype',
+    proof: 'React, TypeScript, modern development tools, and rapid iteration let me make ideas testable without waiting for a giant handoff.'
   },
   {
-    stage: 'Implementation',
-    proof: 'The system still has to fit the people using it. I think about approval, adoption, handoffs, and what happens after the demo.'
+    stage: 'Launch',
+    proof: 'eCommerce, SEO, paid media, content, and reporting keep the work connected to distribution, learning, and revenue.'
   }
 ]
 
@@ -247,7 +247,7 @@ function About() {
   return (
     <PageTransition>
     <div className="about">
-      <section className="about-hero section" data-assistant-section="about-overview">
+      <section className="about-hero section">
         <div className="container">
           <div className="hero-split">
             <div className="hero-split-left">
@@ -257,7 +257,7 @@ function About() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1, ease: ndsEase }}
               >
-                Business + Build
+                Builder Profile
               </motion.p>
               <h1>
                 {'How I Work'.split(' ').map((word, i, words) => (
@@ -278,7 +278,7 @@ function About() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
               >
-                I work best when the business problem is still messy and someone needs to understand the work, shape a useful system, and get the first version moving.
+                I work best when the problem is still messy and someone needs to turn it into a product, a story, and a plan.
               </motion.p>
               <motion.a
                 href="#my-story"
@@ -316,7 +316,7 @@ function About() {
               </div>
               <div className="hero-meta-item">
                 <span className="hero-meta-label">Operating Range</span>
-                <span className="hero-meta-value">Business · Workflow · Product · Implementation</span>
+                <span className="hero-meta-value">Insight · Positioning · Prototype · Launch</span>
               </div>
               <div className="hero-meta-item">
                 <span className="hero-meta-label">Status</span>
@@ -328,7 +328,7 @@ function About() {
       </section>
 
       {/* ═══════ BUILDER DOSSIER; colored squeeze ═══════ */}
-      <SqueezeSection className="builder-dossier section" data-assistant-section="about-working-style">
+      <SqueezeSection className="builder-dossier section">
         <div className="container">
           <motion.p
             className="label"
@@ -346,7 +346,7 @@ function About() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1, ease: ndsEase }}
           >
-            I can move between the person doing the work, the business decision behind it, and the system that could make it better.
+            The useful version of me is the person who can move between the customer, the market, and the build.
           </motion.h2>
           <motion.div
             className="builder-dossier-grid"
@@ -409,7 +409,7 @@ function About() {
       </div>
 
       {/* ═══════ CAPABILITIES; what I actually do ═══════ */}
-      <section className="capabilities-section section" data-assistant-section="about-capabilities">
+      <section className="capabilities-section section">
         <div className="container">
           <motion.p
             className="label"
@@ -427,7 +427,7 @@ function About() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1, ease: ndsEase }}
           >
-            Business judgment, working products, and implementation thinking.
+            Strategy, build, and growth under one roof.
           </motion.h2>
           <div className="capabilities-grid">
             {capabilities.map((cap, i) => (
@@ -520,7 +520,7 @@ function About() {
               Let's Work Together
             </motion.h2>
             <motion.p className="cta-sub" variants={fadeUp}>
-              I'm looking for a team with a real operating problem, a high bar, and room for someone who can work across the business and the build.
+              I'm looking for my next role: full-time, contract, or consulting. If you have a problem worth solving and a high bar for the people solving it, let's talk.
             </motion.p>
             <motion.div variants={fadeUp}>
               <Link to="/contact" className="btn btn-primary">

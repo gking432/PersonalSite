@@ -1,57 +1,57 @@
 // Shared homepage content; rendered three different ways across the design variants.
 export const identity = {
   name: 'Gunnar Neuman',
-  eyebrow: ['Business operator', 'product builder', 'AI systems'],
+  eyebrow: ['Product-minded marketer', 'builder', 'operator'],
   statement:
-    'I turn business problems into working products and systems, then use them to learn what actually works.',
-  roles: ['Business Systems', 'AI Products', 'Workflow Design', '0-to-1 Building', 'Product Strategy']
+    'I build the path from idea to launch, turning customer insight and product strategy into products, campaigns, and measurable growth.',
+  roles: ['Product Marketing', 'Growth', '0-to-1 Building', 'Customer Acquisition', 'AI-Assisted Development']
 }
 
 export const proofItems = [
-  { key: 'Building', value: 'AI products and workflow systems around real business problems' },
-  { key: 'Led', value: 'Client discovery, strategy, implementation, reporting, and iteration' },
-  { key: 'Learned', value: 'Sales operations, product launches, Power BI, and dealer support' },
-  { key: 'Working across', value: 'The business problem, the user, and the first useful version' }
+  { key: 'Now', value: 'Building MoveMint, Terralis Print Studio & product concepts' },
+  { key: 'Founded', value: 'TouchPoint Marketing Solutions, full client lifecycle' },
+  { key: 'Shipped', value: 'Brand, web & acquisition for premium local businesses' },
+  { key: 'Trained', value: '2.5-yr rotation across a premium product brand' }
 ]
 
 export const approachPrinciples = [
   {
     number: '01',
-    title: 'Understand the work',
-    desc: 'I start with the people doing the job, the decisions they make, and the friction slowing them down. The system comes after the problem is clear.'
+    title: 'Find the real problem',
+    desc: 'I start with customer conversations, sales context, competitive research, and analytics so the work is aimed at behavior, not vibes.'
   },
   {
     number: '02',
-    title: 'Build the first useful version',
-    desc: 'I turn the workflow into something people can actually use. That makes the tradeoffs visible and gives the conversation something real to react to.'
+    title: 'Build a testable version',
+    desc: 'I turn positioning, pricing, and product ideas into working prototypes quickly enough to learn from something real.'
   },
   {
     number: '03',
-    title: 'Keep it tied to the business',
-    desc: 'A product is only useful if it fits the work around it. I think about adoption, handoffs, human judgment, and the outcome the system is supposed to improve.'
+    title: 'Connect it to traction',
+    desc: 'Launch only counts when the market can respond. SEO, paid media, content, eCommerce, and reporting all serve that feedback loop.'
   }
 ]
 
 export const resumeHighlights = [
   {
-    value: 'Business first',
-    label: 'Workflow Thinking',
-    detail: 'I start with the work, the user, and the business constraint before deciding what the product should do.'
-  },
-  {
-    value: 'Working proof',
-    label: 'AI Products',
-    detail: 'The interview platform and home-services CRM turn AI use cases into complete, usable product experiences.'
+    value: '0 to 1',
+    label: 'Product Development',
+    detail: 'MoveMint, Terralis Print Studio, interview practice, and dashboard concepts moved from rough idea to working product surfaces.'
   },
   {
     value: 'Full-cycle',
-    label: 'Implementation',
-    detail: 'Discovery, strategy, execution, reporting, and iteration taught me to stay with a problem past the idea stage.'
+    label: 'Client Strategy',
+    detail: 'Discovery, strategy, execution, reporting, and iteration across websites, acquisition campaigns, and conversion work.'
   },
   {
     value: '2.5 yrs',
-    label: 'Business Foundation',
-    detail: 'Sales operations, product marketing, launches, showroom sales, and dealer support inside a premium brand.'
+    label: 'Market Execution',
+    detail: 'Sales operations, product marketing, launches, showroom sales, and dealer sales inside a premium brand.'
+  },
+  {
+    value: 'GTM',
+    label: 'Role Fit',
+    detail: 'Product marketing, growth, or operator roles that need someone comfortable between the customer, the market, and the build.'
   }
 ]
 
@@ -59,31 +59,31 @@ export const resumeTimeline = [
   {
     year: 'Oct 2025-Present',
     title: 'GunnarNeuman.com',
-    role: 'Independent Product Builder',
+    role: 'Product Developer',
     location: 'Milwaukee, WI',
-    desc: 'Building functional AI products and business systems to test how technology can improve a real workflow, not just add another feature.',
-    tags: ['AI Products', 'Business Systems', 'Workflow Design', 'Prototyping']
+    desc: 'Created and launched early-stage products while sharpening a product direction around customer problems, launch mechanics, and measurable growth.',
+    tags: ['React', 'TypeScript', 'Prototyping', 'Product Strategy']
   },
   {
     year: 'Mar 2023-Oct 2025',
     title: 'TouchPoint Marketing Solutions',
     role: 'Founder',
     location: 'Denver, CO',
-    desc: 'Owned discovery, strategy, implementation, reporting, and stakeholder coordination for businesses trying to turn limited time and budget into measurable results.',
-    tags: ['Client Discovery', 'Business Strategy', 'Implementation', 'ROI']
+    desc: 'Managed the full client lifecycle across strategy, execution, reporting, and optimization for businesses turning marketing spend into measurable outcomes.',
+    tags: ['Customer Acquisition', 'Analytics', 'SEO', 'Paid Media']
   },
   {
     year: 'Jun 2020-Feb 2023',
     title: 'Sub-Zero Group, Inc.',
     role: 'Sales Rotational Program',
     location: 'Madison, WI',
-    desc: 'Rotated through sales operations, product marketing, product launches, showroom sales, and dealer support while learning how a complex business carries an idea into the market.',
-    tags: ['Sales Operations', 'Product Launches', 'Power BI', 'Dealer Support']
+    desc: 'Selected as the inaugural candidate for a 2.5-year rotational program across sales operations, product marketing, product launch, showroom sales, and dealer sales.',
+    tags: ['Product Marketing', 'Launches', 'Power BI', 'Premium Brand']
   }
 ]
 
 export const cta = {
-  heading: 'I want to work on problems worth untangling.',
+  heading: "Let's build something.",
   body:
-    "I'm looking for a team that needs someone who can understand the business, work through the ambiguity, and help turn a useful idea into something real."
+    "I'm looking for a team with a real problem, a high bar, and the patience to build something useful. If that sounds like your world, let's talk."
 }
