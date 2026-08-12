@@ -1,6 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { useMemo, useRef, useState } from 'react'
 import PageTransition from '../components/PageTransition'
 import {
   opportunitySample,
@@ -9,14 +7,6 @@ import {
   roleMatchSample
 } from '../data/aiLabSamples'
 import './AILab.css'
-
-const ease = [0.22, 1, 0.36, 1]
-
-const demos = [
-  { id: 'opportunity', number: '01', title: 'AI Opportunity Mapper', description: 'Find a useful first AI pilot inside a real company.', proof: 'Workflow analysis · prioritization · guardrails' },
-  { id: 'role', number: '02', title: 'Role Match Brief', description: 'Turn a job description into an evidence-based case for an interview.', proof: 'Business translation · positioning · honest evidence' },
-  { id: 'reputation', number: '03', title: 'Reputation Intelligence', description: 'Turn raw customer reviews into an operating brief.', proof: 'Classification · pattern finding · recommended action' }
-]
 
 const mapperQuestions = [
   'Where could this company use AI?',
@@ -38,15 +28,6 @@ function ErrorNotice({ message }) {
 }
 
 function ResultHeader({ eyebrow, title, summary, onDownload, onReset }) {
-  useEffect(() => {
-    window.requestAnimationFrame(() => {
-      const workspace = document.querySelector('.lab-workspace')
-      if (!workspace) return
-      const top = workspace.getBoundingClientRect().top + window.scrollY - 92
-      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
-    })
-  }, [])
-
   return (
     <div className="lab-result-head">
       <div>
@@ -149,9 +130,9 @@ function OpportunityMapper() {
 
   if (result) return <OpportunityResult result={result} onReset={() => setResult(null)} />
   return (
-    <div className="lab-workspace-grid">
+    <div className="lab-form-wrap">
       <form className="lab-form" onSubmit={submit}>
-        <div className="lab-form__intro"><span>Bring the context</span><h2>Where should this company use AI first?</h2><p>Give the mapper a public company site and a real question. It will look for an implementable workflow—not a list of generic AI ideas.</p></div>
+        <div className="lab-form__intro"><h3>Where should this company use AI first?</h3><p>Enter a company website and choose what you want the system to investigate.</p></div>
         <label>Company website<input type="url" value={website} onChange={(event) => setWebsite(event.target.value)} placeholder="https://company.com" required /></label>
         <label>Department or team <span>Optional</span><input value={department} onChange={(event) => setDepartment(event.target.value)} placeholder="Customer service, sales, operations…" /></label>
         <label>Question<select value={question} onChange={(event) => setQuestion(event.target.value)}>{mapperQuestions.map((item) => <option key={item}>{item}</option>)}</select></label>
@@ -160,7 +141,6 @@ function OpportunityMapper() {
         <div className="lab-form__actions"><button className="lab-run" type="submit" disabled={loading}>{loading ? 'Analyzing…' : 'Map the opportunity'}<span>→</span></button><button className="lab-sample" type="button" onClick={() => setResult(opportunitySample)}>View complete sample</button></div>
         <small>Public information only. The analysis is directional and should be validated with the people doing the work.</small>
       </form>
-      <aside className="lab-process"><span>What happens</span><ol><li><b>01</b><div><strong>Read the business</strong><p>Understand what the company sells, who it serves, and how work likely moves.</p></div></li><li><b>02</b><div><strong>Find the workflow</strong><p>Look for repeated knowledge work, handoffs, delays, and inconsistent manual AI use.</p></div></li><li><b>03</b><div><strong>Choose a pilot</strong><p>Balance business value, technical complexity, risk, and the need for human control.</p></div></li></ol></aside>
       {loading && <LoadingState steps="Reading the company · mapping workflows · ranking a pilot" />}
     </div>
   )
@@ -201,9 +181,9 @@ function RoleMatch() {
 
   if (result) return <RoleResult result={result} onReset={() => setResult(null)} />
   return (
-    <div className="lab-workspace-grid">
+    <div className="lab-form-wrap">
       <form className="lab-form" onSubmit={submit}>
-        <div className="lab-form__intro"><span>Bring the role</span><h2>Is Gunnar worth interviewing for this?</h2><p>This does not produce a fake fit score. It builds the strongest truthful case from the requirements, then surfaces what a hiring team should explore directly.</p></div>
+        <div className="lab-form__intro"><h3>Is Gunnar worth interviewing for this?</h3><p>Paste a role and get the strongest truthful case based on verified experience and finished work.</p></div>
         <label>Public job-posting URL <span>Optional if pasted below</span><input type="url" value={jobUrl} onChange={(event) => setJobUrl(event.target.value)} placeholder="https://company.com/careers/role" /></label>
         <label>Job description <span>Recommended</span><textarea rows="9" value={jobDescription} onChange={(event) => setJobDescription(event.target.value)} placeholder="Paste the responsibilities and requirements here…" maxLength="18000" /></label>
         <label>What matters most to your team? <span>Optional</span><textarea rows="3" value={companyContext} onChange={(event) => setCompanyContext(event.target.value)} placeholder="A workflow, implementation challenge, team need, or concern…" maxLength="1600" /></label>
@@ -211,7 +191,6 @@ function RoleMatch() {
         <div className="lab-form__actions"><button className="lab-run" type="submit" disabled={loading}>{loading ? 'Building brief…' : 'Build the interview case'}<span>→</span></button><button className="lab-sample" type="button" onClick={() => setResult(roleMatchSample)}>View complete sample</button></div>
         <small>The brief advocates for Gunnar without inventing experience, results, or enterprise deployments.</small>
       </form>
-      <aside className="lab-process"><span>What it evaluates</span><ol><li><b>01</b><div><strong>Direct evidence</strong><p>Verified experience and finished work that map cleanly to the role.</p></div></li><li><b>02</b><div><strong>Transferable evidence</strong><p>Adjacent experience that makes the next step credible without pretending it is identical.</p></div></li><li><b>03</b><div><strong>Interview value</strong><p>The specific questions and project proof that can resolve uncertainty in a real conversation.</p></div></li></ol></aside>
       {loading && <LoadingState steps="Reading the role · matching verified evidence · assembling the interview case" />}
     </div>
   )
@@ -260,9 +239,9 @@ function ReputationIntelligence() {
 
   if (result) return <ReputationResult result={result} onReset={() => setResult(null)} />
   return (
-    <div className="lab-workspace-grid">
+    <div className="lab-form-wrap">
       <form className="lab-form" onSubmit={submit}>
-        <div className="lab-form__intro"><span>Bring the evidence</span><h2>Turn customer feedback into an operating brief.</h2><p>Paste reviews or upload a simple CSV. The system separates writing problems from actual workflow problems and recommends what to fix first.</p></div>
+        <div className="lab-form__intro"><h3>What are customers really saying?</h3><p>Paste reviews or upload a CSV to find recurring themes, operating issues, and the best next action.</p></div>
         <label>Business context <span>Optional</span><input value={businessContext} onChange={(event) => setBusinessContext(event.target.value)} placeholder="Home services, hospitality, healthcare…" maxLength="500" /></label>
         <label>Customer reviews <span>{reviewCount ? `${reviewCount} lines loaded` : 'One review per line works best'}</span><textarea rows="12" value={reviews} onChange={(event) => setReviews(event.target.value)} placeholder="Paste public reviews here…" maxLength="100000" /></label>
         <input ref={fileRef} className="lab-file-input" type="file" accept=".csv,.txt,text/csv,text/plain" onChange={readFile} />
@@ -271,44 +250,36 @@ function ReputationIntelligence() {
         <div className="lab-form__actions"><button className="lab-run" type="submit" disabled={loading}>{loading ? 'Analyzing reviews…' : 'Build the reputation brief'}<span>→</span></button><button className="lab-sample" type="button" onClick={() => setResult(reputationSample)}>View complete sample</button></div>
         <small>Review text is analyzed for this request and is not stored by this site.</small>
       </form>
-      <aside className="lab-process"><span>What it finds</span><ol><li><b>01</b><div><strong>Patterns</strong><p>Recurring positive and negative themes—not just a list of sentiments.</p></div></li><li><b>02</b><div><strong>Operating causes</strong><p>The handoffs, ownership gaps, or policies likely producing the customer experience.</p></div></li><li><b>03</b><div><strong>Action</strong><p>Prioritized fixes, responsible teams, timing, risks, and draft public responses.</p></div></li></ol></aside>
       {loading && <LoadingState steps="Classifying reviews · finding operating patterns · prioritizing action" />}
     </div>
   )
 }
 
 function AILab() {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const requestedDemo = searchParams.get('demo')
-  const activeDemo = demos.some((demo) => demo.id === requestedDemo) ? requestedDemo : 'opportunity'
-  const ActiveDemo = activeDemo === 'opportunity' ? OpportunityMapper : activeDemo === 'role' ? RoleMatch : ReputationIntelligence
-
-  const chooseDemo = (id) => {
-    setSearchParams({ demo: id }, { replace: true })
-  }
-
   return (
     <PageTransition>
       <div className="ai-lab" data-assistant-section="lab-overview">
-        <section className="lab-hero">
+        <header className="lab-simple-header">
           <div className="container">
-            <motion.span className="lab-kicker" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .5, ease }}>AI Lab · Working demonstrations</motion.span>
-            <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .8, ease, delay: .05 }}>Bring real context.<br /><em>Leave with something useful.</em></motion.h1>
-            <motion.div className="lab-hero__bottom" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .7, ease, delay: .2 }}><p>Three focused demonstrations of how I approach AI implementation: start with a real input, structure the reasoning, keep important decisions visible, and produce an output someone can actually use.</p><div><span>03</span><small>Live workflows</small></div></motion.div>
+            <h1>AI Lab</h1>
+            <p>Three small AI tools. Pick one, add your information, and try it.</p>
           </div>
-        </section>
+        </header>
 
-        <section className="lab-shell">
-          <div className="container">
-            <nav className="lab-tabs" aria-label="AI Lab demonstrations">
-              {demos.map((demo) => <button key={demo.id} type="button" className={activeDemo === demo.id ? 'is-active' : ''} onClick={() => chooseDemo(demo.id)} aria-pressed={activeDemo === demo.id}><span>{demo.number}</span><div><strong>{demo.title}</strong><small>{demo.description}</small></div></button>)}
-            </nav>
-            <div className="lab-proof-line"><span>What this demo proves</span><strong>{demos.find((demo) => demo.id === activeDemo)?.proof}</strong></div>
-            <motion.div key={activeDemo} className="lab-workspace" data-assistant-section={`lab-${activeDemo}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .35, ease }}><ActiveDemo /></motion.div>
-          </div>
-        </section>
-
-        <section className="lab-footer-note"><div className="container"><span>Not a magic trick</span><h2>The model is only one part of the system.</h2><p>The useful work is deciding what context to collect, what the output should contain, which claims are supportable, what a person still needs to control, and how the result fits into the next decision.</p></div></section>
+        <main className="lab-simple-list container">
+          <section className="lab-demo" id="lab-opportunity" data-assistant-section="lab-opportunity">
+            <div className="lab-demo__heading"><span>01</span><div><h2>AI Opportunity Mapper</h2><p>Find a useful first AI pilot inside a real company.</p></div></div>
+            <OpportunityMapper />
+          </section>
+          <section className="lab-demo" id="lab-role" data-assistant-section="lab-role">
+            <div className="lab-demo__heading"><span>02</span><div><h2>Role Match Brief</h2><p>Turn a job description into an evidence-based case for interviewing me.</p></div></div>
+            <RoleMatch />
+          </section>
+          <section className="lab-demo" id="lab-reputation" data-assistant-section="lab-reputation">
+            <div className="lab-demo__heading"><span>03</span><div><h2>Reputation Intelligence</h2><p>Turn raw customer reviews into a clear operating brief.</p></div></div>
+            <ReputationIntelligence />
+          </section>
+        </main>
       </div>
     </PageTransition>
   )
