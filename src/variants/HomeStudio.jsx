@@ -18,6 +18,31 @@ const heroStats = [
   { value: '2', label: 'Live AI Platforms' }
 ]
 
+const featuredSystems = [
+  {
+    number: '01',
+    type: 'Business workflow system',
+    title: 'Home-Services AI CRM',
+    description: 'A functional command center connecting lead analysis, call summaries, follow-up, quotes, appointments, reviews, and human approval.',
+    image: '/images/project-northstar.png',
+    imageAlt: 'Home-services CRM dashboard with lead pipeline, tasks, AI insights, and business metrics',
+    href: 'https://new-teal-delta.vercel.app/app',
+    action: 'Open the CRM demo',
+    tags: ['AI workflows', 'Operational system', 'Human approval']
+  },
+  {
+    number: '02',
+    type: 'Live AI product',
+    title: 'PrepMe',
+    description: 'A résumé and target job description become a tailored AI interview, structured practice experience, and actionable feedback.',
+    image: '/images/project-prepme.png',
+    imageAlt: 'PrepMe interview platform dashboard and setup workflow',
+    href: 'https://prep-me-wheat.vercel.app/',
+    action: 'Try PrepMe',
+    tags: ['Personalized AI', 'Product workflow', 'Live platform']
+  }
+]
+
 const fallbackLand = [
   [[[-168, 72], [-140, 70], [-120, 58], [-103, 52], [-96, 42], [-82, 31], [-82, 24], [-98, 18], [-116, 23], [-128, 42], [-151, 58], [-168, 72]]],
   [[[-82, 12], [-68, 8], [-52, -6], [-40, -24], [-54, -55], [-72, -52], [-80, -22], [-82, 12]]],
@@ -405,6 +430,45 @@ function HomeStudio() {
             </div>
           </div>
         </SqueezeSection>
+      </section>
+
+      {/* ─── WORKING PROOF (calm bridge between the two system panels) ─── */}
+      <section className="studio-work" data-assistant-section="home-projects">
+        <div className="studio-work__head">
+          <div>
+            <span className="studio-kicker">Working proof</span>
+            <motion.h2
+              initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }} transition={{ duration: 0.8, ease }}>
+              The systems are there to use, not just read about.
+            </motion.h2>
+          </div>
+          <p>These are self-directed builds, presented honestly. They show how I turn an AI capability into a complete workflow with an interface, decisions, and a useful outcome.</p>
+        </div>
+
+        <div className="studio-work__grid">
+          {featuredSystems.map((project, index) => (
+            <motion.article className="studio-system" key={project.title}
+              initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-8%' }} transition={{ duration: 0.75, ease, delay: index * 0.1 }}>
+              <a className="studio-system__visual" href={project.href} target="_blank" rel="noreferrer" aria-label={`${project.action} in a new tab`}>
+                <img src={project.image} alt={project.imageAlt} loading="lazy" />
+                <span>{project.number}</span>
+              </a>
+              <div className="studio-system__copy">
+                <span className="studio-system__type">{project.type}</span>
+                <h3>{project.title}</h3>
+                <p>{project.description}</p>
+                <div className="studio-tags">
+                  {project.tags.map((tag) => <span key={tag}>{tag}</span>)}
+                </div>
+                <a className="studio-system__link" href={project.href} target="_blank" rel="noreferrer">{project.action} <span>↗</span></a>
+              </div>
+            </motion.article>
+          ))}
+        </div>
+
+        <Link className="studio-work__all" to="/projects">See all projects <span>→</span></Link>
       </section>
 
       {/* ─── EXPERIENCE (tinted squeeze panel) ─── */}

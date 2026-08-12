@@ -30,6 +30,7 @@ export const assistantDestinations = {
 export const assistantSiteTargets = {
   home_overview: { href: '/', selector: '[data-assistant-section="home-overview"]', label: 'Homepage overview' },
   home_approach: { href: '/', selector: '[data-assistant-section="home-approach"]', label: 'How Gunnar approaches the work' },
+  home_projects: { href: '/', selector: '[data-assistant-section="home-projects"]', label: 'Working product proof' },
   home_experience: { href: '/', selector: '[data-assistant-section="home-experience"]', label: 'Gunnar’s experience' },
   about_overview: { href: '/about', selector: '[data-assistant-section="about-overview"]', label: 'About Gunnar' },
   about_working_style: { href: '/about', selector: '[data-assistant-section="about-working-style"]', label: 'How Gunnar works' },

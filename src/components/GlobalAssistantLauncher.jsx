@@ -14,24 +14,15 @@ const pageNames = {
   '/writing': 'Writing page',
 }
 
-const inviteSessionKey = 'gunnar-ai-invite-seen'
-
 function GlobalAssistantLauncher({ hidden = false }) {
   const location = useLocation()
   const assistant = usePortfolioAssistant()
-  const [open, setOpen] = useState(() => {
-    try { return window.sessionStorage.getItem(inviteSessionKey) !== 'true' } catch { return true }
-  })
+  const [open, setOpen] = useState(true)
   const [pendingContext, setPendingContext] = useState('')
   const previousPath = useRef(location.pathname)
   const previousSection = useRef('')
 
-  const rememberInvite = () => {
-    try { window.sessionStorage.setItem(inviteSessionKey, 'true') } catch { /* Session storage is optional. */ }
-  }
-
   const minimize = () => {
-    rememberInvite()
     setOpen(false)
   }
 
@@ -81,7 +72,6 @@ function GlobalAssistantLauncher({ hidden = false }) {
   }, [assistant.active, assistant.sendContextEvent, hidden, location.pathname])
 
   const start = useCallback(async () => {
-    rememberInvite()
     setOpen(false)
     previousPath.current = location.pathname
     const connected = await assistant.connect()

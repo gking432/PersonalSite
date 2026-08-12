@@ -153,7 +153,7 @@ export const assistantTools = [
         destination: {
           type: 'string',
           enum: [
-            'home_overview', 'home_approach', 'home_experience',
+            'home_overview', 'home_approach', 'home_projects', 'home_experience',
             'about_overview', 'about_working_style', 'about_story', 'about_capabilities',
             'projects_overview', 'projects_crm', 'projects_prepme', 'projects_terralis', 'projects_movemint',
             'client_work_overview', 'contact_overview', 'contact_form'
