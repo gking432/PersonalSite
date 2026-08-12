@@ -9,6 +9,7 @@ const pageNames = {
   '/': 'homepage',
   '/about': 'About page',
   '/projects': 'Projects page',
+  '/lab': 'AI Lab',
   '/client-work': 'Client Work page',
   '/contact': 'Contact page',
   '/writing': 'Writing page',

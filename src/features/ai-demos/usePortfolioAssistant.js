@@ -18,6 +18,7 @@ export const initialAssistantNotes = {
 export const assistantDestinations = {
   about: { href: '/about', label: 'Open my story' },
   projects: { href: '/projects', label: 'See my projects' },
+  lab: { href: '/lab', label: 'Explore the AI Lab' },
   client_work: { href: '/client-work', label: 'See earlier client work' },
   contact: { href: '/contact', label: 'Contact Gunnar' },
   resume: { href: '/Gunnar-Neuman-Resume.pdf', label: 'Open my résumé', external: true },
@@ -41,6 +42,10 @@ export const assistantSiteTargets = {
   projects_prepme: { href: '/projects', selector: '#project-prepme', label: 'PrepMe' },
   projects_terralis: { href: '/projects', selector: '#project-terralis', label: 'Terralis Print Studio' },
   projects_movemint: { href: '/projects', selector: '#project-movemint', label: 'MoveMint' },
+  lab_overview: { href: '/lab', selector: '[data-assistant-section="lab-overview"]', label: 'AI Lab overview' },
+  lab_opportunity: { href: '/lab?demo=opportunity', selector: '[data-assistant-section="lab-opportunity"]', label: 'AI Opportunity Mapper' },
+  lab_role: { href: '/lab?demo=role', selector: '[data-assistant-section="lab-role"]', label: 'Role Match Brief' },
+  lab_reputation: { href: '/lab?demo=reputation', selector: '[data-assistant-section="lab-reputation"]', label: 'Reputation Intelligence' },
   client_work_overview: { href: '/client-work', selector: '[data-assistant-section="client-work-overview"]', label: 'Earlier client work' },
   contact_overview: { href: '/contact', selector: '[data-assistant-section="contact-overview"]', label: 'Contact Gunnar' },
   contact_form: { href: '/contact', selector: '[data-assistant-section="contact-form"]', label: 'Contact form' },
@@ -50,6 +55,7 @@ const pageLabels = {
   '/': 'the homepage',
   '/about': 'the About page',
   '/projects': 'the Projects page',
+  '/lab': 'the AI Lab',
   '/client-work': 'the Client Work page',
   '/contact': 'the Contact page',
 }
