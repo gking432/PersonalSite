@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import PageTransition from '../components/PageTransition'
 import SqueezeSection from '../components/SqueezeSection'
+import { aiAssistantEnabled } from '../config/features'
 import './Projects.css'
 
 const ndsEase = [0.22, 1, 0.36, 1]
@@ -18,180 +19,136 @@ const staggerContainer = {
 
 const projects = [
   {
-    name: 'Northstar',
-    type: 'Business Systems',
+    assistantSection: 'projects-crm',
+    elementId: 'project-crm',
+    name: 'Home-Services AI CRM',
+    type: 'Business Workflow',
     status: 'Live Demo',
     shortDesc:
-      'An AI-assisted command center showing how a home-improvement business can capture leads, prioritize follow-up, track jobs, and turn scattered customer signals into daily action.',
+      'A home-services command center that uses AI to organize leads, calls, quotes, appointments, and follow-up while keeping customer communication under human control.',
     image: '/images/project-northstar.png',
-    imageFit: 'contain',
-    imageRatio: 'wide',
-    imageAlt: 'Northstar command center dashboard showing lead pipeline, task management, AI insights, and business metrics',
-    url: 'https://new-gking432s-projects.vercel.app/app',
-    buttonLabel: 'View Northstar',
-    tech: ['AI Assistant', 'CRM', 'Workflow Automation', 'Dashboards']
+    imagePosition: 'top center',
+    imageAlt: 'Home-services CRM dashboard showing lead pipeline, task management, AI insights, and business metrics',
+    url: 'https://new-teal-delta.vercel.app/app',
+    buttonLabel: 'Open the CRM Demo',
+    tech: ['AI Workflows', 'CRM', 'Human Approval']
   },
   {
-    name: 'MoveMint',
-    type: 'Token Launcher',
-    status: 'Live Product',
-    shortDesc:
-      'A live Aptos token launcher built around bonding curve mechanics, graduation logic, and a cleaner path from token idea to public market.',
-    image: '/images/project-movemint.png',
-    imageAlt: 'MoveMint landing page preview',
-    url: 'https://movemint.fun',
-    buttonLabel: 'Visit MoveMint',
-    tech: ['Full-Stack Build', 'Payments', 'Launch Systems']
-  },
-  {
+    assistantSection: 'projects-prepme',
+    elementId: 'project-prepme',
     name: 'PrepMe',
-    type: 'Interview Practice',
-    status: 'Private Prototype',
+    type: 'AI Interview Product',
+    status: 'Live Demo',
     shortDesc:
-      'An interview practice concept built around realistic reps, structured feedback, and the nervous gap before high-stakes conversations.',
+      'PrepMe turns a résumé and target job description into a tailored AI interview with structured feedback.',
     image: '/images/project-prepme.png',
-    imageRatio: 'prepme',
+    imagePosition: 'center center',
     imageAlt: 'PrepMe dashboard showing interview setup flow',
-    url: 'https://prep-lmjhbq6y2-gking432s-projects.vercel.app/dashboard',
-    buttonLabel: 'View PrepMe',
-    tech: ['AI Assistant', 'Feedback Loops', 'AI Workflow']
+    url: 'https://prep-me-wheat.vercel.app/',
+    buttonLabel: 'Try PrepMe',
+    tech: ['Résumé Analysis', 'AI Interview', 'Feedback']
   },
   {
+    assistantSection: 'projects-terralis',
+    elementId: 'project-terralis',
     name: 'Terralis Print Studio',
     type: 'Print Commerce',
     status: 'Live Product',
     shortDesc:
-      'A topographic print studio that turns meaningful places into custom wall art, with the product, brand, and buying flow designed as one system.',
+      'Terralis turns a meaningful location into a customizable topographic print through one connected product and buying flow.',
     image: '/images/project-terralis.png',
-    imageRatio: 'ultrawide',
+    imagePosition: 'center center',
     imageAlt: 'Terralis landing page preview',
     url: 'https://cartoprint.vercel.app/',
     buttonLabel: 'Visit Terralis',
-    tech: ['eCommerce', 'Full-Stack Build', 'Brand']
+    tech: ['Generated Design', 'Customization', 'eCommerce']
   },
   {
-    name: 'This Portfolio',
-    type: 'Personal Site',
-    status: 'Live Build',
+    assistantSection: 'projects-movemint',
+    elementId: 'project-movemint',
+    name: 'MoveMint',
+    type: 'Technical Range',
+    status: 'Aptos Testnet Build',
     shortDesc:
-      'A personal site treated like a product: interactive homepage, evolving positioning, real project links, and a visual system built to keep improving.',
-    preview: 'portfolio',
-    url: '/',
-    buttonLabel: 'View Homepage',
-    tech: ['React', 'Framer Motion', 'Positioning']
+      'I built MoveMint to see whether I could enter an unfamiliar technical domain, understand the mechanics well enough to make product decisions, and ship a working experience.',
+    image: '/images/project-movemint.png',
+    imagePosition: 'top center',
+    imageAlt: 'MoveMint landing page preview',
+    url: 'https://movemint.fun',
+    buttonLabel: 'Visit MoveMint',
+    tech: ['Aptos', 'Bonding Curves', 'Stress Testing']
   }
 ]
 
 function ProjectVisual({ project }) {
-  if (project.image) {
-    const screenshotClasses = [
-      'dev-project-screenshot',
-      project.imageFit === 'contain' ? 'dev-project-screenshot-contain' : '',
-      project.imageRatio === 'wide' ? 'dev-project-screenshot-wide' : '',
-      project.imageRatio === 'prepme' ? 'dev-project-screenshot-prepme' : '',
-      project.imageRatio === 'ultrawide' ? 'dev-project-screenshot-ultrawide' : ''
-    ].filter(Boolean).join(' ')
-
-    return (
-      <div className={screenshotClasses}>
-        <img src={project.image} alt={project.imageAlt} loading="lazy" />
-      </div>
-    )
-  }
-
   return (
-    <div className={`dev-project-concept dev-project-concept-${project.preview || 'default'}`} aria-hidden="true">
-      <span className="dev-concept-status">{project.status}</span>
-      <div className="dev-concept-body">
-        <span className="dev-concept-eyebrow">{project.type}</span>
-        <strong className="dev-concept-name">{project.name}</strong>
-      </div>
+    <div className="project-card-media">
+      <img
+        src={project.image}
+        alt={project.imageAlt}
+        loading="lazy"
+        style={{ objectPosition: project.imagePosition }}
+      />
     </div>
   )
 }
 
-function ProjectSection({ project, index }) {
+function ProjectCard({ project, index }) {
   const number = String(index + 1).padStart(2, '0')
-  const isAlt = index % 2 !== 0
-
-  const content = (
-    <div className="container">
-      <motion.div
-        className="dev-project-header"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        variants={staggerContainer}
-      >
-        <div className="dev-project-header-left">
-          <motion.span className="dev-project-number" variants={fadeUp}>
-            {number}
-          </motion.span>
-          <div className="dev-project-header-text">
-            <motion.h2 className="dev-project-name" variants={fadeUp}>
-              {project.name}
-            </motion.h2>
-            <motion.p className="dev-project-tagline" variants={fadeUp}>
-              {project.type} · {project.status}
-            </motion.p>
-          </div>
-        </div>
-      </motion.div>
-
-      <motion.div
-        className={`dev-project-body${project.image ? ' dev-project-body-screenshot' : ''}`}
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.55, ease: ndsEase }}
-      >
-        <div className="dev-project-left">
-          <ProjectVisual project={project} />
-        </div>
-        <div className="dev-project-details">
-          <p className="dev-project-desc">{project.shortDesc}</p>
-          <div className="dev-project-tech">
-            {project.tech.map((tech) => (
-              <span key={tech} className="tech-badge">{tech}</span>
-            ))}
-          </div>
-          {project.url ? (
-            <a
-              href={project.url}
-              target={project.url.startsWith('http') ? '_blank' : undefined}
-              rel={project.url.startsWith('http') ? 'noopener noreferrer' : undefined}
-              className="btn btn-primary"
-            >
-              {project.buttonLabel}
-            </a>
-          ) : (
-            <span className="btn btn-secondary dev-project-disabled">Private Prototype</span>
-          )}
-        </div>
-      </motion.div>
-    </div>
-  )
-
-  if (isAlt) {
-    return (
-      <SqueezeSection className="dev-project dev-project-alt">
-        {content}
-      </SqueezeSection>
-    )
-  }
 
   return (
-    <section className="dev-project">
-      {content}
-    </section>
+    <motion.article
+      id={project.elementId}
+      data-assistant-section={project.assistantSection}
+      className="project-card"
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.55, delay: (index % 2) * 0.08, ease: ndsEase }}
+    >
+      <ProjectVisual project={project} />
+      <div className="project-card-content">
+        <div className="project-card-heading">
+          <span className="project-card-number">{number}</span>
+          <div>
+            <p className="project-card-meta">{project.type} · {project.status}</p>
+            <h2>{project.name}</h2>
+          </div>
+        </div>
+        <p className="project-card-description">{project.shortDesc}</p>
+        <div className="project-card-footer">
+          <div className="project-card-tech">
+            {project.tech.map((tech) => (
+              <span key={tech}>{tech}</span>
+            ))}
+          </div>
+          <a
+            href={project.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="project-card-link"
+          >
+            {project.buttonLabel} <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </div>
+    </motion.article>
   )
 }
 
 function Projects() {
+  const openProjectSupport = () => {
+    window.dispatchEvent(new CustomEvent('portfolio-assistant:open', {
+      detail: {
+        context: 'The visitor opened you from the Projects support notice. Ask which public project they are using and what is happening. Troubleshoot one step at a time without claiming you can see their other tab or screen.'
+      }
+    }))
+  }
+
   return (
     <PageTransition>
       <div className="projects">
-        <section className="projects-hero section">
+        <section className="projects-hero section" data-assistant-section="projects-overview">
           <div className="container">
             <div className="hero-split">
               <div className="hero-split-left">
@@ -201,7 +158,7 @@ function Projects() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, ease: ndsEase }}
                 >
-                  Dev Projects
+                  Products &amp; Systems
                 </motion.p>
                 <h1>
                   {'Selected Builds'.split(' ').map((word, i, words) => (
@@ -222,7 +179,7 @@ function Projects() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
                 >
-                  A small collection of products and prototypes. Each one started as a question, became a working surface, and taught me something about building for a market.
+                  I build to answer questions that are hard to resolve on paper. These projects show how I move from a business problem or unfamiliar domain to a working product people can actually use.
                 </motion.p>
               </div>
               <motion.div
@@ -232,29 +189,52 @@ function Projects() {
                 transition={{ duration: 0.8, delay: 0.6, ease: ndsEase }}
               >
                 <div className="hero-meta-item">
-                  <span className="hero-meta-label">Format</span>
-                  <span className="hero-meta-value">Portfolio rows</span>
+                  <span className="hero-meta-label">Starting point</span>
+                  <span className="hero-meta-value">A real workflow or unanswered question</span>
                 </div>
                 <div className="hero-meta-item">
-                  <span className="hero-meta-label">Includes</span>
-                  <span className="hero-meta-value">Live products and prototypes</span>
+                  <span className="hero-meta-label">Strongest proof</span>
+                  <span className="hero-meta-value">Home-services CRM and PrepMe</span>
                 </div>
                 <div className="hero-meta-item">
                   <span className="hero-meta-label">Focus</span>
-                  <span className="hero-meta-value">Product, UX, GTM</span>
+                  <span className="hero-meta-value">Business value, workflow, product</span>
                 </div>
                 <div className="hero-meta-item">
-                  <span className="hero-meta-label">Live</span>
-                  <span className="hero-meta-value hero-meta-status">MoveMint and Terralis</span>
+                  <span className="hero-meta-label">Range</span>
+                  <span className="hero-meta-value hero-meta-status">AI, business systems, commerce, Web3</span>
                 </div>
               </motion.div>
             </div>
           </div>
         </section>
 
-        {projects.map((project, index) => (
-          <ProjectSection key={project.name} project={project} index={index} />
-        ))}
+        <section className="projects-gallery">
+          {aiAssistantEnabled && (
+            <div className="container">
+              <motion.aside
+                className="projects-support"
+                aria-label="Project demo support"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.5, ease: ndsEase }}
+              >
+                <span className="projects-support-label">Demo support</span>
+                <div>
+                  <h2>Trying one of the projects?</h2>
+                  <p>If something does not work the way you expect, come back here and ask my AI assistant. It knows the intended workflows, the common failure points, and what to try next.</p>
+                </div>
+                <button type="button" onClick={openProjectSupport}>Ask the assistant for help</button>
+              </motion.aside>
+            </div>
+          )}
+          <div className="container projects-grid">
+            {projects.map((project, index) => (
+              <ProjectCard key={project.name} project={project} index={index} />
+            ))}
+          </div>
+        </section>
 
         {/* ═══════ CLOSING CTA; green squeeze panel ═══════ */}
         <SqueezeSection className="projects-cta section">
@@ -267,20 +247,17 @@ function Projects() {
               variants={staggerContainer}
             >
               <motion.p className="projects-cta-eyebrow" variants={fadeUp}>
-                More where this came from
+                What I want to do next
               </motion.p>
               <motion.h2 className="projects-cta-heading" variants={fadeUp}>
-                Let's build the next one together.
+                Bring me the problem before the solution is obvious.
               </motion.h2>
               <motion.p className="projects-cta-sub" variants={fadeUp}>
-                These started as questions I wanted answered. If you have one worth building around, I'd like to hear it.
+                I am looking for a team where I can understand the work, help shape the system, and stay close enough to execution to make it useful.
               </motion.p>
               <motion.div className="projects-cta-actions" variants={fadeUp}>
                 <Link to="/contact" className="btn btn-primary">
                   Get in Touch
-                </Link>
-                <Link to="/client-work" className="btn btn-outline-light">
-                  See Client Work
                 </Link>
               </motion.div>
             </motion.div>

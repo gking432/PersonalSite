@@ -24,9 +24,6 @@ function merchandisingAssetSrc(mod, filename) {
   return `/${enc(folder)}/${enc(filename)}`
 }
 
-// Which projects get the full featured treatment (the rest go in the index)
-const FEATURED_IDS = ['petunis', 'weatherfixers']
-
 // Clean vanity URLs shown in the browser chrome (hides the host platform)
 const SITE_DISPLAY = {
   petunis: 'petunis.com',
@@ -263,11 +260,11 @@ const clientProjects = [
     name: 'Patti Means Ministry',
     type: 'Website Redesign',
     shortDesc:
-      'My first paid client outside family and friends. Early work, but an honest marker of where the freelance path started.',
+      'My first paid client outside family and friends. Early work, but an honest marker of where the hands-on operating experience started.',
     about:
       'Patti Means Ministry was the first real project I landed outside family and friends. I would make different choices today, but it belongs here because it shows the beginning of the story.',
     description:
-      'Patti Means Ministry was my first paid freelance project outside family and friends. The work itself isn’t what I’d highlight today, but it matters to my story, so it stays in the lineup.',
+      'Patti Means Ministry was my first paid project outside family and friends. The work itself isn’t what I’d highlight today, but it matters to the story, so it stays in the lineup.',
     brief: 'Modernize a dated nonprofit website to better serve families seeking hospice care information while also improving the donation experience.',
     strategy: 'Focused on warmth, clarity, and trust. Redesigned the information architecture to prioritize the most common visitor needs: understanding services, contacting the organization, and donating.',
     scope: 'Modernized visual identity, clearer navigation, better mobile experience, improved donation flow, and professional credibility.',
@@ -874,14 +871,11 @@ function IndexCard({ project, number }) {
 }
 
 function ClientWork() {
-  const featured = clientProjects.filter((p) => FEATURED_IDS.includes(p.id))
-  const indexed = clientProjects.filter((p) => !FEATURED_IDS.includes(p.id))
-
   return (
     <PageTransition>
       <div className="client-work">
         {/* Hero */}
-        <section className="client-work-hero">
+        <section className="client-work-hero" data-assistant-section="client-work-overview">
           <div className="container">
             <div className="hero-split">
               <div className="hero-split-left">
@@ -891,10 +885,10 @@ function ClientWork() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, ease: ndsEase }}
                 >
-                  Client Work
+                  Earlier Work
                 </motion.p>
                 <h1>
-                  {'The Market Lab'.split(' ').map((word, i, words) => (
+                  {'The Agency Years'.split(' ').map((word, i, words) => (
                     <motion.span
                       key={i}
                       style={{ display: 'inline-block' }}
@@ -912,9 +906,11 @@ function ClientWork() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
                 >
-                  Before the products, there were clients. This is where I learned the full
-                  lifecycle: brand, storefront, ads, direct mail, and merchandising for real
-                  businesses with real constraints. You can click into the sites I built and use them.
+                  This is older work from when I ran a small marketing agency. Most of it is not
+                  work I would lead with today. I was learning by doing, and a lot of that meant
+                  making websites and marketing materials for small clients. The sites show their
+                  age. I keep the work here as context for where I started, not as the standard I
+                  want to be judged by now.
                 </motion.p>
               </div>
               <motion.div
@@ -924,32 +920,27 @@ function ClientWork() {
                 transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
               >
                 <div className="hero-meta-item">
-                  <span className="hero-meta-label">Clients</span>
-                  <span className="hero-meta-value">6 Projects</span>
+                  <span className="hero-meta-label">Period</span>
+                  <span className="hero-meta-value">2023–2024</span>
                 </div>
                 <div className="hero-meta-item">
-                  <span className="hero-meta-label">Work</span>
-                  <span className="hero-meta-value">Brand, web, ads, merchandising</span>
+                  <span className="hero-meta-label">What it was</span>
+                  <span className="hero-meta-value">Small client websites and marketing work</span>
                 </div>
                 <div className="hero-meta-item">
-                  <span className="hero-meta-label">Channels</span>
-                  <span className="hero-meta-value">SEO, paid, direct mail, eCommerce</span>
+                  <span className="hero-meta-label">Why it stays</span>
+                  <span className="hero-meta-value">An honest record of where I started</span>
                 </div>
                 <div className="hero-meta-item">
-                  <span className="hero-meta-label">Role</span>
-                  <span className="hero-meta-value hero-meta-status">Full lifecycle</span>
+                  <span className="hero-meta-label">Current relevance</span>
+                  <span className="hero-meta-value hero-meta-status">Context, not a showcase</span>
                 </div>
               </motion.div>
             </div>
           </div>
         </section>
 
-        {/* Featured cases */}
-        {featured.map((project, i) => (
-          <FeaturedCase key={project.id} project={project} index={i} alt={i % 2 !== 0} />
-        ))}
-
-        {/* The rest; compact index */}
+        {/* One consistent archive; no project receives showcase treatment. */}
         <section className="cw-index-section section">
           <div className="container">
             <motion.p
@@ -959,7 +950,7 @@ function ClientWork() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, ease: ndsEase }}
             >
-              More Client Work
+              Client Work
             </motion.p>
             <motion.h2
               className="cw-index-heading"
@@ -968,7 +959,7 @@ function ClientWork() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.08, ease: ndsEase }}
             >
-              The rest of the agency years.
+              Six projects from that chapter.
             </motion.h2>
             <motion.p
               className="cw-index-intro"
@@ -977,11 +968,11 @@ function ClientWork() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.14, ease: ndsEase }}
             >
-              Smaller builds, pitches, and early work. Kept honest: open any of them to browse the live site.
+              Presented in one consistent format. Open any project to browse the site and see the work in context.
             </motion.p>
             <div className="cw-index-grid">
-              {indexed.map((project, i) => (
-                <IndexCard key={project.id} project={project} number={String(featured.length + i + 1).padStart(2, '0')} />
+              {clientProjects.map((project, i) => (
+                <IndexCard key={project.id} project={project} number={String(i + 1).padStart(2, '0')} />
               ))}
             </div>
           </div>
@@ -999,10 +990,10 @@ function ClientWork() {
             >
               <motion.p className="cw-cta-eyebrow" variants={fadeUp}>From clients to products</motion.p>
               <motion.h2 className="cw-cta-heading" variants={fadeUp}>
-                This is the foundation. The dev work is where it's headed.
+                This is the foundation. The product work is where it's headed.
               </motion.h2>
               <motion.div className="cw-cta-actions" variants={fadeUp}>
-                <Link to="/projects" className="btn btn-primary">See Dev Projects</Link>
+                <Link to="/projects" className="btn btn-primary">See Product Projects</Link>
                 <Link to="/contact" className="btn btn-outline-light">Get in Touch</Link>
               </motion.div>
             </motion.div>

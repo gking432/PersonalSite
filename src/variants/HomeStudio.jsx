@@ -5,14 +5,18 @@ import {
   identity,
   approachPrinciples,
   resumeTimeline,
-  resumeHighlights,
   cta
 } from '../data/homeContent'
-import HorizonJourney from '../components/HorizonJourney'
 import SqueezeSection from '../components/SqueezeSection'
 import './HomeStudio.css'
 
 const ease = [0.22, 1, 0.36, 1]
+
+const heroStats = [
+  { value: '5+ yrs', label: 'Business Experience' },
+  { value: '4', label: 'Functional Builds' },
+  { value: '2', label: 'Live AI Platforms' }
+]
 
 const fallbackLand = [
   [[[-168, 72], [-140, 70], [-120, 58], [-103, 52], [-96, 42], [-82, 31], [-82, 24], [-98, 18], [-116, 23], [-128, 42], [-151, 58], [-168, 72]]],
@@ -305,25 +309,9 @@ function Globe() {
 }
 
 function HomeStudio() {
-  const [barHidden, setBarHidden] = useState(false)
-
-  // Hide the top bar while the full-bleed Horizon Journey is pinned on screen,
-  // so the cinematic statement piece plays uninterrupted.
-  useEffect(() => {
-    const onScroll = () => {
-      const runway = document.querySelector('.horizon-scroll-runway')
-      if (!runway) return
-      const r = runway.getBoundingClientRect()
-      setBarHidden(r.top <= 1 && r.bottom >= window.innerHeight - 1)
-    }
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
   return (
     <div className="studio">
-      <header className={`studio-topbar ${barHidden ? 'is-hidden' : ''}`}>
+      <header className="studio-topbar">
         <div className="studio-topbar__inner">
           <Link to="/" className="studio-mark">Gunnar&nbsp;Neuman</Link>
           <nav className="studio-nav">
@@ -336,26 +324,34 @@ function HomeStudio() {
       </header>
 
       {/* ─── HERO ─── */}
-      <section className="studio-hero">
+      <section className="studio-hero" data-assistant-section="home-overview">
         <div className="studio-hero__copy">
           <motion.span className="studio-status"
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease, delay: 0.1 }}>
-            <i /> Available for product &amp; growth roles
+            <i /> Open to roles where business and technology meet
           </motion.span>
 
           <motion.h1 className="studio-headline"
             initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease, delay: 0.2 }}>
-            I build the path from idea to launch.
+            <span className="studio-headline__wide">
+              <span>I turn business problems</span>
+              <span>into working systems.</span>
+            </span>
+            <span className="studio-headline__narrow">
+              <span>I turn business</span>
+              <span>problems into</span>
+              <span>working systems.</span>
+            </span>
           </motion.h1>
 
           <motion.p className="studio-sub"
             initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease, delay: 0.35 }}>
-            I&apos;m Gunnar, a product-minded marketer, builder, and operator. I turn
-            customer insight and product strategy into products, campaigns, and
-            measurable growth.
+            My background is in customers, sales teams, product launches, and client
+            problems. Today I pair that business experience with hands-on product
+            development to build working systems, often with AI at the center.
           </motion.p>
 
           <motion.div className="studio-hero__actions"
@@ -376,7 +372,7 @@ function HomeStudio() {
 
       {/* ─── PROOF STRIP ─── */}
       <section className="studio-proof">
-        {resumeHighlights.map((h) => (
+        {heroStats.map((h) => (
           <div className="studio-proof__item" key={h.label}>
             <span className="studio-proof__value">{h.value}</span>
             <span className="studio-proof__label">{h.label}</span>
@@ -385,7 +381,7 @@ function HomeStudio() {
       </section>
 
       {/* ─── APPROACH (tinted squeeze panel) ─── */}
-      <section className="studio-band studio-approach">
+      <section className="studio-band studio-approach" data-assistant-section="home-approach">
         <SqueezeSection className="studio-panel studio-panel--tint">
           <div className="studio-panel__inner">
             <div className="studio-section__head">
@@ -393,7 +389,7 @@ function HomeStudio() {
               <motion.h2
                 initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }} transition={{ duration: 0.8, ease }}>
-                I help ideas survive contact with customers, markets, and the build itself.
+                I understand the business problem, shape the workflow, and build enough of the solution to prove it.
               </motion.h2>
             </div>
             <div className="studio-approach__grid">
@@ -411,17 +407,8 @@ function HomeStudio() {
         </SqueezeSection>
       </section>
 
-      {/* ─── STATEMENT PIECE; HORIZON JOURNEY ─── */}
-      <section className="studio-statement" aria-label="The build journey">
-        <div className="studio-statement__intro">
-          <span className="studio-kicker">The Build Journey</span>
-          <h2>From first light to launch. Keep scrolling.</h2>
-        </div>
-        <HorizonJourney />
-      </section>
-
       {/* ─── EXPERIENCE (tinted squeeze panel) ─── */}
-      <section className="studio-band">
+      <section className="studio-band" data-assistant-section="home-experience">
         <SqueezeSection className="studio-panel studio-panel--tint">
           <div className="studio-panel__inner">
             <div className="studio-section__head">
@@ -429,7 +416,7 @@ function HomeStudio() {
               <motion.h2
                 initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }} transition={{ duration: 0.8, ease }}>
-                Built across product, growth, and market execution.
+                Business experience first. Technical capability added on top.
               </motion.h2>
             </div>
             <div className="studio-exp__list">

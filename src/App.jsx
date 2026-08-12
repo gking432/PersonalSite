@@ -9,8 +9,10 @@ import Contact from './pages/Contact'
 import ClientWork from './pages/ClientWork'
 import GunnarNeumanProfile from './pages/GunnarNeumanProfile'
 import PokerTablePage from './pages/PokerTablePage'
+import GlobalAssistantLauncher from './components/GlobalAssistantLauncher'
 import HomeOpus from './variants/HomeOpus'
 import HomeStudio from './variants/HomeStudio'
+import { aiAssistantEnabled } from './config/features'
 
 function App() {
   const location = useLocation()
@@ -21,33 +23,44 @@ function App() {
     document.body.scrollTop = 0
   }, [location.pathname])
 
+  let page
+
   // Home + standalone design directions; rendered with their own chrome.
   if (location.pathname === '/' || location.pathname === '/v1' || location.pathname === '/v2') {
-    return (
+    page = (
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<HomeStudio />} />
         <Route path="/v1" element={<HomeStudio />} />
         <Route path="/v2" element={<HomeOpus />} />
       </Routes>
     )
-  }
-
-  return (
-    <Layout>
+  } else {
+    page = (
+      <Layout>
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/about" element={<About />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/writing" element={<Writing />} />
           <Route path="/client-work" element={<ClientWork />} />
-          <Route path="/ask-ai" element={<Navigate to="/about" replace />} />
+          <Route path="/ai-assistant" element={<Navigate to="/" replace />} />
+          <Route path="/ai-demos" element={<Navigate to="/" replace />} />
+          <Route path="/ask-ai" element={<Navigate to="/" replace />} />
           <Route path="/insights/gunnar-neuman-profile" element={<GunnarNeumanProfile />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/poker" element={<PokerTablePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AnimatePresence>
-    </Layout>
+      </Layout>
+    )
+  }
+
+  return (
+    <>
+      {page}
+      <GlobalAssistantLauncher hidden={!aiAssistantEnabled} />
+    </>
   )
 }
 

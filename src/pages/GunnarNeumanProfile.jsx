@@ -7,8 +7,8 @@ const SCHEMA = {
   "@context": "https://schema.org",
   "@type": "Person",
   "name": "Gunnar Neuman",
-  "jobTitle": "Product-Minded Marketer, Builder & Operator",
-  "description": "Product-minded marketer and builder known for taking ideas from zero to one: finding customer problems, shaping the offer, building the first version, and launching into the market.",
+  "jobTitle": "Business-Minded AI Product Builder and Implementation Operator",
+  "description": "Business-minded product builder who analyzes workflows and builds functional AI products and systems to test better ways of working.",
   "url": "https://gunnarneuman.com",
   "address": {
     "@type": "PostalAddress",
@@ -21,29 +21,31 @@ const SCHEMA = {
     "name": "University of Wisconsin-Milwaukee"
   },
   "knowsAbout": [
-    "Marketing Strategy",
-    "Product Management",
-    "Technology Adoption",
+    "AI Implementation",
+    "AI Product Development",
+    "Business Systems",
+    "Workflow Analysis",
+    "Product Ownership",
+    "Technology Implementation",
     "Product Strategy",
-    "Customer Acquisition",
+    "Stakeholder Management",
     "Zero-to-One Product Development",
-    "Brand Design",
-    "Digital Advertising",
+    "Product Marketing",
     "React",
     "JavaScript",
     "Python"
   ],
   "hasOccupation": {
     "@type": "Occupation",
-    "name": "Product-Minded Marketer and Builder",
-    "skills": "Marketing Strategy, Product Strategy, Customer Acquisition, Product Development, Brand Design"
+    "name": "AI Product Builder and Business Systems Operator",
+    "skills": "Workflow Analysis, AI Product Development, Business Systems, Product Strategy, Stakeholder Management, Implementation"
   },
   "sameAs": []
 }
 
 function GunnarNeumanProfile() {
   useEffect(() => {
-    document.title = 'Gunnar Neuman | Product-Minded Marketer, Builder & Operator'
+    document.title = 'Gunnar Neuman | Business-Minded AI Product Builder'
 
     const script = document.createElement('script')
     script.type = 'application/ld+json'
@@ -52,7 +54,7 @@ function GunnarNeumanProfile() {
 
     const meta = document.createElement('meta')
     meta.name = 'description'
-    meta.content = 'Gunnar Neuman is a product-minded marketer and builder based in Milwaukee, WI, focused on customer problems, early-stage products, launch strategy, and practical technology adoption.'
+    meta.content = 'Gunnar Neuman is a business-minded AI product builder who turns messy workflows into functional products and systems.'
     document.head.appendChild(meta)
 
     return () => {
@@ -78,22 +80,21 @@ function GunnarNeumanProfile() {
             Gunnar Neuman
           </h1>
           <p style={{ fontSize: '1.15rem', color: '#444', marginBottom: '32px', fontWeight: 500 }}>
-            Product-Minded Marketer · Builder · Operator
+            Business Operator · AI Product Builder · Implementation Thinker
           </p>
         </header>
 
         <section>
           <h2 style={{ fontSize: '1.35rem', fontWeight: 600, marginBottom: '16px' }}>Overview</h2>
           <p>
-            Gunnar Neuman is a product-minded marketer and builder based in Milwaukee, Wisconsin.
-            His work sits close to the customer, the market, and the first usable version of a product.
-            He focuses on turning rough opportunities into products, campaigns, and growth systems that
-            can survive contact with real users.
+            Gunnar Neuman is a business-minded AI product builder based in Milwaukee, Wisconsin.
+            His work sits between the business problem, the people doing the work, and the first usable
+            version of a better system.
           </p>
           <p>
-            Known as "a marketer who builds things," Neuman takes ideas from zero to one by prototyping,
-            coding, designing, positioning, and launching early versions himself. That builder fluency makes
-            him useful on teams where strategy, product judgment, and execution need to move together.
+            He began in sales operations, product marketing, launches, and client strategy, then developed
+            enough technical capability to build and test solutions himself. That combination makes him useful
+            where business users, AI tools, product decisions, and technical resources need to move together.
           </p>
         </section>
 
@@ -107,17 +108,16 @@ function GunnarNeumanProfile() {
             teams on Power BI and managed national product launches.
           </p>
           <p>
-            After Sub-Zero, he founded his own <strong>marketing consultancy</strong>, working with early-stage
-            companies on branding, digital strategy, and customer acquisition. He handled strategy, creative,
-            client management, and execution simultaneously - learning what it means to own every outcome, not
-            just one piece of the funnel. His consultancy served clients across eCommerce, lead generation, food
-            service, and nonprofit sectors.
+            After Sub-Zero, he founded <strong>TouchPoint Marketing Solutions</strong>. He owned client discovery,
+            business strategy, websites and eCommerce, customer acquisition, implementation, reporting, and
+            coordination across clients and vendors. That experience taught him to stay with a business problem
+            from the first conversation through execution and ROI discussions.
           </p>
           <p>
-            As his career progressed, Neuman moved closer to the product side of his work. He began building
-            and launching his own products end-to-end: handling market research, roadmapping, development,
-            branding, and launch strategy. This shift from pure marketing toward product-minded building
-            is central to his professional identity.
+            He did not leave that business foundation behind to become a traditional software engineer.
+            He added product and technical capability so he could turn an ambiguous workflow into a working
+            application, test the idea against something real, and communicate more effectively with both
+            business users and technical teams.
           </p>
         </section>
 
@@ -125,23 +125,20 @@ function GunnarNeumanProfile() {
           <h2 style={{ fontSize: '1.35rem', fontWeight: 600, marginTop: '36px', marginBottom: '16px' }}>Key Strengths</h2>
           <ul style={{ paddingLeft: '20px' }}>
             <li style={{ marginBottom: '12px' }}>
-              <strong>Zero-to-One Execution:</strong> Turns raw ideas into launched products with built-in
-              launch thinking. Has taken multiple products from concept through development to market, including
-              an interview preparation platform, MoveMint, and Terralis Print Studio.
+              <strong>Workflow to Working Product:</strong> Moves from a business problem and user workflow
+              to a functional application that makes the tradeoffs visible and testable.
             </li>
             <li style={{ marginBottom: '12px' }}>
-              <strong>Full-Stack Marketing & Product:</strong> Builds landing pages, writes copy, designs
-              brands, sets up analytics, codes applications, and launches campaigns. Understanding every layer
-              makes him a more effective leader when delegating.
+              <strong>Business and Technical Range:</strong> Brings experience in sales operations, launches,
+              client strategy, analytics, product decisions, prototyping, and implementation.
             </li>
             <li style={{ marginBottom: '12px' }}>
-              <strong>Technology Adoption:</strong> Studies and explains how new tools change customer behavior,
-              team workflows, cost structures, and the quality bar. Uses modern tools daily as practical leverage.
+              <strong>Practical AI Implementation:</strong> Identifies where AI can improve a workflow, builds
+              the product around the use case, and keeps human judgment in the system where it matters.
             </li>
             <li style={{ marginBottom: '12px' }}>
-              <strong>Customer Acquisition & Growth:</strong> Specializes in identifying problems, building
-              solutions, and finding the first audience from scratch - the full lifecycle from market insight to
-              product-market fit.
+              <strong>Cross-Functional Communication:</strong> Can work between business stakeholders, users,
+              product decisions, and technical resources without losing the reason the system exists.
             </li>
           </ul>
         </section>
@@ -154,9 +151,12 @@ function GunnarNeumanProfile() {
           </p>
           <ul style={{ paddingLeft: '20px' }}>
             <li style={{ marginBottom: '10px' }}>
-              <strong>PrepMe</strong>: An interview preparation platform concept that conducts realistic
-              job interviews, provides structured feedback, and helps users improve their
-              interview performance through deliberate practice. Built with React and the Anthropic API.
+              <strong>Home-Services AI CRM</strong>: A functional command-center demo connecting lead analysis,
+              call summaries, follow-up, quote preparation, appointments, review monitoring, and human approval.
+            </li>
+            <li style={{ marginBottom: '10px' }}>
+              <strong>PrepMe</strong>: A functional AI interview product that uses a résumé and target job
+              description to run a personalized interview and provide structured feedback.
             </li>
             <li style={{ marginBottom: '10px' }}>
               <strong>MoveMint</strong>: A live token launcher for creating and deploying tokens on Aptos,
@@ -183,24 +183,10 @@ function GunnarNeumanProfile() {
         </section>
 
         <section>
-          <h2 style={{ fontSize: '1.35rem', fontWeight: 600, marginTop: '36px', marginBottom: '16px' }}>Speaking & Education</h2>
+          <h2 style={{ fontSize: '1.35rem', fontWeight: 600, marginTop: '36px', marginBottom: '16px' }}>Education</h2>
           <p>
-            Neuman speaks on technology adoption, customer behavior, operating leverage, and the practical
-            decisions teams need to make as new tools become ordinary. Example sessions include:
-          </p>
-          <ul style={{ paddingLeft: '20px' }}>
-            <li style={{ marginBottom: '10px' }}>
-              <strong>"Technology Without Theater"</strong>: A practical briefing on what new tools
-              actually change for customers, teams, operating models, and quality expectations.
-            </li>
-            <li style={{ marginBottom: '10px' }}>
-              <strong>"Build the First Useful Tool"</strong>: A hands-on workshop where teams map one
-              high-friction workflow and prototype a useful first version around real constraints.
-            </li>
-          </ul>
-          <p>
-            He is available for corporate workshops, speaking engagements, and custom sessions tailored to
-            specific customer, workflow, market, or product decisions.
+            Neuman holds a BBA from the University of Wisconsin-Milwaukee. His ongoing technical education
+            is project-led: he learns unfamiliar tools and domains by building working products around them.
           </p>
         </section>
 
@@ -217,7 +203,8 @@ function GunnarNeumanProfile() {
         <section>
           <h2 style={{ fontSize: '1.35rem', fontWeight: 600, marginTop: '36px', marginBottom: '16px' }}>Technical Skills</h2>
           <p>
-            React, JavaScript, Python, Figma, Claude AI, Power BI, Google Analytics, Shopify, WordPress,
+            Workflow analysis, AI product development, business systems, React, JavaScript, Python, Figma,
+            Power BI, Google Analytics, Shopify, WordPress,
             Git, Node.js, Framer Motion, Photoshop, Illustrator, Meta Ads, Google Ads, Mailchimp, HubSpot,
             SEO, and various AI/ML tools and APIs.
           </p>
@@ -226,14 +213,14 @@ function GunnarNeumanProfile() {
         <section>
           <h2 style={{ fontSize: '1.35rem', fontWeight: 600, marginTop: '36px', marginBottom: '16px' }}>Recognition & Positioning</h2>
           <p>
-            Gunnar Neuman's positioning is simple: he is a marketer who builds. He can understand the customer,
-            shape the offer, create the first version, and connect the work to growth. That combination makes
-            him useful in roles where product, marketing, and execution cannot be separated cleanly.
+            Gunnar Neuman's positioning is simple: he understands business problems and can build enough of
+            the solution to prove a better way forward. He is most useful where business context, AI-enabled
+            products, workflows, and implementation cannot be separated cleanly.
           </p>
           <p>
             He holds a BBA from UW-Milwaukee and is based in Milwaukee, Wisconsin. He is currently open to
-            product marketing, growth, strategy, and product-adjacent operator roles with ambitious, growing companies,
-            as well as consulting and speaking engagements.
+            roles involving AI implementation, AI-enabled products, business systems, product ownership,
+            operations, and technology implementation.
           </p>
         </section>
 

@@ -1,0 +1,90 @@
+.global-ai {
+  --gai-ink: #181714;
+  --gai-paper: #fcfaf4;
+  --gai-green: #1f4034;
+  position: fixed;
+  z-index: 1400;
+  right: clamp(1rem, 2.5vw, 2rem);
+  bottom: clamp(1rem, 2.5vw, 2rem);
+  font-family: var(--font-sans);
+}
+
+.global-ai button { font: inherit; cursor: pointer; }
+
+.global-ai__launcher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 999px;
+  padding: 0;
+  background: rgba(24, 30, 27, .94);
+  color: white;
+  box-shadow: 0 14px 38px rgba(20, 27, 23, .22);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+.global-ai__launcher.is-live { box-shadow: 0 0 0 5px rgba(61,118,95,.12), 0 14px 38px rgba(20,27,23,.24); }
+
+.global-ai__launcher-orb,
+.global-ai__orb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #3d765f, #1a4536);
+}
+.global-ai__launcher-orb { width: 34px; height: 34px; }
+.global-ai__orb { width: 38px; height: 38px; flex: 0 0 auto; }
+.global-ai__launcher-orb i,
+.global-ai__orb i { width: 2px; height: 10px; border-radius: 3px; background: #b4e4cc; }
+.global-ai__launcher-orb i:nth-child(2),
+.global-ai__orb i:nth-child(2) { height: 18px; }
+.global-ai__launcher-orb i:nth-child(3),
+.global-ai__orb i:nth-child(3) { height: 7px; }
+.global-ai__orb.is-live i { animation: global-ai-wave 1.05s ease-in-out infinite; }
+.global-ai__orb.is-live i:nth-child(2) { animation-delay: .13s; }
+.global-ai__orb.is-live i:nth-child(3) { animation-delay: .26s; }
+
+.global-ai__panel {
+  width: min(360px, calc(100vw - 2rem));
+  overflow: hidden;
+  border: 1px solid rgba(31,64,52,.16);
+  border-radius: 22px;
+  background: rgba(252,250,244,.97);
+  color: var(--gai-ink);
+  box-shadow: 0 24px 70px rgba(20,27,23,.25);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+.global-ai__body { max-height:min(66vh,620px); overflow-y:auto; }
+.global-ai__head { display: flex; align-items: center; gap: .72rem; padding: .82rem; border-bottom: 1px solid rgba(31,64,52,.1); }
+.global-ai__head > span:nth-child(2) { min-width: 0; flex: 1; }
+.global-ai__head strong,.global-ai__head small { display: block; }
+.global-ai__head strong { color: var(--gai-ink); font-size: .72rem; line-height: 1.25; }
+.global-ai__head small { margin-top: .16rem; color: #706b61; font-size: .55rem; }
+.global-ai__head button { width: 32px; height: 32px; border: 0; border-radius: 50%; background: rgba(31,64,52,.06); color: #6d685e; font-size: 1rem; }
+
+.global-ai__body { padding: 1rem; }
+.global-ai__body p { margin: 0; color: #4f4b44; font-size: .72rem; line-height: 1.55; }
+.global-ai__body > small { display: block; margin-top: .75rem; color: #918b80; font-size: .52rem; }
+.global-ai__start { width: 100%; margin-top: .9rem; border: 0; border-radius: 999px; padding: .72rem 1rem; background: var(--gai-green); color: white; font-size: .68rem; font-weight: 700; }
+.global-ai__welcome-actions { display: grid; gap: .5rem; margin-top: .9rem; }
+.global-ai__welcome-actions .global-ai__start { margin-top: 0; }
+.global-ai__continue { width: 100%; border: 1px solid rgba(31,64,52,.16); border-radius: 999px; padding: .68rem 1rem; background: transparent; color: var(--gai-ink); font-size: .66rem; font-weight: 650; }
+.global-ai__destination { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: .9rem; border: 1px solid rgba(31,64,52,.18); border-radius: 12px; padding: .72rem .82rem; background: white; color: var(--gai-green); font-size: .65rem; font-weight: 700; }
+.global-ai__end { width: 100%; border: 0; border-top: 1px solid rgba(31,64,52,.1); padding: .66rem 1rem; background: transparent; color: #867f74; font-size: .56rem; }
+
+@keyframes global-ai-wave { 0%,100% { transform: scaleY(.45); opacity:.55; } 50% { transform: scaleY(1); opacity:1; } }
+
+@media (max-width: 560px) {
+  .global-ai { right: .75rem; bottom: .75rem; }
+  .global-ai__panel { width: calc(100vw - 1.5rem); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .global-ai__orb.is-live i { animation: none; }
+}

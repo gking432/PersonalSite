@@ -4,7 +4,6 @@ import { useRef, useEffect, useState } from 'react'
 
 
 import PageTransition from '../components/PageTransition'
-import HorizonJourney from '../components/HorizonJourney'
 import EditorialHero from '../components/EditorialHero'
 import './Home.css'
 
@@ -56,14 +55,14 @@ const resumeTimeline = [
   {
     year: 'Oct 2025-Present',
     title: 'GunnarNeuman.com',
-    role: 'Product Developer',
+    role: 'Independent Product Builder',
     location: 'Milwaukee, WI',
     desc: 'Created and launched early-stage products while sharpening a product direction around customer problems, launch mechanics, and measurable growth.',
     bullets: [
       'Built prototypes with AI-assisted development workflows, React, and TypeScript.',
       'Explored concepts including an interview simulation app, MoveMint token launcher, Terralis Print Studio, and productivity dashboard.',
       'Evaluated customer problems, pricing structures, positioning, and launch potential across software, commerce, and media concepts.',
-      'Developed hands-on fluency with Claude Code, Cursor, Codex, and modern development stacks.'
+      'Developed enough technical fluency to turn business and workflow ideas into functional products.'
     ],
     tags: ['React', 'TypeScript', 'Prototyping', 'Product Strategy'],
     side: 'left'
@@ -386,11 +385,6 @@ function Home() {
           </div>
         </div>
       </section>
-
-      {/* ═══════ HORIZON JOURNEY; Full day-cycle scroll experience ═══════ */}
-      <div className="home-anchor" id="builds">
-        <HorizonJourney />
-      </div>
 
       {/* ═══════ EXPERIENCE TIMELINE ═══════ */}
       <section className="background" id="background">

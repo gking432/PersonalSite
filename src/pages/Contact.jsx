@@ -23,25 +23,23 @@ const staggerItem = {
 
 const subjectOptions = [
   { value: 'fulltime', label: 'Full-time role' },
-  { value: 'product-gtm', label: 'Product / GTM challenge' },
-  { value: 'workshop', label: 'Workshop / briefing' },
-  { value: 'client-project', label: 'Client project' },
-  { value: 'partnership', label: 'Partnership' },
+  { value: 'team-intro', label: 'Team introduction' },
+  { value: 'product-conversation', label: 'Product or systems conversation' },
   { value: 'general', label: 'General note' }
 ]
 
 const contactIntents = [
   {
     title: 'Role or Team Fit',
-    text: 'Product marketing, growth, strategy, or operator roles where customer understanding and builder fluency both matter.'
+    text: 'Teams working on AI-enabled products, business systems, implementation, or operational problems where business judgment and technical fluency both matter.'
   },
   {
-    title: 'Product / GTM Problem',
-    text: 'A product, launch, positioning, funnel, or customer behavior problem that needs a practical outside read.'
+    title: 'Product or Systems Conversation',
+    text: 'A useful conversation about a workflow, an AI product, or the gap between a business need and what gets built.'
   },
   {
-    title: 'Briefing or Workshop',
-    text: 'A session for teams trying to understand what technology changes, what to build, and how to make better decisions.'
+    title: 'Introduction',
+    text: 'Someone in your network is building a serious team and you think my background could make sense there.'
   }
 ]
 
@@ -86,7 +84,7 @@ function Contact() {
   return (
     <PageTransition>
     <div className="contact">
-      <section className="contact-hero section">
+      <section className="contact-hero section" data-assistant-section="contact-overview">
         <div className="container">
           <div className="hero-split">
             <div className="hero-split-left">
@@ -117,7 +115,7 @@ function Contact() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
               >
-                Full-time, contract, or consulting. Send the role, product, or problem. I&apos;ll read the context and respond with a useful next step.
+                If you are building a team around a real business or product problem, send me the context. I will read it and get back to you.
               </motion.p>
             </div>
             <motion.div
@@ -148,7 +146,7 @@ function Contact() {
       </section>
 
       {/* Contact Content; Squeezed */}
-      <SqueezeSection className="contact-content section">
+      <SqueezeSection className="contact-content section" data-assistant-section="contact-form">
         <div className="container">
           <motion.div
             className="contact-grid"
@@ -239,7 +237,7 @@ function Contact() {
                         rows="6"
                         value={formData.message}
                         onChange={handleChange}
-                        placeholder="What are you trying to build, decide, launch, or hire for?"
+                        placeholder="What is the team working on, and where could my background be useful?"
                         required
                       ></textarea>
                     </motion.div>
@@ -280,10 +278,7 @@ function Contact() {
                 <h2>Availability</h2>
                 <div className="availability-content">
                   <p className="availability-text">
-                    <strong>Currently seeking:</strong> Full-time roles in product marketing, growth, strategy, or product-adjacent operator work
-                  </p>
-                  <p className="availability-text">
-                    <strong>Also available for:</strong> Product/GTM consulting, briefings, workshops, and selective build projects
+                    <strong>Currently seeking:</strong> Full-time roles where I can work across business problems, AI-enabled products, workflows, and implementation
                   </p>
                 </div>
               </div>

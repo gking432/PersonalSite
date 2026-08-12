@@ -68,7 +68,7 @@ const spineStages = [
     target: '/projects',
     signal: 'proof over polish',
     output: 'live products',
-    nextLabel: 'Dev Projects'
+    nextLabel: 'Products & Systems'
   },
   {
     id: 'market',

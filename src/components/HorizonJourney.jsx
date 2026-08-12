@@ -122,6 +122,24 @@ function subTextLines(stop) {
   return Array.isArray(stop.sub) ? stop.sub : [stop.sub]
 }
 
+// Preserve the original journey composition; only lift the undersized mobile type.
+function journeyHeadlineSize(w, desktopFactor, desktopMax) {
+  if (w <= 700) return Math.min(24, Math.max(22, w * 0.06))
+  return Math.min(w * desktopFactor, desktopMax)
+}
+
+function journeyLabelSize(w) {
+  return w <= 700 ? 9 : Math.min(w * 0.012, 11)
+}
+
+function journeySubSize(w, desktopFactor = 0.016, desktopMax = 15) {
+  return w <= 700 ? 12 : Math.min(w * desktopFactor, desktopMax)
+}
+
+function sunBeamWidthFactor(w) {
+  return w <= 700 ? 0.48 : 0.35
+}
+
 // ═══════════════════════════════════════════
 // TEXT PARTICLE SAMPLING
 // ═══════════════════════════════════════════
@@ -416,7 +434,7 @@ function drawConstellationReveal(ctx, w, h, revealP, stop, data, sprites) {
 
   // Draw text over constellations
   if (glowP > 0) {
-    const fontSize = Math.min(w * 0.045, 48)
+    const fontSize = journeyHeadlineSize(w, 0.045, 48)
     const lineH = fontSize * 1.3
     ctx.globalAlpha = 1
     ctx.font = `300 ${fontSize}px "Instrument Serif", Georgia, serif`
@@ -433,17 +451,17 @@ function drawConstellationReveal(ctx, w, h, revealP, stop, data, sprites) {
     })
 
     ctx.shadowBlur = 10 * glowP
-    ctx.font = `700 ${Math.min(w * 0.012, 11)}px "Inter", sans-serif`
+    ctx.font = `700 ${journeyLabelSize(w)}px "Inter", sans-serif`
     ctx.letterSpacing = '0.2em'
     ctx.fillStyle = rgb([150, 180, 255], fade * glowP * 0.6)
     ctx.fillText(stop.label, textX, textY - fontSize * 0.8)
     ctx.letterSpacing = '0'
 
     ctx.shadowBlur = 8 * glowP
-    ctx.font = `400 ${Math.min(w * 0.016, 15)}px "Instrument Serif", Georgia, serif`
+    ctx.font = `400 ${journeySubSize(w)}px "Instrument Serif", Georgia, serif`
     ctx.fillStyle = rgb([180, 200, 240], fade * glowP * 0.6)
     {
-      const subPx = Math.min(w * 0.016, 15)
+      const subPx = journeySubSize(w)
       const subLineH = subPx * 1.3
       subTextLines(stop).forEach((line, si) => {
         ctx.fillText(line, textX, textY + stop.text.length * lineH + fontSize * 0.5 + si * subLineH)
@@ -514,7 +532,7 @@ function drawCloudReveal(ctx, w, h, revealP, stop, data, sprites) {
 
   // Text; appears and STAYS for a long time
   if (textP > 0) {
-    const fontSize = Math.min(w * 0.042, 44)
+    const fontSize = journeyHeadlineSize(w, 0.042, 44)
     const lineH = fontSize * 1.3
     const textX = w / 2
     const textY = blockY + blockH * 0.25
@@ -532,15 +550,15 @@ function drawCloudReveal(ctx, w, h, revealP, stop, data, sprites) {
     })
 
     ctx.globalAlpha = fade * textP * (1 - disperseP) * 0.55
-    ctx.font = `700 ${Math.min(w * 0.012, 11)}px "Inter", sans-serif`
+    ctx.font = `700 ${journeyLabelSize(w)}px "Inter", sans-serif`
     ctx.fillStyle = rgb([255, 230, 180], 1)
     ctx.fillText(stop.label, textX, textY - fontSize * 0.8)
 
     ctx.globalAlpha = fade * textP * (1 - disperseP) * 0.5
-    ctx.font = `400 ${Math.min(w * 0.016, 15)}px "Instrument Serif", Georgia, serif`
+    ctx.font = `400 ${journeySubSize(w)}px "Instrument Serif", Georgia, serif`
     ctx.fillStyle = rgb([255, 245, 225], 1)
     {
-      const subPx = Math.min(w * 0.016, 15)
+      const subPx = journeySubSize(w)
       const subLineH = subPx * 1.3
       // Tighter gap under headline than other reveals; cloud scene reads better closer to main text
       const subGapAfterMain = fontSize * 0.22
@@ -569,12 +587,12 @@ function drawSunBeamReveal(ctx, w, h, revealP, stop, sunX, sunY) {
   ctx.save()
   ctx.globalAlpha = fade
 
-  const fontSize = Math.min(w * 0.05, 52)
+  const fontSize = journeyHeadlineSize(w, 0.05, 52)
   const lineH = fontSize * 1.3
   const textX = w * 0.5
   const textY = horizonY - h * 0.06
 
-  const beamWidth = w * 0.35 * easeOutCubic(clamp01(revealP / 0.7))
+  const beamWidth = w * sunBeamWidthFactor(w) * easeOutCubic(clamp01(revealP / 0.7))
   const beamLeft = textX - w * 0.2
   const beamRight = beamLeft + beamWidth
 
@@ -594,8 +612,9 @@ function drawSunBeamReveal(ctx, w, h, revealP, stop, sunX, sunY) {
   ctx.save()
   ctx.beginPath()
   ctx.moveTo(sunX, sunY)
-  ctx.lineTo(beamLeft - 10, horizonY + 20)
-  ctx.lineTo(beamRight + 10, horizonY + 20)
+  const beamTextMargin = w <= 700 ? w * 0.14 : 10
+  ctx.lineTo(beamLeft - beamTextMargin, horizonY + 20)
+  ctx.lineTo(beamRight + beamTextMargin, horizonY + 20)
   ctx.closePath()
   ctx.clip()
 
@@ -619,17 +638,17 @@ function drawSunBeamReveal(ctx, w, h, revealP, stop, sunX, sunY) {
   ctx.restore()
 
   ctx.globalAlpha = fade * 0.7
-  ctx.font = `700 ${Math.min(w * 0.012, 11)}px "Inter", sans-serif`
+  ctx.font = `700 ${journeyLabelSize(w)}px "Inter", sans-serif`
   ctx.textAlign = 'center'
   ctx.fillStyle = rgb([255, 220, 150], 1)
   ctx.fillText(stop.label, textX, textY - stop.text.length * lineH - fontSize * 0.5)
 
   ctx.globalAlpha = fade * easeOutCubic(clamp01((revealP - 0.4) / 0.3)) * 0.6
-  ctx.font = `400 ${Math.min(w * 0.016, 15)}px "Instrument Serif", Georgia, serif`
+  ctx.font = `400 ${journeySubSize(w)}px "Instrument Serif", Georgia, serif`
   ctx.fillStyle = rgb([255, 240, 210], 1)
   ctx.textBaseline = 'top'
   {
-    const subPx = Math.min(w * 0.016, 15)
+    const subPx = journeySubSize(w)
     const subLineH = subPx * 1.3
     subTextLines(stop).forEach((line, si) => {
       ctx.fillText(line, textX, textY + fontSize * 0.3 + si * subLineH)
@@ -650,11 +669,11 @@ function drawSunBeamWaterReflection(ctx, w, h, revealP, stop, sunX, sunY, sprite
     : revealP > 0.85 ? (1 - revealP) / 0.15 : 1
   if (fade < 0.01) return
 
-  const fontSize = Math.min(w * 0.05, 52)
+  const fontSize = journeyHeadlineSize(w, 0.05, 52)
   const lineH = fontSize * 1.3
   const textX = w * 0.5
 
-  const beamWidth = w * 0.35 * easeOutCubic(clamp01(revealP / 0.7))
+  const beamWidth = w * sunBeamWidthFactor(w) * easeOutCubic(clamp01(revealP / 0.7))
   const beamLeft = textX - w * 0.2
   const beamRight = beamLeft + beamWidth
 
@@ -723,7 +742,7 @@ function drawSunBeamWaterReflection(ctx, w, h, revealP, stop, sunX, sunY, sprite
 function drawFogRevealText(ctx, w, h, revealP, stop, fogPatches) {
   const horizonY = h * 0.46
 
-  const fontSize = Math.min(w * 0.048, 50)
+  const fontSize = journeyHeadlineSize(w, 0.048, 50)
   const lineH = fontSize * 1.3
   const textX = w * 0.5
   const textY = horizonY - fontSize * 0.3
@@ -750,16 +769,16 @@ function drawFogRevealText(ctx, w, h, revealP, stop, fogPatches) {
   })
 
   ctx.globalAlpha = fade * clearance * 0.6
-  ctx.font = `700 ${Math.min(w * 0.012, 11)}px "Inter", sans-serif`
+  ctx.font = `700 ${journeyLabelSize(w)}px "Inter", sans-serif`
   ctx.fillStyle = rgb([255, 210, 120], 1)
   ctx.fillText(stop.label, textX, textY - stop.text.length * lineH - fontSize * 0.4)
 
   ctx.globalAlpha = fade * clearance * 0.5
-  ctx.font = `400 ${Math.min(w * 0.016, 15)}px "Instrument Serif", Georgia, serif`
+  ctx.font = `400 ${journeySubSize(w)}px "Instrument Serif", Georgia, serif`
   ctx.textBaseline = 'top'
   ctx.fillStyle = rgb([255, 240, 200], 1)
   {
-    const subPx = Math.min(w * 0.016, 15)
+    const subPx = journeySubSize(w)
     const subLineH = subPx * 1.3
     subTextLines(stop).forEach((line, si) => {
       ctx.fillText(line, textX, textY + fontSize * 0.3 + si * subLineH)
@@ -814,7 +833,7 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites, time) {
   const sweepP = easeInOutCubic(clamp01(revealP < 0.5 ? revealP / 0.5 : 1))
   const sweepX = sweepP * w
 
-  const fontSize = Math.min(w * 0.05, 52)
+  const fontSize = journeyHeadlineSize(w, 0.05, 52)
   const lineH = fontSize * 1.3
 
   const textX = w / 2
@@ -827,7 +846,7 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites, time) {
   ctx.clip()
   ctx.globalAlpha = fade
 
-  ctx.font = `700 ${Math.min(w * 0.012, 11)}px "Inter", sans-serif`
+  ctx.font = `700 ${journeyLabelSize(w)}px "Inter", sans-serif`
   ctx.textAlign = 'center'
   ctx.textBaseline = 'bottom'
   ctx.fillStyle = rgb([200, 180, 220], 0.65)
@@ -847,11 +866,11 @@ function drawReflectionReveal(ctx, w, h, revealP, stop, sprites, time) {
 
   ctx.globalAlpha = fade * 0.6
   ctx.shadowBlur = 8
-  ctx.font = `400 ${Math.min(w * 0.018, 16)}px "Instrument Serif", Georgia, serif`
+  ctx.font = `400 ${journeySubSize(w, 0.018, 16)}px "Instrument Serif", Georgia, serif`
   ctx.textBaseline = 'top'
   ctx.fillStyle = rgb([200, 190, 220], 0.75)
   {
-    const subPx = Math.min(w * 0.018, 16)
+    const subPx = journeySubSize(w, 0.018, 16)
     const subLineH = subPx * 1.3
     subTextLines(stop).forEach((line, si) => {
       ctx.fillText(line, textX, textBaseY + fontSize * 0.35 + si * subLineH)
@@ -1691,10 +1710,10 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
       [195, 175, 130],  // fog; amber
     ]
     const refFontSizes = [
-      Math.min(w * 0.045, 48),
-      Math.min(w * 0.042, 44),
-      Math.min(w * 0.05, 52),
-      Math.min(w * 0.048, 50),
+      journeyHeadlineSize(w, 0.045, 48),
+      journeyHeadlineSize(w, 0.042, 44),
+      journeyHeadlineSize(w, 0.05, 52),
+      journeyHeadlineSize(w, 0.048, 50),
     ]
 
     // Compute sweep edges from incoming reveals so old reflections wipe out
@@ -1711,7 +1730,7 @@ function drawHorizon(ctx, w, h, rawProgress, sceneData, sprites, time) {
     const sbPEarly = clamp01((progress - sbStopEarly.at) / sbStopEarly.duration)
     let beamSweepX = 0
     if (sbPEarly > 0 && sbPEarly < 1) {
-      const beamWidth = w * 0.35 * easeOutCubic(clamp01(sbPEarly / 0.7))
+      const beamWidth = w * sunBeamWidthFactor(w) * easeOutCubic(clamp01(sbPEarly / 0.7))
       const beamLeft = w * 0.5 - w * 0.2
       beamSweepX = beamLeft + beamWidth + 20  // +margin to match beam clip
     }

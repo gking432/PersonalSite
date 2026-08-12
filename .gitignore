@@ -27,3 +27,5 @@ shot*.mjs
 # screenshot scratch scripts
 *shot*.mjs
 vfull.mjs
+.vercel
+.env*

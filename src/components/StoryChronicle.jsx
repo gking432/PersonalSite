@@ -19,9 +19,16 @@ const CHAPTERS = [
     title: 'On My Own',
     blocks: [
       { type: 'quote', text: 'As the rotational program came to an end, I decided to take a risk and bet on myself.' },
-      { type: 'p', text: 'I started doing freelance marketing work, and that slowly became a small agency. I was sitting across the table from business owners, founders, and aspiring entrepreneurs trying to make their ideas feel real enough for customers to trust.' },
+      { type: 'p', text: 'I started doing freelance marketing work, and that slowly became a small agency. I was sitting across the table from business owners, founders, and aspiring entrepreneurs trying to turn a loose idea or a stalled business problem into something customers would respond to.' },
+    ],
+  },
+  {
+    id: 'the-work',
+    era: 'What pulled me in',
+    title: 'The Work',
+    blocks: [
       { type: 'p', text: 'That was the first time I understood what kind of work actually pulls me in. It wasn’t the deliverables. It wasn’t being my own boss. It was building.' },
-      { type: 'p', text: 'Running that agency forced me to learn the practical stack of growth: positioning, web, content, SEO, paid media, eCommerce, reporting, and the uncomfortable art of deciding what is actually worth doing.' },
+      { type: 'p', text: 'Running that agency forced me to own the full problem: discovery, strategy, websites and eCommerce, customer acquisition, vendors, reporting, and the uncomfortable art of explaining what was worth doing and what was not.' },
     ],
   },
   {
@@ -40,7 +47,7 @@ const CHAPTERS = [
     blocks: [
       { type: 'quote', text: 'In a world where tools make everyone fast, judgment becomes the real lever.' },
       { type: 'p', text: 'The winners will not be the teams that make the most stuff. They will be the teams that know what is worth making, why it should exist, and how to execute above the noise.' },
-      { type: 'p', text: 'So I went deeper into the technology behind the shift: large language models, data infrastructure, compute economics, adoption cycles, and the cultural questions that come with powerful tools becoming ordinary.' },
+      { type: 'p', text: 'So I went deeper into the technology behind the shift. I wanted to understand where AI could improve real work, where it created new risk or friction, and what it took to turn a promising use case into a product someone could actually use.' },
     ],
   },
   {
@@ -48,8 +55,16 @@ const CHAPTERS = [
     era: 'Today',
     title: 'Building Now',
     blocks: [
-      { type: 'p', text: 'More importantly, I started building. I created Terralis Print Studio, MoveMint, an interview practice platform, and this portfolio as a living product. Each one forced the same questions: who is this for, why now, what should it feel like, how does it launch, and what would make it worth using?' },
-      { type: 'emph', text: 'I’m looking for a team with serious problems, a strong product instinct, and the ambition to build things that matter. That is where I do my best work.' },
+      { type: 'p', text: 'More importantly, I started building. I created an AI interview platform, a home-services CRM demo, Terralis Print Studio, and MoveMint. Different products, but the work was consistent: understand the problem, map the workflow, make the hard product decisions, and build enough of the system to prove it.' },
+      { type: 'p', text: 'I did not leave my business background behind to become a traditional developer. I added enough technical capability to make my business judgment more useful.' },
+    ],
+  },
+  {
+    id: 'whats-next',
+    era: 'The role I want',
+    title: 'What’s Next',
+    blocks: [
+      { type: 'emph', text: 'I’m looking for a team with serious operating problems and room for someone who can work between the business, the user, and the build. That is where I do my best work.' },
     ],
   },
 ]
@@ -134,15 +149,15 @@ export default function StoryChronicle() {
   const railFill = active < 0 ? 0 : (active / (N - 1)) * 100
 
   return (
-    <section className="chron" id="my-story" aria-label="My story" ref={ref} style={{ height: `${(N + 1) * 95}vh` }}>
+    <section className="chron" id="my-story" data-assistant-section="about-story" aria-label="My story" ref={ref} style={{ height: `${(N + 1) * 95}vh` }}>
       <div className="chron__stage">
         {/* Intro heading; blooms in, dissolves away */}
         <motion.div className="chron__intro" style={{ opacity: introOpacity, scale: introScale, filter: introBlur, y: introY }}>
           <p className="chron__eyebrow">My Story</p>
           <h2 className="chron__title">How I got here.</h2>
           <p className="chron__deck">
-            A path from inside a premium brand, to building on my own, to making
-            judgment the thing I lead with.
+            A business foundation first, then the technical capability to build
+            and test better systems myself.
           </p>
         </motion.div>
 
