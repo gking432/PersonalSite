@@ -18,6 +18,15 @@ const mapperQuestions = [
   'Ask my own question'
 ]
 
+function normalizePublicUrl(value) {
+  const trimmed = String(value || '').trim()
+  if (!trimmed) return ''
+  const candidate = /^[a-z][a-z\d+.-]*:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`
+  const parsed = new URL(candidate)
+  if (!['http:', 'https:'].includes(parsed.protocol) || !parsed.hostname.includes('.')) throw new Error('Invalid public URL')
+  return parsed.toString()
+}
+
 function Badge({ children, tone = '' }) {
   return <span className={`lab-badge${tone ? ` lab-badge--${tone.toLowerCase()}` : ''}`}>{children}</span>
 }
@@ -117,13 +126,12 @@ function OpportunityMapper() {
 
   const submit = async (event) => {
     event.preventDefault(); setError('')
-    let parsed
-    try { parsed = new URL(website) } catch { setError('Enter a complete public URL, including https://.'); return }
-    if (!['http:', 'https:'].includes(parsed.protocol)) { setError('Enter a public http or https URL.'); return }
+    let normalizedWebsite
+    try { normalizedWebsite = normalizePublicUrl(website) } catch { setError('Enter a valid public website, such as company.com.'); return }
     const finalQuestion = question === 'Ask my own question' ? customQuestion.trim() : question
     if (!finalQuestion) { setError('Write the question you want the analysis to answer.'); return }
     setLoading(true)
-    try { setResult(await runAnalysis({ demo: 'opportunity', website, department, question: finalQuestion })) }
+    try { setResult(await runAnalysis({ demo: 'opportunity', website: normalizedWebsite, department, question: finalQuestion })) }
     catch (runError) { setError(runError.message) }
     finally { setLoading(false) }
   }
@@ -133,7 +141,7 @@ function OpportunityMapper() {
     <div className="lab-form-wrap">
       <form className="lab-form" onSubmit={submit}>
         <div className="lab-form__intro"><h3>Where should this company use AI first?</h3><p>Enter a company website and choose what you want the system to investigate.</p></div>
-        <label>Company website<input type="url" value={website} onChange={(event) => setWebsite(event.target.value)} placeholder="https://company.com" required /></label>
+        <label>Company website<input type="text" inputMode="url" autoCapitalize="none" autoCorrect="off" value={website} onChange={(event) => setWebsite(event.target.value)} placeholder="company.com" required /></label>
         <label>Department or team <span>Optional</span><input value={department} onChange={(event) => setDepartment(event.target.value)} placeholder="Customer service, sales, operations…" /></label>
         <label>Question<select value={question} onChange={(event) => setQuestion(event.target.value)}>{mapperQuestions.map((item) => <option key={item}>{item}</option>)}</select></label>
         {question === 'Ask my own question' && <label>Ask your own<textarea rows="4" value={customQuestion} onChange={(event) => setCustomQuestion(event.target.value)} placeholder="What would you want an AI implementation lead to investigate?" maxLength="800" required /></label>}
@@ -172,9 +180,10 @@ function RoleMatch() {
   const submit = async (event) => {
     event.preventDefault(); setError('')
     if (!jobUrl.trim() && jobDescription.trim().length < 80) { setError('Paste the job description or provide a public job-posting URL.'); return }
-    if (jobUrl.trim()) { try { new URL(jobUrl) } catch { setError('Enter a complete public job URL, including https://.'); return } }
+    let normalizedJobUrl = ''
+    if (jobUrl.trim()) { try { normalizedJobUrl = normalizePublicUrl(jobUrl) } catch { setError('Enter a valid job URL, such as company.com/careers/role.'); return } }
     setLoading(true)
-    try { setResult(await runAnalysis({ demo: 'role', jobUrl, jobDescription, companyContext })) }
+    try { setResult(await runAnalysis({ demo: 'role', jobUrl: normalizedJobUrl, jobDescription, companyContext })) }
     catch (runError) { setError(runError.message) }
     finally { setLoading(false) }
   }
@@ -184,7 +193,7 @@ function RoleMatch() {
     <div className="lab-form-wrap">
       <form className="lab-form" onSubmit={submit}>
         <div className="lab-form__intro"><h3>Is Gunnar worth interviewing for this?</h3><p>Paste a role and get the strongest truthful case based on verified experience and finished work.</p></div>
-        <label>Public job-posting URL <span>Optional if pasted below</span><input type="url" value={jobUrl} onChange={(event) => setJobUrl(event.target.value)} placeholder="https://company.com/careers/role" /></label>
+        <label>Public job-posting URL <span>Optional if pasted below</span><input type="text" inputMode="url" autoCapitalize="none" autoCorrect="off" value={jobUrl} onChange={(event) => setJobUrl(event.target.value)} placeholder="company.com/careers/role" /></label>
         <label>Job description <span>Recommended</span><textarea rows="9" value={jobDescription} onChange={(event) => setJobDescription(event.target.value)} placeholder="Paste the responsibilities and requirements here…" maxLength="18000" /></label>
         <label>What matters most to your team? <span>Optional</span><textarea rows="3" value={companyContext} onChange={(event) => setCompanyContext(event.target.value)} placeholder="A workflow, implementation challenge, team need, or concern…" maxLength="1600" /></label>
         <ErrorNotice message={error} />
