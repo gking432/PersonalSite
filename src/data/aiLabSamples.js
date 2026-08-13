@@ -43,19 +43,29 @@ export const opportunitySample = {
 
 export const complaintSample = {
   caseId: 'LAB-4821',
+  needsClarification: false,
+  clarificationQuestion: '',
+  clarificationReason: '',
   receivedFrom: 'Web form',
+  originalRequest: 'My two dining chairs arrived damaged, and support never followed up after promising replacements last week. I need this resolved before I dispute the charge.',
   category: 'Billing and product quality',
   urgency: 'High',
   sentiment: 'Frustrated',
   customerIntent: 'Replacement or refund plus an explanation',
   department: 'Customer care · priority queue',
+  routeReason: 'The request combines damaged merchandise, a missed prior commitment, and a potential charge dispute, so it needs an experienced service-recovery owner.',
   summary: 'The customer reports that two dining chairs arrived with damaged fabric and that the replacement date has already been missed once. They want a concrete resolution, not another general status update.',
   facts: ['Two chairs arrived with damaged upholstery', 'A replacement was previously promised', 'The promised replacement date passed', 'The customer is requesting a refund or confirmed replacement'],
   missingInformation: ['Order number', 'Photos of the damage', 'Preferred resolution if both options are available'],
   recommendedAction: 'Route to a senior customer-care representative, verify the order and replacement inventory, then respond with one confirmed resolution and date.',
+  nextSteps: ['Verify the order and previous-contact history', 'Review damage photos and replacement inventory', 'Confirm refund authority if replacement timing is unacceptable', 'Send one approved response with a specific owner and next-update time'],
   escalation: { required: true, reason: 'A prior commitment was missed and the customer is threatening to dispute the charge.' },
   internalNote: 'Do not send another generic apology. Confirm inventory or refund authority before responding. Preserve the prior-contact history for the assigned representative.',
   draftResponse: 'I’m sorry—we missed the replacement date we gave you, and you should not have to keep asking for a clear answer. I’ve escalated this for order verification so we can give you one confirmed resolution: either an available replacement with a firm date or a refund. Please send the order number and, if available, photos of the damaged fabric so the assigned representative can complete the next step without making you repeat the issue.',
+  similarCases: [
+    { id: 'DEMO-101', type: 'Damaged delivery', issue: 'Two upholstered chairs arrived with visible transit damage.', solution: 'Support verified the order and photos, checked replacement inventory, and gave the customer one confirmed resolution path.', outcome: 'Replacement inventory was confirmed and the customer received a specific delivery window.' },
+    { id: 'DEMO-102', type: 'Missed follow-up', issue: 'A customer contacted support twice without receiving the promised update.', solution: 'The case was assigned to one owner, the prior contact history was summarized, and a firm next-update time was established.', outcome: 'The customer stopped repeating the issue and the case closed after one owner completed the follow-through.' }
+  ],
   automationLog: [
     { label: 'Message received', detail: 'Complaint captured from the website form' },
     { label: 'Intent classified', detail: 'Replacement or refund requested' },

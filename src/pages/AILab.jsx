@@ -44,6 +44,40 @@ function WorkflowProgress({ labels }) {
   return <div className="lab-live-process" role="status"><div className="lab-live-process__head"><span className="lab-live-dot" />Automation running</div>{labels.map((label, index) => <div key={label} className={index < active ? 'is-done' : index === active ? 'is-active' : ''}><i>{index < active ? '✓' : index + 1}</i><span>{label}</span></div>)}</div>
 }
 
+function IssueTimeline({ loading = false, activeStep = 0, clarification = null, result = null }) {
+  const similarCount = result?.similarCases?.length || 0
+  const steps = result ? [
+    'Customer request received',
+    `Request identified · ${result.category}`,
+    `Routed to ${result.department}`,
+    similarCount ? `${similarCount} similar demo ${similarCount === 1 ? 'issue' : 'issues'} identified · solutions pulled` : 'No close demo-case match · handled from first principles',
+    'Representative action report generated',
+  ] : clarification ? [
+    'Customer request received',
+    'More information needed',
+    'Routing paused until the answer is supplied',
+    'Demo issue library ready',
+    'Representative report waiting',
+  ] : [
+    'Customer request received',
+    'Identifying request type',
+    'Selecting the correct route',
+    'Searching similar demo issues and prior solutions',
+    'Generating representative action report',
+  ]
+
+  return <div className={`issue-timeline${result ? ' is-complete' : ''}${clarification ? ' needs-input' : ''}`} aria-live="polite">
+    {steps.map((label, index) => {
+      const complete = Boolean(result) || index < activeStep || (clarification && index === 0)
+      const active = !result && (clarification ? index === 1 : loading && index === activeStep)
+      return <div key={label} className={`${complete ? 'is-complete' : ''}${active ? ' is-active' : ''}`}>
+        <span>{complete ? '✓' : active ? <i /> : ''}</span>
+        <p>{label}</p>
+      </div>
+    })}
+  </div>
+}
+
 function EmailDelivery({ type, result, defaultEmail = '', schedule = '', autoSend = false }) {
   const [email, setEmail] = useState(defaultEmail)
   const [state, setState] = useState({ status: 'idle', message: '' })
@@ -69,47 +103,63 @@ function EmailDelivery({ type, result, defaultEmail = '', schedule = '', autoSen
 
 function ComplaintResult({ result, email, onReset }) {
   return <div className="lab-result" aria-live="polite">
-    <ResultHeader eyebrow={`Case ${result.caseId}`} title={`${result.urgency} priority · ${result.category}`} summary={result.summary} filename="customer-issue-workflow.json" result={result} onReset={onReset} />
+    <ResultHeader eyebrow={`Case ${result.caseId}`} title="Representative action report" summary={result.summary} filename="customer-issue-workflow.json" result={result} onReset={onReset} />
+    <IssueTimeline result={result} />
+    <Section title="Initial customer request"><blockquote className="issue-original-request">“{result.originalRequest}”</blockquote></Section>
     <div className="lab-decision-strip"><div><span>Intent</span><strong>{result.customerIntent}</strong></div><div><span>Route</span><strong>{result.department}</strong></div><div><span>Escalation</span><strong>{result.escalation.required ? 'Required' : 'Not required'}</strong></div></div>
-    <Section title="Automation log"><div className="lab-automation-log">{result.automationLog.map((item, index) => <article key={`${item.label}-${index}`}><i>✓</i><div><strong>{item.label}</strong><p>{item.detail}</p></div></article>)}</div></Section>
-    <Section title="Internal ticket"><div className="lab-ticket-grid"><div><h4>Recommended action</h4><p>{result.recommendedAction}</p></div><div><h4>Internal note</h4><p>{result.internalNote}</p></div><div><h4>Known facts</h4><ul>{result.facts.map((item) => <li key={item}>{item}</li>)}</ul></div><div><h4>Missing information</h4><ul>{result.missingInformation.length ? result.missingInformation.map((item) => <li key={item}>{item}</li>) : <li>Nothing material detected</li>}</ul></div></div></Section>
+    <p className="issue-route-reason"><strong>Why this route:</strong> {result.routeReason}</p>
+    <Section title={`${result.similarCases?.length || 0} similar demo ${result.similarCases?.length === 1 ? 'issue' : 'issues'} retrieved`}>
+      {result.similarCases?.length ? <div className="issue-similar-cases">{result.similarCases.map((item) => <article key={item.id}><div><span>{item.id}</span><strong>{item.type}</strong></div><p>{item.issue}</p><dl><div><dt>Previous solution</dt><dd>{item.solution}</dd></div><div><dt>Outcome</dt><dd>{item.outcome}</dd></div></dl></article>)}</div> : <p className="issue-no-match">No close match was found in the fictional demo library. The recommendation was built from the request itself.</p>}
+      <small className="lab-human-note">These are fictional support cases created for this demonstration—not real customer records.</small>
+    </Section>
+    <Section title="Rep briefing"><div className="issue-rep-report"><article><span>Recommended fix</span><p>{result.recommendedAction}</p></article><article><span>Internal brief</span><p>{result.internalNote}</p></article><article><span>Known facts</span><ul>{result.facts.map((item) => <li key={item}>{item}</li>)}</ul></article><article><span>Information still needed</span><ul>{result.missingInformation.length ? result.missingInformation.map((item) => <li key={item}>{item}</li>) : <li>Nothing material detected</li>}</ul></article></div></Section>
+    <Section title="Recommended next steps"><ol className="issue-next-steps">{result.nextSteps.map((item) => <li key={item}>{item}</li>)}</ol></Section>
     <Section title="Draft customer response"><blockquote>{result.draftResponse}</blockquote><small className="lab-human-note">Human approval required before a customer-facing response is sent.</small></Section>
     <EmailDelivery type="complaint" result={result} defaultEmail={email} />
   </div>
 }
 
 function CustomerIssueHandler() {
-  const [form, setForm] = useState({ customerName: '', product: '', orderReference: '', complaint: '', email: '' })
+  const [message, setMessage] = useState('')
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [channels, setChannels] = useState({ configured: false, phoneNumber: '' })
-  const processing = ['Communication received', 'Intent and sentiment classified', 'Risk and urgency checked', 'Correct owner selected', 'Internal ticket assembled', 'Response prepared for approval']
-  useEffect(() => { requestJson('/api/lab-channel-config').then(setChannels).catch(() => {}) }, [])
-  const update = (key) => (event) => setForm((value) => ({ ...value, [key]: event.target.value }))
+  const [activeStep, setActiveStep] = useState(0)
+  const [clarification, setClarification] = useState(null)
+  const [clarificationAnswer, setClarificationAnswer] = useState('')
 
-  const submit = async (event) => {
-    event.preventDefault(); setError('')
-    if (form.complaint.trim().length < 30) { setError('Describe the issue in a little more detail so the system has something real to route.'); return }
+  const run = async (question = '', answer = '') => {
+    setError('')
+    if (message.trim().length < 10) { setError('Enter a customer complaint or request.'); return }
     setLoading(true)
-    try { setResult(await runAnalysis({ demo: 'complaint', channel: 'Web form', ...form })) } catch (runError) { setError(runError.message) } finally { setLoading(false) }
+    setActiveStep(question ? 2 : 0)
+    const timer = window.setInterval(() => setActiveStep((value) => Math.min(4, value + 1)), 900)
+    try {
+      const analysis = await runAnalysis({ demo: 'complaint', channel: 'Web form', complaint: message, clarificationQuestion: question, clarificationAnswer: answer })
+      if (analysis.needsClarification) {
+        setClarification(analysis)
+        setClarificationAnswer('')
+        setActiveStep(1)
+      } else {
+        setClarification(null)
+        setResult(analysis)
+        setActiveStep(5)
+      }
+    } catch (runError) { setError(runError.message) } finally { window.clearInterval(timer); setLoading(false) }
   }
 
-  if (result) return <ComplaintResult result={result} email={form.email} onReset={() => setResult(null)} />
-  return <div className="lab-form-wrap">
-    <div className="lab-channel-row"><span className="is-live">Web form · live</span>{channels.configured ? <><a href={`sms:${channels.phoneNumber}`}>Text {channels.phoneNumber}</a><a href={`tel:${channels.phoneNumber}`}>Call {channels.phoneNumber}</a></> : <span>SMS + phone workflow ready when a Twilio number is connected</span>}</div>
-    <form className="lab-form" onSubmit={submit}>
-      <div className="lab-form__intro"><h3>Leave a realistic customer complaint.</h3><p>Watch the system classify it, route it, build the internal ticket, and draft the response.</p></div>
-      <label>Customer name <span>Optional</span><input value={form.customerName} onChange={update('customerName')} placeholder="Jordan Lee" /></label>
-      <label>Product or service <span>Optional</span><input value={form.product} onChange={update('product')} placeholder="Dining chair, installation, delivery…" /></label>
-      <label>Order or account reference <span>Optional</span><input value={form.orderReference} onChange={update('orderReference')} placeholder="ORDER-1042" /></label>
-      <label>Email for the finished report <span>Optional</span><input type="email" value={form.email} onChange={update('email')} placeholder="you@company.com" /></label>
-      <label>Customer message<textarea rows="6" value={form.complaint} onChange={update('complaint')} placeholder="I ordered two chairs and both arrived damaged. I was promised a replacement last week…" maxLength="6000" required /></label>
+  const reset = () => { setResult(null); setClarification(null); setClarificationAnswer(''); setMessage(''); setError(''); setActiveStep(0) }
+  if (result) return <ComplaintResult result={result} email="" onReset={reset} />
+  if (loading) return <div className="issue-automation-stage"><div className="issue-automation-stage__head"><span>AI automation running</span><p>Turning one inbound request into the context a representative needs.</p></div><IssueTimeline loading activeStep={activeStep} /><button type="button" disabled>Processing request…</button></div>
+  if (clarification) return <div className="issue-automation-stage"><IssueTimeline clarification={clarification} activeStep={activeStep} /><form className="issue-clarification" onSubmit={(event) => { event.preventDefault(); if (clarificationAnswer.trim()) run(clarification.clarificationQuestion, clarificationAnswer) }}><span>One thing before I route this</span><h3>{clarification.clarificationQuestion}</h3><p>{clarification.clarificationReason}</p><div><input value={clarificationAnswer} onChange={(event) => setClarificationAnswer(event.target.value)} placeholder="Type your answer…" autoFocus required /><button type="submit">Continue <b>→</b></button></div></form><button className="issue-start-over" type="button" onClick={reset}>Start over</button><ErrorNotice message={error} /></div>
+  return <div className="issue-intake">
+    <form onSubmit={(event) => { event.preventDefault(); run() }}>
+      <label htmlFor="customer-request">Type a customer service complaint or request and watch the AI automation handle it.</label>
+      <div className="issue-intake__box"><textarea id="customer-request" rows="6" value={message} onChange={(event) => setMessage(event.target.value)} placeholder="My order arrived damaged and I’ve already contacted support twice. I need a replacement before Friday." maxLength="6000" required /><button type="submit">Send request <span>→</span></button></div>
       <ErrorNotice message={error} />
-      <div className="lab-form__actions"><button className="lab-run" type="submit" disabled={loading}>Handle the complaint <span>→</span></button><button className="lab-sample" type="button" onClick={() => setResult(complaintSample)}>Run sample complaint</button></div>
-      <small>This demonstration creates a proposed internal workflow. It does not contact a real customer or issue a refund.</small>
     </form>
-    {loading && <WorkflowProgress labels={processing} />}
+    <button className="issue-sample-link" type="button" onClick={() => setResult(complaintSample)}>Or run an example request</button>
+    <p>This demo does not contact a real company, customer, or representative.</p>
   </div>
 }
 

@@ -20,17 +20,22 @@ function section(title, body) {
 }
 
 function complaintEmail(result) {
+  const similarCases = Array.isArray(result.similarCases) ? result.similarCases.slice(0, 3).map((item) => `${clean(item.type, 120)} — Prior solution: ${clean(item.solution, 500)} Outcome: ${clean(item.outcome, 400)}`) : []
   return {
     subject: `Customer issue demo · ${clean(result.caseId, 40) || 'AI triage'}`,
     title: 'Inbound customer issue report',
     intro: clean(result.summary),
     body: [
-      section('Routing decision', `<p><strong>Urgency:</strong> ${escapeHtml(clean(result.urgency, 40))}<br><strong>Category:</strong> ${escapeHtml(clean(result.category, 120))}<br><strong>Owner:</strong> ${escapeHtml(clean(result.department, 160))}</p>`),
+      section('Initial request', `<div style="padding:16px;background:#f4f1ea;border-left:3px solid #a8823c">${escapeHtml(clean(result.originalRequest, 2400))}</div>`),
+      section('Routing decision', `<p><strong>Urgency:</strong> ${escapeHtml(clean(result.urgency, 40))}<br><strong>Category:</strong> ${escapeHtml(clean(result.category, 120))}<br><strong>Owner:</strong> ${escapeHtml(clean(result.department, 160))}<br><strong>Why:</strong> ${escapeHtml(clean(result.routeReason, 900))}</p>`),
+      section('Similar demonstration cases', bullets(similarCases)),
       section('Recommended action', `<p>${escapeHtml(clean(result.recommendedAction))}</p>`),
+      section('Next steps', bullets(cleanList(result.nextSteps, 5))),
       section('Known facts', bullets(cleanList(result.facts))),
       section('Missing information', bullets(cleanList(result.missingInformation))),
       section('Internal note', `<p>${escapeHtml(clean(result.internalNote))}</p>`),
-      section('Draft customer response', `<div style="padding:16px;background:#f4f1ea;border-left:3px solid #a8823c">${escapeHtml(clean(result.draftResponse, 2400))}</div>`)
+      section('Draft customer response', `<div style="padding:16px;background:#f4f1ea;border-left:3px solid #a8823c">${escapeHtml(clean(result.draftResponse, 2400))}</div>`),
+      `<p style="margin-top:20px;color:#7d776c;font-size:12px">Similar cases shown above come from a fictional support-case library created for this demonstration.</p>`
     ].join('')
   }
 }
