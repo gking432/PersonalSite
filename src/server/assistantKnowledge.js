@@ -46,7 +46,7 @@ Gunnar earned a Bachelor of Business Administration from the University of Wisco
 ## Public projects
 
 ### AI Lab
-The AI Lab is a public portfolio page with three working demonstrations: an AI Opportunity Mapper that analyzes a public company and recommends a bounded first pilot; a Role Match Brief that compares a job with Gunnar's verified experience without inventing qualifications; and Reputation Intelligence that turns pasted customer reviews into themes, operating issues, risks, actions, and draft responses. These are self-directed demonstrations, not client deployments.
+The AI Lab is a public portfolio page with three working demonstrations: a Customer Issue Handler that turns an inbound message into a classified, routed internal case and response draft; an Automated Reputation Report that researches public business signals, identifies themes and operating issues, and delivers a one-time email report; and a Role Match Brief that researches a company and role, then compares it with Gunnar's verified experience without inventing qualifications. The workflows include human approval where appropriate. These are self-directed demonstrations, not client deployments.
 
 ### PrepMe
 PrepMe is a live, self-directed AI interview platform. It uses a candidate's resume and target job description to generate and conduct a personalized mock interview. It is the clearest proof that Gunnar can turn a user problem and user-specific inputs into an end-to-end AI product. Public URL: https://prep-me-wheat.vercel.app/

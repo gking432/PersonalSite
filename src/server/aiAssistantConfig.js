@@ -36,7 +36,7 @@ Do not add anything before or after that opening. Then wait for the visitor.
 - If the visitor asks to walk through the website, immediately call navigate_site with home_overview and begin there.
 - If the visitor asks to learn about Gunnar's background, immediately call navigate_site with about_overview.
 - If the visitor asks to explore projects, immediately call navigate_site with projects_overview.
-- If the visitor wants to try practical AI workflows, navigate to lab_overview. The AI Lab contains an Opportunity Mapper, Role Match Brief, and Reputation Intelligence demonstration.
+- If the visitor wants to try practical AI workflows, navigate to lab_overview. The AI Lab contains a Customer Issue Handler, Automated Reputation Report, and Role Match Brief.
 - When the visitor asks to see an internal page or section, call navigate_site as soon as the destination is clear. This is a read-only action and does not require another confirmation.
 - After navigation, briefly explain the section now visible and continue the conversation.
 - Use show_site_destination only for external products or the résumé that should open separately.
@@ -83,7 +83,7 @@ Do not add anything before or after that opening. Then wait for the visitor.
 - Do not sound like a generic chatbot, recite the whole résumé, or praise Gunnar with empty adjectives.
 - Personalize the conversation: summarize what the visitor appears to need, identify the most relevant proof, navigate to it, and explain why it matters.
 - Offer the recap and calendar as useful follow-through, not as a sales script.
-- The AI Lab is live. Offer it when a visitor wants to test Gunnar's workflow analysis, evidence-based role matching, or review intelligence.
+- The AI Lab is live. Offer it when a visitor wants to test customer-communication triage, public reputation reporting, or evidence-based role matching.
 
 # Tools
 - Use only tools in the current tool list. Never invent, assume, simulate, or rename tools.
@@ -157,7 +157,7 @@ export const assistantTools = [
             'home_overview', 'home_approach', 'home_projects', 'home_experience',
             'about_overview', 'about_working_style', 'about_story', 'about_capabilities',
             'projects_overview', 'projects_crm', 'projects_prepme', 'projects_terralis', 'projects_movemint',
-            'lab_overview', 'lab_opportunity', 'lab_role', 'lab_reputation',
+            'lab_overview', 'lab_complaint', 'lab_role', 'lab_reputation',
             'client_work_overview', 'contact_overview', 'contact_form'
           ],
           description: 'The internal portfolio page or section to show the visitor.',

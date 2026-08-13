@@ -1,22 +1,7 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import PageTransition from '../components/PageTransition'
-import {
-  opportunitySample,
-  reputationSample,
-  reputationSampleReviews,
-  roleMatchSample
-} from '../data/aiLabSamples'
+import { complaintSample, reputationSample, roleMatchSample } from '../data/aiLabSamples'
 import './AILab.css'
-
-const mapperQuestions = [
-  'Where could this company use AI?',
-  'Which workflow should it pilot first?',
-  'Where could AI save employees the most time?',
-  'How could AI improve the customer experience?',
-  'How could AI support sales or service teams?',
-  'What should remain human-controlled?',
-  'Ask my own question'
-]
 
 function normalizePublicUrl(value) {
   const trimmed = String(value || '').trim()
@@ -27,271 +12,170 @@ function normalizePublicUrl(value) {
   return parsed.toString()
 }
 
-function Badge({ children, tone = '' }) {
-  return <span className={`lab-badge${tone ? ` lab-badge--${tone.toLowerCase()}` : ''}`}>{children}</span>
-}
-
-function ErrorNotice({ message }) {
-  if (!message) return null
-  return <div className="lab-error" role="alert"><strong>The custom analysis did not run.</strong><span>{message}</span></div>
-}
-
-function ResultHeader({ eyebrow, title, summary, onDownload, onReset }) {
-  return (
-    <div className="lab-result-head">
-      <div>
-        <span className="lab-result-kicker">{eyebrow}</span>
-        <h2>{title}</h2>
-        <p>{summary}</p>
-      </div>
-      <div className="lab-result-actions">
-        <button type="button" onClick={onDownload}>Download brief</button>
-        <button type="button" onClick={onReset}>Start over</button>
-      </div>
-    </div>
-  )
-}
-
-function Section({ title, children, className = '' }) {
-  return <section className={`lab-result-section ${className}`.trim()}><h3>{title}</h3>{children}</section>
-}
-
-function LoadingState({ steps }) {
-  return (
-    <div className="lab-loading" role="status">
-      <span className="lab-loading__orb"><i /><i /><i /></span>
-      <div><strong>Building the brief</strong><p>{steps}</p></div>
-    </div>
-  )
-}
-
-function downloadResult(filename, result) {
-  const blob = new Blob([JSON.stringify(result, null, 2)], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const anchor = document.createElement('a')
-  anchor.href = url
-  anchor.download = filename
-  anchor.click()
-  URL.revokeObjectURL(url)
+async function requestJson(url, options = {}) {
+  const response = await fetch(url, options)
+  const payload = await response.json().catch(() => ({}))
+  if (!response.ok) throw new Error(payload.error || 'That action could not be completed right now.')
+  return payload
 }
 
 async function runAnalysis(body) {
-  const response = await fetch('/api/lab-analyze', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  })
-  const payload = await response.json().catch(() => ({}))
-  if (!response.ok) throw new Error(payload.error || 'The analysis service is unavailable right now.')
-  if (!payload.result) throw new Error('The custom analysis endpoint is available on the deployed preview. The complete sample result works locally.')
+  const payload = await requestJson('/api/lab-analyze', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+  if (!payload.result) throw new Error('The custom analysis endpoint is available on the deployed preview. The complete sample still works locally.')
   return payload.result
 }
 
-function OpportunityResult({ result, onReset }) {
-  return (
-    <div className="lab-result" aria-live="polite">
-      <ResultHeader eyebrow="Opportunity brief" title={result.organization} summary={result.executiveSummary} onDownload={() => downloadResult('ai-opportunity-brief.json', result)} onReset={onReset} />
-      <Section title="Ranked opportunities" className="lab-result-section--wide">
-        <div className="lab-opportunity-list">
-          {result.opportunities.map((item, index) => (
-            <article key={`${item.title}-${index}`} className="lab-opportunity">
-              <div className="lab-opportunity__rank">0{index + 1}</div>
-              <div className="lab-opportunity__body">
-                <h4>{item.title}</h4>
-                <p>{item.workflow}</p>
-                <div className="lab-badges"><Badge tone={item.value}>Value {item.value}</Badge><Badge>Complexity {item.complexity}</Badge><Badge tone={item.risk === 'High' ? 'risk' : 'safe'}>Risk {item.risk}</Badge></div>
-                <dl><div><dt>Why it matters</dt><dd>{item.why}</dd></div><div><dt>Human checkpoint</dt><dd>{item.humanControl}</dd></div></dl>
-              </div>
-            </article>
-          ))}
-        </div>
-      </Section>
-      <Section title="Recommended first pilot">
-        <div className="lab-pilot"><h4>{result.recommendedPilot.title}</h4><p>{result.recommendedPilot.reason}</p><ol>{result.recommendedPilot.steps.map((step) => <li key={step}>{step}</li>)}</ol><div className="lab-metric"><span>Measure</span>{result.recommendedPilot.successMetric}</div></div>
-      </Section>
-      <Section title="Guardrails"><ul className="lab-clean-list">{result.guardrails.map((item) => <li key={item}>{item}</li>)}</ul></Section>
-      {result.evidenceNote && <p className="lab-evidence-note">{result.evidenceNote}</p>}
-    </div>
-  )
+function Badge({ children, tone = '' }) { return <span className={`lab-badge${tone ? ` lab-badge--${tone.toLowerCase()}` : ''}`}>{children}</span> }
+function ErrorNotice({ message }) { return message ? <div className="lab-error" role="alert"><strong>That did not finish.</strong><span>{message}</span></div> : null }
+function Section({ title, children }) { return <section className="lab-result-section"><h3>{title}</h3>{children}</section> }
+
+function downloadResult(filename, result) {
+  const url = URL.createObjectURL(new Blob([JSON.stringify(result, null, 2)], { type: 'application/json' }))
+  const anchor = document.createElement('a'); anchor.href = url; anchor.download = filename; anchor.click(); URL.revokeObjectURL(url)
 }
 
-function OpportunityMapper() {
-  const [website, setWebsite] = useState('')
-  const [department, setDepartment] = useState('')
-  const [question, setQuestion] = useState(mapperQuestions[1])
-  const [customQuestion, setCustomQuestion] = useState('')
+function ResultHeader({ eyebrow, title, summary, filename, result, onReset }) {
+  return <div className="lab-result-head"><div><span className="lab-result-kicker">{eyebrow}</span><h2>{title}</h2><p>{summary}</p></div><div className="lab-result-actions"><button type="button" onClick={() => downloadResult(filename, result)}>Download</button><button type="button" onClick={onReset}>Start over</button></div></div>
+}
+
+function WorkflowProgress({ labels }) {
+  const [active, setActive] = useState(0)
+  useEffect(() => { const timer = window.setInterval(() => setActive((value) => Math.min(labels.length - 1, value + 1)), 850); return () => window.clearInterval(timer) }, [labels.length])
+  return <div className="lab-live-process" role="status"><div className="lab-live-process__head"><span className="lab-live-dot" />Automation running</div>{labels.map((label, index) => <div key={label} className={index < active ? 'is-done' : index === active ? 'is-active' : ''}><i>{index < active ? '✓' : index + 1}</i><span>{label}</span></div>)}</div>
+}
+
+function EmailDelivery({ type, result, defaultEmail = '', schedule = '', autoSend = false }) {
+  const [email, setEmail] = useState(defaultEmail)
+  const [state, setState] = useState({ status: 'idle', message: '' })
+  const sentRef = useRef(false)
+
+  const send = async (address = email) => {
+    setState({ status: 'sending', message: '' })
+    try {
+      const payload = await requestJson('/api/lab-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type, result, email: address, schedule }) })
+      setState({ status: 'sent', message: payload.message })
+    } catch (error) { setState({ status: 'error', message: error.message }) }
+  }
+
+  useEffect(() => {
+    if (autoSend && defaultEmail && !sentRef.current) { sentRef.current = true; send(defaultEmail) }
+  // The one-time delivery intentionally runs once for the completed result.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  if (state.status === 'sent') return <div className="lab-delivery is-sent"><strong>✓ Report delivered</strong><p>{state.message}</p></div>
+  return <form className="lab-delivery" onSubmit={(event) => { event.preventDefault(); send() }}><div><strong>{type === 'reputation' ? 'One-time automated delivery' : 'Send this result'}</strong><p>{type === 'reputation' ? `This is the report that would arrive ${schedule}. This demo sends it once and creates no recurring subscription.` : 'Email a copy of this completed workflow.'}</p></div><div className="lab-delivery__form"><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@company.com" required /><button type="submit" disabled={state.status === 'sending'}>{state.status === 'sending' ? 'Sending…' : 'Email report'}</button></div>{state.status === 'error' && <small>{state.message}</small>}</form>
+}
+
+function ComplaintResult({ result, email, onReset }) {
+  return <div className="lab-result" aria-live="polite">
+    <ResultHeader eyebrow={`Case ${result.caseId}`} title={`${result.urgency} priority · ${result.category}`} summary={result.summary} filename="customer-issue-workflow.json" result={result} onReset={onReset} />
+    <div className="lab-decision-strip"><div><span>Intent</span><strong>{result.customerIntent}</strong></div><div><span>Route</span><strong>{result.department}</strong></div><div><span>Escalation</span><strong>{result.escalation.required ? 'Required' : 'Not required'}</strong></div></div>
+    <Section title="Automation log"><div className="lab-automation-log">{result.automationLog.map((item, index) => <article key={`${item.label}-${index}`}><i>✓</i><div><strong>{item.label}</strong><p>{item.detail}</p></div></article>)}</div></Section>
+    <Section title="Internal ticket"><div className="lab-ticket-grid"><div><h4>Recommended action</h4><p>{result.recommendedAction}</p></div><div><h4>Internal note</h4><p>{result.internalNote}</p></div><div><h4>Known facts</h4><ul>{result.facts.map((item) => <li key={item}>{item}</li>)}</ul></div><div><h4>Missing information</h4><ul>{result.missingInformation.length ? result.missingInformation.map((item) => <li key={item}>{item}</li>) : <li>Nothing material detected</li>}</ul></div></div></Section>
+    <Section title="Draft customer response"><blockquote>{result.draftResponse}</blockquote><small className="lab-human-note">Human approval required before a customer-facing response is sent.</small></Section>
+    <EmailDelivery type="complaint" result={result} defaultEmail={email} />
+  </div>
+}
+
+function CustomerIssueHandler() {
+  const [form, setForm] = useState({ customerName: '', product: '', orderReference: '', complaint: '', email: '' })
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [channels, setChannels] = useState({ configured: false, phoneNumber: '' })
+  const processing = ['Communication received', 'Intent and sentiment classified', 'Risk and urgency checked', 'Correct owner selected', 'Internal ticket assembled', 'Response prepared for approval']
+  useEffect(() => { requestJson('/api/lab-channel-config').then(setChannels).catch(() => {}) }, [])
+  const update = (key) => (event) => setForm((value) => ({ ...value, [key]: event.target.value }))
 
   const submit = async (event) => {
     event.preventDefault(); setError('')
-    let normalizedWebsite
-    try { normalizedWebsite = normalizePublicUrl(website) } catch { setError('Enter a valid public website, such as company.com.'); return }
-    const finalQuestion = question === 'Ask my own question' ? customQuestion.trim() : question
-    if (!finalQuestion) { setError('Write the question you want the analysis to answer.'); return }
+    if (form.complaint.trim().length < 30) { setError('Describe the issue in a little more detail so the system has something real to route.'); return }
     setLoading(true)
-    try { setResult(await runAnalysis({ demo: 'opportunity', website: normalizedWebsite, department, question: finalQuestion })) }
-    catch (runError) { setError(runError.message) }
-    finally { setLoading(false) }
+    try { setResult(await runAnalysis({ demo: 'complaint', channel: 'Web form', ...form })) } catch (runError) { setError(runError.message) } finally { setLoading(false) }
   }
 
-  if (result) return <OpportunityResult result={result} onReset={() => setResult(null)} />
-  return (
-    <div className="lab-form-wrap">
-      <form className="lab-form" onSubmit={submit}>
-        <div className="lab-form__intro"><h3>Where should this company use AI first?</h3><p>Enter a company website and choose what you want the system to investigate.</p></div>
-        <label>Company website<input type="text" inputMode="url" autoCapitalize="none" autoCorrect="off" value={website} onChange={(event) => setWebsite(event.target.value)} placeholder="company.com" required /></label>
-        <label>Department or team <span>Optional</span><input value={department} onChange={(event) => setDepartment(event.target.value)} placeholder="Customer service, sales, operations…" /></label>
-        <label>Question<select value={question} onChange={(event) => setQuestion(event.target.value)}>{mapperQuestions.map((item) => <option key={item}>{item}</option>)}</select></label>
-        {question === 'Ask my own question' && <label>Ask your own<textarea rows="4" value={customQuestion} onChange={(event) => setCustomQuestion(event.target.value)} placeholder="What would you want an AI implementation lead to investigate?" maxLength="800" required /></label>}
-        <ErrorNotice message={error} />
-        <div className="lab-form__actions"><button className="lab-run" type="submit" disabled={loading}>{loading ? 'Analyzing…' : 'Map the opportunity'}<span>→</span></button><button className="lab-sample" type="button" onClick={() => setResult(opportunitySample)}>View complete sample</button></div>
-        <small>Public information only. The analysis is directional and should be validated with the people doing the work.</small>
-      </form>
-      {loading && <LoadingState steps="Reading the company · mapping workflows · ranking a pilot" />}
-    </div>
-  )
+  if (result) return <ComplaintResult result={result} email={form.email} onReset={() => setResult(null)} />
+  return <div className="lab-form-wrap">
+    <div className="lab-channel-row"><span className="is-live">Web form · live</span>{channels.configured ? <><a href={`sms:${channels.phoneNumber}`}>Text {channels.phoneNumber}</a><a href={`tel:${channels.phoneNumber}`}>Call {channels.phoneNumber}</a></> : <span>SMS + phone workflow ready when a Twilio number is connected</span>}</div>
+    <form className="lab-form" onSubmit={submit}>
+      <div className="lab-form__intro"><h3>Leave a realistic customer complaint.</h3><p>Watch the system classify it, route it, build the internal ticket, and draft the response.</p></div>
+      <label>Customer name <span>Optional</span><input value={form.customerName} onChange={update('customerName')} placeholder="Jordan Lee" /></label>
+      <label>Product or service <span>Optional</span><input value={form.product} onChange={update('product')} placeholder="Dining chair, installation, delivery…" /></label>
+      <label>Order or account reference <span>Optional</span><input value={form.orderReference} onChange={update('orderReference')} placeholder="ORDER-1042" /></label>
+      <label>Email for the finished report <span>Optional</span><input type="email" value={form.email} onChange={update('email')} placeholder="you@company.com" /></label>
+      <label>Customer message<textarea rows="6" value={form.complaint} onChange={update('complaint')} placeholder="I ordered two chairs and both arrived damaged. I was promised a replacement last week…" maxLength="6000" required /></label>
+      <ErrorNotice message={error} />
+      <div className="lab-form__actions"><button className="lab-run" type="submit" disabled={loading}>Handle the complaint <span>→</span></button><button className="lab-sample" type="button" onClick={() => setResult(complaintSample)}>Run sample complaint</button></div>
+      <small>This demonstration creates a proposed internal workflow. It does not contact a real customer or issue a refund.</small>
+    </form>
+    {loading && <WorkflowProgress labels={processing} />}
+  </div>
 }
 
 function RoleResult({ result, onReset }) {
-  return (
-    <div className="lab-result" aria-live="polite">
-      <ResultHeader eyebrow="Interview case" title={result.role} summary={result.interviewCase} onDownload={() => downloadResult('gunnar-neuman-role-match.json', result)} onReset={onReset} />
-      <Section title="Strongest verified matches" className="lab-result-section--wide"><div className="lab-match-grid">{result.strongestMatches.map((item) => <article key={item.title}><h4>{item.title}</h4><p>{item.evidence}</p><span>{item.relevance}</span></article>)}</div></Section>
-      <Section title="Best proof to inspect"><div className="lab-proof-links">{result.relevantProjects.map((item) => <a key={item.name} href={item.href} target="_blank" rel="noreferrer"><strong>{item.name}</strong><span>{item.reason}</span><i>↗</i></a>)}</div></Section>
-      <Section title="Transferable evidence"><div className="lab-chip-list">{result.transferableEvidence.map((item) => <span key={item}>{item}</span>)}</div></Section>
-      <Section title="Areas to explore during an interview"><ul className="lab-clean-list">{result.discussionAreas.map((item) => <li key={item}>{item}</li>)}</ul></Section>
-      <Section title="Questions worth asking"><ol className="lab-number-list">{result.interviewQuestions.map((item) => <li key={item}>{item}</li>)}</ol></Section>
-      <Section title="Keep exploring"><div className="lab-page-links">{result.recommendedPages.map((item) => <a key={item.label} href={item.href} target={item.href.endsWith('.pdf') ? '_blank' : undefined} rel="noreferrer">{item.label}<span>→</span></a>)}</div></Section>
-      <p className="lab-evidence-note">{result.truthBoundary}</p>
-    </div>
-  )
+  return <div className="lab-result" aria-live="polite">
+    <ResultHeader eyebrow="Recruiter brief" title={result.role} summary={result.interviewCase} filename="gunnar-neuman-role-match.json" result={result} onReset={onReset} />
+    <Section title="Strongest verified matches"><div className="lab-match-grid">{result.strongestMatches.map((item) => <article key={item.title}><h4>{item.title}</h4><p>{item.evidence}</p><span>{item.relevance}</span></article>)}</div></Section>
+    <Section title="Best proof to inspect"><div className="lab-proof-links">{result.relevantProjects.map((item) => <a key={item.name} href={item.href} target="_blank" rel="noreferrer"><strong>{item.name}</strong><span>{item.reason}</span><i>↗</i></a>)}</div></Section>
+    <Section title="Areas to explore"><ul className="lab-clean-list">{result.discussionAreas.map((item) => <li key={item}>{item}</li>)}</ul></Section>
+    <Section title="Questions worth asking"><ol className="lab-number-list">{result.interviewQuestions.map((item) => <li key={item}>{item}</li>)}</ol></Section>
+    <EmailDelivery type="role" result={result} />
+    <CalendarBooking />
+    <p className="lab-evidence-note">{result.truthBoundary}</p>
+  </div>
+}
+
+function CalendarBooking() {
+  const [state, setState] = useState({ status: 'idle', slots: [], message: '' })
+  const [selected, setSelected] = useState(null)
+  const [visitor, setVisitor] = useState({ name: '', email: '' })
+  const check = async () => { setState({ status: 'loading', slots: [], message: '' }); try { const data = await requestJson('/api/calendar-availability'); setState({ status: 'ready', slots: data.slots || [], message: '' }) } catch (error) { setState({ status: 'error', slots: [], message: error.message }) } }
+  const book = async (event) => { event.preventDefault(); setState((value) => ({ ...value, status: 'booking' })); try { const data = await requestJson('/api/book-interview', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ start: selected.start, ...visitor }) }); setState({ status: 'booked', slots: [], message: `Interview scheduled for ${data.event?.label || selected.label}.` }) } catch (error) { setState((value) => ({ ...value, status: 'error', message: error.message })) } }
+  return <div className="lab-calendar"><div><strong>Real calendar handoff</strong><p>Check Gunnar’s actual availability. Nothing is booked without explicit confirmation.</p></div>{state.status === 'idle' && <button type="button" onClick={check}>Check availability</button>}{state.status === 'loading' && <span>Looking at calendar…</span>}{state.status === 'ready' && <><div className="lab-slot-list">{state.slots.map((slot) => <button type="button" key={slot.start} className={selected?.start === slot.start ? 'is-selected' : ''} onClick={() => setSelected(slot)}>{slot.label}</button>)}</div>{selected && <form onSubmit={book}><input value={visitor.name} onChange={(event) => setVisitor((value) => ({ ...value, name: event.target.value }))} placeholder="Your name" required /><input type="email" value={visitor.email} onChange={(event) => setVisitor((value) => ({ ...value, email: event.target.value }))} placeholder="you@company.com" required /><button type="submit">Confirm interview</button></form>}</>}{state.status === 'booking' && <span>Creating calendar event…</span>}{state.status === 'booked' && <strong className="lab-success">✓ {state.message}</strong>}{state.status === 'error' && <small>{state.message}</small>}</div>
 }
 
 function RoleMatch() {
-  const [jobUrl, setJobUrl] = useState('')
-  const [jobDescription, setJobDescription] = useState('')
-  const [companyContext, setCompanyContext] = useState('')
-  const [result, setResult] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-
+  const [form, setForm] = useState({ jobUrl: '', companyWebsite: '', jobDescription: '', companyContext: '' })
+  const [result, setResult] = useState(null); const [loading, setLoading] = useState(false); const [error, setError] = useState('')
+  const update = (key) => (event) => setForm((value) => ({ ...value, [key]: event.target.value }))
   const submit = async (event) => {
     event.preventDefault(); setError('')
-    if (!jobUrl.trim() && jobDescription.trim().length < 80) { setError('Paste the job description or provide a public job-posting URL.'); return }
-    let normalizedJobUrl = ''
-    if (jobUrl.trim()) { try { normalizedJobUrl = normalizePublicUrl(jobUrl) } catch { setError('Enter a valid job URL, such as company.com/careers/role.'); return } }
-    setLoading(true)
-    try { setResult(await runAnalysis({ demo: 'role', jobUrl: normalizedJobUrl, jobDescription, companyContext })) }
-    catch (runError) { setError(runError.message) }
-    finally { setLoading(false) }
+    if (!form.jobUrl.trim() && !form.companyWebsite.trim() && form.jobDescription.trim().length < 80) { setError('Add a job link, company website, or pasted job description.'); return }
+    let jobUrl = ''; let companyWebsite = ''
+    try { jobUrl = normalizePublicUrl(form.jobUrl); companyWebsite = normalizePublicUrl(form.companyWebsite) } catch { setError('Use a valid company or job URL, such as company.com/careers/role.'); return }
+    setLoading(true); try { setResult(await runAnalysis({ demo: 'role', ...form, jobUrl, companyWebsite })) } catch (runError) { setError(runError.message) } finally { setLoading(false) }
   }
-
   if (result) return <RoleResult result={result} onReset={() => setResult(null)} />
-  return (
-    <div className="lab-form-wrap">
-      <form className="lab-form" onSubmit={submit}>
-        <div className="lab-form__intro"><h3>Is Gunnar worth interviewing for this?</h3><p>Paste a role and get the strongest truthful case based on verified experience and finished work.</p></div>
-        <label>Public job-posting URL <span>Optional if pasted below</span><input type="text" inputMode="url" autoCapitalize="none" autoCorrect="off" value={jobUrl} onChange={(event) => setJobUrl(event.target.value)} placeholder="company.com/careers/role" /></label>
-        <label>Job description <span>Recommended</span><textarea rows="9" value={jobDescription} onChange={(event) => setJobDescription(event.target.value)} placeholder="Paste the responsibilities and requirements here…" maxLength="18000" /></label>
-        <label>What matters most to your team? <span>Optional</span><textarea rows="3" value={companyContext} onChange={(event) => setCompanyContext(event.target.value)} placeholder="A workflow, implementation challenge, team need, or concern…" maxLength="1600" /></label>
-        <ErrorNotice message={error} />
-        <div className="lab-form__actions"><button className="lab-run" type="submit" disabled={loading}>{loading ? 'Building brief…' : 'Build the interview case'}<span>→</span></button><button className="lab-sample" type="button" onClick={() => setResult(roleMatchSample)}>View complete sample</button></div>
-        <small>The brief advocates for Gunnar without inventing experience, results, or enterprise deployments.</small>
-      </form>
-      {loading && <LoadingState steps="Reading the role · matching verified evidence · assembling the interview case" />}
-    </div>
-  )
+  return <div className="lab-form-wrap"><form className="lab-form" onSubmit={submit}><div className="lab-form__intro"><h3>Give it a real company and role.</h3><p>The system researches the context, builds the strongest truthful interview case, and packages the proof.</p></div><label>Job posting URL <span>Optional</span><input type="text" inputMode="url" value={form.jobUrl} onChange={update('jobUrl')} placeholder="company.com/careers/role" /></label><label>Company website <span>Optional</span><input type="text" inputMode="url" value={form.companyWebsite} onChange={update('companyWebsite')} placeholder="company.com" /></label><label>Job description <span>Paste when available</span><textarea rows="8" value={form.jobDescription} onChange={update('jobDescription')} placeholder="Paste responsibilities and requirements…" maxLength="18000" /></label><label>What matters most to the team? <span>Optional</span><textarea rows="3" value={form.companyContext} onChange={update('companyContext')} placeholder="Implementation, adoption, customer operations…" /></label><ErrorNotice message={error} /><div className="lab-form__actions"><button className="lab-run" type="submit" disabled={loading}>Build the recruiter brief <span>→</span></button><button className="lab-sample" type="button" onClick={() => setResult(roleMatchSample)}>View sample</button></div><small>No fit score and no invented credentials. Direct and transferable evidence remain separate.</small></form>{loading && <WorkflowProgress labels={['Researching the company and role', 'Reading verified experience', 'Matching direct evidence', 'Selecting project proof', 'Building recruiter brief']} />}</div>
 }
 
-function ReputationResult({ result, onReset }) {
-  return (
-    <div className="lab-result" aria-live="polite">
-      <ResultHeader eyebrow="Reputation brief" title="What the reviews are really saying" summary={result.executiveSummary} onDownload={() => downloadResult('reputation-intelligence-brief.json', result)} onReset={onReset} />
-      <Section title="Recurring themes" className="lab-result-section--wide"><div className="lab-theme-grid">{result.themes.map((item) => <article key={item.theme}><div><h4>{item.theme}</h4><Badge tone={item.sentiment === 'Positive' ? 'safe' : 'risk'}>{item.sentiment}</Badge></div><strong>{item.frequency}</strong><p>{item.evidence}</p></article>)}</div></Section>
-      <Section title="Operational issues"><div className="lab-issue-list">{result.operationalIssues.map((item) => <article key={item.issue}><h4>{item.issue}</h4><p>{item.signal}</p><span>Likely owner · {item.likelyOwner}</span></article>)}</div></Section>
-      <Section title="Reputation risks"><ul className="lab-clean-list">{result.risks.map((item) => <li key={item}>{item}</li>)}</ul></Section>
-      <Section title="Recommended action"><div className="lab-action-table">{result.recommendations.map((item) => <article key={item.action}><div><h4>{item.action}</h4><p>{item.impact}</p></div><dl><div><dt>Owner</dt><dd>{item.owner}</dd></div><div><dt>Timing</dt><dd>{item.timing}</dd></div></dl></article>)}</div></Section>
-      <Section title="Draft public responses"><div className="lab-response-list">{result.draftResponses.map((item) => <article key={item.situation}><span>{item.situation}</span><p>“{item.response}”</p></article>)}</div></Section>
-      <div className="lab-next-move"><span>Best next move</span><p>{result.nextMove}</p></div>
-      {result.evidenceNote && <p className="lab-evidence-note">{result.evidenceNote}</p>}
-    </div>
-  )
+function ReputationResult({ result, email, schedule, emailStateKey, onReset }) {
+  return <div className="lab-result" aria-live="polite">
+    <ResultHeader eyebrow={result.reportSchedule} title={`${result.businessName} reputation report`} summary={result.executiveSummary} filename="reputation-report.json" result={result} onReset={onReset} />
+    <Section title="Public sources checked"><div className="lab-source-list">{result.sources.map((item) => <a key={`${item.url}-${item.title}`} href={item.url} target="_blank" rel="noreferrer"><strong>{item.title}</strong><span>{item.finding}</span><i>↗</i></a>)}</div></Section>
+    <Section title="Recurring themes"><div className="lab-theme-grid">{result.themes.map((item) => <article key={item.theme}><div><h4>{item.theme}</h4><Badge tone={item.sentiment === 'Positive' ? 'safe' : item.sentiment === 'Negative' ? 'risk' : ''}>{item.sentiment}</Badge></div><strong>{item.frequency}</strong><p>{item.evidence}</p></article>)}</div></Section>
+    <Section title="Operational issues"><div className="lab-issue-list">{result.operationalIssues.map((item) => <article key={item.issue}><div><h4>{item.issue}</h4><p>{item.signal}</p></div><span>Likely owner · {item.likelyOwner}</span></article>)}</div></Section>
+    <Section title="Recommended action"><div className="lab-action-table">{result.recommendations.map((item) => <article key={item.action}><div><h4>{item.action}</h4><p>{item.impact}</p></div><dl><div><dt>Owner</dt><dd>{item.owner}</dd></div><div><dt>Timing</dt><dd>{item.timing}</dd></div></dl></article>)}</div></Section>
+    <Section title="Draft public responses"><div className="lab-response-list">{result.draftResponses.map((item) => <article key={item.situation}><span>{item.situation}</span><p>“{item.response}”</p></article>)}</div></Section>
+    <div className="lab-next-move"><span>Best next move</span><p>{result.nextMove}</p></div>
+    <EmailDelivery key={emailStateKey} type="reputation" result={result} defaultEmail={email} schedule={schedule} autoSend />
+    <p className="lab-evidence-note">{result.evidenceNote}</p>
+  </div>
 }
 
-function ReputationIntelligence() {
-  const fileRef = useRef(null)
-  const [reviews, setReviews] = useState('')
-  const [businessContext, setBusinessContext] = useState('')
-  const [result, setResult] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const reviewCount = useMemo(() => reviews.trim() ? reviews.trim().split(/\n+/).filter(Boolean).length : 0, [reviews])
-
-  const readFile = async (event) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-    if (file.size > 250000) { setError('Use a CSV or text file smaller than 250 KB.'); return }
-    const text = await file.text()
-    setReviews(text.slice(0, 100000)); setError('')
-  }
-
-  const submit = async (event) => {
-    event.preventDefault(); setError('')
-    if (reviews.trim().length < 120) { setError('Paste several real reviews or load the sample set so there is enough evidence to analyze.'); return }
-    setLoading(true)
-    try { setResult(await runAnalysis({ demo: 'reputation', reviews, businessContext })) }
-    catch (runError) { setError(runError.message) }
-    finally { setLoading(false) }
-  }
-
-  if (result) return <ReputationResult result={result} onReset={() => setResult(null)} />
-  return (
-    <div className="lab-form-wrap">
-      <form className="lab-form" onSubmit={submit}>
-        <div className="lab-form__intro"><h3>What are customers really saying?</h3><p>Paste reviews or upload a CSV to find recurring themes, operating issues, and the best next action.</p></div>
-        <label>Business context <span>Optional</span><input value={businessContext} onChange={(event) => setBusinessContext(event.target.value)} placeholder="Home services, hospitality, healthcare…" maxLength="500" /></label>
-        <label>Customer reviews <span>{reviewCount ? `${reviewCount} lines loaded` : 'One review per line works best'}</span><textarea rows="12" value={reviews} onChange={(event) => setReviews(event.target.value)} placeholder="Paste public reviews here…" maxLength="100000" /></label>
-        <input ref={fileRef} className="lab-file-input" type="file" accept=".csv,.txt,text/csv,text/plain" onChange={readFile} />
-        <div className="lab-input-tools"><button type="button" onClick={() => fileRef.current?.click()}>Upload CSV or text</button><button type="button" onClick={() => { setReviews(reputationSampleReviews); setError('') }}>Load sample reviews</button><button type="button" onClick={() => setReviews('')} disabled={!reviews}>Clear</button></div>
-        <ErrorNotice message={error} />
-        <div className="lab-form__actions"><button className="lab-run" type="submit" disabled={loading}>{loading ? 'Analyzing reviews…' : 'Build the reputation brief'}<span>→</span></button><button className="lab-sample" type="button" onClick={() => setResult(reputationSample)}>View complete sample</button></div>
-        <small>Review text is analyzed for this request and is not stored by this site.</small>
-      </form>
-      {loading && <LoadingState steps="Classifying reviews · finding operating patterns · prioritizing action" />}
-    </div>
-  )
+function ReputationMonitor() {
+  const [form, setForm] = useState({ business: '', email: '', cadence: 'every Monday', deliveryTime: '8:00 AM' })
+  const [result, setResult] = useState(null); const [loading, setLoading] = useState(false); const [error, setError] = useState('')
+  const update = (key) => (event) => setForm((value) => ({ ...value, [key]: event.target.value }))
+  const schedule = `${form.cadence} at ${form.deliveryTime}`
+  const submit = async (event) => { event.preventDefault(); setError(''); if (form.business.trim().length < 3) { setError('Enter a business name, website, or Google Business Profile link.'); return } setLoading(true); try { setResult(await runAnalysis({ demo: 'reputation', ...form })) } catch (runError) { setError(runError.message) } finally { setLoading(false) } }
+  if (result) return <ReputationResult result={result} email={form.email} schedule={schedule} emailStateKey={`${form.email}-${schedule}`} onReset={() => setResult(null)} />
+  return <div className="lab-form-wrap"><form className="lab-form" onSubmit={submit}><div className="lab-form__intro"><h3>Set up a one-time version of an automated reputation report.</h3><p>Give it only the business and delivery details. The system finds the public signals, builds the report, and emails the demonstration.</p></div><label>Business name, website, or Google profile<input value={form.business} onChange={update('business')} placeholder="Business name or company.com" required /></label><label>Your email<input type="email" value={form.email} onChange={update('email')} placeholder="you@company.com" required /></label><label>Hypothetical frequency<select value={form.cadence} onChange={update('cadence')}><option>every weekday</option><option>every Monday</option><option>every Friday</option><option>every day</option></select></label><label>Delivery time<input value={form.deliveryTime} onChange={update('deliveryTime')} placeholder="8:00 AM" required /></label><div className="lab-demo-disclosure"><strong>Demo only</strong><span>One report will be sent now. Nothing will repeat, and no subscription will be created.</span></div><ErrorNotice message={error} /><div className="lab-form__actions"><button className="lab-run" type="submit" disabled={loading}>Research and send report <span>→</span></button><button className="lab-sample" type="button" onClick={() => setResult(reputationSample)}>View sample</button></div></form>{loading && <WorkflowProgress labels={['Resolving the correct business', 'Searching public reputation sources', 'Extracting review signals', 'Finding operating patterns', 'Building executive report', 'Preparing one-time email']} />}</div>
 }
 
 function AILab() {
-  return (
-    <PageTransition>
-      <div className="ai-lab" data-assistant-section="lab-overview">
-        <header className="lab-simple-header">
-          <div className="container">
-            <h1>AI Lab</h1>
-            <p>Three small AI tools. Pick one, add your information, and try it.</p>
-          </div>
-        </header>
-
-        <main className="lab-simple-list container">
-          <section className="lab-demo" id="lab-opportunity" data-assistant-section="lab-opportunity">
-            <div className="lab-demo__heading"><span>01</span><div><h2>AI Opportunity Mapper</h2><p>Find a useful first AI pilot inside a real company.</p></div></div>
-            <OpportunityMapper />
-          </section>
-          <section className="lab-demo" id="lab-role" data-assistant-section="lab-role">
-            <div className="lab-demo__heading"><span>02</span><div><h2>Role Match Brief</h2><p>Turn a job description into an evidence-based case for interviewing me.</p></div></div>
-            <RoleMatch />
-          </section>
-          <section className="lab-demo" id="lab-reputation" data-assistant-section="lab-reputation">
-            <div className="lab-demo__heading"><span>03</span><div><h2>Reputation Intelligence</h2><p>Turn raw customer reviews into a clear operating brief.</p></div></div>
-            <ReputationIntelligence />
-          </section>
-        </main>
-      </div>
-    </PageTransition>
-  )
+  return <PageTransition><div className="ai-lab" data-assistant-section="lab-overview"><header className="lab-simple-header"><div className="container"><h1>AI Lab</h1><p>Three working business workflows. Add real context and watch what the system does with it.</p></div></header><main className="lab-simple-list container"><section className="lab-demo" id="lab-complaint" data-assistant-section="lab-complaint"><div className="lab-demo__heading"><span>01</span><div><h2>Customer Issue Handler</h2><p>Turn an inbound complaint into a routed case, internal ticket, escalation decision, and response draft.</p></div></div><CustomerIssueHandler /></section><section className="lab-demo" id="lab-reputation" data-assistant-section="lab-reputation"><div className="lab-demo__heading"><span>02</span><div><h2>Automated Reputation Report</h2><p>Research a real business, generate its reputation brief, and deliver the one-time report by email.</p></div></div><ReputationMonitor /></section><section className="lab-demo" id="lab-role" data-assistant-section="lab-role"><div className="lab-demo__heading"><span>03</span><div><h2>Role Match Brief</h2><p>Research a company and role, package the strongest verified evidence, email the brief, and check real interview availability.</p></div></div><RoleMatch /></section></main></div></PageTransition>
 }
 
 export default AILab

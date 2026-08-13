@@ -41,6 +41,31 @@ export const opportunitySample = {
   evidenceNote: 'This is a sample analysis of a fictional company. A custom run uses the public website and context you provide.'
 }
 
+export const complaintSample = {
+  caseId: 'LAB-4821',
+  receivedFrom: 'Web form',
+  category: 'Billing and product quality',
+  urgency: 'High',
+  sentiment: 'Frustrated',
+  customerIntent: 'Replacement or refund plus an explanation',
+  department: 'Customer care · priority queue',
+  summary: 'The customer reports that two dining chairs arrived with damaged fabric and that the replacement date has already been missed once. They want a concrete resolution, not another general status update.',
+  facts: ['Two chairs arrived with damaged upholstery', 'A replacement was previously promised', 'The promised replacement date passed', 'The customer is requesting a refund or confirmed replacement'],
+  missingInformation: ['Order number', 'Photos of the damage', 'Preferred resolution if both options are available'],
+  recommendedAction: 'Route to a senior customer-care representative, verify the order and replacement inventory, then respond with one confirmed resolution and date.',
+  escalation: { required: true, reason: 'A prior commitment was missed and the customer is threatening to dispute the charge.' },
+  internalNote: 'Do not send another generic apology. Confirm inventory or refund authority before responding. Preserve the prior-contact history for the assigned representative.',
+  draftResponse: 'I’m sorry—we missed the replacement date we gave you, and you should not have to keep asking for a clear answer. I’ve escalated this for order verification so we can give you one confirmed resolution: either an available replacement with a firm date or a refund. Please send the order number and, if available, photos of the damaged fabric so the assigned representative can complete the next step without making you repeat the issue.',
+  automationLog: [
+    { label: 'Message received', detail: 'Complaint captured from the website form' },
+    { label: 'Intent classified', detail: 'Replacement or refund requested' },
+    { label: 'Risk checked', detail: 'Missed commitment and charge-dispute risk detected' },
+    { label: 'Owner selected', detail: 'Priority customer-care queue' },
+    { label: 'Ticket prepared', detail: 'Internal summary and response draft created' },
+    { label: 'Human approval required', detail: 'Inventory, refund authority, and final response remain human-controlled' }
+  ]
+}
+
 export const roleMatchSample = {
   role: 'AI Product Owner — fictional equipment manufacturer',
   interviewCase: 'Gunnar is worth interviewing when the role needs someone who can understand users and commercial constraints, shape an AI-enabled workflow, and get hands-on enough to prove the first version.',
@@ -89,6 +114,9 @@ export const reputationSampleReviews = `5 stars — The technician was excellent
 3 stars — Good service once they arrived. Communication before the appointment needs work.`
 
 export const reputationSample = {
+  businessName: 'Harbor Home Services',
+  publicProfile: 'Fictional sample business',
+  reportSchedule: 'Every Monday at 8:00 AM',
   executiveSummary: 'Customers generally trust the field team and the quality of the work. The reputation risk is concentrated in the handoffs around that work: callbacks, status updates, pricing consistency, and whether technicians receive the original customer context.',
   themes: [
     { theme: 'Field service quality', sentiment: 'Positive', frequency: '3 of 7 reviews', evidence: 'Technicians are described as professional, clear, friendly, and effective.' },
@@ -112,5 +140,9 @@ export const reputationSample = {
     { situation: 'Pricing discrepancy', response: 'We understand why receiving two different prices would be frustrating. A change in scope should be explained clearly before the work moves forward. Please contact our service manager so we can review the estimate and final charge with you.' }
   ],
   nextMove: 'Fix the communication handoff before spending more on review-response automation. The reviews suggest an operating problem first and a writing problem second.',
-  evidenceNote: 'Sample result based only on the seven fictional reviews shown in the input.'
+  sources: [
+    { title: 'Google Business Profile', url: 'https://www.google.com/business/', finding: 'Sample review themes and rating activity' },
+    { title: 'Company website', url: 'https://example.com/', finding: 'Sample service and contact context' }
+  ],
+  evidenceNote: 'This is a fictional sample report. A custom run researches the public business information available at the time of the request.'
 }
