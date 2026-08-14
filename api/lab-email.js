@@ -52,7 +52,7 @@ function reputationEmail(result, schedule) {
     title: `${clean(result.businessName, 160) || 'Business'} reputation report`,
     intro: clean(result.executiveSummary),
     body: [
-      `<div style="margin:18px 0;padding:14px;background:#e8efe9;color:#244b39"><strong>Demonstration schedule:</strong> ${escapeHtml(clean(schedule, 180) || clean(result.reportSchedule, 180))}<br><span style="font-size:12px">This is a one-time demo. No recurring report was activated.</span></div>`,
+      `<div style="margin:18px 0;padding:14px;background:#e8efe9;color:#244b39"><strong>One-time report copy</strong><br><span style="font-size:12px">This email was requested after the report ran. No recurring report was activated.</span></div>`,
       section('Recurring themes', bullets(themes)),
       section('Recommended actions', bullets(actions)),
       section('Best next move', `<p>${escapeHtml(clean(result.nextMove))}</p>`),

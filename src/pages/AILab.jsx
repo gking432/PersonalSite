@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import PageTransition from '../components/PageTransition'
 import { reputationSample, roleMatchSample } from '../data/aiLabSamples'
 import './AILab.css'
@@ -71,10 +71,9 @@ function IssueTimeline({ status, classification, route, matches, report }) {
   return <div className="issue-pipeline" aria-live="polite">{steps.map((step) => <div key={step.key} className={`${step.complete ? 'is-complete' : ''}${status === step.key ? ' is-running' : ''}`}><span>{step.complete ? '✓' : status === step.key ? <i /> : ''}</span><p>{step.label}</p>{status === step.key && <small>Running</small>}</div>)}</div>
 }
 
-function EmailDelivery({ type, result, defaultEmail = '', schedule = '', autoSend = false }) {
+function EmailDelivery({ type, result, defaultEmail = '', schedule = '' }) {
   const [email, setEmail] = useState(defaultEmail)
   const [state, setState] = useState({ status: 'idle', message: '' })
-  const sentRef = useRef(false)
 
   const send = async (address = email) => {
     setState({ status: 'sending', message: '' })
@@ -84,14 +83,8 @@ function EmailDelivery({ type, result, defaultEmail = '', schedule = '', autoSen
     } catch (error) { setState({ status: 'error', message: error.message }) }
   }
 
-  useEffect(() => {
-    if (autoSend && defaultEmail && !sentRef.current) { sentRef.current = true; send(defaultEmail) }
-  // The one-time delivery intentionally runs once for the completed result.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   if (state.status === 'sent') return <div className="lab-delivery is-sent"><strong>✓ Report delivered</strong><p>{state.message}</p></div>
-  return <form className="lab-delivery" onSubmit={(event) => { event.preventDefault(); send() }}><div><strong>{type === 'reputation' ? 'One-time automated delivery' : 'Send this result'}</strong><p>{type === 'reputation' ? `This is the report that would arrive ${schedule}. This demo sends it once and creates no recurring subscription.` : 'Email a copy of this completed workflow.'}</p></div><div className="lab-delivery__form"><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@company.com" required /><button type="submit" disabled={state.status === 'sending'}>{state.status === 'sending' ? 'Sending…' : 'Email report'}</button></div>{state.status === 'error' && <small>{state.message}</small>}</form>
+  return <form className="lab-delivery" onSubmit={(event) => { event.preventDefault(); send() }}><div><strong>Send this result</strong><p>{type === 'reputation' ? 'Optional: email a copy of this completed report. No subscription will be created.' : 'Email a copy of this completed workflow.'}</p></div><div className="lab-delivery__form"><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@company.com" required /><button type="submit" disabled={state.status === 'sending'}>{state.status === 'sending' ? 'Sending…' : 'Email report'}</button></div>{state.status === 'error' && <small>{state.message}</small>}</form>
 }
 
 function ComplaintResult({ request, classification, route, matches, report, context, onReset }) {
@@ -224,28 +217,27 @@ function RoleMatch() {
   return <div className="lab-form-wrap"><form className="lab-form" onSubmit={submit}><div className="lab-form__intro"><h3>Give it a real company and role.</h3><p>The system researches the context, builds the strongest truthful interview case, and packages the proof.</p></div><label>Job posting URL <span>Optional</span><input type="text" inputMode="url" value={form.jobUrl} onChange={update('jobUrl')} placeholder="company.com/careers/role" /></label><label>Company website <span>Optional</span><input type="text" inputMode="url" value={form.companyWebsite} onChange={update('companyWebsite')} placeholder="company.com" /></label><label>Job description <span>Paste when available</span><textarea rows="8" value={form.jobDescription} onChange={update('jobDescription')} placeholder="Paste responsibilities and requirements…" maxLength="18000" /></label><label>What matters most to the team? <span>Optional</span><textarea rows="3" value={form.companyContext} onChange={update('companyContext')} placeholder="Implementation, adoption, customer operations…" /></label><ErrorNotice message={error} /><div className="lab-form__actions"><button className="lab-run" type="submit" disabled={loading}>Build the recruiter brief <span>→</span></button><button className="lab-sample" type="button" onClick={() => setResult(roleMatchSample)}>View sample</button></div><small>No fit score and no invented credentials. Direct and transferable evidence remain separate.</small></form>{loading && <WorkflowProgress labels={['Researching the company and role', 'Reading verified experience', 'Matching direct evidence', 'Selecting project proof', 'Building recruiter brief']} />}</div>
 }
 
-function ReputationResult({ result, email, schedule, emailStateKey, onReset }) {
+function ReputationResult({ result, onReset }) {
   return <div className="lab-result" aria-live="polite">
-    <ResultHeader eyebrow={result.reportSchedule} title={`${result.businessName} reputation report`} summary={result.executiveSummary} filename="reputation-report.json" result={result} onReset={onReset} />
+    <ResultHeader eyebrow="One-time public-source analysis" title={`${result.businessName} reputation report`} summary={result.executiveSummary} filename="reputation-report.json" result={result} onReset={onReset} />
     <Section title="Public sources checked"><div className="lab-source-list">{result.sources.map((item) => <a key={`${item.url}-${item.title}`} href={item.url} target="_blank" rel="noreferrer"><strong>{item.title}</strong><span>{item.finding}</span><i>↗</i></a>)}</div></Section>
     <Section title="Recurring themes"><div className="lab-theme-grid">{result.themes.map((item) => <article key={item.theme}><div><h4>{item.theme}</h4><Badge tone={item.sentiment === 'Positive' ? 'safe' : item.sentiment === 'Negative' ? 'risk' : ''}>{item.sentiment}</Badge></div><strong>{item.frequency}</strong><p>{item.evidence}</p></article>)}</div></Section>
     <Section title="Operational issues"><div className="lab-issue-list">{result.operationalIssues.map((item) => <article key={item.issue}><div><h4>{item.issue}</h4><p>{item.signal}</p></div><span>Likely owner · {item.likelyOwner}</span></article>)}</div></Section>
     <Section title="Recommended action"><div className="lab-action-table">{result.recommendations.map((item) => <article key={item.action}><div><h4>{item.action}</h4><p>{item.impact}</p></div><dl><div><dt>Owner</dt><dd>{item.owner}</dd></div><div><dt>Timing</dt><dd>{item.timing}</dd></div></dl></article>)}</div></Section>
     <Section title="Draft public responses"><div className="lab-response-list">{result.draftResponses.map((item) => <article key={item.situation}><span>{item.situation}</span><p>“{item.response}”</p></article>)}</div></Section>
     <div className="lab-next-move"><span>Best next move</span><p>{result.nextMove}</p></div>
-    <EmailDelivery key={emailStateKey} type="reputation" result={result} defaultEmail={email} schedule={schedule} autoSend />
+    <EmailDelivery type="reputation" result={result} schedule="one time" />
     <p className="lab-evidence-note">{result.evidenceNote}</p>
   </div>
 }
 
 function ReputationMonitor() {
-  const [form, setForm] = useState({ business: '', address: '', email: '', cadence: 'every Monday', deliveryTime: '8:00 AM' })
+  const [form, setForm] = useState({ business: '', address: '' })
   const [result, setResult] = useState(null); const [loading, setLoading] = useState(false); const [error, setError] = useState('')
   const update = (key) => (event) => setForm((value) => ({ ...value, [key]: event.target.value }))
-  const schedule = `${form.cadence} at ${form.deliveryTime}`
-  const submit = async (event) => { event.preventDefault(); setError(''); if (form.business.trim().length < 3 || form.address.trim().length < 5) { setError('Enter the business name or website and its location.'); return } setLoading(true); try { setResult(await runAnalysis({ demo: 'reputation', ...form })) } catch (runError) { setError(runError.message) } finally { setLoading(false) } }
-  if (result) return <ReputationResult result={result} email={form.email} schedule={schedule} emailStateKey={`${form.email}-${schedule}`} onReset={() => setResult(null)} />
-  return <div className="lab-form-wrap"><form className="lab-form" onSubmit={submit}><div className="lab-form__intro"><h3>Set up a one-time version of an automated reputation report.</h3><p>The location prevents the system from analyzing a same-named business somewhere else.</p></div><label>Business name or website<input value={form.business} onChange={update('business')} placeholder="Business name or company.com" required /></label><label>Business address<input value={form.address} onChange={update('address')} placeholder="Street address, city, state" required /></label><label>Your email<input type="email" value={form.email} onChange={update('email')} placeholder="you@company.com" required /></label><label>Hypothetical frequency<select value={form.cadence} onChange={update('cadence')}><option>every weekday</option><option>every Monday</option><option>every Friday</option><option>every day</option></select></label><label>Delivery time<input value={form.deliveryTime} onChange={update('deliveryTime')} placeholder="8:00 AM" required /></label><div className="lab-demo-disclosure"><strong>Demo only</strong><span>One report will be sent now. Nothing will repeat, and no subscription will be created.</span></div><ErrorNotice message={error} /><div className="lab-form__actions"><button className="lab-run" type="submit" disabled={loading}>Research and send report <span>→</span></button><button className="lab-sample" type="button" onClick={() => setResult(reputationSample)}>View sample</button></div></form>{loading && <WorkflowProgress labels={['Confirming the exact location', 'Searching public reputation sources', 'Extracting review signals', 'Finding operating patterns', 'Building executive report', 'Preparing one-time email']} />}</div>
+  const submit = async (event) => { event.preventDefault(); setError(''); if (form.business.trim().length < 3 || form.address.trim().length < 5) { setError('Enter the business name or website and its location.'); return } setLoading(true); try { setResult(await runAnalysis({ demo: 'reputation', ...form, cadence: 'one time', deliveryTime: 'now' })) } catch (runError) { setError(runError.message) } finally { setLoading(false) } }
+  if (result) return <ReputationResult result={result} onReset={() => setResult(null)} />
+  return <div className="lab-form-wrap"><form className="lab-form" onSubmit={submit}><div className="lab-form__intro"><h3>Run a reputation report.</h3><p>The location prevents the system from analyzing a same-named business somewhere else.</p></div><label>Business name or website<input value={form.business} onChange={update('business')} placeholder="Business name or company.com" required /></label><label>Business address<input value={form.address} onChange={update('address')} placeholder="Street address, city, state" required /></label><ErrorNotice message={error} /><div className="lab-form__actions"><button className="lab-run" type="submit" disabled={loading}>Run report <span>→</span></button><button className="lab-sample" type="button" onClick={() => setResult(reputationSample)}>View sample</button></div></form>{loading && <WorkflowProgress labels={['Confirming the exact location', 'Searching public reputation sources', 'Extracting review signals', 'Finding operating patterns', 'Building operational report']} />}</div>
 }
 
 function AILab() {
