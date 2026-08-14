@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { clientKey, consumeRateLimit, originAllowed } from '../src/server/requestSecurity.js'
 import { demoSupportCases } from '../src/server/demoSupportCases.js'
 
-const categories = ['Returns', 'Sales Inquiry', 'Product Issue', 'Billing', 'Account Access', 'Delivery', 'Appointment', 'Safety', 'General Support']
+const categories = ['Returns', 'Sales Inquiry', 'Product Issue', 'Billing', 'Account Access', 'Delivery', 'Appointment', 'Safety', 'Management Escalation', 'General Support']
 const routes = {
   Returns: 'Customer Support / Returns',
   'Sales Inquiry': 'Sales',
@@ -12,6 +12,7 @@ const routes = {
   Delivery: 'Customer Support / Fulfillment',
   Appointment: 'Scheduling / Operations',
   Safety: 'Product Safety / Escalation',
+  'Management Escalation': 'Customer Support / Management Escalation',
   'General Support': 'Customer Support Main Line',
 }
 
@@ -88,10 +89,11 @@ function routeRequest(classification) {
   const department = routes[classification.category] || routes['General Support']
   const critical = classification.urgency === 'Critical'
   const high = classification.urgency === 'High'
+  const requestedManagement = classification.category === 'Management Escalation'
   return {
     department,
     reason: `${classification.requestType} belongs with ${department}${critical || high ? ` and is marked ${classification.urgency.toLowerCase()} priority` : ''}.`,
-    escalation: { required: critical || (high && ['Safety', 'Billing', 'Returns'].includes(classification.category)), reason: critical ? 'Potential immediate harm or severe impact requires specialist review.' : high ? 'The request has elevated impact and should receive prioritized human review.' : 'No elevated escalation signal was detected.' },
+    escalation: { required: requestedManagement || critical || (high && ['Safety', 'Billing', 'Returns'].includes(classification.category)), reason: requestedManagement ? 'The customer explicitly requested management review.' : critical ? 'Potential immediate harm or severe impact requires specialist review.' : high ? 'The request has elevated impact and should receive prioritized human review.' : 'No elevated escalation signal was detected.' },
   }
 }
 

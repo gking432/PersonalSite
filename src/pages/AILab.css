@@ -109,7 +109,7 @@ textarea { font: inherit; }
   letter-spacing: .06em;
 }
 
-.issue-entry > div {
+.issue-entry-box {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
@@ -132,7 +132,7 @@ textarea { font: inherit; }
 
 .issue-entry textarea::placeholder { color: #929a95; }
 
-.issue-entry > div > button,
+.issue-entry-box > button,
 .issue-context button,
 .issue-report-console button,
 .lab-run,
@@ -148,7 +148,30 @@ textarea { font: inherit; }
   cursor: pointer;
 }
 
-.issue-entry > div > button { margin: 9px; white-space: nowrap; }
+.issue-entry-box > button { margin: 9px; white-space: nowrap; }
+
+.issue-examples {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.issue-examples button {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 7px;
+  color: #4e5953;
+  font-size: 8px;
+  line-height: 1.35;
+  text-align: left;
+  background: #f7f8f7;
+  border: 1px solid #cbd1cd;
+  cursor: pointer;
+}
+
+.issue-examples button:hover { color: #17201b; background: #fff; border-color: #7e8a83; }
+.issue-examples span { color: #17613e; font-size: 7px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 
 .issue-entry > button {
   justify-self: start;
@@ -248,8 +271,8 @@ textarea { font: inherit; }
 .issue-context header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .issue-context header strong { font-size: 11px; }
 .issue-context header p { margin: 2px 0 0; color: #69736d; font-size: 9px; }
-.issue-context > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
-.issue-context label { display: grid; gap: 4px; color: #3d4741; font-size: 9px; }
+.issue-context > label { display: grid; gap: 5px; color: #3d4741; font-size: 10px; }
+.issue-context > label > span { font-weight: 700; }
 .issue-context input,
 .lab-form input,
 .lab-form select,
@@ -268,6 +291,7 @@ textarea { font: inherit; }
 .lab-form textarea:focus { border-color: #5d7868; box-shadow: 0 0 0 2px rgba(20,99,62,.08); }
 .issue-context footer { display: flex; gap: 6px; margin-top: 10px; }
 .issue-context footer button:last-child { color: #3e4b43; background: #edf0ee; border-color: #c9cfcb; }
+.issue-context > small { display: block; margin-top: 7px; color: #69736d; font-size: 8px; }
 
 .issue-report-console {
   margin-top: 9px;
@@ -333,6 +357,20 @@ textarea { font: inherit; }
 .issue-draft { padding: 8px; background: #f3f5f3; border-left: 2px solid #567765; }
 .issue-report-console section > small { display: block; margin-top: 5px; color: #7c857f; font-size: 8px; }
 
+.issue-assistant-handoff {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 10px;
+  background: #edf7f1;
+  border-top: 1px solid #c5d9cc;
+}
+
+.issue-assistant-handoff strong { display: block; color: #174e34; font-size: 9px; }
+.issue-assistant-handoff p { margin: 2px 0 0; color: #5f6d65; font-size: 8px; }
+.issue-assistant-handoff button { padding: 6px 8px; font-size: 8px; white-space: nowrap; }
+
 .lab-form {
   position: relative;
   display: grid;
@@ -368,15 +406,14 @@ textarea { font: inherit; }
 .lab-demo-disclosure strong { text-transform: uppercase; }
 
 .lab-live-process {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
   display: grid;
-  align-content: center;
   gap: 5px;
-  padding: 20px;
+  max-width: 940px;
+  margin-top: 6px;
+  padding: 10px 12px;
   color: #58645d;
-  background: rgba(244,247,245,.97);
+  background: #f4f7f5;
+  border: 1px solid var(--lab-line);
 }
 .lab-live-process__head { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; color: #17201b; font-weight: 700; }
 .lab-live-dot { width: 7px; height: 7px; background: #299e65; border-radius: 50%; animation: labPulse 1s infinite; }
@@ -478,7 +515,6 @@ textarea { font: inherit; }
   .lab-simple-header .container,
   .lab-simple-list.container { width: min(100% - 20px, 1120px); }
   .lab-form,
-  .issue-context > div,
   .issue-report-grid,
   .lab-match-grid,
   .lab-theme-grid { grid-template-columns: 1fr; }
@@ -487,8 +523,11 @@ textarea { font: inherit; }
   .issue-system,
   .lab-form-wrap,
   .lab-result { margin-left: 0; }
-  .issue-entry > div { grid-template-columns: 1fr; }
-  .issue-entry > div > button { width: calc(100% - 18px); }
+  .issue-entry-box { grid-template-columns: 1fr; }
+  .issue-entry-box > button { width: calc(100% - 18px); }
+  .issue-examples { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .issue-assistant-handoff { grid-template-columns: auto 1fr; }
+  .issue-assistant-handoff button { grid-column: 1 / -1; white-space: normal; }
   .issue-report-grid section { min-height: 0; border-right: 0; }
   .issue-match-table > div { grid-template-columns: 55px 1fr; }
   .issue-match-table p,

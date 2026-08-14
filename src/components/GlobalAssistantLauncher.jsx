@@ -72,31 +72,34 @@ function GlobalAssistantLauncher({ hidden = false }) {
     }
   }, [assistant.active, assistant.sendContextEvent, hidden, location.pathname])
 
-  const start = useCallback(async () => {
+  const start = useCallback(async (contextOverride = '', openingInstructions = '') => {
     setOpen(false)
     previousPath.current = location.pathname
-    const connected = await assistant.connect()
+    const context = typeof contextOverride === 'string' && contextOverride ? contextOverride : pendingContext
+    const connected = await assistant.connect({ additionalContext: context, openingInstructions })
     if (!connected) setOpen(true)
-    if (connected && pendingContext) {
-      assistant.sendApplicationEvent(pendingContext)
-      setPendingContext('')
-    }
-  }, [assistant.connect, assistant.sendApplicationEvent, location.pathname, pendingContext])
+    if (connected && context) setPendingContext('')
+  }, [assistant.connect, location.pathname, pendingContext])
 
   useEffect(() => {
     const openForSupport = (event) => {
-      const context = String(event.detail?.context || '').slice(0, 500)
-      setOpen(true)
+      const context = String(event.detail?.context || '').slice(0, 1500)
+      const openingInstructions = String(event.detail?.openingInstructions || '').slice(0, 900)
+      const autoStart = event.detail?.autoStart === true
       if (assistant.active && context) {
-        assistant.sendApplicationEvent(context)
+        setOpen(false)
+        assistant.sendApplicationEvent(`${context}${openingInstructions ? `\nFor your next response: ${openingInstructions}` : ''}`)
+      } else if (autoStart) {
+        start(context, openingInstructions)
       } else {
+        setOpen(true)
         setPendingContext(context)
       }
     }
 
     window.addEventListener('portfolio-assistant:open', openForSupport)
     return () => window.removeEventListener('portfolio-assistant:open', openForSupport)
-  }, [assistant.active, assistant.sendApplicationEvent])
+  }, [assistant.active, assistant.sendApplicationEvent, start])
 
   if (hidden) return null
 
@@ -131,7 +134,7 @@ function GlobalAssistantLauncher({ hidden = false }) {
                 <>
                   <p>{assistant.error || (pendingContext ? 'Tell the assistant which project you are using and what is happening. It knows the intended workflow and common failure points.' : 'Want the quickest tour? My AI assistant can answer questions about me, explain my projects, and move through the site with you.')}</p>
                   <div className="global-ai__welcome-actions">
-                    <button type="button" className="global-ai__start" onClick={start} disabled={assistant.connecting}>{assistant.connecting ? 'Connecting…' : 'Speak with my AI assistant'}</button>
+                    <button type="button" className="global-ai__start" onClick={() => start()} disabled={assistant.connecting}>{assistant.connecting ? 'Connecting…' : 'Speak with my AI assistant'}</button>
                     <button type="button" className="global-ai__continue" onClick={minimize}>Continue to site</button>
                   </div>
                   <small>Microphone permission required</small>

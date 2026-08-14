@@ -206,7 +206,7 @@ export default function useRealtimeVoice() {
           item: {
             type: 'message',
             role: 'user',
-            content: [{ type: 'input_text', text: `[Trusted application context] ${String(handlers.initialContext).slice(0, 800)}` }],
+            content: [{ type: 'input_text', text: `[Trusted application context] ${String(handlers.initialContext).slice(0, 2400)}` }],
           },
         })
       }
@@ -216,7 +216,7 @@ export default function useRealtimeVoice() {
         type: 'response.create',
         response: {
           output_modalities: ['audio'],
-          instructions: 'Begin now with the exact opening greeting in your session instructions. Do not identify yourself as ChatGPT or OpenAI. Say nothing else after the greeting and wait for the visitor.',
+          instructions: handlers.openingInstructions || 'Begin now with the exact opening greeting in your session instructions. Do not identify yourself as ChatGPT or OpenAI. Say nothing else after the greeting and wait for the visitor.',
         },
       })
     } catch (error) {

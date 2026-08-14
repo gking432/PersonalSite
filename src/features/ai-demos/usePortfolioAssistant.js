@@ -164,7 +164,7 @@ export default function usePortfolioAssistant() {
     }
   }, [location.pathname, navigate])
 
-  const connect = useCallback(async () => {
+  const connect = useCallback(async (options = {}) => {
     setConnecting(true)
     setTranscript('')
     setNotes(initialAssistantNotes)
@@ -179,8 +179,10 @@ export default function usePortfolioAssistant() {
       await realtime.connect({
         initialContext: (() => {
           const screen = currentPortfolioScreen(location.pathname)
-          return `The visitor currently has ${screen.page} open at the section "${screen.section}". You may navigate and scroll this portfolio through the navigate_site tool.`
+          const applicationContext = String(options.additionalContext || '').slice(0, 1500)
+          return `The visitor currently has ${screen.page} open at the section "${screen.section}". You may navigate and scroll this portfolio through the navigate_site tool.${applicationContext ? ` Trusted workflow context: ${applicationContext}` : ''}`
         })(),
+        openingInstructions: String(options.openingInstructions || '').slice(0, 900),
         onAssistantTranscript: (text) => setTranscript(text || ''),
         onToolCall: async (name, args) => {
           if (name === 'update_notes') {
