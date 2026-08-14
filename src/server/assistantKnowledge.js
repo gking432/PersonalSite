@@ -23,7 +23,6 @@ This is self-directed product development, not employment by an AI company or en
 
 Verified work includes:
 - Building a fully featured home-services CRM demonstration that integrates AI across customer calls, lead qualification, call summaries, follow-up, quote preparation, appointment coordination, and review management, with human approval controls for customer-facing actions.
-- Creating an AI review-intelligence service that monitors public reviews and produces recurring email reports with reputation changes, customer themes, risk alerts, draft responses, and prioritized improvement recommendations.
 - Building and launching PrepMe, a live AI interview platform that uses a candidate's resume and target job description to generate and conduct personalized mock interviews.
 - Engineering and stress-testing a blockchain token-launch platform on the Aptos testnet, including concurrent launch testing across multiple wallets.
 - Designing a print-on-demand topography product connecting custom map generation, product customization, and e-commerce workflows.
@@ -45,9 +44,6 @@ Gunnar earned a Bachelor of Business Administration from the University of Wisco
 
 ## Public projects
 
-### AI Lab
-The AI Lab is a public portfolio page with three working demonstrations: a Customer Issue Handler that turns an inbound message into a classified, routed internal case and response draft; an Automated Reputation Report that researches public business signals, identifies themes and operating issues, and delivers a one-time email report; and a Role Match Brief that researches a company and role, then compares it with Gunnar's verified experience without inventing qualifications. The workflows include human approval where appropriate. These are self-directed demonstrations, not client deployments.
-
 ### PrepMe
 PrepMe is a live, self-directed AI interview platform. It uses a candidate's resume and target job description to generate and conduct a personalized mock interview. It is the clearest proof that Gunnar can turn a user problem and user-specific inputs into an end-to-end AI product. Public URL: https://prep-me-wheat.vercel.app/
 
@@ -57,9 +53,6 @@ Do not claim paying customers, user counts, revenue, enterprise adoption, or com
 This is a public, self-directed functional demonstration, not a client deployment. It explores a connected home-services workflow: lead analysis, calls and summaries, follow-up, quote preparation, appointments, review monitoring, and human approval. It demonstrates operational workflow thinking and judgment about where AI should assist rather than replace people.
 
 Do not claim it was built for Exterior Pros, deployed to a contractor, integrated with an unverified production service, or produced commercial results.
-
-### AI review-intelligence service
-This is a self-directed service that monitors public reviews and structures recurring reports around reputation changes, themes, risks, draft responses, and recommended improvements. Do not claim paying customers, employer deployment, or measured business results.
 
 ### MoveMint
 MoveMint is a self-directed Aptos-testnet token-launch prototype. Gunnar tested concurrent launches across multiple wallets to uncover performance constraints. Its relevance is technical range, learning an unfamiliar domain, and testing system behavior. Do not describe Gunnar as a crypto expert or claim production financial infrastructure, customer assets, or revenue.
