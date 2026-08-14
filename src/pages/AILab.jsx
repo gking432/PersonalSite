@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import PageTransition from '../components/PageTransition'
-import { complaintSample, reputationSample, roleMatchSample } from '../data/aiLabSamples'
+import { reputationSample, roleMatchSample } from '../data/aiLabSamples'
 import './AILab.css'
 
 function normalizePublicUrl(value) {
@@ -25,6 +25,14 @@ async function runAnalysis(body) {
   return payload.result
 }
 
+async function runIssueStep(body) {
+  const payload = await requestJson('/api/lab-issue', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+  if (!payload.result) throw new Error('That workflow step did not return a result.')
+  return payload.result
+}
+
+const showStep = () => new Promise((resolve) => window.setTimeout(resolve, 320))
+
 function Badge({ children, tone = '' }) { return <span className={`lab-badge${tone ? ` lab-badge--${tone.toLowerCase()}` : ''}`}>{children}</span> }
 function ErrorNotice({ message }) { return message ? <div className="lab-error" role="alert"><strong>That did not finish.</strong><span>{message}</span></div> : null }
 function Section({ title, children }) { return <section className="lab-result-section"><h3>{title}</h3>{children}</section> }
@@ -44,38 +52,16 @@ function WorkflowProgress({ labels }) {
   return <div className="lab-live-process" role="status"><div className="lab-live-process__head"><span className="lab-live-dot" />Automation running</div>{labels.map((label, index) => <div key={label} className={index < active ? 'is-done' : index === active ? 'is-active' : ''}><i>{index < active ? '✓' : index + 1}</i><span>{label}</span></div>)}</div>
 }
 
-function IssueTimeline({ loading = false, activeStep = 0, clarification = null, result = null }) {
-  const similarCount = result?.similarCases?.length || 0
-  const steps = result ? [
-    'Customer request received',
-    `Request identified · ${result.category}`,
-    `Routed to ${result.department}`,
-    similarCount ? `${similarCount} similar demo ${similarCount === 1 ? 'issue' : 'issues'} identified · solutions pulled` : 'No close demo-case match · handled from first principles',
-    'Representative action report generated',
-  ] : clarification ? [
-    'Customer request received',
-    'More information needed',
-    'Routing paused until the answer is supplied',
-    'Demo issue library ready',
-    'Representative report waiting',
-  ] : [
-    'Customer request received',
-    'Identifying request type',
-    'Selecting the correct route',
-    'Searching similar demo issues and prior solutions',
-    'Generating representative action report',
+function IssueTimeline({ status, classification, route, matches, report }) {
+  const matchLabel = matches === null ? 'Searching similar issues and previous solutions' : matches.length ? `${matches.length} similar demo ${matches.length === 1 ? 'issue' : 'issues'} identified · solutions pulled` : 'No close demo-case match · handled from first principles'
+  const steps = [
+    { key: 'received', label: 'Customer request received', complete: status !== 'idle' },
+    { key: 'classifying', label: classification ? `Request identified · ${classification.category}` : 'Identifying request type', complete: Boolean(classification) },
+    { key: 'routing', label: route ? `Routed to ${route.department}` : 'Determining route', complete: Boolean(route) },
+    { key: 'matching', label: matchLabel, complete: matches !== null },
+    { key: 'reporting', label: report ? 'Representative action report generated' : 'Generating representative action report', complete: Boolean(report) },
   ]
-
-  return <div className={`issue-timeline${result ? ' is-complete' : ''}${clarification ? ' needs-input' : ''}`} aria-live="polite">
-    {steps.map((label, index) => {
-      const complete = Boolean(result) || index < activeStep || (clarification && index === 0)
-      const active = !result && (clarification ? index === 1 : loading && index === activeStep)
-      return <div key={label} className={`${complete ? 'is-complete' : ''}${active ? ' is-active' : ''}`}>
-        <span>{complete ? '✓' : active ? <i /> : ''}</span>
-        <p>{label}</p>
-      </div>
-    })}
-  </div>
+  return <div className="issue-pipeline" aria-live="polite">{steps.map((step) => <div key={step.key} className={`${step.complete ? 'is-complete' : ''}${status === step.key ? ' is-running' : ''}`}><span>{step.complete ? '✓' : status === step.key ? <i /> : ''}</span><p>{step.label}</p>{status === step.key && <small>Running</small>}</div>)}</div>
 }
 
 function EmailDelivery({ type, result, defaultEmail = '', schedule = '', autoSend = false }) {
@@ -101,65 +87,78 @@ function EmailDelivery({ type, result, defaultEmail = '', schedule = '', autoSen
   return <form className="lab-delivery" onSubmit={(event) => { event.preventDefault(); send() }}><div><strong>{type === 'reputation' ? 'One-time automated delivery' : 'Send this result'}</strong><p>{type === 'reputation' ? `This is the report that would arrive ${schedule}. This demo sends it once and creates no recurring subscription.` : 'Email a copy of this completed workflow.'}</p></div><div className="lab-delivery__form"><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@company.com" required /><button type="submit" disabled={state.status === 'sending'}>{state.status === 'sending' ? 'Sending…' : 'Email report'}</button></div>{state.status === 'error' && <small>{state.message}</small>}</form>
 }
 
-function ComplaintResult({ result, email, onReset }) {
-  return <div className="lab-result" aria-live="polite">
-    <ResultHeader eyebrow={`Case ${result.caseId}`} title="Representative action report" summary={result.summary} filename="customer-issue-workflow.json" result={result} onReset={onReset} />
-    <IssueTimeline result={result} />
-    <Section title="Initial customer request"><blockquote className="issue-original-request">“{result.originalRequest}”</blockquote></Section>
-    <div className="lab-decision-strip"><div><span>Intent</span><strong>{result.customerIntent}</strong></div><div><span>Route</span><strong>{result.department}</strong></div><div><span>Escalation</span><strong>{result.escalation.required ? 'Required' : 'Not required'}</strong></div></div>
-    <p className="issue-route-reason"><strong>Why this route:</strong> {result.routeReason}</p>
-    <Section title={`${result.similarCases?.length || 0} similar demo ${result.similarCases?.length === 1 ? 'issue' : 'issues'} retrieved`}>
-      {result.similarCases?.length ? <div className="issue-similar-cases">{result.similarCases.map((item) => <article key={item.id}><div><span>{item.id}</span><strong>{item.type}</strong></div><p>{item.issue}</p><dl><div><dt>Previous solution</dt><dd>{item.solution}</dd></div><div><dt>Outcome</dt><dd>{item.outcome}</dd></div></dl></article>)}</div> : <p className="issue-no-match">No close match was found in the fictional demo library. The recommendation was built from the request itself.</p>}
-      <small className="lab-human-note">These are fictional support cases created for this demonstration—not real customer records.</small>
-    </Section>
-    <Section title="Rep briefing"><div className="issue-rep-report"><article><span>Recommended fix</span><p>{result.recommendedAction}</p></article><article><span>Internal brief</span><p>{result.internalNote}</p></article><article><span>Known facts</span><ul>{result.facts.map((item) => <li key={item}>{item}</li>)}</ul></article><article><span>Information still needed</span><ul>{result.missingInformation.length ? result.missingInformation.map((item) => <li key={item}>{item}</li>) : <li>Nothing material detected</li>}</ul></article></div></Section>
-    <Section title="Recommended next steps"><ol className="issue-next-steps">{result.nextSteps.map((item) => <li key={item}>{item}</li>)}</ol></Section>
-    <Section title="Draft customer response"><blockquote>{result.draftResponse}</blockquote><small className="lab-human-note">Human approval required before a customer-facing response is sent.</small></Section>
-    <EmailDelivery type="complaint" result={result} defaultEmail={email} />
+function ComplaintResult({ request, classification, route, matches, report, context, onReset }) {
+  const fullResult = { request, classification, route, matches, report, context }
+  return <div className="issue-system" aria-live="polite">
+    <IssueTimeline status="complete" classification={classification} route={route} matches={matches} report={report} />
+    <div className="issue-report-console">
+      <header><div><span>{report.caseId}</span><strong>REP ACTION REPORT</strong></div><div><button type="button" onClick={() => downloadResult('customer-issue-report.json', fullResult)}>Download</button><button type="button" onClick={onReset}>New request</button></div></header>
+      <div className="issue-report-meta"><span>{classification.category}</span><span>{classification.urgency} priority</span><span>{route.department}</span><span>{route.escalation.required ? 'Escalation required' : 'Standard handling'}</span></div>
+      <section className="issue-report-request"><label>Original request</label><p>{request}</p></section>
+      <div className="issue-report-grid">
+        <section><label>Rep needs to know</label><ul>{report.repNeedsToKnow.map((item) => <li key={item}>{item}</li>)}</ul></section>
+        <section className={report.unresolvedContext.length ? 'is-missing' : ''}><label>Missing context</label><ul>{report.unresolvedContext.length ? report.unresolvedContext.map((item) => <li key={item}>{item}</li>) : <li>Nothing required before the next action.</li>}</ul></section>
+        <section><label>Recommended action</label><p>{report.recommendedAction}</p></section>
+        <section><label>Why it went here</label><p>{route.reason}</p></section>
+      </div>
+      <section><label>Next steps</label><ol>{report.nextSteps.map((item) => <li key={item}>{item}</li>)}</ol></section>
+      <section><label>{matches.length ? `Similar issues (${matches.length})` : 'Similar issues'}</label>{matches.length ? <div className="issue-match-table">{matches.map((item) => <div key={item.id}><span>{item.id}</span><strong>{item.type}</strong><p>{item.solution}</p><small>{item.outcome}</small></div>)}</div> : <p>No close match in the fictional demo-case library. The report was generated from the request and routing logic.</p>}<small className="issue-demo-note">Demo cases are fictional and are shown only to demonstrate retrieval.</small></section>
+      <section><label>Draft customer response</label><p className="issue-draft">{report.draftResponse}</p><small>Human approval required before sending.</small></section>
+    </div>
   </div>
 }
 
 function CustomerIssueHandler() {
   const [message, setMessage] = useState('')
-  const [result, setResult] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
-  const [activeStep, setActiveStep] = useState(0)
-  const [clarification, setClarification] = useState(null)
-  const [clarificationAnswer, setClarificationAnswer] = useState('')
+  const [classification, setClassification] = useState(null)
+  const [route, setRoute] = useState(null)
+  const [matches, setMatches] = useState(null)
+  const [report, setReport] = useState(null)
+  const [context, setContext] = useState({})
 
-  const run = async (question = '', answer = '') => {
-    setError('')
-    if (message.trim().length < 10) { setError('Enter a customer complaint or request.'); return }
-    setLoading(true)
-    setActiveStep(question ? 2 : 0)
-    const timer = window.setInterval(() => setActiveStep((value) => Math.min(4, value + 1)), 900)
-    try {
-      const analysis = await runAnalysis({ demo: 'complaint', channel: 'Web form', complaint: message, clarificationQuestion: question, clarificationAnswer: answer })
-      if (analysis.needsClarification) {
-        setClarification(analysis)
-        setClarificationAnswer('')
-        setActiveStep(1)
-      } else {
-        setClarification(null)
-        setResult(analysis)
-        setActiveStep(5)
-      }
-    } catch (runError) { setError(runError.message) } finally { window.clearInterval(timer); setLoading(false) }
+  const finishPipeline = async (request, analysis, suppliedContext = {}) => {
+    setStatus('routing')
+    const routeResult = await runIssueStep({ action: 'route', request, classification: analysis, context: suppliedContext })
+    setRoute(routeResult)
+    await showStep()
+    setStatus('matching')
+    const matchResult = await runIssueStep({ action: 'match', request, classification: analysis, route: routeResult, context: suppliedContext })
+    setMatches(matchResult.matches)
+    await showStep()
+    setStatus('reporting')
+    const reportResult = await runIssueStep({ action: 'report', request, classification: analysis, route: routeResult, matches: matchResult.matches, context: suppliedContext })
+    setReport(reportResult)
+    setStatus('complete')
   }
 
-  const reset = () => { setResult(null); setClarification(null); setClarificationAnswer(''); setMessage(''); setError(''); setActiveStep(0) }
-  if (result) return <ComplaintResult result={result} email="" onReset={reset} />
-  if (loading) return <div className="issue-automation-stage"><div className="issue-automation-stage__head"><span>AI automation running</span><p>Turning one inbound request into the context a representative needs.</p></div><IssueTimeline loading activeStep={activeStep} /><button type="button" disabled>Processing request…</button></div>
-  if (clarification) return <div className="issue-automation-stage"><IssueTimeline clarification={clarification} activeStep={activeStep} /><form className="issue-clarification" onSubmit={(event) => { event.preventDefault(); if (clarificationAnswer.trim()) run(clarification.clarificationQuestion, clarificationAnswer) }}><span>One thing before I route this</span><h3>{clarification.clarificationQuestion}</h3><p>{clarification.clarificationReason}</p><div><input value={clarificationAnswer} onChange={(event) => setClarificationAnswer(event.target.value)} placeholder="Type your answer…" autoFocus required /><button type="submit">Continue <b>→</b></button></div></form><button className="issue-start-over" type="button" onClick={reset}>Start over</button><ErrorNotice message={error} /></div>
-  return <div className="issue-intake">
-    <form onSubmit={(event) => { event.preventDefault(); run() }}>
-      <label htmlFor="customer-request">Type a customer service complaint or request and watch the AI automation handle it.</label>
-      <div className="issue-intake__box"><textarea id="customer-request" rows="6" value={message} onChange={(event) => setMessage(event.target.value)} placeholder="My order arrived damaged and I’ve already contacted support twice. I need a replacement before Friday." maxLength="6000" required /><button type="submit">Send request <span>→</span></button></div>
-      <ErrorNotice message={error} />
-    </form>
-    <button className="issue-sample-link" type="button" onClick={() => setResult(complaintSample)}>Or run an example request</button>
-    <p>This demo does not contact a real company, customer, or representative.</p>
+  const start = async (requestOverride) => {
+    const request = String(requestOverride || message).trim()
+    if (request.length < 8) { setError('Enter a customer complaint or request.'); return }
+    setMessage(request); setError(''); setClassification(null); setRoute(null); setMatches(null); setReport(null); setContext({}); setStatus('classifying')
+    try {
+      const analysis = await runIssueStep({ action: 'classify', request })
+      setClassification(analysis)
+      if (analysis.followUpFields.length) setStatus('context')
+      else await finishPipeline(request, analysis, {})
+    } catch (runError) { setError(runError.message); setStatus('idle') }
+  }
+
+  const submitContext = async (event, skip = false) => {
+    event?.preventDefault(); setError('')
+    try { await finishPipeline(message, classification, skip ? {} : context) } catch (runError) { setError(runError.message); setStatus('context') }
+  }
+
+  const reset = () => { setMessage(''); setStatus('idle'); setError(''); setClassification(null); setRoute(null); setMatches(null); setReport(null); setContext({}) }
+  if (report) return <ComplaintResult request={message} classification={classification} route={route} matches={matches} report={report} context={context} onReset={reset} />
+  const running = ['classifying', 'routing', 'matching', 'reporting'].includes(status)
+  return <div className="issue-system">
+    {status === 'idle' ? <form className="issue-entry" onSubmit={(event) => { event.preventDefault(); start() }}><label htmlFor="customer-request">Enter a customer request</label><div><textarea id="customer-request" rows="4" value={message} onChange={(event) => setMessage(event.target.value)} placeholder="I need to return a product, but I’m not sure what information you need from me." maxLength="6000" required /><button type="submit">Run automation</button></div><button type="button" onClick={() => start('I need to return a product.')}>Use example: product return</button><small>Nothing is sent to a real company or customer.</small><ErrorNotice message={error} /></form> : <>
+      <IssueTimeline status={status} classification={classification} route={route} matches={matches} report={report} />
+      {status === 'context' && <form className="issue-context" onSubmit={submitContext}><header><span className="issue-agent-pulse" /><div><strong>{classification.category} context needed</strong><p>Add what you know. The automation will pass it to the assigned rep.</p></div></header><div>{classification.followUpFields.map((field) => <label key={field.key}><span>{field.question}</span><input value={context[field.key] || ''} onChange={(event) => setContext((value) => ({ ...value, [field.key]: event.target.value }))} placeholder={field.placeholder} /></label>)}</div><footer><button type="submit">Continue with context</button><button type="button" onClick={(event) => submitContext(event, true)}>Continue without it</button></footer><ErrorNotice message={error} /></form>}
+      {running && <div className="issue-running"><span className="issue-agent-pulse" /><p>The active step is running now. It will only check off when the result returns.</p></div>}
+    </>}
   </div>
 }
 
@@ -225,7 +224,7 @@ function ReputationMonitor() {
 }
 
 function AILab() {
-  return <PageTransition><div className="ai-lab" data-assistant-section="lab-overview"><header className="lab-simple-header"><div className="container"><h1>AI Lab</h1><p>Three working business workflows. Add real context and watch what the system does with it.</p></div></header><main className="lab-simple-list container"><section className="lab-demo" id="lab-complaint" data-assistant-section="lab-complaint"><div className="lab-demo__heading"><span>01</span><div><h2>Customer Issue Handler</h2><p>Turn an inbound complaint into a routed case, internal ticket, escalation decision, and response draft.</p></div></div><CustomerIssueHandler /></section><section className="lab-demo" id="lab-reputation" data-assistant-section="lab-reputation"><div className="lab-demo__heading"><span>02</span><div><h2>Automated Reputation Report</h2><p>Research a real business, generate its reputation brief, and deliver the one-time report by email.</p></div></div><ReputationMonitor /></section><section className="lab-demo" id="lab-role" data-assistant-section="lab-role"><div className="lab-demo__heading"><span>03</span><div><h2>Role Match Brief</h2><p>Research a company and role, package the strongest verified evidence, email the brief, and check real interview availability.</p></div></div><RoleMatch /></section></main></div></PageTransition>
+  return <PageTransition><div className="ai-lab" data-assistant-section="lab-overview"><header className="lab-simple-header"><div className="container"><h1>AI Lab</h1><p>Working business automations.</p></div></header><main className="lab-simple-list container"><section className="lab-demo" id="lab-complaint" data-assistant-section="lab-complaint"><div className="lab-demo__heading"><span>01</span><div><h2>Customer Request Router</h2><p>Classify · collect context · route · retrieve · brief</p></div></div><CustomerIssueHandler /></section><section className="lab-demo" id="lab-reputation" data-assistant-section="lab-reputation"><div className="lab-demo__heading"><span>02</span><div><h2>Reputation Report</h2><p>Research public signals and build the operating report.</p></div></div><ReputationMonitor /></section><section className="lab-demo" id="lab-role" data-assistant-section="lab-role"><div className="lab-demo__heading"><span>03</span><div><h2>Role Match</h2><p>Research a role and map the strongest verified evidence.</p></div></div><RoleMatch /></section></main></div></PageTransition>
 }
 
 export default AILab
