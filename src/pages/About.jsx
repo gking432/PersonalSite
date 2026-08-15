@@ -1,6 +1,6 @@
-import { useRef, useEffect } from 'react'
+import { useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
 import SqueezeSection from '../components/SqueezeSection'
 import StoryChronicle from '../components/StoryChronicle'
@@ -71,18 +71,25 @@ const builderProfile = [
 // ── OPERATING THESIS; pinned, scroll-driven word reveal ──
 // A single opinionated statement that lights up word-by-word as you scroll,
 // with the point-of-view paragraph resolving underneath it.
+const ACCENT_FINAL = 'rgba(168, 130, 60, 1)'
+const INK_FINAL = 'rgba(42, 42, 42, 1)'
+const isAccent = (item) => typeof item === 'object' && item.accent
+
 function ThesisReveal({ progress }) {
+  // With motion reduced the scroll runway collapses, so there is no scroll left
+  // to drive the reveal. The words have to start legible instead of at 14%
+  // opacity, or the statement is simply unreadable.
+  const reduce = useReducedMotion()
   const total = thesisWords.length
   const colors = thesisWords.map((_, i) => {
     const start = 0.14 + (i / total) * 0.5
     const end = start + 0.1
-    const accent = typeof thesisWords[i] === 'object' && thesisWords[i].accent
     return useTransform(
       progress,
       [start, end],
-      accent
-        ? ['rgba(168, 130, 60, 0.18)', 'rgba(168, 130, 60, 1)']
-        : ['rgba(42, 42, 42, 0.14)', 'rgba(42, 42, 42, 1)']
+      isAccent(thesisWords[i])
+        ? ['rgba(168, 130, 60, 0.18)', ACCENT_FINAL]
+        : ['rgba(42, 42, 42, 0.14)', INK_FINAL]
     )
   })
 
@@ -93,21 +100,28 @@ function ThesisReveal({ progress }) {
 
   return (
     <div className="thesis-inner">
-      <motion.p className="thesis-kicker" style={{ opacity: kickerOpacity, y: kickerY }}>
+      <motion.p
+        className="thesis-kicker"
+        style={reduce ? undefined : { opacity: kickerOpacity, y: kickerY }}
+      >
         Point of View
       </motion.p>
       <h2 className="thesis-statement">
         {thesisWords.map((item, i) => {
           const word = typeof item === 'object' ? item.w : item
+          const color = reduce ? (isAccent(item) ? ACCENT_FINAL : INK_FINAL) : colors[i]
           return (
             <span key={i}>
-              <motion.span style={{ color: colors[i] }}>{word}</motion.span>
+              <motion.span style={{ color }}>{word}</motion.span>
               {i < total - 1 ? ' ' : ''}
             </span>
           )
         })}
       </h2>
-      <motion.p className="thesis-support" style={{ opacity: supportOpacity, y: supportY }}>
+      <motion.p
+        className="thesis-support"
+        style={reduce ? undefined : { opacity: supportOpacity, y: supportY }}
+      >
         The teams that win won't make the most. They'll know what's worth making,
         why it should exist, and how to execute above the noise. That's the work
         I want to be in the room for.
@@ -117,7 +131,10 @@ function ThesisReveal({ progress }) {
 }
 
 // Word-by-word color reveal on scroll (same as Home photo sections)
+const CREAM_FINAL = 'rgba(244, 241, 234, 1)'
+
 function StatementGiantText({ children, scrollYProgress, lineBreakAfter }) {
+  const reduce = useReducedMotion()
   const words = typeof children === 'string' ? children.split(' ') : [children]
   const totalWords = words.length
 
@@ -127,7 +144,7 @@ function StatementGiantText({ children, scrollYProgress, lineBreakAfter }) {
     return useTransform(
       scrollYProgress,
       [wordStart, wordEnd],
-      ['rgba(244, 241, 234, 0.3)', 'rgba(244, 241, 234, 1)']
+      ['rgba(244, 241, 234, 0.3)', CREAM_FINAL]
     )
   })
 
@@ -136,7 +153,7 @@ function StatementGiantText({ children, scrollYProgress, lineBreakAfter }) {
       {words.map((word, index) => (
         <span key={index}>
           <motion.span
-            style={{ color: wordColors[index] }}
+            style={{ color: reduce ? CREAM_FINAL : wordColors[index] }}
             className="statement-text-word"
           >
             {word}
@@ -148,75 +165,10 @@ function StatementGiantText({ children, scrollYProgress, lineBreakAfter }) {
   )
 }
 
-// Story content; each item is either a paragraph, a pullQuote (breakout), or a moment (big display text)
-const storyBlocks = [
-  { text: 'I started my career at Sub-Zero Group, Inc. in a rotational program that moved through sales operations, product marketing, product launch, showroom sales, and external dealer sales. It was an unusually good seat for learning how premium products move through a market.', first: true },
-  { text: 'I saw the parts most people only talk about in pieces: the product story, the sales team, the dealer network, the showroom experience, the launch material, and the discipline required to make a brand feel consistent at every touchpoint.' },
-  { text: 'As the rotational program came to an end, {I decided to take a risk and bet on myself.}', highlight: 'pullQuote' },
-  { text: 'I started doing freelance marketing work, and that slowly became a small agency. I was sitting across the table from business owners, founders, and aspiring entrepreneurs trying to make their ideas feel real enough for customers to trust.' },
-  { text: 'That was the first time I understood what kind of work actually pulls me in.' },
-  { text: 'It wasn\'t the deliverables. It wasn\'t being my own boss. {It was building.}', highlight: 'moment' },
-  { text: 'The best moments were not the handoff moments. They were the messy middle: the strategy pivots, the rough drafts, the first version of a site, the moment a client could finally see the shape of what they had been describing.' },
-  { text: 'Running that agency forced me to learn the practical stack of growth: positioning, web, content, SEO, paid media, eCommerce, reporting, client management, and the uncomfortable art of deciding what is actually worth doing.' },
-  { text: '{Then the tools changed.}', highlight: 'moment' },
-  { text: 'As AI and modern builder tools became widely available, the industry changed fast. At first, it felt like a gift: more speed, more leverage, more ways to make small teams powerful.' },
-  { text: '{For me, it was the opposite.}', highlight: 'emphasis' },
-  { text: 'Then the economics of basic marketing production collapsed. Websites, copy, and ad creative became cheaper and easier to produce. That made the average deliverable less defensible, and it forced me to ask a better question: what still matters when almost everyone can make something?' },
-  { text: 'This led me to a new way of thinking about modern marketing: {in a world where tools make everyone fast, judgment becomes the real lever.} The winners will not be the teams that make the most stuff. They will be the teams that know what is worth making, why it should exist, and how to execute above the noise.', highlight: 'pullQuote' },
-  { text: 'So I went deeper into the technology behind the shift. I studied large language models, data infrastructure, emerging companies, compute economics, adoption cycles, and the cultural questions that come with powerful tools becoming ordinary.' },
-  { text: 'More importantly, I started building. I created Terralis Print Studio, MoveMint, an interview practice platform, and this portfolio as a living product. Each one forced the same questions: who is this for, why now, what should it feel like, how does it launch, and what would make it worth using?' },
-  { text: 'Today, technology is part of my operating system, but it is not the point. The point is still the work: finding a real problem, shaping the offer, building the first version, putting it in front of people, and improving it with evidence.' },
-  { text: 'I\'m looking for a team with serious problems, a strong product instinct, and the ambition to build things that matter. That is where I do my best work.' },
-]
-
-function renderStoryText(text, highlight) {
-  if (!highlight) return text
-  const match = text.match(/^(.*?)\{(.*?)\}(.*)$/s)
-  if (!match) return text
-  const [, before, highlighted, after] = match
-  return (
-    <>
-      {before && <span>{before}</span>}
-      <span className={`story-inline-${highlight}`}>{highlighted}</span>
-      {after && <span>{after}</span>}
-    </>
-  )
-}
-
 function About() {
-  const storyRunwayRef = useRef(null)
-  const storyContentRef = useRef(null)
   const processRef = useRef(null)
   const statementRef = useRef(null)
   const philosophyRef = useRef(null)
-
-  // Story scroll; content scrolls through pinned squeeze container
-  const { scrollYProgress: storyScroll } = useScroll({
-    target: storyRunwayRef,
-    offset: ["start start", "end end"]
-  })
-
-  const storyContentY = useTransform(storyScroll, (v) => {
-    if (!storyContentRef.current) return 0
-    const contentH = storyContentRef.current.offsetHeight
-    const containerH = window.innerHeight * 0.85
-    return -v * Math.max(0, contentH - containerH)
-  })
-
-  // Dynamically size the scroll runway to match content length
-  useEffect(() => {
-    const update = () => {
-      if (!storyContentRef.current || !storyRunwayRef.current) return
-      const contentH = storyContentRef.current.offsetHeight
-      const viewportH = window.innerHeight
-      const containerH = viewportH * 0.85
-      const travel = Math.max(0, contentH - containerH)
-      storyRunwayRef.current.style.height = `${viewportH + travel}px`
-    }
-    const t = setTimeout(update, 150)
-    window.addEventListener('resize', update)
-    return () => { clearTimeout(t); window.removeEventListener('resize', update) }
-  }, [])
 
   const { scrollYProgress: thesisScroll } = useScroll({
     target: processRef,

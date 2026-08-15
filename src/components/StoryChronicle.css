@@ -263,3 +263,56 @@
     line-height: 1.16;
   }
 }
+
+/* ── Reduced motion ──
+   The chronicle is a scroll-driven crossfade: chapters are stacked absolutely and
+   only one is visible at a time, with the section sized to eight viewport heights
+   to drive the sequence. That is exactly the pattern a visitor who has asked for
+   reduced motion is asking not to receive, and simply freezing the opacity would
+   pile all seven chapters on top of each other.
+   So unwind it into an ordinary article: nothing pinned, every chapter in normal
+   flow, all of it readable in one pass. Framer writes opacity/transform/filter as
+   inline styles on every frame, so these need !important to win. */
+@media (prefers-reduced-motion: reduce) {
+  .chron { height: auto !important; }
+
+  .chron__stage {
+    position: static;
+    height: auto;
+    overflow: visible;
+    display: block;
+    padding: var(--space-xl) 0;
+  }
+
+  .chron__intro {
+    position: static;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    padding-bottom: var(--space-xl);
+  }
+
+  .chron__frame {
+    opacity: 1 !important;
+    height: auto;
+    margin: 0 auto;
+    grid-template-columns: minmax(0, 660px);
+    align-items: start;
+  }
+
+  /* The rail tracks scroll position through the sequence; without the sequence
+     it has nothing to report. */
+  .chron__rail { display: none; }
+
+  .chron__article { height: auto; }
+
+  .chron__chapter {
+    position: static;
+    inset: auto;
+    opacity: 1 !important;
+    transform: none !important;
+    display: block;
+    margin-bottom: var(--space-xl);
+  }
+  .chron__chapter:last-child { margin-bottom: 0; }
+}

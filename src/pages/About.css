@@ -140,137 +140,6 @@ Reads like a biography in a private club's member directory
   line-height: 1.65;
 }
 
-/* ═══════ MY STORY; Scroll-through squeeze ═══════ */
-.story-scroll-runway {
-  position: relative;
-  min-height: 300vh; /* fallback before JS measurement */
-  margin-top: var(--space-3xl);
-}
-
-.story-sticky-wrapper {
-  position: sticky;
-  top: var(--header-height);
-  height: calc(100vh - var(--header-height));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.story-sticky-wrapper .squeeze-wrapper {
-  width: 100%;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.my-story-section {
-  width: 100%;
-  height: 85vh;
-  max-height: 85vh;
-  overflow: hidden;
-  background-color: var(--parchment);
-  padding: 0;
-  display: flex;
-  align-items: flex-start;
-}
-
-.my-story-inner {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: var(--space-2xl) var(--space-lg) var(--space-3xl);
-  will-change: transform;
-}
-
-.my-story-header {
-  text-align: center;
-  margin-bottom: var(--space-2xl);
-}
-
-.my-story-label {
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--slate);
-  margin-bottom: var(--space-sm);
-}
-
-.my-story-headline {
-  font-family: var(--font-serif);
-  font-size: clamp(2.5rem, 6vw, 4rem);
-  font-weight: 400;
-  line-height: 1.1;
-  color: var(--charcoal);
-}
-
-.my-story-divider {
-  width: 60px;
-  height: 1px;
-  background: rgba(0, 0, 0, 0.12);
-  margin: var(--space-lg) auto 0;
-}
-
-/* Body paragraphs; default text on cream */
-.story-body {
-  font-size: 1.05rem;
-  line-height: 1.85;
-  color: var(--slate);
-  margin-bottom: var(--space-md);
-}
-
-/* First paragraph; serif, larger, drop cap */
-.story-body.story-first {
-  font-family: var(--font-serif);
-  font-size: 1.25rem;
-  line-height: 1.7;
-  color: var(--charcoal);
-}
-
-.story-body.story-first::first-letter {
-  font-family: var(--font-display);
-  font-size: 4.5rem;
-  float: left;
-  line-height: 0.75;
-  margin-right: 12px;
-  margin-top: 8px;
-  color: var(--charcoal);
-  font-weight: 400;
-}
-
-/* Inline highlights; big text exactly where it appears in the story */
-.story-inline-pullQuote {
-  display: block;
-  font-family: var(--font-serif);
-  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
-  font-weight: 400;
-  font-style: italic;
-  line-height: 1.3;
-  color: var(--charcoal);
-  margin: var(--space-sm) 0;
-}
-
-.story-inline-moment {
-  display: block;
-  font-family: var(--font-display);
-  font-size: clamp(2.5rem, 7vw, 5rem);
-  font-weight: 400;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-  color: var(--charcoal);
-  margin: var(--space-sm) 0;
-}
-
-.story-inline-emphasis {
-  display: block;
-  font-family: var(--font-serif);
-  font-size: clamp(1.15rem, 2vw, 1.4rem);
-  font-style: italic;
-  line-height: 1.6;
-  color: var(--slate);
-}
-
 /* ═══════ OPERATING THESIS; pinned word reveal ═══════ */
 .thesis-scroll {
   height: 260vh; /* runway for the word-by-word reveal */
@@ -721,4 +590,35 @@ Reads like a biography in a private club's member directory
   padding: var(--space-2xl) 0 0;
   margin-bottom: 0;
   background: var(--parchment);
+}
+
+/* ── Reduced motion ──
+   Two sections on this page are pinned scroll runways: the operating thesis
+   (260vh) and the statement moment (200vh). Both exist only to drive a
+   scroll-linked reveal. With motion reduced the reveal is switched off in the
+   component, so the runways are 460vh of empty scrolling with nothing to show.
+   Collapse them to their content. */
+@media (prefers-reduced-motion: reduce) {
+  .thesis-scroll { height: auto; }
+  .thesis-sticky {
+    position: static;
+    height: auto;
+    padding: var(--space-2xl) 0;
+  }
+
+  .statement-scroll-runway { height: auto; }
+  .statement-sticky-wrapper {
+    position: static;
+    height: auto;
+  }
+  .statement-section,
+  .philosophy-photo-section {
+    height: auto;
+    max-height: none;
+    padding: var(--space-2xl) 0;
+  }
+  .statement-inner { transform: none !important; }
+
+  .philosophy-photo-scroll-runway { height: auto; }
+  .philosophy-photo-sticky-wrapper { position: static; height: auto; }
 }

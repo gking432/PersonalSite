@@ -155,9 +155,12 @@ export default function StoryChronicle() {
         <motion.div className="chron__intro" style={{ opacity: introOpacity, scale: introScale, filter: introBlur, y: introY }}>
           <p className="chron__eyebrow">My Story</p>
           <h2 className="chron__title">How I got here.</h2>
+          {/* The thesis of the whole transition, stated before the story rather
+              than only at chapter six, where a visitor scrolling normally never
+              reaches it. Chapter six now reads as the payoff. */}
           <p className="chron__deck">
-            A business foundation first, then the technical capability to build
-            and test better systems myself.
+            I didn’t leave my business background behind to become a developer. I
+            added enough technical capability to make that judgment more useful.
           </p>
         </motion.div>
 
