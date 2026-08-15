@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Gunnar Neuman — Résumé</title>
+<style>
+  /* Print-first, ATS-first. Single column, real text, no layout tables, no
+     images, no columns. Applicant tracking systems flatten a PDF to a text
+     stream in reading order; anything clever here becomes garbage there. */
+  @page { size: letter; margin: 0.5in 0.55in; }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 9.7pt;
+    line-height: 1.33;
+    color: #1a1a1a;
+  }
+
+  header { margin-bottom: 9pt; }
+
+  h1 {
+    margin: 0 0 3pt;
+    font-size: 20pt;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .target {
+    margin: 0 0 5pt;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 9.4pt;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #1f4034;
+  }
+
+  .contact {
+    margin: 0;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 9pt;
+    line-height: 1.5;
+    color: #333;
+  }
+
+  .contact a { color: #1f4034; text-decoration: none; }
+
+  h2 {
+    margin: 10pt 0 5pt;
+    padding-bottom: 2pt;
+    border-bottom: 0.8pt solid #1a1a1a;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 9pt;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+  }
+
+  .summary { margin: 0; text-align: left; }
+
+  .job { margin-top: 7pt; page-break-inside: avoid; }
+  .job:first-of-type { margin-top: 0; }
+
+  .job-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12pt;
+  }
+
+  .job-title { margin: 0; font-size: 10.6pt; font-weight: 700; }
+  .job-org { font-weight: 400; }
+
+  .job-meta {
+    flex: none;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 8.6pt;
+    color: #444;
+    white-space: nowrap;
+  }
+
+  ul { margin: 3pt 0 0; padding-left: 13pt; }
+  li { margin-bottom: 2pt; }
+  li:last-child { margin-bottom: 0; }
+
+  .skills p { margin: 0 0 3pt; }
+  .skills p:last-child { margin-bottom: 0; }
+  .skills strong { font-family: Helvetica, Arial, sans-serif; font-size: 9pt; }
+
+  .edu p { margin: 0 0 2pt; }
+  .edu .school { font-weight: 700; }
+
+  .flag { background: #ffe9a8; padding: 0 2pt; }
+</style>
+</head>
+<body>
+
+  <header>
+    <h1>Gunnar Neuman</h1>
+    <p class="target">AI Implementation · Business Systems · Product</p>
+    <p class="contact">
+      Milwaukee, WI &nbsp;·&nbsp; <span class="flag">[YOUR PHONE]</span> &nbsp;·&nbsp; <span class="flag">[CONFIRM EMAIL]</span><br />
+      <a href="https://gunnarneuman.com">gunnarneuman.com</a>
+      &nbsp;·&nbsp;
+      Case study: <a href="https://gunnarneuman.com/projects/home-services-crm">gunnarneuman.com/projects/home-services-crm</a>
+    </p>
+  </header>
+
+  <h2>Summary</h2>
+  <p class="summary">
+    AI implementation and product professional with five years across sales operations,
+    product launches, and client delivery, plus the hands-on capability to build working
+    systems rather than only specify them. I map how work actually happens, decide where AI
+    belongs and where deterministic software or human judgment is the better answer, build a
+    testable first version, and plan the pilot that shows whether it worked.
+  </p>
+
+  <h2>Experience</h2>
+
+  <div class="job">
+    <div class="job-head">
+      <p class="job-title">AI Product &amp; Implementation <span class="job-org">— Independent</span></p>
+      <span class="job-meta">Milwaukee, WI · Oct 2025 – Present</span>
+    </div>
+    <ul>
+      <li>Built a full home-services CRM demonstration integrating AI across customer calls,
+        lead qualification, call summarization, follow-up, quote preparation, appointment
+        coordination, and review management, with human approval required for all
+        customer-facing actions.</li>
+      <li>Published the implementation reasoning as a case study: where AI is used and where
+        deterministic software is used instead, defined failure and fallback behavior, a
+        30/60/90 pilot plan, and the metrics that would decide whether to expand or stop.</li>
+      <li>Designed and built a live portfolio assistant on a constrained tool set: read-only
+        actions run automatically, while consequential actions — sending email, booking against
+        a live calendar — stop for explicit human confirmation. State and permissions are
+        enforced in software, not by the model.</li>
+      <li>Built and launched PrepMe, a live AI interview platform that generates and conducts a
+        personalized mock interview from a candidate's résumé and target job description.</li>
+    </ul>
+  </div>
+
+  <div class="job">
+    <div class="job-head">
+      <p class="job-title">Founder <span class="job-org">— TouchPoint Marketing Solutions</span></p>
+      <span class="job-meta">Denver, CO · Mar 2023 – Oct 2025</span>
+    </div>
+    <ul>
+      <li>Ran six client engagements end to end: discovery, scoping, build, launch, performance
+        reporting, and handoff to a client team that had to operate the result without me.</li>
+      <li>Translated business goals into scoped and delivered solutions across websites,
+        e-commerce, customer acquisition, and reporting.</li>
+      <li>Used campaign and customer data to report results and adjust activity; coordinated
+        timelines, budgets, vendors, and client communication across concurrent projects.</li>
+    </ul>
+  </div>
+
+  <div class="job">
+    <div class="job-head">
+      <p class="job-title">Sales Rotational Program <span class="job-org">— Sub-Zero Group, Inc.</span></p>
+      <span class="job-meta">Madison, WI · Jun 2020 – Feb 2023</span>
+    </div>
+    <ul>
+      <li>Built custom Power BI reporting tools and trained external sales teams to adopt them,
+        changing how those users accessed and applied sales data day to day.</li>
+      <li>Selected as the inaugural participant in a 2.5-year rotational program spanning sales
+        operations, product marketing, product launch, showroom sales, and dealer support.</li>
+      <li>Supported cross-functional product launches through competitive research, positioning,
+        naming, imagery, sales materials, and retail execution.</li>
+      <li>Gathered dealer and distributor feedback, supported product training, and translated
+        product information into practical customer-facing resources.</li>
+    </ul>
+  </div>
+
+  <h2>Education</h2>
+  <div class="edu">
+    <p class="school">University of Wisconsin–Milwaukee — Bachelor of Business Administration</p>
+    <p>Majors in Marketing and Supply Chain Management · Central European international business program</p>
+  </div>
+
+  <h2>Skills</h2>
+  <div class="skills">
+    <p><strong>AI &amp; Implementation:</strong> AI-enabled workflow design, human-in-the-loop
+      systems, tool calling and orchestration, structured outputs (JSON Schema), prompt design,
+      evaluation and error analysis, requirements definition, process mapping, pilot design,
+      rapid prototyping</p>
+    <p><strong>Business:</strong> Stakeholder discovery, client management, sales operations,
+      cross-functional delivery, user training and adoption, ROI reporting, go-to-market</p>
+    <p><strong>Technical:</strong> React, TypeScript, REST APIs, OpenAI API, Google Calendar API,
+      Twilio, Power BI, Claude, Cursor, Codex, v0</p>
+  </div>
+
+</body>
+</html>
