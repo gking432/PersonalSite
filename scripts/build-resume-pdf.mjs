@@ -14,13 +14,20 @@ const here = dirname(fileURLToPath(import.meta.url))
 const source = resolve(here, '../resume/resume.html')
 const output = resolve(here, '../public/Gunnar-Neuman-Resume.pdf')
 
-const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' })
+const configuredBrowser = process.env.RESUME_CHROMIUM_PATH
+const localChrome = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+const bundledBrowser = '/opt/pw-browsers/chromium'
+const executablePath = configuredBrowser
+  || (process.platform === 'darwin' ? localChrome : bundledBrowser)
+
+const browser = await chromium.launch({ executablePath })
 const page = await browser.newPage()
 await page.goto(pathToFileURL(source).href, { waitUntil: 'load' })
 await page.pdf({
   path: output,
   format: 'Letter',
   printBackground: true,
+  scale: 0.9,
   margin: { top: '0.5in', bottom: '0.5in', left: '0.6in', right: '0.6in' },
 })
 await browser.close()

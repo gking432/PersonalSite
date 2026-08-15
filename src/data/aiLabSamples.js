@@ -1,7 +1,7 @@
 export const opportunitySample = {
   organization: 'Harbor Home Services',
   context: 'A fictional regional home-services company handling inbound leads, estimates, technician scheduling, and customer follow-up across several disconnected tools.',
-  executiveSummary: 'The best first AI pilot is not a general chatbot. It is a lead-to-estimate briefing workflow that assembles the information a coordinator already needs, flags what is missing, and drafts the next action for human approval.',
+  executiveSummary: 'A strong first AI pilot is a lead-to-estimate briefing workflow. It assembles the information a coordinator already needs, flags what is missing, and drafts the next action for human approval.',
   opportunities: [
     {
       title: 'Lead-to-estimate briefing',
@@ -34,7 +34,7 @@ export const opportunitySample = {
   recommendedPilot: {
     title: 'Start with the lead-to-estimate brief',
     reason: 'It is frequent, bounded, measurable, and leaves the customer-facing decision with a person.',
-    steps: ['Map the current intake fields and handoffs', 'Create a structured brief from existing lead data', 'Add missing-information checks', 'Draft—but do not send—the next action', 'Pilot with one coordinator for two weeks'],
+    steps: ['Map the current intake fields and handoffs', 'Create a structured brief from existing lead data', 'Add missing-information checks', 'Draft the next action and hold it for approval', 'Pilot with one coordinator for two weeks'],
     successMetric: 'Time from complete inquiry to coordinator-ready estimate brief, plus the percentage of briefs accepted with minor or no edits.'
   },
   guardrails: ['Do not generate final pricing without approved business rules', 'Do not send customer communication without review during the pilot', 'Keep source information visible so employees can verify the output'],
@@ -54,14 +54,14 @@ export const complaintSample = {
   customerIntent: 'Replacement or refund plus an explanation',
   department: 'Customer care · priority queue',
   routeReason: 'The request combines damaged merchandise, a missed prior commitment, and a potential charge dispute, so it needs an experienced service-recovery owner.',
-  summary: 'The customer reports that two dining chairs arrived with damaged fabric and that the replacement date has already been missed once. They want a concrete resolution, not another general status update.',
+  summary: 'The customer reports that two dining chairs arrived with damaged fabric and that the replacement date has already been missed once. They want a concrete resolution after receiving general status updates.',
   facts: ['Two chairs arrived with damaged upholstery', 'A replacement was previously promised', 'The promised replacement date passed', 'The customer is requesting a refund or confirmed replacement'],
   missingInformation: ['Order number', 'Photos of the damage', 'Preferred resolution if both options are available'],
   recommendedAction: 'Route to a senior customer-care representative, verify the order and replacement inventory, then respond with one confirmed resolution and date.',
   nextSteps: ['Verify the order and previous-contact history', 'Review damage photos and replacement inventory', 'Confirm refund authority if replacement timing is unacceptable', 'Send one approved response with a specific owner and next-update time'],
   escalation: { required: true, reason: 'A prior commitment was missed and the customer is threatening to dispute the charge.' },
   internalNote: 'Do not send another generic apology. Confirm inventory or refund authority before responding. Preserve the prior-contact history for the assigned representative.',
-  draftResponse: 'I’m sorry—we missed the replacement date we gave you, and you should not have to keep asking for a clear answer. I’ve escalated this for order verification so we can give you one confirmed resolution: either an available replacement with a firm date or a refund. Please send the order number and, if available, photos of the damaged fabric so the assigned representative can complete the next step without making you repeat the issue.',
+  draftResponse: 'I’m sorry. We missed the replacement date we gave you, and you should have received a clear answer by now. I’ve escalated this for order verification so we can give you one confirmed resolution: either an available replacement with a firm date or a refund. Please send the order number and, if available, photos of the damaged fabric so the assigned representative can complete the next step without making you repeat the issue.',
   similarCases: [
     { id: 'DEMO-101', type: 'Damaged delivery', issue: 'Two upholstered chairs arrived with visible transit damage.', solution: 'Support verified the order and photos, checked replacement inventory, and gave the customer one confirmed resolution path.', outcome: 'Replacement inventory was confirmed and the customer received a specific delivery window.' },
     { id: 'DEMO-102', type: 'Missed follow-up', issue: 'A customer contacted support twice without receiving the promised update.', solution: 'The case was assigned to one owner, the prior contact history was summarized, and a firm next-update time was established.', outcome: 'The customer stopped repeating the issue and the case closed after one owner completed the follow-through.' }
@@ -77,7 +77,7 @@ export const complaintSample = {
 }
 
 export const roleMatchSample = {
-  role: 'AI Product Owner — fictional equipment manufacturer',
+  role: 'AI Product Owner, fictional equipment manufacturer',
   interviewCase: 'Gunnar is worth interviewing when the role needs someone who can understand users and commercial constraints, shape an AI-enabled workflow, and get hands-on enough to prove the first version.',
   strongestMatches: [
     {
@@ -88,7 +88,7 @@ export const roleMatchSample = {
     {
       title: 'Hands-on AI product work',
       evidence: 'He built PrepMe and a functional home-services CRM demonstration with AI embedded inside complete user workflows.',
-      relevance: 'He can move beyond a recommendation and produce something stakeholders can actually test.'
+      relevance: 'He can move beyond a recommendation and produce something stakeholders can test.'
     },
     {
       title: 'Adoption and communication',
@@ -112,5 +112,5 @@ export const roleMatchSample = {
     { label: 'Read his background', href: '/about' },
     { label: 'Open his résumé', href: '/Gunnar-Neuman-Resume.pdf' }
   ],
-  truthBoundary: 'This brief argues the strongest evidence-based case. It does not claim enterprise AI deployments, formal ML engineering, or experience Gunnar does not have.'
+  truthBoundary: 'This brief argues the strongest evidence-based case. Its scope excludes enterprise AI deployments, formal ML engineering, and unverified experience.'
 }

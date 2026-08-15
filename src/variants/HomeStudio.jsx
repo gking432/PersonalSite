@@ -17,7 +17,7 @@ const ease = [0.22, 1, 0.36, 1]
 const capabilityPhases = [
   {
     title: 'Find the workflow',
-    detail: 'Discovery, process mapping, and the people actually doing the job'
+    detail: 'Discovery, process mapping, and the people doing the job'
   },
   {
     title: 'Decide what AI should touch',
@@ -418,9 +418,9 @@ function HomeStudio() {
             initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease, delay: 0.35 }}>
             Five years in sales operations, product launches, and client delivery
-            taught me how the work actually gets done. Now I build the systems around
-            it &mdash; deciding where AI genuinely helps, where plain software is
-            better, and where a person needs to stay in control.
+            taught me how the work gets done. Now I build systems around that
+            work. I decide where AI helps, where plain software works better, and where
+            a person needs to stay in control.
           </motion.p>
 
           <motion.div className="studio-hero__actions"
@@ -446,9 +446,8 @@ function HomeStudio() {
           initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.8, ease }}>
           I spent five years close to customers, sales teams, and client delivery.
-          When AI made building cheap, I learned to build &mdash; not to become an
-          engineer, but so I could take an idea past the slide and find out whether
-          it actually improves the work.
+          When AI lowered the cost of building, I learned enough to take an idea past
+          the slide and test whether it improves the work.
         </motion.p>
       </section>
 
@@ -514,10 +513,9 @@ function HomeStudio() {
         <motion.p className="studio-rubric__close"
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.7, ease, delay: 0.3 }}>
-          And then the part that decides whether any of it mattered:{' '}
-          <strong>a system nobody adopts didn&rsquo;t work.</strong> The hardest
-          problem is usually not the build &mdash; it&rsquo;s the person who already
-          has a working spreadsheet and no reason to trust your new thing.
+          Adoption decides whether any of it mattered:{' '}
+          <strong>a system nobody adopts didn&rsquo;t work.</strong> The hardest problem
+          is often earning trust from someone whose spreadsheet already works for them.
         </motion.p>
       </section>
 
@@ -529,7 +527,7 @@ function HomeStudio() {
             <motion.h2
               initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }} transition={{ duration: 0.8, ease }}>
-              The systems are there to use, not just read about.
+              You can use the systems yourself.
             </motion.h2>
           </div>
           <p>These are self-directed builds, presented honestly. They show how I turn an AI capability into a complete workflow with an interface, decisions, and a useful outcome.</p>

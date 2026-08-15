@@ -20,7 +20,7 @@ function section(title, body) {
 }
 
 function complaintEmail(result) {
-  const similarCases = Array.isArray(result.similarCases) ? result.similarCases.slice(0, 3).map((item) => `${clean(item.type, 120)} — Prior solution: ${clean(item.solution, 500)} Outcome: ${clean(item.outcome, 400)}`) : []
+  const similarCases = Array.isArray(result.similarCases) ? result.similarCases.slice(0, 3).map((item) => `${clean(item.type, 120)}. Prior solution: ${clean(item.solution, 500)} Outcome: ${clean(item.outcome, 400)}`) : []
   return {
     subject: `Customer issue demo · ${clean(result.caseId, 40) || 'AI triage'}`,
     title: 'Inbound customer issue report',
@@ -41,11 +41,11 @@ function complaintEmail(result) {
 }
 
 function roleEmail(result) {
-  const matches = Array.isArray(result.strongestMatches) ? result.strongestMatches.slice(0, 5).map((item) => `${clean(item.title, 140)} — ${clean(item.evidence, 500)}`) : []
+  const matches = Array.isArray(result.strongestMatches) ? result.strongestMatches.slice(0, 5).map((item) => `${clean(item.title, 140)}: ${clean(item.evidence, 500)}`) : []
   const questions = cleanList(result.interviewQuestions, 5)
   const projects = Array.isArray(result.relevantProjects) ? result.relevantProjects.slice(0, 3).map((item) => {
     const url = safeUrl(item.href)
-    return url ? `<li style="margin:7px 0"><a href="${escapeHtml(url)}" style="color:#173e31">${escapeHtml(clean(item.name, 120))}</a> — ${escapeHtml(clean(item.reason, 500))}</li>` : ''
+    return url ? `<li style="margin:7px 0"><a href="${escapeHtml(url)}" style="color:#173e31">${escapeHtml(clean(item.name, 120))}</a>: ${escapeHtml(clean(item.reason, 500))}</li>` : ''
   }).join('') : ''
   return {
     subject: `Role match brief · ${clean(result.role, 150) || 'Gunnar Neuman'}`,

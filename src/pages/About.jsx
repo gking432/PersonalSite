@@ -52,7 +52,7 @@ const capabilities = [
 const builderProfile = [
   {
     stage: 'Business Context',
-    proof: 'Sales operations, client discovery, analytics, and market experience taught me to understand how the work actually gets done.'
+    proof: 'Sales operations, client discovery, analytics, and market experience taught me to understand how the work gets done.'
   },
   {
     stage: 'Workflow',
@@ -60,7 +60,7 @@ const builderProfile = [
   },
   {
     stage: 'Working System',
-    proof: 'I can build enough of the product myself to make the idea testable instead of leaving it trapped in a presentation.'
+    proof: 'I can build enough of the product myself to make the idea testable and put it in front of people.'
   },
   {
     stage: 'Implementation',
@@ -154,18 +154,18 @@ const storyBlocks = [
   { text: 'I saw the parts most people only talk about in pieces: the product story, the sales team, the dealer network, the showroom experience, the launch material, and the discipline required to make a brand feel consistent at every touchpoint.' },
   { text: 'As the rotational program came to an end, {I decided to take a risk and bet on myself.}', highlight: 'pullQuote' },
   { text: 'I started doing freelance marketing work, and that slowly became a small agency. I was sitting across the table from business owners, founders, and aspiring entrepreneurs trying to make their ideas feel real enough for customers to trust.' },
-  { text: 'That was the first time I understood what kind of work actually pulls me in.' },
-  { text: 'It wasn\'t the deliverables. It wasn\'t being my own boss. {It was building.}', highlight: 'moment' },
-  { text: 'The best moments were not the handoff moments. They were the messy middle: the strategy pivots, the rough drafts, the first version of a site, the moment a client could finally see the shape of what they had been describing.' },
-  { text: 'Running that agency forced me to learn the practical stack of growth: positioning, web, content, SEO, paid media, eCommerce, reporting, client management, and the uncomfortable art of deciding what is actually worth doing.' },
+  { text: 'That was the first time I understood what kind of work pulls me in.' },
+  { text: 'The part that pulled me in was building: turning loose ideas into something a client could see, use, and respond to.', highlight: 'moment' },
+  { text: 'The best moments happened in the messy middle: the strategy pivots, the rough drafts, the first version of a site, and the moment a client could finally see the shape of what they had been describing.' },
+  { text: 'Running that agency forced me to learn the practical stack of growth: positioning, web, content, SEO, paid media, eCommerce, reporting, client management, and the uncomfortable work of deciding which ideas deserved the investment.' },
   { text: '{Then the tools changed.}', highlight: 'moment' },
-  { text: 'As AI and modern builder tools became widely available, the industry changed fast. At first, it felt like a gift: more speed, more leverage, more ways to make small teams powerful.' },
-  { text: '{For me, it was the opposite.}', highlight: 'emphasis' },
+  { text: 'As AI and modern builder tools became widely available, the industry changed fast. At first, it felt like a gift: more speed, more capacity, more ways for small teams to build.' },
+  { text: '{The downside became clear quickly.}', highlight: 'emphasis' },
   { text: 'Then the economics of basic marketing production collapsed. Websites, copy, and ad creative became cheaper and easier to produce. That made the average deliverable less defensible, and it forced me to ask a better question: what still matters when almost everyone can make something?' },
-  { text: 'This led me to a new way of thinking about modern marketing: {in a world where tools make everyone fast, judgment becomes the real lever.} The winners will not be the teams that make the most stuff. They will be the teams that know what is worth making, why it should exist, and how to execute above the noise.', highlight: 'pullQuote' },
+  { text: 'This led me to a new way of thinking about modern marketing: {in a world where tools make everyone fast, judgment becomes the real lever.} Strong teams know what is worth making, why it should exist, and how to execute above the noise.', highlight: 'pullQuote' },
   { text: 'So I went deeper into the technology behind the shift. I studied large language models, data infrastructure, emerging companies, compute economics, adoption cycles, and the cultural questions that come with powerful tools becoming ordinary.' },
-  { text: 'More importantly, I started building. I created Terralis Print Studio, MoveMint, an interview practice platform, and this portfolio as a living product. Each one forced the same questions: who is this for, why now, what should it feel like, how does it launch, and what would make it worth using?' },
-  { text: 'Today, technology is part of my operating system, but it is not the point. The point is still the work: finding a real problem, shaping the offer, building the first version, putting it in front of people, and improving it with evidence.' },
+  { text: 'I started building. I created Terralis Print Studio, MoveMint, an interview practice platform, and this portfolio as a living product. Each one forced the same questions: who is this for, why now, what should it feel like, how does it launch, and what would make it worth using?' },
+  { text: 'Today, technology expands what I can execute. The work still starts with finding a real problem, shaping the offer, building the first version, putting it in front of people, and improving it with evidence.' },
   { text: 'I\'m looking for a team with serious problems, a strong product instinct, and the ambition to build things that matter. That is where I do my best work.' },
 ]
 
@@ -397,7 +397,7 @@ function About() {
             >
               <p className="statement-subtitle">What's Next</p>
               <StatementGiantText scrollYProgress={statementTextScroll} lineBreakAfter={3}>
-                I want in on problems that actually matter.
+                I want in on problems that matter.
               </StatementGiantText>
               <p className="statement-paragraph">
                 A team with a high bar, a real product instinct, and the ambition to build things worth building.
@@ -412,7 +412,7 @@ function About() {
       {/* NOTE (Gunnar): the middle paragraph is written from what the site already
           claims as verified (you built the reports and trained external sales teams
           on them). The characterisation of *why* adoption was hard is inference, not
-          recorded fact. Replace it with what actually happened — how long it really
+          recorded fact. Replace it with what actually happened: how long it really
           took, what people resisted, and what finally moved it. That version will be
           both truer and more specific than this one. */}
       <section className="adoption-section section" data-assistant-section="about-adoption">
@@ -444,20 +444,18 @@ function About() {
           >
             <motion.p variants={staggerItem}>
               At Sub-Zero I built custom Power BI reporting tools for sales teams, and then had
-              to get external dealers and reps to actually use them. The second part turned out
+              to get external dealers and reps to use them. The second part turned out
               to be the whole job.
             </motion.p>
             <motion.p variants={staggerItem}>
-              Building the reports was the straightforward half. Getting people to change how
-              they accessed sales data was not. Everyone already had habits, existing
+              Building the reports took less effort than changing how people accessed sales
+              data. Everyone already had habits, existing
               spreadsheets, and no particular reason to trust something new from someone in a
-              rotational program. Training people on the tools was not a footnote at the end of
-              the project; it was most of the project.
+              rotational program. Training people on the tools became most of the project.
             </motion.p>
             <motion.p variants={staggerItem}>
-              That is the same failure mode AI tools have now. Model quality is rarely what stops
-              a project. What stops it is that the people who were supposed to use the new thing
-              quietly went back to the old one.
+              The same failure mode appears with AI tools now. Model quality rarely stops a
+              project. Adoption fails when the intended users quietly return to the old process.
             </motion.p>
           </motion.div>
         </div>

@@ -65,9 +65,8 @@ function ActionLog({ actions, onSimulateFailure, canSimulate }) {
       )}
 
       <p className="assistant-log__note">
-        Reads happen automatically. Anything that leaves the site &mdash; an email, a
-        calendar invite &mdash; stops and waits for you. The model decides what to
-        say; the application decides what is allowed.
+        Reads happen automatically. Email and calendar actions wait for your
+        confirmation. The model decides what to say; the application decides what is allowed.
       </p>
     </section>
   )

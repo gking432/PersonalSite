@@ -56,7 +56,7 @@ const decisions = [
   {
     step: 'Capture name, address, and phone',
     owner: 'mixed',
-    why: 'Extraction is a language problem; validation is not. The address is checked against a lookup rather than trusted from the transcript.'
+    why: 'A language model extracts the details. A deterministic lookup validates the address before the workflow uses it.'
   },
   {
     step: 'Classify job type and urgency',
@@ -66,12 +66,12 @@ const decisions = [
   {
     step: 'Assign a technician',
     owner: 'software',
-    why: 'Not AI. Skills, geography, and availability are rules. A model would be less accurate and impossible to explain when it got it wrong.'
+    why: 'Deterministic rules handle skills, geography, and availability with clear, explainable results.'
   },
   {
     step: 'Set the price on a quote',
     owner: 'human',
-    why: 'Not AI. Pricing carries liability. The system can assemble line items; a person sets the number and owns it.'
+    why: 'Pricing carries liability. The system assembles line items, and a person sets and owns the final number.'
   },
   {
     step: 'Draft the follow-up message',
@@ -81,7 +81,7 @@ const decisions = [
   {
     step: 'Book the appointment',
     owner: 'software',
-    why: 'Not AI. Calendar conflict resolution is a solved problem. There is no reason to hand a solved problem to a model.'
+    why: 'Ordinary scheduling logic handles calendar conflicts accurately and consistently.'
   },
   {
     step: 'Flag a review for a response',
@@ -94,13 +94,13 @@ const failures = [
   {
     failure: 'The address is unclear or misheard',
     detection: 'Validation lookup fails',
-    behaviour: 'Asks once more, then records the lead as address unconfirmed rather than guessing',
+    behaviour: 'Asks once more, then records the lead as address unconfirmed and sends it to a person',
     surfaced: 'Office manager, before dispatch'
   },
   {
     failure: 'Low-confidence job classification',
     detection: 'Confidence below threshold',
-    behaviour: 'The lead is still created, but routed to human triage instead of automatic assignment',
+    behaviour: 'Creates the lead and routes it to human triage for assignment',
     surfaced: 'Triage queue'
   },
   {
@@ -139,15 +139,15 @@ const pilot = [
   {
     phase: 'Days 61–90',
     title: 'Extend or stop',
-    detail: 'Extend to business-hours overflow. Loosen approval on the single lowest-risk step and nothing else. Train the full team properly rather than sending a link. Re-measure against the baseline.',
-    gate: 'Metrics moved and staff would object if you removed it — expand, adjust, or stop'
+    detail: 'Extend to business-hours overflow. Loosen approval on the single lowest-risk step and nothing else. Train the full team with hands-on sessions. Re-measure against the baseline.',
+    gate: 'Metrics moved and staff would object if you removed it; expand, adjust, or stop'
   }
 ]
 
 const metrics = [
   { metric: 'Missed-call recovery rate', baseline: 'Phone log, 30 days prior', decision: 'The core value case. If this does not move, stop the project' },
   { metric: 'Time to first response', baseline: 'Lead created → first contact timestamp', decision: 'Whether speed is genuinely improving or just moving somewhere else' },
-  { metric: 'Intake completeness', baseline: 'Share of leads with every required field', decision: 'Whether AI intake actually beats a person taking the call' },
+  { metric: 'Intake completeness', baseline: 'Share of leads with every required field', decision: 'Whether AI intake outperforms a person taking the call' },
   { metric: 'Edit rate on AI drafts', baseline: 'Share of drafts changed before sending', decision: 'Quality signal. High and staying high means the drafts are not earning their place' },
   { metric: 'Escalation rate', baseline: 'Share of calls handed to a person', decision: 'Scope signal. Tells you where the real boundary sits' },
   { metric: 'What the staff say at day 90', baseline: 'Ask them', decision: 'The adoption question. Everything else can look fine while this quietly fails' }
@@ -221,7 +221,7 @@ function CrmCaseStudy() {
                 <strong>A self-built demonstration.</strong> No client, no users, no
                 production data, and no commercial results. I built it to work through
                 how AI should sit inside a real operational workflow, and to have
-                something concrete to argue about instead of a slide.
+                something concrete that makes the decisions visible and testable.
               </p>
             </motion.aside>
 
@@ -262,7 +262,7 @@ function CrmCaseStudy() {
               A small home-services business runs on the phone. The people best
               equipped to answer it are the people who are under a sink, on a roof, or
               driving between jobs. So calls go to voicemail, and a homeowner with a
-              leak does not leave a voicemail — they call the next company on the list.
+              leak calls the next company on the list.
             </motion.p>
             <motion.p variants={fadeUp}>
               The knock-on problems all come from the same place. Intake is
@@ -272,9 +272,9 @@ function CrmCaseStudy() {
               head on the drive home. Review requests get sent when someone remembers.
             </motion.p>
             <motion.p variants={fadeUp}>
-              None of that is a technology problem in origin. It is a capacity problem
-              that shows up as a data problem. That distinction is what determines
-              where AI belongs in the fix and where it does not.
+              Limited capacity creates inconsistent data and slow follow-up. The workflow
+              design follows from choosing the appropriate role for AI, ordinary software,
+              and human judgment at each step.
             </motion.p>
           </motion.div>
         </Section>
@@ -285,7 +285,7 @@ function CrmCaseStudy() {
           assistantSection="crm-case-workflow"
           kicker="The workflow"
           heading="One path, from ringing phone to review request."
-          intro="Colour shows who owns each step. The interesting parts of this diagram are the grey ones — the places where the answer was ordinary software."
+          intro="Colour shows who owns each step. The grey steps use ordinary software because deterministic logic handles them well."
         >
           <motion.div
             className="cs-flow"
@@ -314,10 +314,10 @@ function CrmCaseStudy() {
           <div className="container">
             <div className="cs-section__head">
               <p className="cs-kicker">The decisions</p>
-              <h2>Where AI is used, and where it deliberately isn’t.</h2>
+              <h2>How each step is implemented.</h2>
               <p className="cs-intro">
-                Three of these steps could have used a model and don’t. Those are the
-                rows I would want to be asked about.
+                Three steps use ordinary software even though a model could handle them.
+                Those choices matter as much as the AI features.
               </p>
             </div>
             <div className="cs-table-scroll">
@@ -349,7 +349,7 @@ function CrmCaseStudy() {
           assistantSection="crm-case-failures"
           kicker="When it goes wrong"
           heading="Every step has a defined way to fail."
-          intro="A demo that only shows the happy path has not been designed, it has been staged. These are the paths that matter in a real business, where the cost of a confident wrong answer lands on a customer."
+          intro="Real design includes failure paths. These are the cases that matter in a business, where the cost of a confident wrong answer lands on a customer."
         >
           <div className="cs-table-scroll">
             <table className="cs-table">
@@ -374,8 +374,8 @@ function CrmCaseStudy() {
             </table>
           </div>
           <p className="cs-footnote">
-            The common thread: when the system is unsure, it degrades to a person
-            rather than guessing. Confidence is a routing input, not a display value.
+            When confidence drops, the system routes the work to a person. Confidence
+            directly controls the next step in the workflow.
           </p>
         </Section>
 
@@ -385,7 +385,7 @@ function CrmCaseStudy() {
           assistantSection="crm-case-pilot"
           kicker="Rollout"
           heading="How I would put this into a real business."
-          intro="This has not been deployed anywhere. If I were implementing it inside a twelve-person home-services company, this is the plan I would bring to the first meeting."
+          intro="Deployment status: portfolio demonstration. For a twelve-person home-services company, this is the plan I would bring to the first meeting."
         >
           <motion.div
             className="cs-phases"
@@ -414,7 +414,7 @@ function CrmCaseStudy() {
           assistantSection="crm-case-measurement"
           kicker="Measurement"
           heading="What I would measure, and what each number would decide."
-          intro="Proposed, not achieved. None of these have been measured, because there is no business behind the demo to measure them in."
+          intro="These are proposed measures. The demonstration has no operating business or baseline, so there are no measured results."
         >
           <div className="cs-table-scroll">
             <table className="cs-table">
@@ -449,24 +449,22 @@ function CrmCaseStudy() {
               variants={staggerContainer}
             >
               <motion.p className="cs-kicker" variants={fadeUp}>Limits</motion.p>
-              <motion.h2 variants={fadeUp}>What this doesn’t prove.</motion.h2>
+              <motion.h2 variants={fadeUp}>Current limits.</motion.h2>
               <motion.p variants={fadeUp}>
-                It has never run against real customers, real call volume, or a real
-                technician’s schedule. I have not measured whether AI intake beats a
-                person answering the phone, because there is no baseline to measure it
-                against. Nothing here has been through a security review, and no data
-                in it belongs to anyone.
+                The demonstration has no exposure to real customers, live call volume,
+                or technician schedules. It has no operating baseline or measured comparison
+                between AI intake and a person answering the phone. It has also had no
+                security review, and all data is fictional.
               </motion.p>
               <motion.p variants={fadeUp}>
-                And the hardest part of this work is the part a demonstration cannot
-                test: getting a team that already has a system to switch to a new one.
-                I have done that before, with Power BI reporting at Sub-Zero, and it
-                took far longer than building the thing did.
+                A demonstration cannot test adoption by a team with an established process.
+                I handled that challenge with Power BI reporting at Sub-Zero; earning adoption
+                took far longer than building the reports.
               </motion.p>
               <motion.p variants={fadeUp}>
-                What this does show is the reasoning — what I would build, what I
-                deliberately would not, where I would keep people in control, what I
-                would do when it fails, and how I would find out whether it was working.
+                The value of this case study is the reasoning: what I would build, where
+                people remain in control, how the workflow handles failure, and how I
+                would measure whether it works.
               </motion.p>
               <motion.div className="cs-limits__actions" variants={fadeUp}>
                 <Link className="btn btn-primary" to="/contact">Get in touch</Link>

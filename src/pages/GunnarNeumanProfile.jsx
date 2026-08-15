@@ -114,8 +114,8 @@ function GunnarNeumanProfile() {
             from the first conversation through execution and ROI discussions.
           </p>
           <p>
-            He did not leave that business foundation behind to become a traditional software engineer.
-            He added product and technical capability so he could turn an ambiguous workflow into a working
+            His business foundation gives the technical work context. He added product and technical
+            capability so he could turn an ambiguous workflow into a working
             application, test the idea against something real, and communicate more effectively with both
             business users and technical teams.
           </p>
@@ -195,8 +195,8 @@ function GunnarNeumanProfile() {
           <p>
             Neuman publishes essays and field notes on customer behavior, technology adoption,
             marketing strategy, product judgment, and the path from idea to market. His
-            writing reflects a practitioner's perspective - informed by hands-on building rather than
-            theoretical frameworks.
+            writing reflects a practitioner's perspective informed by hands-on building and practical
+            experience.
           </p>
         </section>
 
