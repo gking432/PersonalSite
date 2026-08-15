@@ -939,10 +939,10 @@ function ClientWork() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, ease: ndsEase }}
                 >
-                  Selected Archive
+                  Earlier Client Work
                 </motion.p>
                 <h1>
-                  {'Client Work'.split(' ').map((word, i, words) => (
+                  {'Client Delivery'.split(' ').map((word, i, words) => (
                     <motion.span
                       key={i}
                       style={{ display: 'inline-block' }}
@@ -960,9 +960,9 @@ function ClientWork() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
                 >
-                  A selection of websites, eCommerce builds, campaigns, and customer-acquisition
-                  work from a broader client-services chapter. These six projects are examples,
-                  not my complete client list.
+                  Across my client-services work, I owned the delivery loop: understanding what
+                  a client needed, scoping it, building it, launching it, reporting on the result,
+                  and adjusting. That ownership is what carried forward into the product and AI work.
                 </motion.p>
               </div>
               <motion.div
@@ -976,16 +976,16 @@ function ClientWork() {
                   <span className="hero-meta-value">2023–2025</span>
                 </div>
                 <div className="hero-meta-item">
+                  <span className="hero-meta-label">The loop</span>
+                  <span className="hero-meta-value">Discover · scope · build · launch · report</span>
+                </div>
+                <div className="hero-meta-item">
+                  <span className="hero-meta-label">What I owned</span>
+                  <span className="hero-meta-value">The engagement, from first conversation through handoff</span>
+                </div>
+                <div className="hero-meta-item">
                   <span className="hero-meta-label">Shown here</span>
-                  <span className="hero-meta-value">Six selected projects</span>
-                </div>
-                <div className="hero-meta-item">
-                  <span className="hero-meta-label">Work included</span>
-                  <span className="hero-meta-value">Websites · eCommerce · campaigns · reporting</span>
-                </div>
-                <div className="hero-meta-item">
-                  <span className="hero-meta-label">Context</span>
-                  <span className="hero-meta-value hero-meta-status">Earlier client-services work</span>
+                  <span className="hero-meta-value hero-meta-status">Six selections from a broader body of work</span>
                 </div>
               </motion.div>
             </div>
@@ -1011,7 +1011,7 @@ function ClientWork() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.08, ease: ndsEase }}
             >
-              Six projects from a broader chapter.
+              Six examples of how I delivered.
             </motion.h2>
             <motion.p
               className="cw-index-intro"
@@ -1020,7 +1020,7 @@ function ClientWork() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.14, ease: ndsEase }}
             >
-              This is a selection, not a complete client roster. Open any project to browse the surviving work in context.
+              This is a selection, not a complete client roster. Open any project to browse the work in context.
             </motion.p>
             <div className="cw-index-grid">
               {clientProjects.map((project, i) => (
