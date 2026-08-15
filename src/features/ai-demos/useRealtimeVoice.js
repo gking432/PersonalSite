@@ -11,6 +11,22 @@ function parseArguments(value) {
   try { return JSON.parse(value || '{}') } catch { return {} }
 }
 
+function microphoneErrorMessage(error) {
+  if (error?.name === 'NotFoundError' || error?.name === 'DevicesNotFoundError') {
+    return 'No microphone was found on this device. Connect or enable a microphone, then try voice again. You can also use text instead.'
+  }
+  if (error?.name === 'NotAllowedError' || error?.name === 'SecurityError') {
+    return 'Microphone access is blocked. Allow microphone access for this site, then try voice again. You can also use text instead.'
+  }
+  if (error?.name === 'NotReadableError' || error?.name === 'TrackStartError') {
+    return 'The browser found a microphone but could not use it. Check whether another application is using it, then try again. You can also use text instead.'
+  }
+  if (error?.name === 'AbortError') {
+    return 'The microphone could not be started. Check the device connection and try voice again. You can also use text instead.'
+  }
+  return error?.message || 'The live voice session could not be started.'
+}
+
 export default function useRealtimeVoice() {
   const [state, setState] = useState(initialState)
   const peerRef = useRef(null)
@@ -220,9 +236,7 @@ export default function useRealtimeVoice() {
         },
       })
     } catch (error) {
-      const message = error?.name === 'NotAllowedError'
-        ? 'Microphone access is required for the live assistant.'
-        : (error?.message || 'The live voice session could not be started.')
+      const message = microphoneErrorMessage(error)
       failureRef.current = message
       channelRef.current?.close?.()
       peerRef.current?.close?.()

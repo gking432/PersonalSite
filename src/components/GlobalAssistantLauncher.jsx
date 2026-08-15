@@ -179,7 +179,6 @@ function GlobalAssistantLauncher({ hidden = false }) {
     previousPath.current = location.pathname
     const context = typeof contextOverride === 'string' && contextOverride ? contextOverride : pendingContext
     const connected = await assistant.connect({ additionalContext: context, openingInstructions })
-    if (!connected) setMode('text')
     if (connected) {
       setVoiceSessionStarted(true)
       setActivitySource('voice')
