@@ -33,7 +33,7 @@ function TextDestination({ id, onNavigate }) {
     : <Link to={destination.href} onClick={onNavigate}>{contents}</Link>
 }
 
-function TextAssistant({ chat, onNavigate }) {
+function TextAssistant({ chat, onNavigate, onSessionStart }) {
   const [draft, setDraft] = useState('')
   const messagesRef = useRef(null)
 
@@ -46,7 +46,13 @@ function TextAssistant({ chat, onNavigate }) {
     if (!draft.trim()) return
     const message = draft
     setDraft('')
+    onSessionStart()
     await chat.sendMessage(message)
+  }
+
+  const sendSuggestion = (suggestion) => {
+    onSessionStart()
+    chat.sendMessage(suggestion)
   }
 
   return <div className="global-ai__text">
@@ -55,7 +61,7 @@ function TextAssistant({ chat, onNavigate }) {
       {chat.sending && <div className="global-ai__typing"><i /><i /><i /><span>Working on that</span></div>}
       {chat.error && <p className="global-ai__text-error">{chat.error}</p>}
     </div>
-    {!!chat.suggestions.length && <div className="global-ai__suggestions">{chat.suggestions.slice(0, 2).map((suggestion) => <button type="button" key={suggestion} onClick={() => chat.sendMessage(suggestion)} disabled={chat.sending}>{suggestion}</button>)}</div>}
+    {!!chat.suggestions.length && <div className="global-ai__suggestions">{chat.suggestions.slice(0, 2).map((suggestion) => <button type="button" key={suggestion} onClick={() => sendSuggestion(suggestion)} disabled={chat.sending}>{suggestion}</button>)}</div>}
     <form className="global-ai__composer" onSubmit={submit}><label htmlFor="global-ai-message">Ask Gunnar's AI assistant</label><div><input id="global-ai-message" value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="Ask about Gunnar…" autoComplete="off" autoFocus /><button type="submit" disabled={chat.sending || !draft.trim()} aria-label="Send message">↑</button></div></form>
   </div>
 }
@@ -67,6 +73,8 @@ function GlobalAssistantLauncher({ hidden = false }) {
   const [inviteOpen, setInviteOpen] = useState(false)
   const [open, setOpen] = useState(false)
   const [activityOpen, setActivityOpen] = useState(false)
+  const [voiceSessionStarted, setVoiceSessionStarted] = useState(false)
+  const [activitySource, setActivitySource] = useState('text')
   // Text is the default: a hiring manager is likely at work, possibly on a
   // phone. Voice is an upgrade they opt into, not a toll gate.
   const [mode, setMode] = useState('text')
@@ -172,7 +180,11 @@ function GlobalAssistantLauncher({ hidden = false }) {
     const context = typeof contextOverride === 'string' && contextOverride ? contextOverride : pendingContext
     const connected = await assistant.connect({ additionalContext: context, openingInstructions })
     if (!connected) setMode('text')
-    if (connected && context) setPendingContext('')
+    if (connected) {
+      setVoiceSessionStarted(true)
+      setActivitySource('voice')
+      if (context) setPendingContext('')
+    }
   }, [assistant.connect, dismissInvite, location.pathname, pendingContext])
 
   useEffect(() => {
@@ -200,7 +212,8 @@ function GlobalAssistantLauncher({ hidden = false }) {
   if (hidden) return null
 
   const status = assistant.connecting ? 'Connecting…' : mode === 'text' ? 'Text conversation' : assistant.active ? (assistant.assistantSpeaking ? 'Speaking' : assistant.userSpeaking ? 'Listening' : 'Voice live') : 'Voice or text'
-  const activity = assistant.active || mode === 'voice' ? assistant : chat
+  const activity = activitySource === 'voice' ? assistant : chat
+  const sessionStarted = voiceSessionStarted || chat.started
 
   return (
     <aside className="global-ai" aria-label="Gunnar's AI assistant">
@@ -241,7 +254,7 @@ function GlobalAssistantLauncher({ hidden = false }) {
                   </div>
                 </>
               ) : mode === 'text' ? (
-                <TextAssistant chat={chat} onNavigate={minimize} />
+                <TextAssistant chat={chat} onNavigate={minimize} onSessionStart={() => setActivitySource('text')} />
               ) : (
                 <>
                   <p>{assistant.error || (pendingContext ? 'The assistant has the project context and can help you work through what is happening.' : 'Ask about Gunnar’s background, experience, projects, or where to go on the site.')}</p>
@@ -273,7 +286,9 @@ function GlobalAssistantLauncher({ hidden = false }) {
       </AnimatePresence>
 
       <div className="global-ai__launchers">
-        <motion.button type="button" className={`global-ai__notes-launcher${activityOpen ? ' is-open' : ''}`} onClick={toggleActivity} aria-label={activityOpen ? 'Close conversation notes' : 'Open conversation notes and activity'} whileHover={{ y: -2 }} whileTap={{ scale: .98 }}><span className="global-ai__notes-icon"><i /><i /></span></motion.button>
+        <AnimatePresence>
+          {sessionStarted && <motion.button type="button" className={`global-ai__notes-launcher${activityOpen ? ' is-open' : ''}`} onClick={toggleActivity} aria-label={activityOpen ? 'Close conversation notes' : 'Open conversation notes and activity'} initial={{ opacity: 0, scale: .7 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: .7 }} whileHover={{ y: -2 }} whileTap={{ scale: .92 }}><span className="global-ai__notes-icon"><i /><i /></span></motion.button>}
+        </AnimatePresence>
         <motion.button type="button" className={`global-ai__launcher${assistant.active || assistant.connecting ? ' is-live' : ''}`} onClick={toggleAssistant} aria-label={open ? 'Minimize Gunnar’s AI assistant' : assistant.active ? 'Open live AI assistant controls' : 'Open Gunnar’s AI assistant'} whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}><span className="global-ai__launcher-orb"><i /><i /><i /></span></motion.button>
       </div>
     </aside>

@@ -55,11 +55,13 @@
 .global-ai__nudge-open:hover { color: #b4e4cc; }
 
 .global-ai__launchers {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: .48rem;
+  width: 52px;
   margin-top: .68rem;
+  margin-left: auto;
 }
 
 .global-ai__launcher {
@@ -82,13 +84,15 @@
 .global-ai__launcher.is-live { box-shadow: 0 0 0 5px rgba(61,118,95,.12), 0 14px 38px rgba(20,27,23,.24); }
 
 .global-ai__notes-launcher {
-  position: relative;
-  z-index: 3;
+  position: absolute;
+  z-index: 5;
+  top: -9px;
+  right: -8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
+  width: 30px;
+  height: 30px;
   padding: 0;
   color: #315746;
   background: rgba(252,250,244,.97);
@@ -103,34 +107,34 @@
 .global-ai__notes-icon {
   position: relative;
   display: block;
-  width: 15px;
-  height: 18px;
-  border: 1.6px solid currentColor;
+  width: 11px;
+  height: 14px;
+  border: 1.4px solid currentColor;
   border-radius: 2px;
 }
 .global-ai__notes-icon::after {
   content: '';
   position: absolute;
-  top: 3px;
+  top: 2px;
   right: -2px;
-  width: 4px;
-  height: 4px;
+  width: 3px;
+  height: 3px;
   background: rgba(252,250,244,.97);
-  border-left: 1.6px solid currentColor;
+  border-left: 1.4px solid currentColor;
   transform: rotate(45deg);
 }
 .global-ai__notes-launcher:hover .global-ai__notes-icon::after,
 .global-ai__notes-launcher.is-open .global-ai__notes-icon::after { background: #edf3ef; }
 .global-ai__notes-icon i {
   position: absolute;
-  left: 3px;
-  width: 7px;
+  left: 2px;
+  width: 6px;
   height: 1px;
   background: currentColor;
   opacity: .75;
 }
-.global-ai__notes-icon i:first-child { top: 8px; }
-.global-ai__notes-icon i:last-child { top: 12px; }
+.global-ai__notes-icon i:first-child { top: 6px; }
+.global-ai__notes-icon i:last-child { top: 9px; }
 
 .global-ai__launcher-orb,
 .global-ai__orb {

@@ -383,7 +383,6 @@ function HomeStudio() {
             <span />
           </button>
           <nav className={`studio-nav${menuOpen ? ' is-open' : ''}`}>
-            <Link to="/projects/home-services-crm" onClick={() => setMenuOpen(false)}>CRM Case Study</Link>
             <Link to="/about" onClick={() => setMenuOpen(false)}>About</Link>
             <Link to="/projects" onClick={() => setMenuOpen(false)}>Projects</Link>
             <Link to="/client-work" onClick={() => setMenuOpen(false)}>Client Work</Link>

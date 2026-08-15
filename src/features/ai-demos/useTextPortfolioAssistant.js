@@ -104,6 +104,7 @@ export default function useTextPortfolioAssistant() {
   }, [messages, sending])
 
   return {
+    started: messages.some((message) => message.role === 'user'),
     messages,
     suggestions,
     sending,
