@@ -12,16 +12,10 @@ No modals. Progressive disclosure on-page.
    HERO
    ========================================== */
 .client-work-hero {
-  min-height: 0;
+  min-height: 58vh;
   display: flex;
-  align-items: flex-start;
-  padding: clamp(2.75rem, 7vh, 5rem) 0 clamp(2.5rem, 6vh, 4.5rem);
-}
-
-.client-work-hero .cw-hero-grid {
-  grid-template-columns: minmax(0, 1fr) minmax(25rem, .78fr);
-  align-items: end;
-  gap: clamp(2rem, 6vw, 6rem);
+  align-items: center;
+  padding: var(--space-3xl) 0 var(--space-2xl);
 }
 
 .client-work-hero .label {
@@ -31,40 +25,24 @@ No modals. Progressive disclosure on-page.
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--slate);
-  margin-bottom: var(--space-xs);
+  margin-bottom: var(--space-sm);
 }
 
 .client-work-hero h1 {
   font-family: var(--font-display);
-  font-size: clamp(3.4rem, 7vw, 6.75rem);
+  font-size: clamp(4rem, 12vw, 10rem);
   font-weight: 400;
   line-height: 0.95;
   letter-spacing: -0.04em;
   color: var(--charcoal);
-  margin: 0;
+  margin-bottom: var(--space-lg);
 }
 
-.client-work-hero .hero-desc {
-  margin: 0;
-  font-size: clamp(1rem, 1.45vw, 1.14rem);
-  line-height: 1.65;
+.client-work-subtitle {
+  max-width: 700px;
   color: var(--slate);
-  max-width: 620px;
-}
-
-.cw-hero-copy {
-  padding-bottom: .45rem;
-}
-
-/* Secondary note: honest about the craft aging without letting the page
-   apologize for itself in the position where the framing should be. */
-.client-work-hero .cw-hero-note {
-  margin-top: .85rem;
-  padding-top: .85rem;
-  border-top: 1px solid var(--gray-200);
-  font-size: clamp(.84rem, 1.1vw, .94rem);
-  line-height: 1.55;
-  opacity: .76;
+  font-size: clamp(1.1rem, 2.3vw, 1.28rem);
+  line-height: 1.7;
 }
 
 /* ==========================================
@@ -839,8 +817,8 @@ No modals. Progressive disclosure on-page.
   }
 
   .client-work-hero {
-    min-height: auto;
-    padding: var(--space-xl) 0;
+    min-height: 48vh;
+    padding: var(--space-2xl) 0 var(--space-xl);
   }
 
   .client-feature {
@@ -1139,8 +1117,7 @@ No modals. Progressive disclosure on-page.
 
 /* ── Index section ── */
 .cw-index-section {
-  padding: clamp(2.75rem, 7vh, 5rem) 0 var(--space-3xl);
-  border-top: 1px solid var(--gray-200);
+  padding: 0 0 var(--space-3xl);
 }
 .cw-index-label {
   font-family: var(--font-sans);
@@ -1326,8 +1303,6 @@ No modals. Progressive disclosure on-page.
 
 /* ── Responsive ── */
 @media (max-width: 900px) {
-  .client-work-hero .cw-hero-grid { grid-template-columns: 1fr; gap: var(--space-md); }
-  .cw-hero-copy { max-width: 680px; padding-bottom: 0; }
   .cw-case-head { grid-template-columns: 1fr; gap: var(--space-md); }
   .cw-case-meta { grid-template-columns: 1fr; gap: var(--space-lg); }
   .cw-index-head { grid-template-columns: 1fr; }

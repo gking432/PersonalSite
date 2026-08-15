@@ -931,7 +931,7 @@ function ClientWork() {
         {/* Hero */}
         <section className="client-work-hero" data-assistant-section="client-work-overview">
           <div className="container">
-            <div className="hero-split cw-hero-grid">
+            <div className="hero-split">
               <div className="hero-split-left">
                 <motion.p
                   className="label"
@@ -939,10 +939,10 @@ function ClientWork() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, ease: ndsEase }}
                 >
-                  Client delivery · 2023–2025
+                  Selected Archive
                 </motion.p>
                 <h1>
-                  {'Selected client work.'.split(' ').map((word, i, words) => (
+                  {'Client Work'.split(' ').map((word, i, words) => (
                     <motion.span
                       key={i}
                       style={{ display: 'inline-block' }}
@@ -954,29 +954,40 @@ function ClientWork() {
                     </motion.span>
                   ))}
                 </h1>
-              </div>
-              <div className="cw-hero-copy">
                 <motion.p
-                  className="hero-desc"
+                  className="client-work-subtitle"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
                 >
-                  From 2023 to 2025, I handled websites, eCommerce, advertising, content,
-                  reporting, and customer-acquisition work across a broader group of clients
-                  and projects than what is shown here.
-                </motion.p>
-                <motion.p
-                  className="hero-desc cw-hero-note"
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
-                >
-                  These are six selected examples, not my complete client list. The work is older
-                  and some of it shows its age. I keep it here because it shows the range of work
-                  I owned during that chapter.
+                  A selection of websites, eCommerce builds, campaigns, and customer-acquisition
+                  work from a broader client-services chapter. These six projects are examples,
+                  not my complete client list.
                 </motion.p>
               </div>
+              <motion.div
+                className="hero-meta"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
+              >
+                <div className="hero-meta-item">
+                  <span className="hero-meta-label">Period</span>
+                  <span className="hero-meta-value">2023–2025</span>
+                </div>
+                <div className="hero-meta-item">
+                  <span className="hero-meta-label">Shown here</span>
+                  <span className="hero-meta-value">Six selected projects</span>
+                </div>
+                <div className="hero-meta-item">
+                  <span className="hero-meta-label">Work included</span>
+                  <span className="hero-meta-value">Websites · eCommerce · campaigns · reporting</span>
+                </div>
+                <div className="hero-meta-item">
+                  <span className="hero-meta-label">Context</span>
+                  <span className="hero-meta-value hero-meta-status">Earlier client-services work</span>
+                </div>
+              </motion.div>
             </div>
           </div>
         </section>
