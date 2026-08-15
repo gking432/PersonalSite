@@ -364,16 +364,30 @@ function Globe() {
 }
 
 function HomeStudio() {
+  const [menuOpen, setMenuOpen] = useState(false)
+
   return (
     <div className="studio">
       <header className="studio-topbar">
         <div className="studio-topbar__inner">
           <Link to="/" className="studio-mark">Gunnar&nbsp;Neuman</Link>
-          <nav className="studio-nav">
-            <Link to="/about">About</Link>
-            <Link to="/projects">Projects</Link>
-            <Link to="/client-work">Client Work</Link>
-            <Link to="/contact">Contact</Link>
+          <button
+            type="button"
+            className={`studio-menu-button${menuOpen ? ' is-open' : ''}`}
+            onClick={() => setMenuOpen((value) => !value)}
+            aria-label="Toggle navigation menu"
+            aria-expanded={menuOpen}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+          <nav className={`studio-nav${menuOpen ? ' is-open' : ''}`}>
+            <Link to="/projects/home-services-crm" onClick={() => setMenuOpen(false)}>CRM Case Study</Link>
+            <Link to="/about" onClick={() => setMenuOpen(false)}>About</Link>
+            <Link to="/projects" onClick={() => setMenuOpen(false)}>Projects</Link>
+            <Link to="/client-work" onClick={() => setMenuOpen(false)}>Client Work</Link>
+            <Link to="/contact" onClick={() => setMenuOpen(false)}>Contact</Link>
           </nav>
         </div>
       </header>
@@ -413,9 +427,9 @@ function HomeStudio() {
           <motion.div className="studio-hero__actions"
             initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease, delay: 0.5 }}>
-            <Link to="/projects" className="studio-btn studio-btn--primary">View the work</Link>
+            <Link to="/projects/home-services-crm" className="studio-btn studio-btn--primary">Read the CRM case study</Link>
+            <Link to="/projects" className="studio-btn studio-btn--ghost">All projects</Link>
             <a href="/Gunnar-Neuman-Resume.pdf" className="studio-btn studio-btn--ghost" target="_blank" rel="noreferrer">Resume</a>
-            <Link to="/contact" className="studio-btn studio-btn--ghost">Get in touch &rarr;</Link>
           </motion.div>
         </div>
 
@@ -424,6 +438,22 @@ function HomeStudio() {
           transition={{ duration: 1.1, ease, delay: 0.3 }}>
           <Globe />
         </motion.div>
+      </section>
+
+      <section className="studio-featured-case" data-assistant-section="home-case-study">
+        <Link to="/projects/home-services-crm" className="studio-featured-case__link">
+          <div>
+            <span className="studio-featured-case__eyebrow">Featured AI implementation case study</span>
+            <h2>Putting AI inside a home-services workflow.</h2>
+          </div>
+          <div className="studio-featured-case__summary">
+            <p>
+              The workflow, model boundaries, human controls, failure paths,
+              30/60/90 rollout plan, and the measurements that would decide whether to continue.
+            </p>
+            <strong>Read the case study <span aria-hidden="true">→</span></strong>
+          </div>
+        </Link>
       </section>
 
       {/* ─── WHY THE TRANSITION ─── */}

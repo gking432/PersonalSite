@@ -68,6 +68,7 @@ function Layout({ children, showFooter = true }) {
   ].filter(Boolean).join(' ')
 
   const navLinks = [
+    { path: '/projects/home-services-crm', label: 'CRM Case Study' },
     { path: '/about', label: 'About' },
     { path: '/projects', label: 'Projects' },
     { path: '/client-work', label: 'Client Work' },
@@ -76,6 +77,7 @@ function Layout({ children, showFooter = true }) {
 
   // Flat list for mobile menu
   const mobileLinks = [
+    { path: '/projects/home-services-crm', label: 'CRM Case Study' },
     { path: '/about', label: 'About' },
     { path: '/projects', label: 'Projects' },
     { path: '/client-work', label: 'Client Work' },

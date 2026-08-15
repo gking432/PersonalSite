@@ -8,7 +8,6 @@ import Writing from './pages/Writing'
 import Contact from './pages/Contact'
 import ClientWork from './pages/ClientWork'
 import CrmCaseStudy from './pages/CrmCaseStudy'
-import AILab from './pages/AILab'
 import GunnarNeumanProfile from './pages/GunnarNeumanProfile'
 import GlobalAssistantLauncher from './components/GlobalAssistantLauncher'
 import HomeStudio from './variants/HomeStudio'
@@ -42,9 +41,9 @@ function App() {
           <Route path="/projects/home-services-crm" element={<CrmCaseStudy />} />
           <Route path="/writing" element={<Writing />} />
           <Route path="/client-work" element={<ClientWork />} />
-          <Route path="/lab" element={<AILab />} />
-          <Route path="/ai-lab" element={<Navigate to="/lab" replace />} />
-          <Route path="/ai-demos" element={<Navigate to="/lab" replace />} />
+          <Route path="/lab" element={<Navigate to="/" replace />} />
+          <Route path="/ai-lab" element={<Navigate to="/" replace />} />
+          <Route path="/ai-demos" element={<Navigate to="/" replace />} />
           <Route path="/ai-assistant" element={<Navigate to="/" replace />} />
           <Route path="/ask-ai" element={<Navigate to="/" replace />} />
           <Route path="/insights/gunnar-neuman-profile" element={<GunnarNeumanProfile />} />

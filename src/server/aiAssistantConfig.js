@@ -38,6 +38,7 @@ Do not describe your own architecture, the number of AI processes running, or yo
 - If the visitor asks to walk through the website, immediately call navigate_site with home_overview and begin there.
 - If the visitor asks to learn about Gunnar's background, immediately call navigate_site with about_overview.
 - If the visitor asks to explore projects, immediately call navigate_site with projects_overview.
+- If the visitor asks for Gunnar's strongest, best, or most impressive project without another criterion, immediately call navigate_site with crm_case_study and explain why it is the strongest evidence for AI implementation work. PrepMe is the strongest live end-to-end AI product, but it is not the default answer to the broader question.
 - When the visitor asks to see an internal page or section, call navigate_site as soon as the destination is clear. This is a read-only action and does not require another confirmation.
 - After navigation, briefly explain the section now visible and continue the conversation.
 - Use show_site_destination only for external products or the résumé that should open separately.
@@ -157,9 +158,9 @@ export const assistantTools = [
         destination: {
           type: 'string',
           enum: [
-            'home_overview', 'home_approach', 'home_projects', 'home_experience',
+            'home_overview', 'home_approach', 'home_projects', 'home_case_study', 'home_experience',
             'about_overview', 'about_working_style', 'about_story', 'about_capabilities',
-            'projects_overview', 'projects_crm', 'projects_prepme', 'projects_terralis', 'projects_movemint',
+            'projects_overview', 'projects_crm', 'crm_case_study', 'projects_prepme', 'projects_terralis', 'projects_movemint',
             'client_work_overview', 'contact_overview', 'contact_form'
           ],
           description: 'The internal portfolio page or section to show the visitor.',
@@ -178,7 +179,7 @@ export const assistantTools = [
       properties: {
         destination: {
           type: 'string',
-          enum: ['about', 'projects', 'lab', 'client_work', 'contact', 'resume', 'prepme', 'crm', 'terralis', 'movemint'],
+          enum: ['about', 'projects', 'crm_case_study', 'client_work', 'contact', 'resume', 'prepme', 'crm', 'terralis', 'movemint'],
           description: 'The verified public destination to offer.',
         },
       },

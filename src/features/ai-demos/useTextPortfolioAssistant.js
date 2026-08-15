@@ -10,7 +10,7 @@ export default function useTextPortfolioAssistant() {
   const [messages, setMessages] = useState([openingMessage])
   const [suggestions, setSuggestions] = useState([
     'What is Gunnar best at?',
-    'Show me his strongest project',
+    'Why is the CRM case study relevant?',
     'Why is he moving into AI implementation?',
   ])
   const [sending, setSending] = useState(false)

@@ -200,7 +200,7 @@ function GlobalAssistantLauncher({ hidden = false }) {
             <button type="button" className="global-ai__nudge-close" onClick={dismissInvite} aria-label="Dismiss">×</button>
             <p>
               Questions about Gunnar&rsquo;s background or how any of this was built?
-              His assistant can answer, and it shows you every action it takes.
+              His assistant can answer. In voice mode, it also shows each tool action as it happens.
             </p>
             <button type="button" className="global-ai__nudge-open" onClick={openAssistant}>Ask a question</button>
           </motion.aside>

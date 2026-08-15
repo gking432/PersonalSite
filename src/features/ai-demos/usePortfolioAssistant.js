@@ -18,6 +18,7 @@ export const initialAssistantNotes = {
 export const assistantDestinations = {
   about: { href: '/about', label: 'Open my story' },
   projects: { href: '/projects', label: 'See my projects' },
+  crm_case_study: { href: '/projects/home-services-crm', label: 'Read the CRM case study' },
   client_work: { href: '/client-work', label: 'See earlier client work' },
   contact: { href: '/contact', label: 'Contact Gunnar' },
   resume: { href: '/Gunnar-Neuman-Resume.pdf', label: 'Open my résumé', external: true },
@@ -31,6 +32,7 @@ export const assistantSiteTargets = {
   home_overview: { href: '/', selector: '[data-assistant-section="home-overview"]', label: 'Homepage overview' },
   home_approach: { href: '/', selector: '[data-assistant-section="home-approach"]', label: 'How Gunnar approaches the work' },
   home_projects: { href: '/', selector: '[data-assistant-section="home-projects"]', label: 'Working product proof' },
+  home_case_study: { href: '/', selector: '[data-assistant-section="home-case-study"]', label: 'Featured CRM case study' },
   home_experience: { href: '/', selector: '[data-assistant-section="home-experience"]', label: 'Gunnar’s experience' },
   about_overview: { href: '/about', selector: '[data-assistant-section="about-overview"]', label: 'About Gunnar' },
   about_working_style: { href: '/about', selector: '[data-assistant-section="about-working-style"]', label: 'How Gunnar works' },
@@ -38,6 +40,7 @@ export const assistantSiteTargets = {
   about_capabilities: { href: '/about', selector: '[data-assistant-section="about-capabilities"]', label: 'Gunnar’s capabilities' },
   projects_overview: { href: '/projects', selector: '[data-assistant-section="projects-overview"]', label: 'Project overview' },
   projects_crm: { href: '/projects', selector: '#project-crm', label: 'Home-Services AI CRM' },
+  crm_case_study: { href: '/projects/home-services-crm', selector: '[data-assistant-section="crm-case-overview"]', label: 'Home-Services AI CRM case study' },
   projects_prepme: { href: '/projects', selector: '#project-prepme', label: 'PrepMe' },
   projects_terralis: { href: '/projects', selector: '#project-terralis', label: 'Terralis Print Studio' },
   projects_movemint: { href: '/projects', selector: '#project-movemint', label: 'MoveMint' },
@@ -50,6 +53,7 @@ const pageLabels = {
   '/': 'the homepage',
   '/about': 'the About page',
   '/projects': 'the Projects page',
+  '/projects/home-services-crm': 'the Home-Services AI CRM case study',
   '/client-work': 'the Client Work page',
   '/contact': 'the Contact page',
 }

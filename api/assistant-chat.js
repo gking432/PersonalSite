@@ -1,7 +1,7 @@
 import { clientKey, consumeRateLimit, originAllowed } from '../src/server/requestSecurity.js'
 import { textAssistantInstructions } from '../src/server/textAssistantConfig.js'
 
-const destinationIds = ['about', 'projects', 'client_work', 'contact', 'resume', 'prepme', 'crm', 'terralis', 'movemint']
+const destinationIds = ['about', 'projects', 'crm_case_study', 'client_work', 'contact', 'resume', 'prepme', 'crm', 'terralis', 'movemint']
 
 const replySchema = {
   type: 'object',
