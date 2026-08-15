@@ -1,7 +1,10 @@
 .squeeze-wrapper {
   padding: 20px 0;
-  /* Whatever shows behind a squeezing panel stays the site's warm parchment; never a lighter "white" margin. */
-  background-color: var(--parchment);
+  /* The gutter revealed as a panel scales down must read as the page itself, so
+     inherit the surrounding background rather than naming a colour. Hard-coding
+     --parchment here matched the interior pages but not the homepage, which sits
+     on --paper, leaving a faint seam around every squeezed panel there. */
+  background-color: transparent;
 }
 
 .squeeze-inner {
