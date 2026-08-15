@@ -372,7 +372,6 @@ function HomeStudio() {
           <nav className="studio-nav">
             <Link to="/about">About</Link>
             <Link to="/projects">Projects</Link>
-            <Link to="/lab">AI Lab</Link>
             <Link to="/client-work">Client Work</Link>
             <Link to="/contact">Contact</Link>
           </nav>
