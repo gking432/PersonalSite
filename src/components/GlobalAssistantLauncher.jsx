@@ -15,8 +15,13 @@ const pageNames = {
   '/writing': 'Writing page',
 }
 
-function initialInviteState() {
-  try { return sessionStorage.getItem('gunnar-ai-intro-seen') !== 'true' } catch { return true }
+// A small, dismissible nudge that appears after the visitor has had a moment
+// with the page. It replaced a full-screen modal that blocked scrolling on first
+// load and asked a stranger to talk to a bot before they had seen anything.
+const INVITE_DELAY_MS = 15000
+
+function inviteAlreadySeen() {
+  try { return sessionStorage.getItem('gunnar-ai-intro-seen') === 'true' } catch { return false }
 }
 
 function TextDestination({ id, onNavigate }) {
@@ -59,9 +64,11 @@ function GlobalAssistantLauncher({ hidden = false }) {
   const location = useLocation()
   const assistant = usePortfolioAssistant()
   const chat = useTextPortfolioAssistant()
-  const [inviteOpen, setInviteOpen] = useState(initialInviteState)
+  const [inviteOpen, setInviteOpen] = useState(false)
   const [open, setOpen] = useState(false)
-  const [mode, setMode] = useState('choose')
+  // Text is the default: a hiring manager is likely at work, possibly on a
+  // phone. Voice is an upgrade they opt into, not a toll gate.
+  const [mode, setMode] = useState('text')
   const [pendingContext, setPendingContext] = useState('')
   const previousPath = useRef(location.pathname)
   const previousSection = useRef('')
@@ -71,16 +78,18 @@ function GlobalAssistantLauncher({ hidden = false }) {
     try { sessionStorage.setItem('gunnar-ai-intro-seen', 'true') } catch { /* Session storage can be unavailable in strict privacy modes. */ }
   }, [])
 
+  // Surface the nudge once the visitor has settled in, and never on first paint.
+  useEffect(() => {
+    if (hidden || inviteAlreadySeen()) return undefined
+    const timer = window.setTimeout(() => setInviteOpen(true), INVITE_DELAY_MS)
+    return () => window.clearTimeout(timer)
+  }, [hidden])
+
   useEffect(() => {
     if (!inviteOpen) return undefined
-    const previousOverflow = document.body.style.overflow
     const closeOnEscape = (event) => { if (event.key === 'Escape') dismissInvite() }
-    document.body.style.overflow = 'hidden'
     window.addEventListener('keydown', closeOnEscape)
-    return () => {
-      document.body.style.overflow = previousOverflow
-      window.removeEventListener('keydown', closeOnEscape)
-    }
+    return () => window.removeEventListener('keydown', closeOnEscape)
   }, [dismissInvite, inviteOpen])
 
   const minimize = () => setOpen(false)
@@ -92,7 +101,7 @@ function GlobalAssistantLauncher({ hidden = false }) {
 
   const endConversation = () => {
     assistant.end()
-    setMode('choose')
+    setMode('text')
     setOpen(false)
   }
 
@@ -147,7 +156,7 @@ function GlobalAssistantLauncher({ hidden = false }) {
     previousPath.current = location.pathname
     const context = typeof contextOverride === 'string' && contextOverride ? contextOverride : pendingContext
     const connected = await assistant.connect({ additionalContext: context, openingInstructions })
-    if (!connected) setMode('choose')
+    if (!connected) setMode('text')
     if (connected && context) setPendingContext('')
   }, [assistant.connect, dismissInvite, location.pathname, pendingContext])
 
@@ -180,17 +189,21 @@ function GlobalAssistantLauncher({ hidden = false }) {
   return (
     <aside className="global-ai" aria-label="Gunnar's AI assistant">
       <AnimatePresence>
-        {inviteOpen && (
-          <motion.div className="global-ai__intro-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .25 }}>
-            <motion.section className="global-ai__intro" role="dialog" aria-modal="true" aria-labelledby="global-ai-intro-title" initial={{ opacity: 0, y: 18, scale: .98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: .98 }} transition={{ duration: .34, ease: [0.22, 1, 0.36, 1] }}>
-              <button type="button" className="global-ai__intro-close" onClick={dismissInvite} aria-label="Close introduction">×</button>
-              <span className="global-ai__intro-label">A note from Gunnar</span>
-              <h2 id="global-ai-intro-title">Hey, I’m Gunnar.</h2>
-              <p>For the best way to experience the site, I’d love for you to try my AI assistant. It can answer questions about my background and experience, explain my projects, and help you navigate the website.</p>
-              <p>Click the icon in the bottom-right corner to get started. I recommend voice mode for the full experience, but you can type instead.</p>
-              <button type="button" className="global-ai__intro-continue" onClick={dismissInvite}>Continue to site</button>
-            </motion.section>
-          </motion.div>
+        {inviteOpen && !open && (
+          <motion.aside
+            className="global-ai__nudge"
+            initial={{ opacity: 0, y: 14, scale: .97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: .98 }}
+            transition={{ duration: .32, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <button type="button" className="global-ai__nudge-close" onClick={dismissInvite} aria-label="Dismiss">×</button>
+            <p>
+              Questions about Gunnar&rsquo;s background or how any of this was built?
+              His assistant can answer, and it shows you every action it takes.
+            </p>
+            <button type="button" className="global-ai__nudge-open" onClick={openAssistant}>Ask a question</button>
+          </motion.aside>
         )}
       </AnimatePresence>
 
@@ -204,11 +217,35 @@ function GlobalAssistantLauncher({ hidden = false }) {
             </div>
 
             <div className="global-ai__body">
-              {mode === 'voice' && assistant.active ? <><p>The assistant is listening. Ask about Gunnar, his projects, or where to go on the site.</p><AssistantActionPanel assistant={assistant} compact /><small>Microphone on · Speak naturally</small></> : mode === 'text' ? <TextAssistant chat={chat} onNavigate={minimize} /> : <><p>{assistant.error || (pendingContext ? 'The assistant has the project context and can help you work through what is happening.' : 'Ask about Gunnar’s background, experience, projects, or where to go on the site.')}</p><div className="global-ai__welcome-actions"><button type="button" className="global-ai__start" onClick={() => startVoice()} disabled={assistant.connecting}>{assistant.connecting ? 'Connecting…' : 'Start voice conversation'}</button><button type="button" className="global-ai__continue" onClick={() => setMode('text')}>Type instead</button></div><small>Voice mode requires microphone permission</small></>}
+              {mode === 'voice' && assistant.active ? (
+                <>
+                  <p>The assistant is listening. Ask about Gunnar, his projects, or where to go on the site.</p>
+                  <AssistantActionPanel assistant={assistant} compact />
+                  <small>Microphone on · Speak naturally</small>
+                </>
+              ) : mode === 'voice' ? (
+                <>
+                  <p>{assistant.error || 'Starting the voice conversation…'}</p>
+                  <div className="global-ai__welcome-actions">
+                    <button type="button" className="global-ai__continue" onClick={() => setMode('text')}>Type instead</button>
+                  </div>
+                </>
+              ) : mode === 'text' ? (
+                <TextAssistant chat={chat} onNavigate={minimize} />
+              ) : (
+                <>
+                  <p>{assistant.error || (pendingContext ? 'The assistant has the project context and can help you work through what is happening.' : 'Ask about Gunnar’s background, experience, projects, or where to go on the site.')}</p>
+                  <div className="global-ai__welcome-actions">
+                    <button type="button" className="global-ai__start" onClick={() => startVoice()} disabled={assistant.connecting}>{assistant.connecting ? 'Connecting…' : 'Start voice conversation'}</button>
+                    <button type="button" className="global-ai__continue" onClick={() => setMode('text')}>Type instead</button>
+                  </div>
+                  <small>Voice mode requires microphone permission</small>
+                </>
+              )}
             </div>
 
             {mode === 'voice' && assistant.active && <button type="button" className="global-ai__end" onClick={endConversation}>End conversation</button>}
-            {mode === 'text' && <button type="button" className="global-ai__end" onClick={() => setMode('choose')}>Back to voice or text</button>}
+            {mode === 'text' && <button type="button" className="global-ai__end" onClick={() => startVoice()} disabled={assistant.connecting}>{assistant.connecting ? 'Connecting…' : 'Switch to voice'}</button>}
           </motion.div>
         )}
       </AnimatePresence>

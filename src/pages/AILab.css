@@ -633,3 +633,42 @@ textarea { font: inherit; }
   .issue-pipeline i,
   .lab-live-dot { animation: none; }
 }
+
+/* ─── ROUTER EVALUATION ──────────────────────────────────────────────────────
+   The score is measured by scripts/run-router-eval.mjs, never written by hand.
+   Failures stay visible; a published error rate is the point of the section. */
+.lab-eval { display: grid; gap: 1.25rem; }
+.lab-eval__intro p { margin: 0; max-width: 68ch; font-size: .95rem; line-height: 1.65; }
+
+.lab-eval__score { display: flex; align-items: baseline; gap: .7rem; flex-wrap: wrap; }
+.lab-eval__score strong { font-size: 2.2rem; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.lab-eval__score span { font-size: .82rem; opacity: .7; }
+
+.lab-eval__table-wrap { overflow-x: auto; border: 1px solid rgba(31, 64, 52, .16); border-radius: 6px; }
+.lab-eval__table { width: 100%; min-width: 680px; border-collapse: collapse; font-size: .84rem; }
+.lab-eval__table th, .lab-eval__table td { padding: .6rem .8rem; text-align: left; border-bottom: 1px solid rgba(31, 64, 52, .1); vertical-align: top; }
+.lab-eval__table thead th { font-size: .64rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; opacity: .6; white-space: nowrap; }
+.lab-eval__table tbody th { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .74rem; white-space: nowrap; opacity: .7; }
+.lab-eval__table tbody tr:last-child th, .lab-eval__table tbody tr:last-child td { border-bottom: none; }
+.lab-eval__table tr.is-fail { background: rgba(180, 80, 63, .05); }
+.lab-eval__request { min-width: 20rem; line-height: 1.5; }
+
+.lab-eval__flag { display: inline-block; padding: .12rem .45rem; border-radius: 3px; font-size: .62rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.lab-eval__flag.is-pass { background: rgba(31, 64, 52, .1); color: #1f4034; }
+.lab-eval__flag.is-fail { background: rgba(180, 80, 63, .12); color: #a53d29; }
+
+.lab-eval__analysis { border-top: 1px solid rgba(31, 64, 52, .14); padding-top: 1.1rem; }
+.lab-eval__analysis h3 { margin: 0 0 .6rem; font-size: 1rem; }
+.lab-eval__analysis ul { margin: 0 0 .9rem; padding-left: 1.2rem; }
+.lab-eval__analysis li { margin-bottom: .4rem; font-size: .88rem; line-height: 1.55; }
+.lab-eval__analysis p { margin: 0; max-width: 68ch; font-size: .88rem; line-height: 1.6; opacity: .82; }
+
+.lab-eval__pending { border: 1px solid rgba(168, 130, 60, .35); background: rgba(168, 130, 60, .07); border-radius: 6px; padding: 1.1rem 1.25rem; }
+.lab-eval__pending > p { margin: 0; max-width: 68ch; font-size: .9rem; line-height: 1.62; }
+.lab-eval__pending code { font-size: .82em; padding: .05rem .3rem; background: rgba(31, 64, 52, .07); border-radius: 3px; }
+.lab-eval__pending details { margin-top: .9rem; }
+.lab-eval__pending summary { cursor: pointer; font-size: .82rem; font-weight: 650; }
+.lab-eval__cases { margin: .9rem 0 0; padding-left: 1.2rem; display: grid; gap: .7rem; }
+.lab-eval__cases li p { margin: .15rem 0; font-size: .86rem; line-height: 1.5; }
+.lab-eval__cases li span { font-size: .62rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; opacity: .65; }
+.lab-eval__cases li small { font-size: .76rem; opacity: .6; }

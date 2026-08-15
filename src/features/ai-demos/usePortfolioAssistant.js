@@ -70,6 +70,34 @@ export function currentPortfolioScreen(pathname = window.location.pathname) {
   }
 }
 
+// ─── Action log ──────────────────────────────────────────────────────────────
+// Every tool call the model makes is recorded and shown to the visitor. Reads
+// run automatically; anything that leaves the site is recorded as held until a
+// person confirms it in the page. This is the difference between a chatbot and
+// a system with an audit trail, so the log is deliberately not collapsible.
+const actionLabels = {
+  update_notes: { label: 'Update conversation notes', kind: 'internal' },
+  navigate_site: { label: 'Navigate the site', kind: 'read' },
+  show_site_destination: { label: 'Offer a destination link', kind: 'read' },
+  offer_email_recap: { label: 'Open the recap form', kind: 'read' },
+  check_calendar_availability: { label: "Check Gunnar's calendar", kind: 'read' },
+}
+
+let actionSequence = 0
+
+function describeResult(name, args, result) {
+  if (!result?.success) return result?.error || 'Failed'
+  if (name === 'navigate_site') return result.label ? `${result.label} in view` : 'Section in view'
+  if (name === 'show_site_destination') return 'Link shown'
+  if (name === 'check_calendar_availability') {
+    const count = result.slots?.length || 0
+    return count ? `${count} open ${count === 1 ? 'slot' : 'slots'}` : 'No open slots'
+  }
+  if (name === 'offer_email_recap') return 'Form shown, waiting on you'
+  if (name === 'update_notes') return 'Notes updated'
+  return 'Done'
+}
+
 function cleanList(value) {
   return Array.isArray(value) ? value.slice(0, 4).map((item) => String(item).slice(0, 180)) : []
 }
@@ -103,7 +131,27 @@ export default function usePortfolioAssistant() {
   const [calendarState, setCalendarState] = useState({ status: 'idle', slots: [], message: '' })
   const [bookingState, setBookingState] = useState({ status: 'idle', message: '', event: null })
   const [duration, setDuration] = useState(0)
+  const [actions, setActions] = useState([])
   const durationRef = useRef(null)
+  // When armed, the next calendar check is forced to fail so a visitor can watch
+  // the system degrade to a human path instead of guessing at a time.
+  const failNextCalendarRef = useRef(false)
+
+  const logAction = useCallback((entry) => {
+    actionSequence += 1
+    setActions((current) => [...current.slice(-11), { id: actionSequence, ...entry }])
+  }, [])
+
+  const armCalendarFailure = useCallback(() => {
+    failNextCalendarRef.current = true
+    logAction({
+      label: 'Simulated failure armed',
+      kind: 'internal',
+      status: 'ok',
+      detail: 'The next calendar check will be forced to return an error',
+      simulated: true,
+    })
+  }, [logAction])
 
   useEffect(() => {
     if (!active) return undefined
@@ -113,6 +161,12 @@ export default function usePortfolioAssistant() {
 
   const checkAvailability = useCallback(async () => {
     setCalendarState({ status: 'checking', slots: [], message: '' })
+    if (failNextCalendarRef.current) {
+      failNextCalendarRef.current = false
+      const message = 'Simulated failure: the calendar service did not respond.'
+      setCalendarState({ status: 'unavailable', slots: [], message })
+      return { success: false, error: message }
+    }
     try {
       const response = await fetch('/api/calendar-availability', { headers: { Accept: 'application/json' } })
       const payload = await response.json().catch(() => ({}))
@@ -168,6 +222,8 @@ export default function usePortfolioAssistant() {
     setCalendarState({ status: 'idle', slots: [], message: '' })
     setBookingState({ status: 'idle', message: '', event: null })
     setDuration(0)
+    setActions([])
+    failNextCalendarRef.current = false
 
     try {
       await realtime.connect({
@@ -179,24 +235,44 @@ export default function usePortfolioAssistant() {
         openingInstructions: String(options.openingInstructions || '').slice(0, 900),
         onAssistantTranscript: (text) => setTranscript(text || ''),
         onToolCall: async (name, args) => {
-          if (name === 'update_notes') {
-            setNotes(cleanNotes(args))
-            return { success: true }
+          const run = async () => {
+            if (name === 'update_notes') {
+              setNotes(cleanNotes(args))
+              return { success: true }
+            }
+            if (name === 'show_site_destination') {
+              const next = assistantDestinations[args.destination]
+              if (!next) return { success: false, error: 'That destination is not available.' }
+              setDestination(next)
+              return { success: true, buttonVisible: true, destination: next.href }
+            }
+            if (name === 'navigate_site') return navigateSite(args.destination)
+            if (name === 'offer_email_recap') {
+              setEmailOffered(true)
+              return { success: true, secureEmailFormVisible: true }
+            }
+            if (name === 'check_calendar_availability') return checkAvailability()
+            if (name === 'wait_for_user') return { success: true, suppressResponse: true }
+            return { success: false, error: 'That action is not available.' }
           }
-          if (name === 'show_site_destination') {
-            const next = assistantDestinations[args.destination]
-            if (!next) return { success: false, error: 'That destination is not available.' }
-            setDestination(next)
-            return { success: true, buttonVisible: true, destination: next.href }
+
+          const result = await run()
+
+          // wait_for_user fires on silence and background noise; logging it would
+          // bury the actions that actually mean something.
+          if (name !== 'wait_for_user') {
+            const meta = actionLabels[name] || { label: name, kind: 'read' }
+            logAction({
+              label: meta.label,
+              kind: meta.kind,
+              status: result?.success ? 'ok' : 'error',
+              detail: describeResult(name, args, result),
+              simulated: name === 'check_calendar_availability' && !result?.success
+                && String(result?.error || '').startsWith('Simulated'),
+            })
           }
-          if (name === 'navigate_site') return navigateSite(args.destination)
-          if (name === 'offer_email_recap') {
-            setEmailOffered(true)
-            return { success: true, secureEmailFormVisible: true }
-          }
-          if (name === 'check_calendar_availability') return checkAvailability()
-          if (name === 'wait_for_user') return { success: true, suppressResponse: true }
-          return { success: false, error: 'That action is not available.' }
+
+          return result
         },
       })
       setActive(true)
@@ -217,6 +293,12 @@ export default function usePortfolioAssistant() {
 
   const sendRecap = useCallback(async ({ email, shareWithGunnar }) => {
     setEmailState({ status: 'sending', message: '' })
+    logAction({
+      label: 'Send conversation recap',
+      kind: 'write',
+      status: 'running',
+      detail: 'You confirmed in the form; sending now',
+    })
     try {
       const response = await fetch('/api/send-recap', {
         method: 'POST',
@@ -229,19 +311,27 @@ export default function usePortfolioAssistant() {
         ? 'Recap sent. Gunnar also received the approved introduction brief.'
         : 'Recap sent. Check your inbox.'
       setEmailState({ status: 'sent', message })
+      logAction({ label: 'Send conversation recap', kind: 'write', status: 'ok', detail: 'Recap sent' })
       realtime.sendApplicationEvent(payload.shared
         ? 'The requested recap was sent and the visitor explicitly approved sharing the introduction brief with Gunnar. Acknowledge both briefly without repeating the email address.'
         : 'The requested recap email was sent successfully. Acknowledge it briefly without repeating the email address.')
       return true
     } catch (error) {
       setEmailState({ status: 'error', message: error?.message || 'The recap could not be sent.' })
+      logAction({ label: 'Send conversation recap', kind: 'write', status: 'error', detail: 'Could not send' })
       realtime.sendApplicationEvent('The recap email could not be sent. Explain that briefly and offer the Contact page instead.')
       return false
     }
-  }, [notes, realtime.sendApplicationEvent])
+  }, [logAction, notes, realtime.sendApplicationEvent])
 
   const bookInterview = useCallback(async ({ start, name, email }) => {
     setBookingState({ status: 'booking', message: '', event: null })
+    logAction({
+      label: 'Book a meeting',
+      kind: 'write',
+      status: 'running',
+      detail: 'You selected a time and confirmed; creating the event',
+    })
     try {
       const response = await fetch('/api/book-interview', {
         method: 'POST',
@@ -251,15 +341,17 @@ export default function usePortfolioAssistant() {
       const payload = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(payload.error || 'The interview could not be scheduled.')
       setBookingState({ status: 'booked', message: 'Interview scheduled. A calendar invitation is on its way.', event: payload.event })
+      logAction({ label: 'Book a meeting', kind: 'write', status: 'ok', detail: payload.event?.label || 'Meeting created' })
       realtime.sendApplicationEvent(`The visitor explicitly confirmed and successfully booked the interview time ${payload.event?.label || start}. Confirm completion briefly.`)
       return true
     } catch (error) {
       const message = error?.message || 'The interview could not be scheduled.'
       setBookingState({ status: 'error', message, event: null })
+      logAction({ label: 'Book a meeting', kind: 'write', status: 'error', detail: 'Could not create the event' })
       realtime.sendApplicationEvent('The requested interview could not be booked. Explain that briefly and offer the Contact page instead.')
       return false
     }
-  }, [realtime.sendApplicationEvent])
+  }, [logAction, realtime.sendApplicationEvent])
 
   useEffect(() => end, [end])
 
@@ -282,6 +374,8 @@ export default function usePortfolioAssistant() {
     calendarState,
     bookingState,
     duration,
+    actions,
+    armCalendarFailure,
     error: realtime.error,
     userSpeaking: realtime.userSpeaking,
     assistantSpeaking: realtime.assistantSpeaking,

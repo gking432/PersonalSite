@@ -26,6 +26,53 @@ function Notes({ notes }) {
   )
 }
 
+// The audit trail. Always visible: the point of the panel is that a visitor can
+// see what the assistant is allowed to do and where a person has to intervene.
+const statusLabels = { ok: 'done', running: 'running', error: 'failed' }
+
+function ActionLog({ actions, onSimulateFailure, canSimulate }) {
+  return (
+    <section className="assistant-action assistant-action--log">
+      <div className="assistant-log__head">
+        <span className="assistant-action__label">Action log</span>
+        {canSimulate && (
+          <button type="button" className="assistant-log__simulate" onClick={onSimulateFailure}>
+            Simulate a tool failure
+          </button>
+        )}
+      </div>
+
+      {actions.length === 0 ? (
+        <p className="assistant-log__empty">
+          Every action this assistant takes appears here as it happens.
+        </p>
+      ) : (
+        <ol className="assistant-log" aria-live="polite">
+          {actions.map((action) => (
+            <li key={action.id} className={`is-${action.status} is-kind-${action.kind}`}>
+              <span className="assistant-log__kind">{action.kind}</span>
+              <div>
+                <strong>
+                  {action.label}
+                  {action.simulated && <em className="assistant-log__sim">simulated</em>}
+                </strong>
+                <small>{action.detail}</small>
+              </div>
+              <span className="assistant-log__status">{statusLabels[action.status] || action.status}</span>
+            </li>
+          ))}
+        </ol>
+      )}
+
+      <p className="assistant-log__note">
+        Reads happen automatically. Anything that leaves the site &mdash; an email, a
+        calendar invite &mdash; stops and waits for you. The model decides what to
+        say; the application decides what is allowed.
+      </p>
+    </section>
+  )
+}
+
 function Destination({ destination, onNavigate }) {
   if (!destination) return null
   const contents = <>{destination.label}<span>→</span></>
@@ -102,6 +149,11 @@ function Calendar({ state, bookingState, onBook }) {
 export default function AssistantActionPanel({ assistant, compact = false, onNavigate }) {
   return (
     <div className={`assistant-actions${compact ? ' is-compact' : ''}`}>
+      <ActionLog
+        actions={assistant.actions || []}
+        onSimulateFailure={assistant.armCalendarFailure}
+        canSimulate={Boolean(assistant.armCalendarFailure) && assistant.calendarState?.status !== 'ready'}
+      />
       <Notes notes={assistant.notes} />
       <Destination destination={assistant.destination} onNavigate={onNavigate} />
       {assistant.emailOffered && <EmailRecap state={assistant.emailState} onSend={assistant.sendRecap} />}

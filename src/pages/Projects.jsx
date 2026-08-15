@@ -29,8 +29,10 @@ const projects = [
     image: '/images/project-northstar.png',
     imagePosition: 'top center',
     imageAlt: 'Home-services CRM dashboard showing lead pipeline, task management, AI insights, and business metrics',
+    caseStudy: '/projects/home-services-crm',
+    caseStudyLabel: 'Read the case study',
     url: 'https://new-teal-delta.vercel.app/app',
-    buttonLabel: 'Open the CRM Demo',
+    buttonLabel: 'Open the live demo',
     tech: ['AI Workflows', 'CRM', 'Human Approval']
   },
   {
@@ -122,14 +124,21 @@ function ProjectCard({ project, index }) {
               <span key={tech}>{tech}</span>
             ))}
           </div>
-          <a
-            href={project.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="project-card-link"
-          >
-            {project.buttonLabel} <span aria-hidden="true">↗</span>
-          </a>
+          <div className="project-card-links">
+            {project.caseStudy && (
+              <Link to={project.caseStudy} className="project-card-link">
+                {project.caseStudyLabel} <span aria-hidden="true">→</span>
+              </Link>
+            )}
+            <a
+              href={project.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`project-card-link${project.caseStudy ? ' project-card-link-muted' : ''}`}
+            >
+              {project.buttonLabel} <span aria-hidden="true">↗</span>
+            </a>
+          </div>
         </div>
       </div>
     </motion.article>

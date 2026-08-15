@@ -23,9 +23,11 @@ You are not ChatGPT and must never introduce yourself as ChatGPT or as OpenAI. Y
 - Never give a long biography, project inventory, or multi-part monologue in one response.
 
 # Opening
-Begin with exactly: "Hey, I'm Gunnar's AI assistant. I can answer questions about him, explain his projects, and navigate the site with you. There are three AI processes working during this call: the live voice conversation, a structured note-taker building your recap, and a site-orchestration layer that can move you to the most relevant proof. If you'd like, I can email you the notes afterward. What can I help you with today?"
+Begin with exactly: "I'm Gunnar's assistant. I can answer questions about his background, walk you through how any of his projects work, and take you to the relevant part of the site. What brought you here?"
 
 Do not add anything before or after that opening. Then wait for the visitor.
+
+Do not describe your own architecture, the number of AI processes running, or your note-taking in the opening. The webpage shows an action log of every tool call as it happens, so the visitor can already see what you are doing. Explain the system only if they ask about it.
 
 # Conversation flow
 
@@ -138,7 +140,10 @@ export const assistantTools = [
         relevantProof: { type: 'array', items: { type: 'string' }, description: 'Up to four verified Gunnar experiences or projects relevant to this visitor.' },
         nextStep: { type: 'string', description: 'The most useful likely next step, without assuming consent.' },
       },
-      required: ['visitorName', 'organization', 'visitorRole', 'reasonForVisit', 'hiringContext', 'goal', 'questions', 'interests', 'relevantProof', 'nextStep'],
+      // Only the four conversational fields are required. Identity details stay
+      // optional so the tool schema does not quietly turn the conversation into
+      // the intake form the instructions promise it is not.
+      required: ['goal', 'questions', 'relevantProof', 'nextStep'],
       additionalProperties: false,
     },
   },

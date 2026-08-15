@@ -70,6 +70,7 @@ function Layout({ children, showFooter = true }) {
   const navLinks = [
     { path: '/about', label: 'About' },
     { path: '/projects', label: 'Projects' },
+    { path: '/lab', label: 'AI Lab' },
     { path: '/client-work', label: 'Client Work' },
     { path: '/contact', label: 'Contact' },
   ]
@@ -78,6 +79,7 @@ function Layout({ children, showFooter = true }) {
   const mobileLinks = [
     { path: '/about', label: 'About' },
     { path: '/projects', label: 'Projects' },
+    { path: '/lab', label: 'AI Lab' },
     { path: '/client-work', label: 'Client Work' },
     { path: '/contact', label: 'Contact' },
   ]

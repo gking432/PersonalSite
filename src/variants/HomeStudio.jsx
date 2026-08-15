@@ -12,10 +12,38 @@ import './HomeStudio.css'
 
 const ease = [0.22, 1, 0.36, 1]
 
-const heroStats = [
-  { value: '5+ yrs', label: 'Business Experience' },
-  { value: '4', label: 'Functional Builds' },
-  { value: '2', label: 'Live AI Platforms' }
+// The three phases of the work, in the order they happen. This replaced a
+// numeric stat strip ("4 functional builds") that invited the wrong question.
+const capabilityPhases = [
+  {
+    title: 'Find the workflow',
+    detail: 'Discovery, process mapping, and the people actually doing the job'
+  },
+  {
+    title: 'Decide what AI should touch',
+    detail: 'And what stays deterministic, and what stays human'
+  },
+  {
+    title: 'Build it and get it used',
+    detail: 'Working systems, narrow pilots, training, adoption'
+  }
+]
+
+// The rubric, stated as criteria rather than principles so a reader can apply
+// it to their own workflow while scanning. Previews the CRM decision table.
+const decisionRubric = [
+  {
+    when: 'Use AI when',
+    detail: 'the input is unstructured, interpretation matters, or several different outputs would all be reasonable.'
+  },
+  {
+    when: 'Use ordinary software when',
+    detail: 'the rules are already known, the output has to be exact, or permissions, transactions, and records are involved.'
+  },
+  {
+    when: 'Keep a person in it when',
+    detail: "the consequences are significant, confidence is low, or the context can't be reliably verified."
+  }
 ]
 
 const featuredSystems = [
@@ -26,8 +54,10 @@ const featuredSystems = [
     description: 'A functional command center connecting lead analysis, call summaries, follow-up, quotes, appointments, reviews, and human approval.',
     image: '/images/project-northstar.png',
     imageAlt: 'Home-services CRM dashboard with lead pipeline, tasks, AI insights, and business metrics',
+    caseStudy: '/projects/home-services-crm',
+    caseStudyAction: 'Read the case study',
     href: 'https://new-teal-delta.vercel.app/app',
-    action: 'Open the CRM demo',
+    action: 'Open the live demo',
     tags: ['AI workflows', 'Operational system', 'Human approval']
   },
   {
@@ -342,6 +372,7 @@ function HomeStudio() {
           <nav className="studio-nav">
             <Link to="/about">About</Link>
             <Link to="/projects">Projects</Link>
+            <Link to="/lab">AI Lab</Link>
             <Link to="/client-work">Client Work</Link>
             <Link to="/contact">Contact</Link>
           </nav>
@@ -354,7 +385,7 @@ function HomeStudio() {
           <motion.span className="studio-status"
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease, delay: 0.1 }}>
-            <i /> Open to roles where business and technology meet
+            <i /> Open to AI implementation, adoption, and product roles
           </motion.span>
 
           <motion.h1 className="studio-headline"
@@ -374,9 +405,10 @@ function HomeStudio() {
           <motion.p className="studio-sub"
             initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease, delay: 0.35 }}>
-            My background is in customers, sales teams, product launches, and client
-            problems. Today I pair that business experience with hands-on product
-            development to build working systems, often with AI at the center.
+            Five years in sales operations, product launches, and client delivery
+            taught me how the work actually gets done. Now I build the systems around
+            it &mdash; deciding where AI genuinely helps, where plain software is
+            better, and where a person needs to stay in control.
           </motion.p>
 
           <motion.div className="studio-hero__actions"
@@ -395,12 +427,26 @@ function HomeStudio() {
         </motion.div>
       </section>
 
-      {/* ─── PROOF STRIP ─── */}
-      <section className="studio-proof">
-        {heroStats.map((h) => (
-          <div className="studio-proof__item" key={h.label}>
-            <span className="studio-proof__value">{h.value}</span>
-            <span className="studio-proof__label">{h.label}</span>
+      {/* ─── WHY THE TRANSITION ─── */}
+      {/* The question every recruiter has, answered before they have to dig for
+          it. The long version still lives on the About page. */}
+      <section className="studio-pivot">
+        <motion.p
+          initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.8, ease }}>
+          I spent five years close to customers, sales teams, and client delivery.
+          When AI made building cheap, I learned to build &mdash; not to become an
+          engineer, but so I could take an idea past the slide and find out whether
+          it actually improves the work.
+        </motion.p>
+      </section>
+
+      {/* ─── WHAT THE WORK IS ─── */}
+      <section className="studio-proof studio-proof--phases">
+        {capabilityPhases.map((phase) => (
+          <div className="studio-proof__item" key={phase.title}>
+            <span className="studio-proof__value">{phase.title}</span>
+            <span className="studio-proof__label">{phase.detail}</span>
           </div>
         ))}
       </section>
@@ -432,6 +478,38 @@ function HomeStudio() {
         </SqueezeSection>
       </section>
 
+      {/* ─── DECISION RUBRIC ─── */}
+      {/* Criteria, not principles: a reader can hold these against a workflow in
+          their own company while scanning. */}
+      <section className="studio-section studio-rubric" data-assistant-section="home-rubric">
+        <div className="studio-section__head">
+          <span className="studio-kicker">Judgment</span>
+          <motion.h2
+            initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ duration: 0.8, ease }}>
+            How I decide what a system should do.
+          </motion.h2>
+        </div>
+        <div className="studio-rubric__grid">
+          {decisionRubric.map((rule, i) => (
+            <motion.div className="studio-rubric__rule" key={rule.when}
+              initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }} transition={{ duration: 0.7, ease, delay: i * 0.1 }}>
+              <h3>{rule.when}</h3>
+              <p>{rule.detail}</p>
+            </motion.div>
+          ))}
+        </div>
+        <motion.p className="studio-rubric__close"
+          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.7, ease, delay: 0.3 }}>
+          And then the part that decides whether any of it mattered:{' '}
+          <strong>a system nobody adopts didn&rsquo;t work.</strong> The hardest
+          problem is usually not the build &mdash; it&rsquo;s the person who already
+          has a working spreadsheet and no reason to trust your new thing.
+        </motion.p>
+      </section>
+
       {/* ─── WORKING PROOF (calm bridge between the two system panels) ─── */}
       <section className="studio-work" data-assistant-section="home-projects">
         <div className="studio-work__head">
@@ -451,10 +529,17 @@ function HomeStudio() {
             <motion.article className="studio-system" key={project.title}
               initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-8%' }} transition={{ duration: 0.75, ease, delay: index * 0.1 }}>
-              <a className="studio-system__visual" href={project.href} target="_blank" rel="noreferrer" aria-label={`${project.action} in a new tab`}>
-                <img src={project.image} alt={project.imageAlt} loading="lazy" />
-                <span>{project.number}</span>
-              </a>
+              {project.caseStudy ? (
+                <Link className="studio-system__visual" to={project.caseStudy} aria-label={project.caseStudyAction}>
+                  <img src={project.image} alt={project.imageAlt} loading="lazy" />
+                  <span>{project.number}</span>
+                </Link>
+              ) : (
+                <a className="studio-system__visual" href={project.href} target="_blank" rel="noreferrer" aria-label={`${project.action} in a new tab`}>
+                  <img src={project.image} alt={project.imageAlt} loading="lazy" />
+                  <span>{project.number}</span>
+                </a>
+              )}
               <div className="studio-system__copy">
                 <span className="studio-system__type">{project.type}</span>
                 <h3>{project.title}</h3>
@@ -462,7 +547,12 @@ function HomeStudio() {
                 <div className="studio-tags">
                   {project.tags.map((tag) => <span key={tag}>{tag}</span>)}
                 </div>
-                <a className="studio-system__link" href={project.href} target="_blank" rel="noreferrer">{project.action} <span>↗</span></a>
+                <div className="studio-system__actions">
+                  {project.caseStudy && (
+                    <Link className="studio-system__link" to={project.caseStudy}>{project.caseStudyAction} <span>→</span></Link>
+                  )}
+                  <a className={`studio-system__link${project.caseStudy ? ' studio-system__link--muted' : ''}`} href={project.href} target="_blank" rel="noreferrer">{project.action} <span>↗</span></a>
+                </div>
               </div>
             </motion.article>
           ))}

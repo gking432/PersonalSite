@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import PageTransition from '../components/PageTransition'
-import { reputationSample, roleMatchSample } from '../data/aiLabSamples'
+import { roleMatchSample } from '../data/aiLabSamples'
+import { routerEvalCases } from '../data/routerEvalCases'
+import evalResults from '../data/routerEvalResults.json'
 import './AILab.css'
 
 function normalizePublicUrl(value) {
@@ -248,32 +250,151 @@ function RoleMatch() {
   return <div className="lab-form-wrap"><form className="lab-form" onSubmit={submit}><div className="lab-form__intro"><h3>Give it a real company and role.</h3><p>The system researches the context, builds the strongest truthful interview case, and packages the proof.</p></div><label>Job posting URL <span>Optional</span><input type="text" inputMode="url" value={form.jobUrl} onChange={update('jobUrl')} placeholder="company.com/careers/role" /></label><label>Company website <span>Optional</span><input type="text" inputMode="url" value={form.companyWebsite} onChange={update('companyWebsite')} placeholder="company.com" /></label><label>Job description <span>Paste when available</span><textarea rows="8" value={form.jobDescription} onChange={update('jobDescription')} placeholder="Paste responsibilities and requirements…" maxLength="18000" /></label><label>What matters most to the team? <span>Optional</span><textarea rows="3" value={form.companyContext} onChange={update('companyContext')} placeholder="Implementation, adoption, customer operations…" /></label><ErrorNotice message={error} /><div className="lab-form__actions"><button className="lab-run" type="submit" disabled={loading}>Build the recruiter brief <span>→</span></button><button className="lab-sample" type="button" onClick={() => setResult(roleMatchSample)}>View sample</button></div><small>No fit score and no invented credentials. Direct and transferable evidence remain separate.</small></form>{loading && <WorkflowProgress labels={['Researching the company and role', 'Reading verified experience', 'Matching direct evidence', 'Selecting project proof', 'Building recruiter brief']} />}</div>
 }
 
-function ReputationResult({ result, onReset }) {
-  const reportDocument = <div className="lab-result">
-    <ResultHeader eyebrow="One-time public-source analysis" title={`${result.businessName} reputation report`} summary={result.executiveSummary} filename="reputation-report.json" result={result} onReset={onReset} />
-    <Section title="Public sources checked"><div className="lab-source-list">{result.sources.map((item) => <a key={`${item.url}-${item.title}`} href={item.url} target="_blank" rel="noreferrer"><strong>{item.title}</strong><span>{item.finding}</span><i>↗</i></a>)}</div></Section>
-    <Section title="Recurring themes"><div className="lab-theme-grid">{result.themes.map((item) => <article key={item.theme}><div><h4>{item.theme}</h4><Badge tone={item.sentiment === 'Positive' ? 'safe' : item.sentiment === 'Negative' ? 'risk' : ''}>{item.sentiment}</Badge></div><strong>{item.frequency}</strong><p>{item.evidence}</p></article>)}</div></Section>
-    <Section title="Operational issues"><div className="lab-issue-list">{result.operationalIssues.map((item) => <article key={item.issue}><div><h4>{item.issue}</h4><p>{item.signal}</p></div><span>Likely owner · {item.likelyOwner}</span></article>)}</div></Section>
-    <Section title="Recommended action"><div className="lab-action-table">{result.recommendations.map((item) => <article key={item.action}><div><h4>{item.action}</h4><p>{item.impact}</p></div><dl><div><dt>Owner</dt><dd>{item.owner}</dd></div><div><dt>Timing</dt><dd>{item.timing}</dd></div></dl></article>)}</div></Section>
-    <Section title="Draft public responses"><div className="lab-response-list">{result.draftResponses.map((item) => <article key={item.situation}><span>{item.situation}</span><p>“{item.response}”</p></article>)}</div></Section>
-    <div className="lab-next-move"><span>Best next move</span><p>{result.nextMove}</p></div>
-    <EmailDelivery type="reputation" result={result} schedule="one time" />
-    <p className="lab-evidence-note">{result.evidenceNote}</p>
-  </div>
-  return <ReportViewer readyDetail={`${result.sources.length} public ${result.sources.length === 1 ? 'source' : 'sources'} cited · ${result.themes.length} reputation themes identified`} documentLabel={`${result.businessName} reputation report`} onReset={onReset}>{reportDocument}</ReportViewer>
-}
+// Published accuracy for the router. The number is measured, never asserted:
+// if the eval has not been run, this says so and shows the test set instead.
+function RouterEvaluation() {
+  const hasRun = Array.isArray(evalResults.results) && evalResults.results.length > 0
+  const failures = hasRun ? evalResults.results.filter((row) => !row.pass) : []
+  const runLabel = evalResults.runAt ? new Date(evalResults.runAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : ''
 
-function ReputationMonitor() {
-  const [form, setForm] = useState({ business: '', address: '' })
-  const [result, setResult] = useState(null); const [loading, setLoading] = useState(false); const [error, setError] = useState('')
-  const update = (key) => (event) => setForm((value) => ({ ...value, [key]: event.target.value }))
-  const submit = async (event) => { event.preventDefault(); setError(''); if (form.business.trim().length < 3 || form.address.trim().length < 5) { setError('Enter the business name or website and its location.'); return } setLoading(true); try { setResult(await runAnalysis({ demo: 'reputation', ...form, cadence: 'one time', deliveryTime: 'now' })) } catch (runError) { setError(runError.message) } finally { setLoading(false) } }
-  if (result) return <ReputationResult result={result} onReset={() => setResult(null)} />
-  return <div className="lab-form-wrap"><form className="lab-form" onSubmit={submit}><div className="lab-form__intro"><h3>Run a reputation report.</h3><p>The location prevents the system from analyzing a same-named business somewhere else.</p></div><label>Business name or website<input value={form.business} onChange={update('business')} placeholder="Business name or company.com" required /></label><label>Business address<input value={form.address} onChange={update('address')} placeholder="Street address, city, state" required /></label><ErrorNotice message={error} /><div className="lab-form__actions"><button className="lab-run" type="submit" disabled={loading}>Run report <span>→</span></button><button className="lab-sample" type="button" onClick={() => setResult(reputationSample)}>View sample</button></div></form>{loading && <WorkflowProgress labels={['Confirming the exact location', 'Searching public reputation sources', 'Extracting review signals', 'Finding operating patterns', 'Building operational report']} />}</div>
+  return (
+    <div className="lab-eval">
+      <div className="lab-eval__intro">
+        <p>
+          A demo that only shows the cases it handles well is a sales pitch. These
+          are {routerEvalCases.length} hand-written requests with the routing I
+          believe is correct for each, including several where the intent is mixed
+          or buried. The router is scored against them.
+        </p>
+      </div>
+
+      {hasRun ? (
+        <>
+          <div className="lab-eval__score">
+            <strong>{evalResults.passed}/{evalResults.total}</strong>
+            <span>correct{runLabel ? ` · last run ${runLabel}` : ''}{evalResults.model ? ` · ${evalResults.model}` : ''}</span>
+          </div>
+          <div className="lab-eval__table-wrap">
+            <table className="lab-eval__table">
+              <thead>
+                <tr>
+                  <th scope="col">Case</th>
+                  <th scope="col">Request</th>
+                  <th scope="col">Expected</th>
+                  <th scope="col">Actual</th>
+                  <th scope="col">Result</th>
+                </tr>
+              </thead>
+              <tbody>
+                {evalResults.results.map((row) => (
+                  <tr key={row.id} className={row.pass ? '' : 'is-fail'}>
+                    <th scope="row">{row.id}</th>
+                    <td className="lab-eval__request">{row.request}</td>
+                    <td>{row.expected}</td>
+                    <td>{row.actual || '—'}</td>
+                    <td><span className={`lab-eval__flag is-${row.pass ? 'pass' : 'fail'}`}>{row.pass ? 'pass' : 'fail'}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {failures.length > 0 && (
+            <div className="lab-eval__analysis">
+              <h3>Where it failed</h3>
+              <ul>
+                {failures.map((row) => (
+                  <li key={row.id}>
+                    <strong>{row.id}</strong> expected <em>{row.expected}</em>, returned{' '}
+                    <em>{row.actual || 'nothing'}</em>. {row.note}
+                  </li>
+                ))}
+              </ul>
+              <p>
+                {/* NOTE (Gunnar): replace this with your own reading of the
+                    failures once the eval has run. The pattern across them is the
+                    interesting part, and only you can write it honestly. */}
+                The pattern across these failures is the part worth fixing, and it
+                is worth writing up by hand rather than summarising automatically.
+              </p>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="lab-eval__pending">
+          <p>
+            <strong>Not yet run against the live classifier.</strong> The test set is
+            committed at <code>src/data/routerEvalCases.js</code> and the runner at{' '}
+            <code>scripts/run-router-eval.mjs</code>. Results appear here once the
+            eval has actually been executed; no score is shown before then.
+          </p>
+          <details>
+            <summary>See the {routerEvalCases.length} test cases</summary>
+            <ol className="lab-eval__cases">
+              {routerEvalCases.map((testCase) => (
+                <li key={testCase.id}>
+                  <span>{testCase.expected}</span>
+                  <p>{testCase.request}</p>
+                  <small>{testCase.note}</small>
+                </li>
+              ))}
+            </ol>
+          </details>
+        </div>
+      )}
+    </div>
+  )
 }
 
 function AILab() {
-  return <PageTransition><div className="ai-lab" data-assistant-section="lab-overview"><header className="lab-simple-header"><div className="container"><h1>AI Lab</h1><p>Working business automations.</p></div></header><main className="lab-simple-list container"><section className="lab-demo" id="lab-complaint" data-assistant-section="lab-complaint"><div className="lab-demo__heading"><span>01</span><div><h2>Customer Request Router</h2><p>Classify · collect context · route · retrieve · brief</p></div></div><CustomerIssueHandler /></section><section className="lab-demo" id="lab-reputation" data-assistant-section="lab-reputation"><div className="lab-demo__heading"><span>02</span><div><h2>Reputation Report</h2><p>Research public signals and build the operating report.</p></div></div><ReputationMonitor /></section><section className="lab-demo" id="lab-role" data-assistant-section="lab-role"><div className="lab-demo__heading"><span>03</span><div><h2>Role Match</h2><p>Research a role and map the strongest verified evidence.</p></div></div><RoleMatch /></section></main></div></PageTransition>
+  return (
+    <PageTransition>
+      <div className="ai-lab" data-assistant-section="lab-overview">
+        <header className="lab-simple-header">
+          <div className="container">
+            <h1>AI Lab</h1>
+            <p>
+              Working business automations, with the reasoning and the error rate
+              attached. Every consequential step stops for a person.
+            </p>
+          </div>
+        </header>
+        <main className="lab-simple-list container">
+          <section className="lab-demo" id="lab-complaint" data-assistant-section="lab-complaint">
+            <div className="lab-demo__heading">
+              <span>01</span>
+              <div>
+                <h2>Customer Request Router</h2>
+                <p>Classify · collect context · route · retrieve · brief</p>
+              </div>
+            </div>
+            <CustomerIssueHandler />
+          </section>
+
+          <section className="lab-demo" id="lab-eval" data-assistant-section="lab-eval">
+            <div className="lab-demo__heading">
+              <span>02</span>
+              <div>
+                <h2>How often the router is right</h2>
+                <p>A fixed test set, scored, with the failures left visible</p>
+              </div>
+            </div>
+            <RouterEvaluation />
+          </section>
+
+          <section className="lab-demo" id="lab-role" data-assistant-section="lab-role">
+            <div className="lab-demo__heading">
+              <span>03</span>
+              <div>
+                <h2>Role Match</h2>
+                <p>Research a role and map the strongest verified evidence.</p>
+              </div>
+            </div>
+            <RoleMatch />
+          </section>
+        </main>
+      </div>
+    </PageTransition>
+  )
 }
 
 export default AILab

@@ -245,6 +245,25 @@ Client Work-inspired portfolio layout for dev projects.
   text-underline-offset: 4px;
 }
 
+/* Where a case study exists it becomes the primary path; the external demo
+   sits beside it in a quieter weight. */
+.project-card-links {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.project-card-link-muted {
+  color: var(--warm-gray);
+  font-weight: 600;
+}
+
+.project-card-link-muted:hover {
+  color: var(--slate);
+}
+
 .dev-project {
   padding: var(--space-3xl) 0;
 }

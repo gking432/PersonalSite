@@ -56,6 +56,13 @@ function moduleTabLabel(mod) {
 const clientProjects = [
   {
     id: 'petunis',
+    // Delivery record. Fill these in with what actually happened; these are the
+    // fields that turn this page from a design gallery into evidence of working
+    // with stakeholders and handing something over. Empty fields are not rendered.
+    engagement: {
+      workedWith: '',
+      handoff: ''
+    },
     year: '2024',
     name: 'PetUnis',
     type: 'Brand Design & eCommerce',
@@ -113,6 +120,13 @@ const clientProjects = [
   },
   {
     id: 'weatherfixers',
+    // Delivery record. Fill these in with what actually happened; these are the
+    // fields that turn this page from a design gallery into evidence of working
+    // with stakeholders and handing something over. Empty fields are not rendered.
+    engagement: {
+      workedWith: '',
+      handoff: ''
+    },
     year: '2024',
     name: 'WeatherFixers.com',
     type: 'Lead Aggregation Website',
@@ -166,6 +180,13 @@ const clientProjects = [
   },
   {
     id: 'elevate-apparel',
+    // Delivery record. Fill these in with what actually happened; these are the
+    // fields that turn this page from a design gallery into evidence of working
+    // with stakeholders and handing something over. Empty fields are not rendered.
+    engagement: {
+      workedWith: '',
+      handoff: ''
+    },
     year: '2024',
     name: 'Elevate Apparel',
     type: 'eCommerce & Merchandising',
@@ -210,6 +231,13 @@ const clientProjects = [
   },
   {
     id: 'gts-revolution',
+    // Delivery record. Fill these in with what actually happened; these are the
+    // fields that turn this page from a design gallery into evidence of working
+    // with stakeholders and handing something over. Empty fields are not rendered.
+    engagement: {
+      workedWith: '',
+      handoff: ''
+    },
     year: '2024',
     name: 'GTS Revolution',
     type: 'Merch & eCommerce',
@@ -256,6 +284,13 @@ const clientProjects = [
   },
   {
     id: 'hospice-nonprofit',
+    // Delivery record. Fill these in with what actually happened; these are the
+    // fields that turn this page from a design gallery into evidence of working
+    // with stakeholders and handing something over. Empty fields are not rendered.
+    engagement: {
+      workedWith: '',
+      handoff: ''
+    },
     year: '2023',
     name: 'Patti Means Ministry',
     type: 'Website Redesign',
@@ -319,6 +354,13 @@ const clientProjects = [
   },
   {
     id: 'blue-lizard',
+    // Delivery record. Fill these in with what actually happened; these are the
+    // fields that turn this page from a design gallery into evidence of working
+    // with stakeholders and handing something over. Empty fields are not rendered.
+    engagement: {
+      workedWith: '',
+      handoff: ''
+    },
     year: '2023',
     name: 'Blue Lizard Bar & Grill',
     type: 'Website Redesign',
@@ -812,6 +854,18 @@ function FeaturedCase({ project, index, alt }) {
           <span>Scope</span>
           <p>{project.scope}</p>
         </div>
+        {project.engagement?.workedWith && (
+          <div className="cw-case-meta-item">
+            <span>Who I worked with</span>
+            <p>{project.engagement.workedWith}</p>
+          </div>
+        )}
+        {project.engagement?.handoff && (
+          <div className="cw-case-meta-item">
+            <span>How it handed off</span>
+            <p>{project.engagement.handoff}</p>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -885,10 +939,10 @@ function ClientWork() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, ease: ndsEase }}
                 >
-                  Earlier Work
+                  Client Delivery
                 </motion.p>
                 <h1>
-                  {'The Agency Years'.split(' ').map((word, i, words) => (
+                  {'Six Engagements'.split(' ').map((word, i, words) => (
                     <motion.span
                       key={i}
                       style={{ display: 'inline-block' }}
@@ -906,11 +960,20 @@ function ClientWork() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
                 >
-                  This is older work from when I ran a small marketing agency. Most of it is not
-                  work I would lead with today. I was learning by doing, and a lot of that meant
-                  making websites and marketing materials for small clients. The sites show their
-                  age. I keep the work here as context for where I started, not as the standard I
-                  want to be judged by now.
+                  Every one of these started with a conversation about what a business actually
+                  needed, and ended with something live that someone else had to run without me.
+                  In between: scoping the work, building it, launching it, reporting on what
+                  happened, and adjusting. Two and a half years of the same loop, across six
+                  businesses with six different problems.
+                </motion.p>
+                <motion.p
+                  className="hero-desc cw-hero-note"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
+                >
+                  This is older marketing and web work, and the craft shows its age. I keep it
+                  here because the delivery is the part that transferred.
                 </motion.p>
               </div>
               <motion.div
@@ -921,19 +984,19 @@ function ClientWork() {
               >
                 <div className="hero-meta-item">
                   <span className="hero-meta-label">Period</span>
-                  <span className="hero-meta-value">2023–2024</span>
+                  <span className="hero-meta-value">2023–2025</span>
                 </div>
                 <div className="hero-meta-item">
-                  <span className="hero-meta-label">What it was</span>
-                  <span className="hero-meta-value">Small client websites and marketing work</span>
+                  <span className="hero-meta-label">The loop</span>
+                  <span className="hero-meta-value">Discover · scope · build · launch · report</span>
+                </div>
+                <div className="hero-meta-item">
+                  <span className="hero-meta-label">What I owned</span>
+                  <span className="hero-meta-value">The whole engagement, start to handoff</span>
                 </div>
                 <div className="hero-meta-item">
                   <span className="hero-meta-label">Why it stays</span>
-                  <span className="hero-meta-value">An honest record of where I started</span>
-                </div>
-                <div className="hero-meta-item">
-                  <span className="hero-meta-label">Current relevance</span>
-                  <span className="hero-meta-value hero-meta-status">Context, not a showcase</span>
+                  <span className="hero-meta-value hero-meta-status">Real stakeholders, real delivery</span>
                 </div>
               </motion.div>
             </div>

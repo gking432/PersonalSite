@@ -115,19 +115,23 @@ function retrieveCases(request, classification, context) {
   }).filter((item) => item.score >= 2).sort((a, b) => b.score - a.score).slice(0, 3).map(({ score, ...item }) => item)
 }
 
+// Exported so scripts/run-router-eval.mjs measures the same code path the demo
+// uses. If the classifier prompt changes here, re-run the eval.
+export async function classifyRequest({ request, safetyIdentifier = 'lab-user' }) {
+  return structuredResponse({
+    name: 'customer_request_classification',
+    schema: classifySchema,
+    safetyIdentifier,
+    instructions: 'You classify inbound customer requests for an internal service operation. Extract only supplied facts. Ask for missing context through compact, specific form fields. Do not ask for information that is already present. Never request payment-card data, passwords, government identifiers, or other sensitive information.',
+    input: `Classify this request and identify up to five pieces of context a representative would need to resolve it. A short request like "I need to return a product" should normally ask for customer name, order or purchase number, purchase date, item, and return reason or condition. A safety report should prioritize immediate safe handling and ask only what a safety specialist needs. Use short field labels and direct questions.\n\nCustomer request:\n${clean(request)}`,
+  })
+}
+
 async function handleAction(action, body, identifier) {
   const request = clean(body.request)
   if (request.length < 8) throw Object.assign(new Error('Enter a customer complaint or request.'), { status: 400 })
 
-  if (action === 'classify') {
-    return structuredResponse({
-      name: 'customer_request_classification',
-      schema: classifySchema,
-      safetyIdentifier: identifier,
-      instructions: 'You classify inbound customer requests for an internal service operation. Extract only supplied facts. Ask for missing context through compact, specific form fields. Do not ask for information that is already present. Never request payment-card data, passwords, government identifiers, or other sensitive information.',
-      input: `Classify this request and identify up to five pieces of context a representative would need to resolve it. A short request like "I need to return a product" should normally ask for customer name, order or purchase number, purchase date, item, and return reason or condition. A safety report should prioritize immediate safe handling and ask only what a safety specialist needs. Use short field labels and direct questions.\n\nCustomer request:\n${request}`,
-    })
-  }
+  if (action === 'classify') return classifyRequest({ request, safetyIdentifier: identifier })
 
   const classification = body.classification
   if (!classification || !categories.includes(classification.category)) throw Object.assign(new Error('The request must be identified before this step can run.'), { status: 400 })

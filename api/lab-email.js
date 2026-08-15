@@ -1,7 +1,7 @@
 import { clientKey, consumeRateLimit, escapeHtml, originAllowed } from '../src/server/requestSecurity.js'
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const allowedTypes = new Set(['complaint', 'reputation', 'role'])
+const allowedTypes = new Set(['complaint', 'role'])
 const clean = (value, max = 1200) => String(value || '').trim().slice(0, max)
 const cleanList = (value, max = 6) => Array.isArray(value) ? value.slice(0, max).map((item) => clean(item, 600)).filter(Boolean) : []
 
@@ -40,28 +40,6 @@ function complaintEmail(result) {
   }
 }
 
-function reputationEmail(result, schedule) {
-  const themes = Array.isArray(result.themes) ? result.themes.slice(0, 6).map((item) => `${clean(item.theme, 120)} — ${clean(item.evidence, 500)}`) : []
-  const actions = Array.isArray(result.recommendations) ? result.recommendations.slice(0, 6).map((item) => `${clean(item.action, 220)} (${clean(item.owner, 100)} · ${clean(item.timing, 80)})`) : []
-  const sources = Array.isArray(result.sources) ? result.sources.slice(0, 8).map((item) => {
-    const url = safeUrl(item.url)
-    return url ? `<li style="margin:7px 0"><a href="${escapeHtml(url)}" style="color:#173e31">${escapeHtml(clean(item.title, 180) || url)}</a> — ${escapeHtml(clean(item.finding, 400))}</li>` : ''
-  }).join('') : ''
-  return {
-    subject: `Reputation report demo · ${clean(result.businessName, 120) || 'Business report'}`,
-    title: `${clean(result.businessName, 160) || 'Business'} reputation report`,
-    intro: clean(result.executiveSummary),
-    body: [
-      `<div style="margin:18px 0;padding:14px;background:#e8efe9;color:#244b39"><strong>One-time report copy</strong><br><span style="font-size:12px">This email was requested after the report ran. No recurring report was activated.</span></div>`,
-      section('Recurring themes', bullets(themes)),
-      section('Recommended actions', bullets(actions)),
-      section('Best next move', `<p>${escapeHtml(clean(result.nextMove))}</p>`),
-      sources ? section('Public sources checked', `<ul style="margin:10px 0 0;padding-left:20px">${sources}</ul>`) : '',
-      `<p style="margin-top:24px;color:#7d776c;font-size:12px">${escapeHtml(clean(result.evidenceNote, 1200))}</p>`
-    ].join('')
-  }
-}
-
 function roleEmail(result) {
   const matches = Array.isArray(result.strongestMatches) ? result.strongestMatches.slice(0, 5).map((item) => `${clean(item.title, 140)} — ${clean(item.evidence, 500)}`) : []
   const questions = cleanList(result.interviewQuestions, 5)
@@ -96,7 +74,7 @@ export default async function handler(request, response) {
   if (!allowedTypes.has(type) || !emailPattern.test(email) || !result || typeof result !== 'object') return response.status(400).json({ error: 'A valid report and email address are required.' })
   if (JSON.stringify(result).length > 60000) return response.status(413).json({ error: 'That report is too large to email.' })
 
-  const content = type === 'complaint' ? complaintEmail(result) : type === 'reputation' ? reputationEmail(result, schedule) : roleEmail(result)
+  const content = type === 'complaint' ? complaintEmail(result) : roleEmail(result)
   const html = `<div style="font-family:Inter,Arial,sans-serif;max-width:680px;margin:0 auto;padding:34px;color:#262b27;line-height:1.6"><p style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#587568">Gunnar Neuman · AI Lab</p><h1 style="font-family:Georgia,serif;font-size:34px;line-height:1.08;font-weight:400;margin:10px 0 18px">${escapeHtml(content.title)}</h1><p>${escapeHtml(content.intro)}</p>${content.body}<p style="margin-top:30px;padding-top:18px;border-top:1px solid #e4ddcd;color:#7d776c;font-size:11px">Generated as a one-time AI Lab demonstration. Automated systems should be validated against the underlying source information and keep appropriate human approval.</p></div>`
 
   try {

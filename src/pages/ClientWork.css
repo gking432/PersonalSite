@@ -45,6 +45,15 @@ No modals. Progressive disclosure on-page.
   max-width: 650px;
 }
 
+/* Secondary note: honest about the craft aging without letting the page
+   apologize for itself in the position where the framing should be. */
+.client-work-hero .cw-hero-note {
+  margin-top: 1.1rem;
+  font-size: clamp(0.94rem, 1.4vw, 1.02rem);
+  line-height: 1.65;
+  opacity: 0.72;
+}
+
 /* ==========================================
    FEATURED PROJECTS; Editorial Layout
    ========================================== */

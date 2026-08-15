@@ -408,6 +408,61 @@ function About() {
         </div>
       </div>
 
+      {/* ═══════ ADOPTION STORY; the pre-AI proof ═══════ */}
+      {/* NOTE (Gunnar): the middle paragraph is written from what the site already
+          claims as verified (you built the reports and trained external sales teams
+          on them). The characterisation of *why* adoption was hard is inference, not
+          recorded fact. Replace it with what actually happened — how long it really
+          took, what people resisted, and what finally moved it. That version will be
+          both truer and more specific than this one. */}
+      <section className="adoption-section section" data-assistant-section="about-adoption">
+        <div className="container">
+          <motion.p
+            className="label"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, ease: ndsEase }}
+          >
+            Adoption
+          </motion.p>
+          <motion.h2
+            className="section-heading adoption-heading"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1, ease: ndsEase }}
+          >
+            The closest thing I&rsquo;ve done to this job, before AI existed.
+          </motion.h2>
+          <motion.div
+            className="adoption-body"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-60px' }}
+          >
+            <motion.p variants={staggerItem}>
+              At Sub-Zero I built custom Power BI reporting tools for sales teams, and then had
+              to get external dealers and reps to actually use them. The second part turned out
+              to be the whole job.
+            </motion.p>
+            <motion.p variants={staggerItem}>
+              Building the reports was the straightforward half. Getting people to change how
+              they accessed sales data was not. Everyone already had habits, existing
+              spreadsheets, and no particular reason to trust something new from someone in a
+              rotational program. Training people on the tools was not a footnote at the end of
+              the project; it was most of the project.
+            </motion.p>
+            <motion.p variants={staggerItem}>
+              That is the same failure mode AI tools have now. Model quality is rarely what stops
+              a project. What stops it is that the people who were supposed to use the new thing
+              quietly went back to the old one.
+            </motion.p>
+          </motion.div>
+        </div>
+      </section>
+
       {/* ═══════ CAPABILITIES; what I actually do ═══════ */}
       <section className="capabilities-section section" data-assistant-section="about-capabilities">
         <div className="container">
