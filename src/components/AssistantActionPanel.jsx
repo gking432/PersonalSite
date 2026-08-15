@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import './AssistantActionPanel.css'
 
 function Notes({ notes }) {
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(true)
   return (
     <section className="assistant-action assistant-action--notes">
       <button type="button" className="assistant-action__toggle" onClick={() => setExpanded((value) => !value)} aria-expanded={expanded}>

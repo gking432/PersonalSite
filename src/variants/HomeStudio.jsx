@@ -429,7 +429,6 @@ function HomeStudio() {
             transition={{ duration: 0.9, ease, delay: 0.5 }}>
             <Link to="/projects/home-services-crm" className="studio-btn studio-btn--primary">Read the CRM case study</Link>
             <Link to="/projects" className="studio-btn studio-btn--ghost">All projects</Link>
-            <a href="/Gunnar-Neuman-Resume.pdf" className="studio-btn studio-btn--ghost" target="_blank" rel="noreferrer">Resume</a>
           </motion.div>
         </div>
 
@@ -438,22 +437,6 @@ function HomeStudio() {
           transition={{ duration: 1.1, ease, delay: 0.3 }}>
           <Globe />
         </motion.div>
-      </section>
-
-      <section className="studio-featured-case" data-assistant-section="home-case-study">
-        <Link to="/projects/home-services-crm" className="studio-featured-case__link">
-          <div>
-            <span className="studio-featured-case__eyebrow">Featured AI implementation case study</span>
-            <h2>Putting AI inside a home-services workflow.</h2>
-          </div>
-          <div className="studio-featured-case__summary">
-            <p>
-              The workflow, model boundaries, human controls, failure paths,
-              30/60/90 rollout plan, and the measurements that would decide whether to continue.
-            </p>
-            <strong>Read the case study <span aria-hidden="true">→</span></strong>
-          </div>
-        </Link>
       </section>
 
       {/* ─── WHY THE TRANSITION ─── */}

@@ -12,56 +12,55 @@
 .global-ai button { font: inherit; cursor: pointer; }
 
 /* ─── NUDGE ───────────────────────────────────────────────────────────────
-   A dismissible corner card that appears after the visitor has had time with
-   the page. Replaced a full-screen modal that blocked scroll on first load. */
+   A deliberately tiny invitation. It is absolutely positioned so appearing
+   cannot change the width of the launcher stack or move either control. */
 .global-ai__nudge {
-  position: relative;
-  z-index: 2;
-  width: min(300px, calc(100vw - 2.5rem));
-  margin-bottom: .7rem;
-  padding: 1rem 1.1rem 1.05rem;
-  color: var(--gai-ink);
-  background: rgba(252,250,244,.985);
-  border: 1px solid rgba(31,64,52,.16);
-  border-radius: 16px;
-  box-shadow: 0 20px 52px rgba(11, 18, 14, .18);
-}
-
-.global-ai__nudge-close {
   position: absolute;
-  top: .45rem;
-  right: .5rem;
-  width: 26px;
-  height: 26px;
-  padding: 0;
-  color: #8a8479;
-  font-size: .95rem;
-  line-height: 1;
-  background: transparent;
-  border: 0;
-  border-radius: 50%;
+  z-index: 2;
+  right: 0;
+  bottom: calc(100% + .72rem);
+  width: max-content;
+  max-width: calc(100vw - 2rem);
+  padding: .38rem .72rem;
+  color: #fcfaf4;
+  background: rgba(24,30,27,.97);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 999px;
+  box-shadow: 0 14px 34px rgba(11,18,14,.2);
 }
 
-.global-ai__nudge-close:hover { color: #514e47; background: rgba(31,64,52,.06); }
-
-.global-ai__nudge p {
-  margin: 0 1rem .8rem 0;
-  color: #514e47;
-  font-size: .78rem;
-  line-height: 1.55;
+.global-ai__nudge::after {
+  content: '';
+  position: absolute;
+  right: 1.2rem;
+  bottom: -5px;
+  width: 10px;
+  height: 10px;
+  background: rgba(24,30,27,.97);
+  transform: rotate(45deg);
 }
 
 .global-ai__nudge-open {
-  padding: .5rem .85rem;
-  color: #fcfaf4;
-  font-size: .68rem;
-  font-weight: 750;
-  background: #1f4034;
+  position: relative;
+  z-index: 1;
+  padding: .18rem 0;
+  color: inherit;
+  font-size: .6rem;
+  font-weight: 700;
+  background: transparent;
   border: 0;
-  border-radius: 999px;
+  white-space: nowrap;
 }
 
-.global-ai__nudge-open:hover { background: #2c5a48; }
+.global-ai__nudge-open:hover { color: #b4e4cc; }
+
+.global-ai__launchers {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: .48rem;
+  margin-top: .68rem;
+}
 
 .global-ai__launcher {
   position: relative;
@@ -81,6 +80,57 @@
   -webkit-backdrop-filter: blur(18px);
 }
 .global-ai__launcher.is-live { box-shadow: 0 0 0 5px rgba(61,118,95,.12), 0 14px 38px rgba(20,27,23,.24); }
+
+.global-ai__notes-launcher {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  color: #315746;
+  background: rgba(252,250,244,.97);
+  border: 1px solid rgba(31,64,52,.17);
+  border-radius: 999px;
+  box-shadow: 0 10px 28px rgba(20,27,23,.15);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+.global-ai__notes-launcher:hover,
+.global-ai__notes-launcher.is-open { background: #edf3ef; border-color: rgba(31,64,52,.28); }
+.global-ai__notes-icon {
+  position: relative;
+  display: block;
+  width: 15px;
+  height: 18px;
+  border: 1.6px solid currentColor;
+  border-radius: 2px;
+}
+.global-ai__notes-icon::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  right: -2px;
+  width: 4px;
+  height: 4px;
+  background: rgba(252,250,244,.97);
+  border-left: 1.6px solid currentColor;
+  transform: rotate(45deg);
+}
+.global-ai__notes-launcher:hover .global-ai__notes-icon::after,
+.global-ai__notes-launcher.is-open .global-ai__notes-icon::after { background: #edf3ef; }
+.global-ai__notes-icon i {
+  position: absolute;
+  left: 3px;
+  width: 7px;
+  height: 1px;
+  background: currentColor;
+  opacity: .75;
+}
+.global-ai__notes-icon i:first-child { top: 8px; }
+.global-ai__notes-icon i:last-child { top: 12px; }
 
 .global-ai__launcher-orb,
 .global-ai__orb {
@@ -115,6 +165,48 @@
   box-shadow: 0 24px 70px rgba(20,27,23,.25);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
+}
+
+.global-ai__activity {
+  position: relative;
+  z-index: 4;
+  width: min(410px, calc(100vw - 2rem));
+  max-height: min(70vh, 640px);
+  overflow: hidden;
+  color: var(--gai-ink);
+  background: rgba(252,250,244,.985);
+  border: 1px solid rgba(31,64,52,.16);
+  border-radius: 20px;
+  box-shadow: 0 24px 70px rgba(20,27,23,.24);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+.global-ai__activity-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .82rem 1rem;
+  border-bottom: 1px solid rgba(31,64,52,.1);
+}
+.global-ai__activity-head span,
+.global-ai__activity-head strong,
+.global-ai__activity-head small { display: block; }
+.global-ai__activity-head strong { color: var(--gai-ink); font-size: .72rem; line-height: 1.25; }
+.global-ai__activity-head small { margin-top: .14rem; color: #706b61; font-size: .52rem; }
+.global-ai__activity-head button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  color: #6d685e;
+  background: rgba(31,64,52,.06);
+  border: 0;
+  border-radius: 50%;
+}
+.global-ai__activity-body {
+  max-height: min(60vh, 550px);
+  overflow-y: auto;
+  padding: .12rem 1rem 1rem;
 }
 .global-ai__body { max-height:min(66vh,620px); overflow-y:auto; }
 .global-ai__head { display: flex; align-items: center; gap: .72rem; padding: .82rem; border-bottom: 1px solid rgba(31,64,52,.1); }
@@ -169,7 +261,8 @@
   .global-ai { right: .75rem; bottom: .75rem; }
   .global-ai__panel { width: calc(100vw - 1.5rem); }
   .global-ai__panel.is-text { width: calc(100vw - 1.5rem); }
-  .global-ai__nudge { width: calc(100vw - 1.75rem); }
+  .global-ai__activity { width: calc(100vw - 1.5rem); }
+  .global-ai__nudge { max-width: calc(100vw - 1.5rem); }
 }
 
 @media (prefers-reduced-motion: reduce) {

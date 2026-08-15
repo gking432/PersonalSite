@@ -66,6 +66,7 @@ function GlobalAssistantLauncher({ hidden = false }) {
   const chat = useTextPortfolioAssistant()
   const [inviteOpen, setInviteOpen] = useState(false)
   const [open, setOpen] = useState(false)
+  const [activityOpen, setActivityOpen] = useState(false)
   // Text is the default: a hiring manager is likely at work, possibly on a
   // phone. Voice is an upgrade they opt into, not a toll gate.
   const [mode, setMode] = useState('text')
@@ -96,7 +97,20 @@ function GlobalAssistantLauncher({ hidden = false }) {
 
   const openAssistant = () => {
     dismissInvite()
+    setActivityOpen(false)
     setOpen(true)
+  }
+
+  const toggleAssistant = () => {
+    dismissInvite()
+    setActivityOpen(false)
+    setOpen((value) => !value)
+  }
+
+  const toggleActivity = () => {
+    dismissInvite()
+    setOpen(false)
+    setActivityOpen((value) => !value)
   }
 
   const endConversation = () => {
@@ -109,6 +123,7 @@ function GlobalAssistantLauncher({ hidden = false }) {
     if (hidden) {
       assistant.end()
       setOpen(false)
+      setActivityOpen(false)
       setInviteOpen(false)
     }
   // End any hidden microphone session when the assistant is disabled.
@@ -185,6 +200,7 @@ function GlobalAssistantLauncher({ hidden = false }) {
   if (hidden) return null
 
   const status = assistant.connecting ? 'Connecting…' : mode === 'text' ? 'Text conversation' : assistant.active ? (assistant.assistantSpeaking ? 'Speaking' : assistant.userSpeaking ? 'Listening' : 'Voice live') : 'Voice or text'
+  const activity = assistant.active || mode === 'voice' ? assistant : chat
 
   return (
     <aside className="global-ai" aria-label="Gunnar's AI assistant">
@@ -197,12 +213,7 @@ function GlobalAssistantLauncher({ hidden = false }) {
             exit={{ opacity: 0, y: 8, scale: .98 }}
             transition={{ duration: .32, ease: [0.22, 1, 0.36, 1] }}
           >
-            <button type="button" className="global-ai__nudge-close" onClick={dismissInvite} aria-label="Dismiss">×</button>
-            <p>
-              Questions about Gunnar&rsquo;s background or how any of this was built?
-              His assistant can answer. In voice mode, it also shows each tool action as it happens.
-            </p>
-            <button type="button" className="global-ai__nudge-open" onClick={openAssistant}>Ask a question</button>
+            <button type="button" className="global-ai__nudge-open" onClick={openAssistant}>Talk with my AI assistant</button>
           </motion.aside>
         )}
       </AnimatePresence>
@@ -220,7 +231,6 @@ function GlobalAssistantLauncher({ hidden = false }) {
               {mode === 'voice' && assistant.active ? (
                 <>
                   <p>The assistant is listening. Ask about Gunnar, his projects, or where to go on the site.</p>
-                  <AssistantActionPanel assistant={assistant} compact />
                   <small>Microphone on · Speak naturally</small>
                 </>
               ) : mode === 'voice' ? (
@@ -250,7 +260,22 @@ function GlobalAssistantLauncher({ hidden = false }) {
         )}
       </AnimatePresence>
 
-      {!open && <motion.button type="button" className={`global-ai__launcher${assistant.active || assistant.connecting ? ' is-live' : ''}`} onClick={openAssistant} aria-label={assistant.active ? 'Open live AI assistant controls' : 'Open Gunnar’s AI assistant'} whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}><span className="global-ai__launcher-orb"><i /><i /><i /></span></motion.button>}
+      <AnimatePresence>
+        {activityOpen && (
+          <motion.div className="global-ai__activity" initial={{ opacity: 0, y: 12, scale: .98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 8, scale: .98 }} transition={{ duration: .24, ease: [0.22, 1, 0.36, 1] }}>
+            <div className="global-ai__activity-head">
+              <span><strong>Conversation notes</strong><small>Notes and assistant activity</small></span>
+              <button type="button" onClick={() => setActivityOpen(false)} aria-label="Close conversation notes">×</button>
+            </div>
+            <div className="global-ai__activity-body"><AssistantActionPanel assistant={activity} compact /></div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="global-ai__launchers">
+        <motion.button type="button" className={`global-ai__notes-launcher${activityOpen ? ' is-open' : ''}`} onClick={toggleActivity} aria-label={activityOpen ? 'Close conversation notes' : 'Open conversation notes and activity'} whileHover={{ y: -2 }} whileTap={{ scale: .98 }}><span className="global-ai__notes-icon"><i /><i /></span></motion.button>
+        <motion.button type="button" className={`global-ai__launcher${assistant.active || assistant.connecting ? ' is-live' : ''}`} onClick={toggleAssistant} aria-label={open ? 'Minimize Gunnar’s AI assistant' : assistant.active ? 'Open live AI assistant controls' : 'Open Gunnar’s AI assistant'} whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}><span className="global-ai__launcher-orb"><i /><i /><i /></span></motion.button>
+      </div>
     </aside>
   )
 }
