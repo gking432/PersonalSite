@@ -931,7 +931,7 @@ function ClientWork() {
         {/* Hero */}
         <section className="client-work-hero" data-assistant-section="client-work-overview">
           <div className="container">
-            <div className="hero-split">
+            <div className="hero-split cw-hero-grid">
               <div className="hero-split-left">
                 <motion.p
                   className="label"
@@ -939,10 +939,10 @@ function ClientWork() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, ease: ndsEase }}
                 >
-                  Client Delivery
+                  Client delivery · 2023–2025
                 </motion.p>
                 <h1>
-                  {'Six Engagements'.split(' ').map((word, i, words) => (
+                  {'Selected client work.'.split(' ').map((word, i, words) => (
                     <motion.span
                       key={i}
                       style={{ display: 'inline-block' }}
@@ -954,17 +954,17 @@ function ClientWork() {
                     </motion.span>
                   ))}
                 </h1>
+              </div>
+              <div className="cw-hero-copy">
                 <motion.p
                   className="hero-desc"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
                 >
-                  Every one of these started with a conversation about what a business actually
-                  needed, and ended with something live that someone else had to run without me.
-                  In between: scoping the work, building it, launching it, reporting on what
-                  happened, and adjusting. Two and a half years of the same loop, across six
-                  businesses with six different problems.
+                  From 2023 to 2025, I handled websites, eCommerce, advertising, content,
+                  reporting, and customer-acquisition work across a broader group of clients
+                  and projects than what is shown here.
                 </motion.p>
                 <motion.p
                   className="hero-desc cw-hero-note"
@@ -972,33 +972,11 @@ function ClientWork() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
                 >
-                  This is older marketing and web work, and the craft shows its age. I keep it
-                  here because the delivery is the part that transferred.
+                  These are six selected examples, not my complete client list. The work is older
+                  and some of it shows its age. I keep it here because it shows the range of work
+                  I owned during that chapter.
                 </motion.p>
               </div>
-              <motion.div
-                className="hero-meta"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
-              >
-                <div className="hero-meta-item">
-                  <span className="hero-meta-label">Period</span>
-                  <span className="hero-meta-value">2023–2025</span>
-                </div>
-                <div className="hero-meta-item">
-                  <span className="hero-meta-label">The loop</span>
-                  <span className="hero-meta-value">Discover · scope · build · launch · report</span>
-                </div>
-                <div className="hero-meta-item">
-                  <span className="hero-meta-label">What I owned</span>
-                  <span className="hero-meta-value">The whole engagement, start to handoff</span>
-                </div>
-                <div className="hero-meta-item">
-                  <span className="hero-meta-label">Why it stays</span>
-                  <span className="hero-meta-value hero-meta-status">Real stakeholders, real delivery</span>
-                </div>
-              </motion.div>
             </div>
           </div>
         </section>
@@ -1013,7 +991,7 @@ function ClientWork() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, ease: ndsEase }}
             >
-              Client Work
+              Selected archive
             </motion.p>
             <motion.h2
               className="cw-index-heading"
@@ -1022,7 +1000,7 @@ function ClientWork() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.08, ease: ndsEase }}
             >
-              Six projects from that chapter.
+              Six projects from a broader chapter.
             </motion.h2>
             <motion.p
               className="cw-index-intro"
@@ -1031,7 +1009,7 @@ function ClientWork() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.14, ease: ndsEase }}
             >
-              Presented in one consistent format. Open any project to browse the site and see the work in context.
+              This is a selection, not a complete client roster. Open any project to browse the surviving work in context.
             </motion.p>
             <div className="cw-index-grid">
               {clientProjects.map((project, i) => (
