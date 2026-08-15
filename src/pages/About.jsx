@@ -464,7 +464,7 @@ function About() {
       </section>
 
       {/* ═══════ CAPABILITIES; what I actually do ═══════ */}
-      <section className="capabilities-section section" data-assistant-section="about-capabilities">
+      <SqueezeSection className="capabilities-section section" data-assistant-section="about-capabilities">
         <div className="container">
           <motion.p
             className="label"
@@ -514,7 +514,7 @@ function About() {
             ))}
           </div>
         </div>
-      </section>
+      </SqueezeSection>
 
       {/* ═══════ ASK AI PHOTO SECTION ═══════ */}
       {SHOW_ASK_AI && (
