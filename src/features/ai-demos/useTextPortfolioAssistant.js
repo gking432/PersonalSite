@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useState } from 'react'
 
 const initialNotes = {
   visitorName: '',
@@ -11,12 +11,38 @@ const initialNotes = {
   interests: [],
   relevantProof: [],
   nextStep: 'Continue the conversation',
+  entries: [],
 }
 
 const openingMessage = {
   role: 'assistant',
-  content: "Hi. I'm Gunnar's AI assistant. I can answer questions about his background, pull up the right work, or help you through one of his projects. What would you like to know?",
+  content: "Hi. I'm Gunnar's assistant. What brought you to his site today?",
   destinations: [],
+}
+
+let textNoteSequence = 0
+
+function mergeList(current = [], incoming = [], limit = 20) {
+  return [...current, ...incoming]
+    .map((item) => String(item || '').trim())
+    .filter((item, index, items) => item && items.indexOf(item) === index)
+    .slice(-limit)
+}
+
+function mergeNotes(current, incoming) {
+  return {
+    visitorName: incoming.visitorName || current.visitorName,
+    organization: incoming.organization || current.organization,
+    visitorRole: incoming.visitorRole || current.visitorRole,
+    reasonForVisit: incoming.reasonForVisit || current.reasonForVisit,
+    hiringContext: incoming.hiringContext || current.hiringContext,
+    goal: incoming.goal || current.goal,
+    questions: mergeList(current.questions, incoming.questions),
+    interests: mergeList(current.interests, incoming.interests),
+    relevantProof: mergeList(current.relevantProof, incoming.relevantProof),
+    nextStep: incoming.nextStep || current.nextStep,
+    entries: current.entries,
+  }
 }
 
 export default function useTextPortfolioAssistant() {
@@ -29,8 +55,6 @@ export default function useTextPortfolioAssistant() {
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
   const [notes, setNotes] = useState(initialNotes)
-  const [actions, setActions] = useState([])
-  const actionCounter = useRef(0)
 
   const sendMessage = useCallback(async (value) => {
     const content = String(value || '').trim().slice(0, 1200)
@@ -39,17 +63,16 @@ export default function useTextPortfolioAssistant() {
     const userMessage = { role: 'user', content, destinations: [] }
     const nextMessages = [...messages, userMessage]
     setMessages(nextMessages)
+    setNotes((current) => {
+      textNoteSequence += 1
+      return {
+        ...current,
+        entries: [...current.entries, { id: `text-note-${textNoteSequence}`, text: content }].slice(-30),
+      }
+    })
     setSuggestions([])
     setSending(true)
     setError('')
-    const knowledgeActionId = `text-action-${++actionCounter.current}`
-    setActions((current) => [...current.slice(-9), {
-      id: knowledgeActionId,
-      kind: 'read',
-      label: 'Consult verified portfolio knowledge',
-      detail: 'Matching the question to Gunnar’s verified background and project evidence.',
-      status: 'running',
-    }])
 
     try {
       const response = await fetch('/api/assistant-chat', {
@@ -68,35 +91,10 @@ export default function useTextPortfolioAssistant() {
         destinations: Array.isArray(payload.destinations) ? payload.destinations : [],
       }])
       setSuggestions(Array.isArray(payload.suggestions) ? payload.suggestions : [])
-      if (payload.notes) setNotes(payload.notes)
-      setActions((current) => {
-        const completed = current.map((action) => action.id === knowledgeActionId
-          ? { ...action, status: 'ok', detail: 'Answer grounded in Gunnar’s verified public knowledge.' }
-          : action)
-        const additions = [{
-          id: `text-action-${++actionCounter.current}`,
-          kind: 'internal',
-          label: 'Update conversation notes',
-          detail: 'Captured the useful context, questions, relevant evidence, and next step.',
-          status: 'ok',
-        }]
-        if (Array.isArray(payload.destinations) && payload.destinations.length) {
-          additions.push({
-            id: `text-action-${++actionCounter.current}`,
-            kind: 'read',
-            label: 'Offer relevant portfolio destination',
-            detail: 'Displayed the most relevant page or project link without opening anything automatically.',
-            status: 'ok',
-          })
-        }
-        return [...completed, ...additions].slice(-12)
-      })
+      if (payload.notes) setNotes((current) => mergeNotes(current, payload.notes))
       return true
     } catch (requestError) {
       setError(requestError?.message || 'The assistant could not answer right now.')
-      setActions((current) => current.map((action) => action.id === knowledgeActionId
-        ? { ...action, status: 'error', detail: 'The knowledge request did not complete.' }
-        : action))
       return false
     } finally {
       setSending(false)
@@ -111,7 +109,6 @@ export default function useTextPortfolioAssistant() {
     error,
     sendMessage,
     notes,
-    actions,
     destination: null,
     emailOffered: false,
     calendarState: { status: 'idle' },

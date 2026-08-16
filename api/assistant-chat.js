@@ -130,9 +130,9 @@ export default async function handler(request, response) {
       reasonForVisit: String(rawNotes.reasonForVisit || '').slice(0, 320),
       hiringContext: String(rawNotes.hiringContext || '').slice(0, 500),
       goal: String(rawNotes.goal || 'Getting oriented').slice(0, 320),
-      questions: Array.isArray(rawNotes.questions) ? rawNotes.questions.map((item) => String(item).slice(0, 220)).slice(0, 4) : [],
-      interests: Array.isArray(rawNotes.interests) ? rawNotes.interests.map((item) => String(item).slice(0, 180)).slice(0, 4) : [],
-      relevantProof: Array.isArray(rawNotes.relevantProof) ? rawNotes.relevantProof.map((item) => String(item).slice(0, 220)).slice(0, 4) : [],
+      questions: Array.isArray(rawNotes.questions) ? rawNotes.questions.map((item) => String(item).slice(0, 220)).slice(0, 12) : [],
+      interests: Array.isArray(rawNotes.interests) ? rawNotes.interests.map((item) => String(item).slice(0, 180)).slice(0, 12) : [],
+      relevantProof: Array.isArray(rawNotes.relevantProof) ? rawNotes.relevantProof.map((item) => String(item).slice(0, 220)).slice(0, 12) : [],
       nextStep: String(rawNotes.nextStep || 'Continue the conversation').slice(0, 320),
     }
 

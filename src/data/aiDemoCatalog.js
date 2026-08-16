@@ -33,7 +33,7 @@ export const profileAnswers = [
     id: 'capabilities',
     label: 'What can he build?',
     keywords: ['build', 'technical', 'code', 'capable', 'skills'],
-    answer: 'He can take a workflow from rough idea to a functional product: shape the process, design the interface, connect APIs and data, add AI where it is useful, and deploy something people can use. PrepMe and the home-services CRM are the clearest public examples.',
+    answer: 'He can take a workflow from rough idea to a functional product: shape the process, design the interface, connect APIs and data, add AI where it is useful, and deploy something people can use. The home-services CRM and its case study are the clearest public evidence.',
     interest: 'Hands-on implementation capability',
   },
   {
@@ -47,7 +47,7 @@ export const profileAnswers = [
     id: 'projects',
     label: 'Which project should I look at?',
     keywords: ['project', 'portfolio', 'prepme', 'crm', 'proof'],
-    answer: 'Start with PrepMe for an AI-first product and the home-services CRM for a deeper operational system. This demo is the clearest example of cross-channel AI, tool use, browser state and follow-through working as one workflow.',
+    answer: 'Start with the home-services CRM case study. It is the clearest example of workflow design, human controls, implementation decisions, and connected AI features working as one system.',
     interest: 'Relevant portfolio proof',
   },
 ]

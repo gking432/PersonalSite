@@ -3,71 +3,49 @@ import { Link } from 'react-router-dom'
 import './AssistantActionPanel.css'
 
 function Notes({ notes }) {
-  const [expanded, setExpanded] = useState(true)
+  const entries = Array.isArray(notes.entries) ? notes.entries : []
+  const visitor = [notes.visitorName, notes.visitorRole, notes.organization].filter(Boolean).join(' · ')
+  const discussion = [...(notes.interests || []), ...(notes.relevantProof || [])]
+    .filter((item, index, items) => item && items.indexOf(item) === index)
+
   return (
     <section className="assistant-action assistant-action--notes">
-      <button type="button" className="assistant-action__toggle" onClick={() => setExpanded((value) => !value)} aria-expanded={expanded}>
-        <span><i /> AI notes</span><small>{expanded ? 'Hide' : 'View'}</small>
-      </button>
-      {expanded && (
-        <dl className="assistant-notes">
-          {(notes.visitorName || notes.organization || notes.visitorRole) && (
-            <div><dt>Visitor</dt><dd>{[notes.visitorName, notes.visitorRole, notes.organization].filter(Boolean).join(' · ')}</dd></div>
-          )}
-          {notes.reasonForVisit && <div><dt>Context</dt><dd>{notes.reasonForVisit}</dd></div>}
-          {notes.hiringContext && <div><dt>Opportunity</dt><dd>{notes.hiringContext}</dd></div>}
-          <div><dt>Goal</dt><dd>{notes.goal}</dd></div>
-          <div><dt>Questions</dt><dd>{notes.questions.length ? notes.questions.join(' · ') : 'Listening for the important questions'}</dd></div>
-          <div><dt>Relevant proof</dt><dd>{notes.relevantProof.length ? notes.relevantProof.join(' · ') : 'Matching Gunnar’s experience to the conversation'}</dd></div>
-          <div><dt>Next step</dt><dd>{notes.nextStep}</dd></div>
-        </dl>
-      )}
-    </section>
-  )
-}
-
-// The audit trail. Always visible: the point of the panel is that a visitor can
-// see what the assistant is allowed to do and where a person has to intervene.
-const statusLabels = { ok: 'done', running: 'running', error: 'failed' }
-
-function ActionLog({ actions, onSimulateFailure, canSimulate }) {
-  return (
-    <section className="assistant-action assistant-action--log">
-      <div className="assistant-log__head">
-        <span className="assistant-action__label">Action log</span>
-        {canSimulate && (
-          <button type="button" className="assistant-log__simulate" onClick={onSimulateFailure}>
-            Simulate a tool failure
-          </button>
-        )}
+      <div className="assistant-notes__head">
+        <span><i /> Meeting notes</span><small>Live</small>
       </div>
 
-      {actions.length === 0 ? (
-        <p className="assistant-log__empty">
-          Every action this assistant takes appears here as it happens.
-        </p>
-      ) : (
-        <ol className="assistant-log" aria-live="polite">
-          {actions.map((action) => (
-            <li key={action.id} className={`is-${action.status} is-kind-${action.kind}`}>
-              <span className="assistant-log__kind">{action.kind}</span>
-              <div>
-                <strong>
-                  {action.label}
-                  {action.simulated && <em className="assistant-log__sim">simulated</em>}
-                </strong>
-                <small>{action.detail}</small>
-              </div>
-              <span className="assistant-log__status">{statusLabels[action.status] || action.status}</span>
-            </li>
-          ))}
-        </ol>
-      )}
+      <div className="assistant-notes" aria-live="polite">
+        {entries.length ? (
+          <ol className="assistant-notes__entries">
+            {entries.map((entry, index) => (
+              <li key={entry.id || `${index}-${entry.text}`} className={entry.complete === false ? 'is-live' : ''}>
+                <span>{index + 1}</span><p>{entry.text}</p>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p className="assistant-notes__empty">Questions and discussion points will appear here as the conversation develops.</p>
+        )}
 
-      <p className="assistant-log__note">
-        Reads happen automatically. Email and calendar actions wait for your
-        confirmation. The model decides what to say; the application decides what is allowed.
-      </p>
+        {(visitor || notes.reasonForVisit || notes.hiringContext) && (
+          <dl className="assistant-notes__context">
+            {visitor && <div><dt>Visitor</dt><dd>{visitor}</dd></div>}
+            {notes.reasonForVisit && <div><dt>Reason for visiting</dt><dd>{notes.reasonForVisit}</dd></div>}
+            {notes.hiringContext && <div><dt>Opportunity</dt><dd>{notes.hiringContext}</dd></div>}
+          </dl>
+        )}
+
+        {!!discussion.length && (
+          <div className="assistant-notes__summary">
+            <strong>Points discussed</strong>
+            <ul>{discussion.map((item) => <li key={item}>{item}</li>)}</ul>
+          </div>
+        )}
+
+        {notes.nextStep && notes.nextStep !== 'Continue the conversation' && (
+          <div className="assistant-notes__next"><strong>Next step</strong><p>{notes.nextStep}</p></div>
+        )}
+      </div>
     </section>
   )
 }
@@ -148,11 +126,6 @@ function Calendar({ state, bookingState, onBook }) {
 export default function AssistantActionPanel({ assistant, compact = false, onNavigate }) {
   return (
     <div className={`assistant-actions${compact ? ' is-compact' : ''}`}>
-      <ActionLog
-        actions={assistant.actions || []}
-        onSimulateFailure={assistant.armCalendarFailure}
-        canSimulate={Boolean(assistant.armCalendarFailure) && assistant.calendarState?.status !== 'ready'}
-      />
       <Notes notes={assistant.notes} />
       <Destination destination={assistant.destination} onNavigate={onNavigate} />
       {assistant.emailOffered && <EmailRecap state={assistant.emailState} onSend={assistant.sendRecap} />}

@@ -35,6 +35,7 @@ export default function useRealtimeVoice() {
   const audioRef = useRef(null)
   const handlersRef = useRef({})
   const transcriptRef = useRef('')
+  const inputTranscriptsRef = useRef(new Map())
   const failureRef = useRef('')
 
   const send = useCallback((event) => {
@@ -60,6 +61,7 @@ export default function useRealtimeVoice() {
     }
     audioRef.current = null
     transcriptRef.current = ''
+    inputTranscriptsRef.current.clear()
     failureRef.current = ''
     setState(initialState)
   }, [])
@@ -111,8 +113,17 @@ export default function useRealtimeVoice() {
       transcriptRef.current = event.transcript || transcriptRef.current
       handlersRef.current.onAssistantTranscript?.(transcriptRef.current, true)
     }
+    if (event.type === 'conversation.item.input_audio_transcription.delta') {
+      const itemId = event.item_id || 'current-turn'
+      const nextTranscript = `${inputTranscriptsRef.current.get(itemId) || ''}${event.delta || ''}`
+      inputTranscriptsRef.current.set(itemId, nextTranscript)
+      handlersRef.current.onUserTranscript?.(nextTranscript, false, itemId)
+    }
     if (event.type === 'conversation.item.input_audio_transcription.completed') {
-      handlersRef.current.onUserTranscript?.(event.transcript || '')
+      const itemId = event.item_id || 'current-turn'
+      const finalTranscript = event.transcript || inputTranscriptsRef.current.get(itemId) || ''
+      inputTranscriptsRef.current.delete(itemId)
+      handlersRef.current.onUserTranscript?.(finalTranscript, true, itemId)
     }
     if (event.type === 'response.output_audio.done') {
       setState((current) => ({ ...current, assistantSpeaking: false }))

@@ -282,7 +282,7 @@ function GlobalAssistantLauncher({ hidden = false }) {
         {activityOpen && (
           <motion.div className="global-ai__activity" initial={{ opacity: 0, y: 12, scale: .98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 8, scale: .98 }} transition={{ duration: .24, ease: [0.22, 1, 0.36, 1] }}>
             <div className="global-ai__activity-head">
-              <span><strong>Conversation notes</strong><small>Notes and assistant activity</small></span>
+              <span><strong>Meeting notes</strong><small>Updated throughout the conversation</small></span>
               <button type="button" onClick={() => setActivityOpen(false)} aria-label="Close conversation notes">×</button>
             </div>
             <div className="global-ai__activity-body"><AssistantActionPanel assistant={activity} compact /></div>
@@ -292,7 +292,7 @@ function GlobalAssistantLauncher({ hidden = false }) {
 
       <div className="global-ai__launchers">
         <AnimatePresence>
-          {sessionStarted && <motion.button type="button" className={`global-ai__notes-launcher${activityOpen ? ' is-open' : ''}`} onClick={toggleActivity} aria-label={activityOpen ? 'Close conversation notes' : 'Open conversation notes and activity'} initial={{ opacity: 0, scale: .7 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: .7 }} whileHover={{ y: -2 }} whileTap={{ scale: .92 }}><span className="global-ai__notes-icon"><i /><i /></span></motion.button>}
+          {sessionStarted && <motion.button type="button" className={`global-ai__notes-launcher${activityOpen ? ' is-open' : ''}`} onClick={toggleActivity} aria-label={activityOpen ? 'Close meeting notes' : 'Open meeting notes'} initial={{ opacity: 0, scale: .7 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: .7 }} whileHover={{ y: -2 }} whileTap={{ scale: .92 }}><span className="global-ai__notes-icon"><i /><i /></span></motion.button>}
         </AnimatePresence>
         <motion.button type="button" className={`global-ai__launcher${assistant.active || assistant.connecting ? ' is-live' : ''}`} onClick={toggleAssistant} aria-label={open ? 'Minimize Gunnar’s AI assistant' : assistant.active ? 'Open live AI assistant controls' : 'Open Gunnar’s AI assistant'} whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}><span className="global-ai__launcher-orb"><i /><i /><i /></span></motion.button>
       </div>
