@@ -17,7 +17,7 @@ export const catalogFabrics = [
   { id: 'slate', name: 'Slate Grid', family: 'Performance weave', color: '#67716e', accent: '#c6cfca', pattern: 'grid', note: 'Durable and neutral. Best when the space already has strong color.' },
   { id: 'sand', name: 'Sandstone', family: 'Textured weave', color: '#c7ae87', accent: '#ede2cf', pattern: 'weave', note: 'Warm, quiet and easy to place in hospitality-style spaces.' },
   { id: 'juniper', name: 'Juniper Bouclé', family: 'Soft texture', color: '#315f4d', accent: '#8fac9f', pattern: 'boucle', note: 'The strongest fit for the Harbor Lounge: warm, tactile and still professional.' },
-  { id: 'ember', name: 'Ember Check', family: 'Woven pattern', color: '#9b4c34', accent: '#e6b892', pattern: 'check', note: 'Adds energy and contrast, but works best as an accent rather than across a full room.' },
+  { id: 'ember', name: 'Ember Check', family: 'Woven pattern', color: '#9b4c34', accent: '#e6b892', pattern: 'check', note: 'Best used as an accent. Adds energy and contrast to a room.' },
   { id: 'cobalt', name: 'Cobalt Line', family: 'Performance textile', color: '#294d78', accent: '#8da8c6', pattern: 'line', note: 'A clean high-contrast choice for contemporary, high-traffic environments.' },
 ]
 
@@ -26,28 +26,28 @@ export const profileAnswers = [
     id: 'background',
     label: 'What is Gunnar’s background?',
     keywords: ['background', 'experience', 'career', 'worked'],
-    answer: 'Gunnar’s background is in customers, sales teams, product launches and client problems. He later added hands-on product development so he could build and test the systems he was proposing instead of stopping at a recommendation.',
+    answer: 'Gunnar’s background is in customers, sales teams, product launches and client problems. He later added hands-on product development so he could build and test the systems he proposed.',
     interest: 'Business and technical background',
   },
   {
     id: 'capabilities',
-    label: 'What can he actually build?',
+    label: 'What can he build?',
     keywords: ['build', 'technical', 'code', 'capable', 'skills'],
-    answer: 'He can take a workflow from rough idea to a functional product: shape the process, design the interface, connect APIs and data, add AI where it is useful, and deploy something people can actually use. PrepMe and the home-services CRM are the clearest public examples.',
+    answer: 'He can take a workflow from rough idea to a functional product: shape the process, design the interface, connect APIs and data, add AI where it is useful, and deploy something people can use. The home-services CRM and its case study are the clearest public evidence.',
     interest: 'Hands-on implementation capability',
   },
   {
     id: 'implementation',
     label: 'Why AI implementation?',
     keywords: ['implementation', 'ai role', 'why ai', 'career change', 'moving'],
-    answer: 'The fit is practical. Gunnar understands how employees and customers work, can identify the repeated manual steps, and can turn those steps into a usable AI-enabled workflow. He is not claiming years of formal enterprise AI transformation work; the value is the combination of business judgment and the ability to build.',
+    answer: 'The fit is practical. Gunnar understands how employees and customers work, can identify repeated manual steps, and can turn those steps into a usable AI-enabled workflow. His direct evidence comes from self-directed products and functional demonstrations. Business judgment and hands-on building are the core strengths.',
     interest: 'AI implementation fit',
   },
   {
     id: 'projects',
     label: 'Which project should I look at?',
     keywords: ['project', 'portfolio', 'prepme', 'crm', 'proof'],
-    answer: 'Start with PrepMe for an AI-first product and the home-services CRM for a deeper operational system. This demo is the clearest example of cross-channel AI, tool use, browser state and follow-through working as one workflow.',
+    answer: 'Start with the home-services CRM case study. It is the clearest example of workflow design, human controls, implementation decisions, and connected AI features working as one system.',
     interest: 'Relevant portfolio proof',
   },
 ]
@@ -57,4 +57,3 @@ export const previewSlots = [
   { id: 'slot-2', day: 'Wednesday', date: 'Aug 12', time: '1:30 PM', zone: 'CT' },
   { id: 'slot-3', day: 'Thursday', date: 'Aug 13', time: '9:00 AM', zone: 'CT' },
 ]
-

@@ -3,7 +3,7 @@ export const identity = {
   name: 'Gunnar Neuman',
   eyebrow: ['Business operator', 'product builder', 'AI systems'],
   statement:
-    'I turn business problems into working products and systems, then use them to learn what actually works.',
+    'I turn business problems into working products and systems, then use them to learn what works.',
   roles: ['Business Systems', 'AI Products', 'Workflow Design', '0-to-1 Building', 'Product Strategy']
 }
 
@@ -23,7 +23,7 @@ export const approachPrinciples = [
   {
     number: '02',
     title: 'Build the first useful version',
-    desc: 'I turn the workflow into something people can actually use. That makes the tradeoffs visible and gives the conversation something real to react to.'
+    desc: 'I turn the workflow into something people can use. That makes the tradeoffs visible and gives the conversation something concrete to react to.'
   },
   {
     number: '03',
@@ -61,7 +61,7 @@ export const resumeTimeline = [
     title: 'GunnarNeuman.com',
     role: 'Independent Product Builder',
     location: 'Milwaukee, WI',
-    desc: 'Building functional AI products and business systems to test how technology can improve a real workflow, not just add another feature.',
+    desc: 'Building functional AI products and business systems to test how technology can improve a real workflow.',
     tags: ['AI Products', 'Business Systems', 'Workflow Design', 'Prototyping']
   },
   {

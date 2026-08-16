@@ -188,7 +188,7 @@ function Projects() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
                 >
-                  I build to answer questions that are hard to resolve on paper. These projects show how I move from a business problem or unfamiliar domain to a working product people can actually use.
+                  I build to answer questions that are hard to resolve on paper. These projects show how I move from a business problem or unfamiliar domain to a working product people can use.
                 </motion.p>
               </div>
               <motion.div

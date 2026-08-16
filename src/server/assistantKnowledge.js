@@ -4,7 +4,7 @@ export const assistantKnowledge = `
 ## Core identity
 Gunnar Neuman is an AI Product Builder based in Milwaukee, Wisconsin. He is a business-minded operator with experience in sales operations, product launches, client work, customer acquisition, training, and cross-functional delivery who developed the technical capability to design and build functional AI-enabled products and business systems himself.
 
-His story is not "a marketer trying to become a developer." The accurate story is: business operator, then broader product ownership, then technically capable business and product operator.
+His career developed from business operations into broader product ownership and hands-on technical execution. He is a technically capable business and product operator.
 
 Gunnar can investigate a business problem, map the workflow, identify where AI or software can help, define a useful first version, build functional interfaces and workflows, incorporate AI capabilities, preserve human approvals where needed, and communicate with business and technical stakeholders.
 
@@ -18,7 +18,7 @@ When a visitor names a company, use Gunnar's verified experience plus stable gen
 
 ## Professional history
 
-### AI Product Builder, GunnarNeuman.com — October 2025 to present
+### AI Product Builder, GunnarNeuman.com; October 2025 to present
 This is self-directed product development, not employment by an AI company or enterprise AI consulting.
 
 Verified work includes:
@@ -29,12 +29,12 @@ Verified work includes:
 
 This proves Gunnar can move beyond recommendations and build functional software to test an idea. It does not prove enterprise scale, large organizational adoption, paying customers, or commercial traction.
 
-### Founder, TouchPoint Marketing Solutions — March 2023 to October 2025
+### Founder, TouchPoint Marketing Solutions; March 2023 to October 2025
 Gunnar worked directly with small-business clients to scope and deliver websites, e-commerce work, customer-acquisition campaigns, and reporting. He managed work from initial conversations through implementation, launch, performance review, and updates. He used campaign and customer data to report results and adjust marketing activity, and coordinated timelines, budgets, vendors, and client communication.
 
 This was real client-services work and demonstrates discovery, scoping, implementation, communication, analysis, and project ownership. Do not recast it as enterprise transformation consulting, AI consulting, management consulting, or complex systems integration.
 
-### Sales Rotational Program, Sub-Zero Group, Inc. — June 2020 to February 2023
+### Sales Rotational Program, Sub-Zero Group, Inc.; June 2020 to February 2023
 Gunnar was the inaugural participant in a two-and-a-half-year rotational program spanning sales operations, product marketing, product launch, showroom sales, and dealer support. He supported cross-functional product launches through competitive research, positioning, naming, imagery, sales materials, and retail execution. He built custom Power BI reporting tools and trained external sales teams to use them, helping users access and apply sales data. He gathered dealer and distributor feedback, supported product training, and translated product information into practical sales and customer-facing resources.
 
 Do not upgrade his title to product manager or claim he owned Sub-Zero's product roadmap, launches, enterprise data architecture, or digital transformation.
@@ -45,12 +45,14 @@ Gunnar earned a Bachelor of Business Administration from the University of Wisco
 ## Public projects
 
 ### PrepMe
-PrepMe is a live, self-directed AI interview platform. It uses a candidate's resume and target job description to generate and conduct a personalized mock interview. It is the clearest proof that Gunnar can turn a user problem and user-specific inputs into an end-to-end AI product. Public URL: https://prep-me-wheat.vercel.app/
+PrepMe is a live, self-directed AI interview platform. It uses a candidate's resume and target job description to generate and conduct a personalized mock interview. Public URL: https://prep-me-wheat.vercel.app/
 
 Do not claim paying customers, user counts, revenue, enterprise adoption, or commercial success.
 
 ### Home-Services AI CRM
-This is a public, self-directed functional demonstration, not a client deployment. It explores a connected home-services workflow: lead analysis, calls and summaries, follow-up, quote preparation, appointments, review monitoring, and human approval. It demonstrates operational workflow thinking and judgment about where AI should assist rather than replace people.
+Classification: public, self-directed functional demonstration. It has no client deployment. It explores a connected home-services workflow: lead analysis, calls and summaries, follow-up, quote preparation, appointments, review monitoring, and human approval. It demonstrates operational workflow thinking and judgment about the appropriate role for AI and human approval.
+
+For every general question about Gunnar's strongest, best, or most impressive project, this CRM and its written case study are the primary answer. It is his clearest evidence for AI implementation, AI operations, business systems, workflow design, human-in-the-loop controls, and rollout thinking. Discuss PrepMe only when the visitor asks about it by name or specifically asks for an interview-practice product.
 
 Do not claim it was built for Exterior Pros, deployed to a contractor, integrated with an unverified production service, or produced commercial results.
 
@@ -67,14 +69,14 @@ Earlier client work consisted primarily of websites, e-commerce, marketing execu
 Verified technical tools include React, TypeScript, Claude, Codex, Cursor, v0, and Power BI. Say Gunnar can build functional web products with modern AI-assisted development. Do not infer unverified depth in backend architecture, cloud infrastructure, authentication, databases, DevOps, or production-scale engineering.
 
 Gunnar's AI implementation approach:
-1. Start with how employees or customers actually perform the work.
+1. Start with how employees or customers perform the work today.
 2. Identify repeated steps, handoffs, copying, rewriting, searching, summarizing, or manual AI prompting.
 3. Turn useful but inconsistent AI behavior into accessible software with the context and workflow built in.
 4. Decide what AI can draft, organize, summarize, classify, or recommend and what still requires human judgment or approval.
 5. Build a useful first version that can be tested.
 6. Connect the AI capability to the real workflow around it.
 
-Gunnar does not treat maximum automation as the goal. The goal is a better workflow.
+Gunnar optimizes for a better workflow. Maximum automation is rarely the goal.
 
 ## Career direction
 Gunnar is interested in roles involving AI implementation, AI operations, product ownership, business systems, practical workflow improvement, and related technology transformation. Do not reduce his identity to "automation guy" or recite a list of target job titles unless asked.

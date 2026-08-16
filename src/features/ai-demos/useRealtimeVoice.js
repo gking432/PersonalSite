@@ -11,6 +11,22 @@ function parseArguments(value) {
   try { return JSON.parse(value || '{}') } catch { return {} }
 }
 
+function microphoneErrorMessage(error) {
+  if (error?.name === 'NotFoundError' || error?.name === 'DevicesNotFoundError') {
+    return 'No microphone was found on this device. Connect or enable a microphone, then try voice again. You can also use text instead.'
+  }
+  if (error?.name === 'NotAllowedError' || error?.name === 'SecurityError') {
+    return 'Microphone access is blocked. Allow microphone access for this site, then try voice again. You can also use text instead.'
+  }
+  if (error?.name === 'NotReadableError' || error?.name === 'TrackStartError') {
+    return 'The browser found a microphone but could not use it. Check whether another application is using it, then try again. You can also use text instead.'
+  }
+  if (error?.name === 'AbortError') {
+    return 'The microphone could not be started. Check the device connection and try voice again. You can also use text instead.'
+  }
+  return error?.message || 'The live voice session could not be started.'
+}
+
 export default function useRealtimeVoice() {
   const [state, setState] = useState(initialState)
   const peerRef = useRef(null)
@@ -19,6 +35,7 @@ export default function useRealtimeVoice() {
   const audioRef = useRef(null)
   const handlersRef = useRef({})
   const transcriptRef = useRef('')
+  const inputTranscriptsRef = useRef(new Map())
   const failureRef = useRef('')
 
   const send = useCallback((event) => {
@@ -44,6 +61,7 @@ export default function useRealtimeVoice() {
     }
     audioRef.current = null
     transcriptRef.current = ''
+    inputTranscriptsRef.current.clear()
     failureRef.current = ''
     setState(initialState)
   }, [])
@@ -95,8 +113,17 @@ export default function useRealtimeVoice() {
       transcriptRef.current = event.transcript || transcriptRef.current
       handlersRef.current.onAssistantTranscript?.(transcriptRef.current, true)
     }
+    if (event.type === 'conversation.item.input_audio_transcription.delta') {
+      const itemId = event.item_id || 'current-turn'
+      const nextTranscript = `${inputTranscriptsRef.current.get(itemId) || ''}${event.delta || ''}`
+      inputTranscriptsRef.current.set(itemId, nextTranscript)
+      handlersRef.current.onUserTranscript?.(nextTranscript, false, itemId)
+    }
     if (event.type === 'conversation.item.input_audio_transcription.completed') {
-      handlersRef.current.onUserTranscript?.(event.transcript || '')
+      const itemId = event.item_id || 'current-turn'
+      const finalTranscript = event.transcript || inputTranscriptsRef.current.get(itemId) || ''
+      inputTranscriptsRef.current.delete(itemId)
+      handlersRef.current.onUserTranscript?.(finalTranscript, true, itemId)
     }
     if (event.type === 'response.output_audio.done') {
       setState((current) => ({ ...current, assistantSpeaking: false }))
@@ -220,9 +247,7 @@ export default function useRealtimeVoice() {
         },
       })
     } catch (error) {
-      const message = error?.name === 'NotAllowedError'
-        ? 'Microphone access is required for the live assistant.'
-        : (error?.message || 'The live voice session could not be started.')
+      const message = microphoneErrorMessage(error)
       failureRef.current = message
       channelRef.current?.close?.()
       peerRef.current?.close?.()

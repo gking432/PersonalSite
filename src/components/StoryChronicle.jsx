@@ -27,8 +27,8 @@ const CHAPTERS = [
     era: 'What pulled me in',
     title: 'The Work',
     blocks: [
-      { type: 'p', text: 'That was the first time I understood what kind of work actually pulls me in. It wasn’t the deliverables. It wasn’t being my own boss. It was building.' },
-      { type: 'p', text: 'Running that agency forced me to own the full problem: discovery, strategy, websites and eCommerce, customer acquisition, vendors, reporting, and the uncomfortable art of explaining what was worth doing and what was not.' },
+      { type: 'p', text: 'That was the first time I understood what kind of work pulls me in. I liked building: turning a loose idea into something a client could see, use, and respond to.' },
+      { type: 'p', text: 'Running that agency forced me to own the full problem: discovery, strategy, websites and eCommerce, customer acquisition, vendors, reporting, and the uncomfortable work of deciding which ideas deserved the investment.' },
     ],
   },
   {
@@ -36,7 +36,7 @@ const CHAPTERS = [
     era: 'When everything moved',
     title: 'The Shift',
     blocks: [
-      { type: 'p', text: 'Then the tools changed. As AI and modern builder tools became widely available, the industry changed fast. At first, it felt like a gift: more speed, more leverage, more ways to make small teams powerful.' },
+      { type: 'p', text: 'Then the tools changed. As AI and modern builder tools became widely available, the industry changed fast. At first, it felt like a gift: more speed, more capacity, more ways for small teams to build.' },
       { type: 'p', text: 'Then the economics of basic marketing production collapsed. Websites, copy, and ad creative became cheaper and easier to produce. That made the average deliverable less defensible, and it forced me to ask a better question: what still matters when almost everyone can make something?' },
     ],
   },
@@ -46,8 +46,8 @@ const CHAPTERS = [
     title: 'The Lever',
     blocks: [
       { type: 'quote', text: 'In a world where tools make everyone fast, judgment becomes the real lever.' },
-      { type: 'p', text: 'The winners will not be the teams that make the most stuff. They will be the teams that know what is worth making, why it should exist, and how to execute above the noise.' },
-      { type: 'p', text: 'So I went deeper into the technology behind the shift. I wanted to understand where AI could improve real work, where it created new risk or friction, and what it took to turn a promising use case into a product someone could actually use.' },
+      { type: 'p', text: 'Strong teams know what is worth making, why it should exist, and how to execute above the noise.' },
+      { type: 'p', text: 'So I went deeper into the technology behind the shift. I wanted to understand where AI could improve real work, where it created new risk or friction, and what it took to turn a promising use case into a product someone could use.' },
     ],
   },
   {
@@ -55,8 +55,8 @@ const CHAPTERS = [
     era: 'Today',
     title: 'Building Now',
     blocks: [
-      { type: 'p', text: 'More importantly, I started building. I created an AI interview platform, a home-services CRM demo, Terralis Print Studio, and MoveMint. Different products, but the work was consistent: understand the problem, map the workflow, make the hard product decisions, and build enough of the system to prove it.' },
-      { type: 'p', text: 'I did not leave my business background behind to become a traditional developer. I added enough technical capability to make my business judgment more useful.' },
+      { type: 'p', text: 'I started building. I created an AI interview platform, a home-services CRM demo, Terralis Print Studio, and MoveMint. Across each product, the work stayed consistent: understand the problem, map the workflow, make the hard product decisions, and build enough of the system to prove it.' },
+      { type: 'p', text: 'My business background gives the technical work context. Technical capability lets me carry that judgment into a working product.' },
     ],
   },
   {

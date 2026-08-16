@@ -26,7 +26,7 @@ const staggerItem = {
 
 const writingTopics = [
   { title: 'Customer Behavior', text: 'The moments where people decide, hesitate, trust, buy, abandon, and return.' },
-  { title: 'Technology Adoption', text: 'What new tools actually change inside teams, markets, cost structures, and habits.' },
+  { title: 'Technology Adoption', text: 'What new tools change inside teams, markets, cost structures, and habits.' },
   { title: 'Product Judgment', text: 'How builders decide what to make before the work becomes expensive.' },
   { title: 'Go-To-Market', text: 'Positioning, acquisition, messaging, and proof from close to the work.' }
 ]

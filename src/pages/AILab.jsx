@@ -291,7 +291,7 @@ function RouterEvaluation() {
                     <th scope="row">{row.id}</th>
                     <td className="lab-eval__request">{row.request}</td>
                     <td>{row.expected}</td>
-                    <td>{row.actual || '—'}</td>
+                    <td>{row.actual || 'Not available'}</td>
                     <td><span className={`lab-eval__flag is-${row.pass ? 'pass' : 'fail'}`}>{row.pass ? 'pass' : 'fail'}</span></td>
                   </tr>
                 ))}
@@ -314,7 +314,7 @@ function RouterEvaluation() {
                     failures once the eval has run. The pattern across them is the
                     interesting part, and only you can write it honestly. */}
                 The pattern across these failures is the part worth fixing, and it
-                is worth writing up by hand rather than summarising automatically.
+                deserves a manual review and a written explanation.
               </p>
             </div>
           )}
@@ -325,7 +325,7 @@ function RouterEvaluation() {
             <strong>Not yet run against the live classifier.</strong> The test set is
             committed at <code>src/data/routerEvalCases.js</code> and the runner at{' '}
             <code>scripts/run-router-eval.mjs</code>. Results appear here once the
-            eval has actually been executed; no score is shown before then.
+            eval has been executed; no score is shown before then.
           </p>
           <details>
             <summary>See the {routerEvalCases.length} test cases</summary>

@@ -17,7 +17,7 @@ const ease = [0.22, 1, 0.36, 1]
 const capabilityPhases = [
   {
     title: 'Find the workflow',
-    detail: 'Discovery, process mapping, and the people actually doing the job'
+    detail: 'Discovery, process mapping, and the people doing the job'
   },
   {
     title: 'Decide what AI should touch',
@@ -364,16 +364,29 @@ function Globe() {
 }
 
 function HomeStudio() {
+  const [menuOpen, setMenuOpen] = useState(false)
+
   return (
     <div className="studio">
       <header className="studio-topbar">
         <div className="studio-topbar__inner">
           <Link to="/" className="studio-mark">Gunnar&nbsp;Neuman</Link>
-          <nav className="studio-nav">
-            <Link to="/about">About</Link>
-            <Link to="/projects">Projects</Link>
-            <Link to="/client-work">Client Work</Link>
-            <Link to="/contact">Contact</Link>
+          <button
+            type="button"
+            className={`studio-menu-button${menuOpen ? ' is-open' : ''}`}
+            onClick={() => setMenuOpen((value) => !value)}
+            aria-label="Toggle navigation menu"
+            aria-expanded={menuOpen}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+          <nav className={`studio-nav${menuOpen ? ' is-open' : ''}`}>
+            <Link to="/about" onClick={() => setMenuOpen(false)}>About</Link>
+            <Link to="/projects" onClick={() => setMenuOpen(false)}>Projects</Link>
+            <Link to="/client-work" onClick={() => setMenuOpen(false)}>Client Work</Link>
+            <Link to="/contact" onClick={() => setMenuOpen(false)}>Contact</Link>
           </nav>
         </div>
       </header>
@@ -384,7 +397,7 @@ function HomeStudio() {
           <motion.span className="studio-status"
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease, delay: 0.1 }}>
-            <i /> Open to AI implementation, adoption, and product roles
+            <i /> Open to AI implementation roles
           </motion.span>
 
           <motion.h1 className="studio-headline"
@@ -405,17 +418,16 @@ function HomeStudio() {
             initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease, delay: 0.35 }}>
             Five years in sales operations, product launches, and client delivery
-            taught me how the work actually gets done. Now I build the systems around
-            it &mdash; deciding where AI genuinely helps, where plain software is
-            better, and where a person needs to stay in control.
+            taught me how the work gets done. Now I build systems around that
+            work. I decide where AI helps, where plain software works better, and where
+            a person needs to stay in control.
           </motion.p>
 
           <motion.div className="studio-hero__actions"
             initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease, delay: 0.5 }}>
-            <Link to="/projects" className="studio-btn studio-btn--primary">View the work</Link>
-            <a href="/Gunnar-Neuman-Resume.pdf" className="studio-btn studio-btn--ghost" target="_blank" rel="noreferrer">Resume</a>
-            <Link to="/contact" className="studio-btn studio-btn--ghost">Get in touch &rarr;</Link>
+            <Link to="/projects/home-services-crm" className="studio-btn studio-btn--primary">Read the CRM case study</Link>
+            <Link to="/projects" className="studio-btn studio-btn--ghost">All projects</Link>
           </motion.div>
         </div>
 
@@ -434,9 +446,8 @@ function HomeStudio() {
           initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.8, ease }}>
           I spent five years close to customers, sales teams, and client delivery.
-          When AI made building cheap, I learned to build &mdash; not to become an
-          engineer, but so I could take an idea past the slide and find out whether
-          it actually improves the work.
+          When AI lowered the cost of building, I learned enough to take an idea past
+          the slide and test whether it improves the work.
         </motion.p>
       </section>
 
@@ -502,10 +513,9 @@ function HomeStudio() {
         <motion.p className="studio-rubric__close"
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.7, ease, delay: 0.3 }}>
-          And then the part that decides whether any of it mattered:{' '}
-          <strong>a system nobody adopts didn&rsquo;t work.</strong> The hardest
-          problem is usually not the build &mdash; it&rsquo;s the person who already
-          has a working spreadsheet and no reason to trust your new thing.
+          Adoption decides whether any of it mattered:{' '}
+          <strong>a system nobody adopts didn&rsquo;t work.</strong> The hardest problem
+          is often earning trust from someone whose spreadsheet already works for them.
         </motion.p>
       </section>
 
@@ -517,7 +527,7 @@ function HomeStudio() {
             <motion.h2
               initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }} transition={{ duration: 0.8, ease }}>
-              The systems are there to use, not just read about.
+              You can use the systems yourself.
             </motion.h2>
           </div>
           <p>These are self-directed builds, presented honestly. They show how I turn an AI capability into a complete workflow with an interface, decisions, and a useful outcome.</p>

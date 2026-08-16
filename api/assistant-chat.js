@@ -1,7 +1,7 @@
 import { clientKey, consumeRateLimit, originAllowed } from '../src/server/requestSecurity.js'
 import { textAssistantInstructions } from '../src/server/textAssistantConfig.js'
 
-const destinationIds = ['about', 'projects', 'client_work', 'contact', 'resume', 'prepme', 'crm', 'terralis', 'movemint']
+const destinationIds = ['about', 'projects', 'crm_case_study', 'client_work', 'contact', 'resume', 'prepme', 'crm', 'terralis', 'movemint']
 
 const replySchema = {
   type: 'object',
@@ -20,8 +20,26 @@ const replySchema = {
       description: 'Zero to three short, natural follow-up questions the visitor could ask.',
       items: { type: 'string' },
     },
+    notes: {
+      type: 'object',
+      description: 'Cumulative factual conversation notes based only on information the visitor voluntarily provided and verified Gunnar evidence discussed.',
+      properties: {
+        visitorName: { type: 'string' },
+        organization: { type: 'string' },
+        visitorRole: { type: 'string' },
+        reasonForVisit: { type: 'string' },
+        hiringContext: { type: 'string' },
+        goal: { type: 'string' },
+        questions: { type: 'array', items: { type: 'string' } },
+        interests: { type: 'array', items: { type: 'string' } },
+        relevantProof: { type: 'array', items: { type: 'string' } },
+        nextStep: { type: 'string' },
+      },
+      required: ['visitorName', 'organization', 'visitorRole', 'reasonForVisit', 'hiringContext', 'goal', 'questions', 'interests', 'relevantProof', 'nextStep'],
+      additionalProperties: false,
+    },
   },
-  required: ['reply', 'destinations', 'suggestions'],
+  required: ['reply', 'destinations', 'suggestions', 'notes'],
   additionalProperties: false,
 }
 
@@ -84,7 +102,7 @@ export default async function handler(request, response) {
             schema: replySchema,
           },
         },
-        max_output_tokens: 700,
+        max_output_tokens: 1000,
         safety_identifier: identifier,
         store: false,
       }),
@@ -104,12 +122,26 @@ export default async function handler(request, response) {
     const suggestions = Array.isArray(result.suggestions)
       ? result.suggestions.map((item) => String(item).slice(0, 100)).slice(0, 3)
       : []
+    const rawNotes = result.notes || {}
+    const notes = {
+      visitorName: String(rawNotes.visitorName || '').slice(0, 120),
+      organization: String(rawNotes.organization || '').slice(0, 160),
+      visitorRole: String(rawNotes.visitorRole || '').slice(0, 160),
+      reasonForVisit: String(rawNotes.reasonForVisit || '').slice(0, 320),
+      hiringContext: String(rawNotes.hiringContext || '').slice(0, 500),
+      goal: String(rawNotes.goal || 'Getting oriented').slice(0, 320),
+      questions: Array.isArray(rawNotes.questions) ? rawNotes.questions.map((item) => String(item).slice(0, 220)).slice(0, 12) : [],
+      interests: Array.isArray(rawNotes.interests) ? rawNotes.interests.map((item) => String(item).slice(0, 180)).slice(0, 12) : [],
+      relevantProof: Array.isArray(rawNotes.relevantProof) ? rawNotes.relevantProof.map((item) => String(item).slice(0, 220)).slice(0, 12) : [],
+      nextStep: String(rawNotes.nextStep || 'Continue the conversation').slice(0, 320),
+    }
 
     response.setHeader('Cache-Control', 'no-store')
     return response.status(200).json({
       reply: String(result.reply || '').slice(0, 2400),
       destinations,
       suggestions,
+      notes,
     })
   } catch (error) {
     console.error('Assistant text response error', error)

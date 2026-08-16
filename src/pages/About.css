@@ -399,6 +399,7 @@ Reads like a biography in a private club's member directory
 
 .capabilities-section {
   padding: var(--space-2xl) 0;
+  background-color: var(--cream);
 }
 
 .capabilities-section .label {

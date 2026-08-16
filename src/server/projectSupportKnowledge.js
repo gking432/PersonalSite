@@ -30,7 +30,7 @@ Truth boundary: Do not claim paying users, revenue, enterprise adoption, or a pr
 
 ## Home-services AI CRM
 Public URL: https://new-teal-delta.vercel.app/app
-What it is: A self-directed functional demonstration of connected lead, call, follow-up, quote, appointment, review, and approval workflows. It is not a client deployment.
+What it is: A self-directed functional demonstration of connected lead, call, follow-up, quote, appointment, review, and approval workflows. Classification: portfolio demonstration with no client deployment.
 Best first path:
 1. Choose Executive Tour for the shorter guided route or Full Guided Tour for the complete walkthrough.
 2. Follow the highlighted instruction in the Demo Center.

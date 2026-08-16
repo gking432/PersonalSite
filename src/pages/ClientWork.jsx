@@ -295,11 +295,11 @@ const clientProjects = [
     name: 'Patti Means Ministry',
     type: 'Website Redesign',
     shortDesc:
-      'My first paid client outside family and friends. Early work, but an honest marker of where the hands-on operating experience started.',
+      'My first paid client outside family and friends. This early project marks where the hands-on operating experience started.',
     about:
-      'Patti Means Ministry was the first real project I landed outside family and friends. I would make different choices today, but it belongs here because it shows the beginning of the story.',
+      'Patti Means Ministry was the first real project I landed outside family and friends. The project marks the beginning of my independent client work, and I would make different design choices today.',
     description:
-      'Patti Means Ministry was my first paid project outside family and friends. The work itself isn’t what I’d highlight today, but it matters to the story, so it stays in the lineup.',
+      'Patti Means Ministry was my first paid project outside family and friends. It documents the start of the client-services chapter and the early lessons that came with it.',
     brief: 'Modernize a dated nonprofit website to better serve families seeking hospice care information while also improving the donation experience.',
     strategy: 'Focused on warmth, clarity, and trust. Redesigned the information architecture to prioritize the most common visitor needs: understanding services, contacting the organization, and donating.',
     scope: 'Modernized visual identity, clearer navigation, better mobile experience, improved donation flow, and professional credibility.',
@@ -365,9 +365,9 @@ const clientProjects = [
     name: 'Blue Lizard Bar & Grill',
     type: 'Website Redesign',
     shortDesc:
-      'Pitch-only restaurant website redesign. The client did not buy it, but the live spec site shows how I prototype before a deal closes.',
+      'Pitch-only restaurant website redesign. The client declined it. The live spec site shows how I prototype before a deal closes.',
     about:
-      'This was a sales pitch, not shipped client work. I am including it because a clickable spec site is one of the clearest ways to show direction in the room.',
+      'This was an unsold sales pitch. I am including it because a clickable spec site clearly shows the direction I presented in the room.',
     description:
       'Unsold website redesign pitch for a bar & grill, built as a live hosted site to demonstrate layout, tone, and flow during sales conversations.',
     brief: 'Pitch a full restaurant website redesign covering the homepage, menu, hours, reviews, and contact flow without a signed engagement.',
@@ -939,10 +939,10 @@ function ClientWork() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, ease: ndsEase }}
                 >
-                  Client Delivery
+                  Earlier Client Work
                 </motion.p>
                 <h1>
-                  {'Six Engagements'.split(' ').map((word, i, words) => (
+                  {'Client Delivery'.split(' ').map((word, i, words) => (
                     <motion.span
                       key={i}
                       style={{ display: 'inline-block' }}
@@ -955,25 +955,14 @@ function ClientWork() {
                   ))}
                 </h1>
                 <motion.p
-                  className="hero-desc"
+                  className="client-work-subtitle"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
                 >
-                  Every one of these started with a conversation about what a business actually
-                  needed, and ended with something live that someone else had to run without me.
-                  In between: scoping the work, building it, launching it, reporting on what
-                  happened, and adjusting. Two and a half years of the same loop, across six
-                  businesses with six different problems.
-                </motion.p>
-                <motion.p
-                  className="hero-desc cw-hero-note"
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.5, ease: ndsEase }}
-                >
-                  This is older marketing and web work, and the craft shows its age. I keep it
-                  here because the delivery is the part that transferred.
+                  Across my client-services work, I owned the delivery loop: understanding what
+                  a client needed, scoping it, building it, launching it, reporting on the result,
+                  and adjusting. That ownership is what carried forward into the product and AI work.
                 </motion.p>
               </div>
               <motion.div
@@ -992,11 +981,11 @@ function ClientWork() {
                 </div>
                 <div className="hero-meta-item">
                   <span className="hero-meta-label">What I owned</span>
-                  <span className="hero-meta-value">The whole engagement, start to handoff</span>
+                  <span className="hero-meta-value">The engagement, from first conversation through handoff</span>
                 </div>
                 <div className="hero-meta-item">
-                  <span className="hero-meta-label">Why it stays</span>
-                  <span className="hero-meta-value hero-meta-status">Real stakeholders, real delivery</span>
+                  <span className="hero-meta-label">Shown here</span>
+                  <span className="hero-meta-value hero-meta-status">Six selections from a broader body of work</span>
                 </div>
               </motion.div>
             </div>
@@ -1013,7 +1002,7 @@ function ClientWork() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, ease: ndsEase }}
             >
-              Client Work
+              Selected archive
             </motion.p>
             <motion.h2
               className="cw-index-heading"
@@ -1022,7 +1011,7 @@ function ClientWork() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.08, ease: ndsEase }}
             >
-              Six projects from that chapter.
+              Six examples of how I delivered.
             </motion.h2>
             <motion.p
               className="cw-index-intro"
@@ -1031,7 +1020,7 @@ function ClientWork() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.14, ease: ndsEase }}
             >
-              Presented in one consistent format. Open any project to browse the site and see the work in context.
+              The six entries come from a larger client roster. Open any project to browse the work in context.
             </motion.p>
             <div className="cw-index-grid">
               {clientProjects.map((project, i) => (

@@ -3,7 +3,13 @@ import { clientKey, consumeRateLimit, escapeHtml, originAllowed } from '../src/s
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function cleanList(value) {
-  return Array.isArray(value) ? value.slice(0, 4).map((item) => String(item).slice(0, 180)) : []
+  return Array.isArray(value) ? value.slice(0, 12).map((item) => String(item).slice(0, 180)) : []
+}
+
+function cleanMeetingEntries(value) {
+  return Array.isArray(value)
+    ? value.slice(0, 30).map((entry) => String(entry?.text || entry || '').trim().slice(0, 500)).filter(Boolean)
+    : []
 }
 
 function listMarkup(title, items) {
@@ -44,6 +50,7 @@ export default async function handler(request, response) {
   const questions = cleanList(notes.questions)
   const interests = cleanList(notes.interests)
   const relevantProof = cleanList(notes.relevantProof)
+  const meetingEntries = cleanMeetingEntries(notes.entries)
   const nextStep = String(notes.nextStep || 'Continue the conversation with Gunnar directly.').slice(0, 240)
 
   const html = `
@@ -54,6 +61,7 @@ export default async function handler(request, response) {
       ${reasonForVisit ? `<p><strong>Reason for visiting:</strong> ${escapeHtml(reasonForVisit)}</p>` : ''}
       ${hiringContext ? `<p><strong>Opportunity context:</strong> ${escapeHtml(hiringContext)}</p>` : ''}
       <p><strong>Visitor goal:</strong> ${escapeHtml(goal)}</p>
+      ${listMarkup('Meeting notes', meetingEntries)}
       ${listMarkup('Questions discussed', questions)}
       ${listMarkup('Interests', interests)}
       ${listMarkup('Relevant experience and projects', relevantProof)}
@@ -90,6 +98,7 @@ export default async function handler(request, response) {
           ${reasonForVisit ? `<p><strong>Reason for visiting:</strong> ${escapeHtml(reasonForVisit)}</p>` : ''}
           ${hiringContext ? `<p><strong>Opportunity context:</strong> ${escapeHtml(hiringContext)}</p>` : ''}
           <p><strong>Goal:</strong> ${escapeHtml(goal)}</p>
+          ${listMarkup('Meeting notes', meetingEntries)}
           ${listMarkup('Questions discussed', questions)}
           ${listMarkup('Interests', interests)}
           ${listMarkup('Relevant proof discussed', relevantProof)}

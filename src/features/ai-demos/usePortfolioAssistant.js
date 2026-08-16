@@ -13,11 +13,13 @@ export const initialAssistantNotes = {
   interests: [],
   relevantProof: [],
   nextStep: 'Continue the conversation',
+  entries: [],
 }
 
 export const assistantDestinations = {
   about: { href: '/about', label: 'Open my story' },
   projects: { href: '/projects', label: 'See my projects' },
+  crm_case_study: { href: '/projects/home-services-crm', label: 'Read the CRM case study' },
   client_work: { href: '/client-work', label: 'See earlier client work' },
   contact: { href: '/contact', label: 'Contact Gunnar' },
   resume: { href: '/Gunnar-Neuman-Resume.pdf', label: 'Open my résumé', external: true },
@@ -31,6 +33,7 @@ export const assistantSiteTargets = {
   home_overview: { href: '/', selector: '[data-assistant-section="home-overview"]', label: 'Homepage overview' },
   home_approach: { href: '/', selector: '[data-assistant-section="home-approach"]', label: 'How Gunnar approaches the work' },
   home_projects: { href: '/', selector: '[data-assistant-section="home-projects"]', label: 'Working product proof' },
+  home_case_study: { href: '/', selector: '[data-assistant-section="home-case-study"]', label: 'Featured CRM case study' },
   home_experience: { href: '/', selector: '[data-assistant-section="home-experience"]', label: 'Gunnar’s experience' },
   about_overview: { href: '/about', selector: '[data-assistant-section="about-overview"]', label: 'About Gunnar' },
   about_working_style: { href: '/about', selector: '[data-assistant-section="about-working-style"]', label: 'How Gunnar works' },
@@ -38,6 +41,7 @@ export const assistantSiteTargets = {
   about_capabilities: { href: '/about', selector: '[data-assistant-section="about-capabilities"]', label: 'Gunnar’s capabilities' },
   projects_overview: { href: '/projects', selector: '[data-assistant-section="projects-overview"]', label: 'Project overview' },
   projects_crm: { href: '/projects', selector: '#project-crm', label: 'Home-Services AI CRM' },
+  crm_case_study: { href: '/projects/home-services-crm', selector: '[data-assistant-section="crm-case-overview"]', label: 'Home-Services AI CRM case study' },
   projects_prepme: { href: '/projects', selector: '#project-prepme', label: 'PrepMe' },
   projects_terralis: { href: '/projects', selector: '#project-terralis', label: 'Terralis Print Studio' },
   projects_movemint: { href: '/projects', selector: '#project-movemint', label: 'MoveMint' },
@@ -50,6 +54,7 @@ const pageLabels = {
   '/': 'the homepage',
   '/about': 'the About page',
   '/projects': 'the Projects page',
+  '/projects/home-services-crm': 'the Home-Services AI CRM case study',
   '/client-work': 'the Client Work page',
   '/contact': 'the Contact page',
 }
@@ -70,36 +75,8 @@ export function currentPortfolioScreen(pathname = window.location.pathname) {
   }
 }
 
-// ─── Action log ──────────────────────────────────────────────────────────────
-// Every tool call the model makes is recorded and shown to the visitor. Reads
-// run automatically; anything that leaves the site is recorded as held until a
-// person confirms it in the page. This is the difference between a chatbot and
-// a system with an audit trail, so the log is deliberately not collapsible.
-const actionLabels = {
-  update_notes: { label: 'Update conversation notes', kind: 'internal' },
-  navigate_site: { label: 'Navigate the site', kind: 'read' },
-  show_site_destination: { label: 'Offer a destination link', kind: 'read' },
-  offer_email_recap: { label: 'Open the recap form', kind: 'read' },
-  check_calendar_availability: { label: "Check Gunnar's calendar", kind: 'read' },
-}
-
-let actionSequence = 0
-
-function describeResult(name, args, result) {
-  if (!result?.success) return result?.error || 'Failed'
-  if (name === 'navigate_site') return result.label ? `${result.label} in view` : 'Section in view'
-  if (name === 'show_site_destination') return 'Link shown'
-  if (name === 'check_calendar_availability') {
-    const count = result.slots?.length || 0
-    return count ? `${count} open ${count === 1 ? 'slot' : 'slots'}` : 'No open slots'
-  }
-  if (name === 'offer_email_recap') return 'Form shown, waiting on you'
-  if (name === 'update_notes') return 'Notes updated'
-  return 'Done'
-}
-
 function cleanList(value) {
-  return Array.isArray(value) ? value.slice(0, 4).map((item) => String(item).slice(0, 180)) : []
+  return Array.isArray(value) ? value.slice(0, 12).map((item) => String(item).slice(0, 180)) : []
 }
 
 function cleanNotes(args) {
@@ -117,6 +94,31 @@ function cleanNotes(args) {
   }
 }
 
+function mergeList(current = [], incoming = [], limit = 20) {
+  return [...current, ...incoming]
+    .map((item) => String(item || '').trim())
+    .filter((item, index, items) => item && items.indexOf(item) === index)
+    .slice(-limit)
+}
+
+function mergeNotes(current, incoming) {
+  return {
+    visitorName: incoming.visitorName || current.visitorName,
+    organization: incoming.organization || current.organization,
+    visitorRole: incoming.visitorRole || current.visitorRole,
+    reasonForVisit: incoming.reasonForVisit || current.reasonForVisit,
+    hiringContext: incoming.hiringContext || current.hiringContext,
+    goal: incoming.goal || current.goal,
+    questions: mergeList(current.questions, incoming.questions),
+    interests: mergeList(current.interests, incoming.interests),
+    relevantProof: mergeList(current.relevantProof, incoming.relevantProof),
+    nextStep: incoming.nextStep || current.nextStep,
+    entries: current.entries || [],
+  }
+}
+
+let meetingNoteSequence = 0
+
 export default function usePortfolioAssistant() {
   const location = useLocation()
   const navigate = useNavigate()
@@ -131,27 +133,28 @@ export default function usePortfolioAssistant() {
   const [calendarState, setCalendarState] = useState({ status: 'idle', slots: [], message: '' })
   const [bookingState, setBookingState] = useState({ status: 'idle', message: '', event: null })
   const [duration, setDuration] = useState(0)
-  const [actions, setActions] = useState([])
   const durationRef = useRef(null)
-  // When armed, the next calendar check is forced to fail so a visitor can watch
-  // the system degrade to a human path instead of guessing at a time.
-  const failNextCalendarRef = useRef(false)
 
-  const logAction = useCallback((entry) => {
-    actionSequence += 1
-    setActions((current) => [...current.slice(-11), { id: actionSequence, ...entry }])
-  }, [])
-
-  const armCalendarFailure = useCallback(() => {
-    failNextCalendarRef.current = true
-    logAction({
-      label: 'Simulated failure armed',
-      kind: 'internal',
-      status: 'ok',
-      detail: 'The next calendar check will be forced to return an error',
-      simulated: true,
+  const addMeetingEntry = useCallback((value, complete = true, itemId = '') => {
+    const text = String(value || '').trim().slice(0, 500)
+    if (!text) return
+    setNotes((current) => {
+      const entries = current.entries || []
+      const stableId = itemId ? `voice-note-${itemId}` : ''
+      const existingIndex = stableId ? entries.findIndex((entry) => entry.id === stableId) : -1
+      if (existingIndex >= 0) {
+        const nextEntries = [...entries]
+        nextEntries[existingIndex] = { ...nextEntries[existingIndex], text, complete }
+        return { ...current, entries: nextEntries }
+      }
+      if (entries.at(-1)?.text === text) return current
+      meetingNoteSequence += 1
+      return {
+        ...current,
+        entries: [...entries, { id: stableId || `meeting-note-${meetingNoteSequence}`, text, complete }].slice(-30),
+      }
     })
-  }, [logAction])
+  }, [])
 
   useEffect(() => {
     if (!active) return undefined
@@ -161,12 +164,6 @@ export default function usePortfolioAssistant() {
 
   const checkAvailability = useCallback(async () => {
     setCalendarState({ status: 'checking', slots: [], message: '' })
-    if (failNextCalendarRef.current) {
-      failNextCalendarRef.current = false
-      const message = 'Simulated failure: the calendar service did not respond.'
-      setCalendarState({ status: 'unavailable', slots: [], message })
-      return { success: false, error: message }
-    }
     try {
       const response = await fetch('/api/calendar-availability', { headers: { Accept: 'application/json' } })
       const payload = await response.json().catch(() => ({}))
@@ -215,15 +212,13 @@ export default function usePortfolioAssistant() {
   const connect = useCallback(async (options = {}) => {
     setConnecting(true)
     setTranscript('')
-    setNotes(initialAssistantNotes)
+    setNotes({ ...initialAssistantNotes, entries: [] })
     setDestination(null)
     setEmailOffered(false)
     setEmailState({ status: 'idle', message: '' })
     setCalendarState({ status: 'idle', slots: [], message: '' })
     setBookingState({ status: 'idle', message: '', event: null })
     setDuration(0)
-    setActions([])
-    failNextCalendarRef.current = false
 
     try {
       await realtime.connect({
@@ -234,45 +229,26 @@ export default function usePortfolioAssistant() {
         })(),
         openingInstructions: String(options.openingInstructions || '').slice(0, 900),
         onAssistantTranscript: (text) => setTranscript(text || ''),
+        onUserTranscript: addMeetingEntry,
         onToolCall: async (name, args) => {
-          const run = async () => {
-            if (name === 'update_notes') {
-              setNotes(cleanNotes(args))
-              return { success: true }
-            }
-            if (name === 'show_site_destination') {
-              const next = assistantDestinations[args.destination]
-              if (!next) return { success: false, error: 'That destination is not available.' }
-              setDestination(next)
-              return { success: true, buttonVisible: true, destination: next.href }
-            }
-            if (name === 'navigate_site') return navigateSite(args.destination)
-            if (name === 'offer_email_recap') {
-              setEmailOffered(true)
-              return { success: true, secureEmailFormVisible: true }
-            }
-            if (name === 'check_calendar_availability') return checkAvailability()
-            if (name === 'wait_for_user') return { success: true, suppressResponse: true }
-            return { success: false, error: 'That action is not available.' }
+          if (name === 'update_notes') {
+            setNotes((current) => mergeNotes(current, cleanNotes(args)))
+            return { success: true }
           }
-
-          const result = await run()
-
-          // wait_for_user fires on silence and background noise; logging it would
-          // bury the actions that actually mean something.
-          if (name !== 'wait_for_user') {
-            const meta = actionLabels[name] || { label: name, kind: 'read' }
-            logAction({
-              label: meta.label,
-              kind: meta.kind,
-              status: result?.success ? 'ok' : 'error',
-              detail: describeResult(name, args, result),
-              simulated: name === 'check_calendar_availability' && !result?.success
-                && String(result?.error || '').startsWith('Simulated'),
-            })
+          if (name === 'show_site_destination') {
+            const next = assistantDestinations[args.destination]
+            if (!next) return { success: false, error: 'That destination is not available.' }
+            setDestination(next)
+            return { success: true, buttonVisible: true, destination: next.href }
           }
-
-          return result
+          if (name === 'navigate_site') return navigateSite(args.destination)
+          if (name === 'offer_email_recap') {
+            setEmailOffered(true)
+            return { success: true, secureEmailFormVisible: true }
+          }
+          if (name === 'check_calendar_availability') return checkAvailability()
+          if (name === 'wait_for_user') return { success: true, suppressResponse: true }
+          return { success: false, error: 'That action is not available.' }
         },
       })
       setActive(true)
@@ -283,7 +259,7 @@ export default function usePortfolioAssistant() {
     } finally {
       setConnecting(false)
     }
-  }, [checkAvailability, location.pathname, navigateSite, realtime.connect])
+  }, [addMeetingEntry, checkAvailability, location.pathname, navigateSite, realtime.connect])
 
   const end = useCallback(() => {
     realtime.disconnect()
@@ -293,12 +269,6 @@ export default function usePortfolioAssistant() {
 
   const sendRecap = useCallback(async ({ email, shareWithGunnar }) => {
     setEmailState({ status: 'sending', message: '' })
-    logAction({
-      label: 'Send conversation recap',
-      kind: 'write',
-      status: 'running',
-      detail: 'You confirmed in the form; sending now',
-    })
     try {
       const response = await fetch('/api/send-recap', {
         method: 'POST',
@@ -311,27 +281,19 @@ export default function usePortfolioAssistant() {
         ? 'Recap sent. Gunnar also received the approved introduction brief.'
         : 'Recap sent. Check your inbox.'
       setEmailState({ status: 'sent', message })
-      logAction({ label: 'Send conversation recap', kind: 'write', status: 'ok', detail: 'Recap sent' })
       realtime.sendApplicationEvent(payload.shared
         ? 'The requested recap was sent and the visitor explicitly approved sharing the introduction brief with Gunnar. Acknowledge both briefly without repeating the email address.'
         : 'The requested recap email was sent successfully. Acknowledge it briefly without repeating the email address.')
       return true
     } catch (error) {
       setEmailState({ status: 'error', message: error?.message || 'The recap could not be sent.' })
-      logAction({ label: 'Send conversation recap', kind: 'write', status: 'error', detail: 'Could not send' })
       realtime.sendApplicationEvent('The recap email could not be sent. Explain that briefly and offer the Contact page instead.')
       return false
     }
-  }, [logAction, notes, realtime.sendApplicationEvent])
+  }, [notes, realtime.sendApplicationEvent])
 
   const bookInterview = useCallback(async ({ start, name, email }) => {
     setBookingState({ status: 'booking', message: '', event: null })
-    logAction({
-      label: 'Book a meeting',
-      kind: 'write',
-      status: 'running',
-      detail: 'You selected a time and confirmed; creating the event',
-    })
     try {
       const response = await fetch('/api/book-interview', {
         method: 'POST',
@@ -341,17 +303,15 @@ export default function usePortfolioAssistant() {
       const payload = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(payload.error || 'The interview could not be scheduled.')
       setBookingState({ status: 'booked', message: 'Interview scheduled. A calendar invitation is on its way.', event: payload.event })
-      logAction({ label: 'Book a meeting', kind: 'write', status: 'ok', detail: payload.event?.label || 'Meeting created' })
       realtime.sendApplicationEvent(`The visitor explicitly confirmed and successfully booked the interview time ${payload.event?.label || start}. Confirm completion briefly.`)
       return true
     } catch (error) {
       const message = error?.message || 'The interview could not be scheduled.'
       setBookingState({ status: 'error', message, event: null })
-      logAction({ label: 'Book a meeting', kind: 'write', status: 'error', detail: 'Could not create the event' })
       realtime.sendApplicationEvent('The requested interview could not be booked. Explain that briefly and offer the Contact page instead.')
       return false
     }
-  }, [logAction, realtime.sendApplicationEvent])
+  }, [realtime.sendApplicationEvent])
 
   useEffect(() => end, [end])
 
@@ -374,8 +334,6 @@ export default function usePortfolioAssistant() {
     calendarState,
     bookingState,
     duration,
-    actions,
-    armCalendarFailure,
     error: realtime.error,
     userSpeaking: realtime.userSpeaking,
     assistantSpeaking: realtime.assistantSpeaking,
