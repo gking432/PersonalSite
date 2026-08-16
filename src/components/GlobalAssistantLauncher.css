@@ -262,10 +262,10 @@
 @keyframes global-ai-typing { 0%,100% { transform: translateY(0); opacity: .35; } 50% { transform: translateY(-2px); opacity: 1; } }
 
 @media (max-width: 560px) {
-  .global-ai { right: .75rem; bottom: .75rem; }
-  .global-ai__panel { width: calc(100vw - 1.5rem); }
+  .global-ai { right: .75rem; bottom: max(.75rem, env(safe-area-inset-bottom)); }
+  .global-ai__panel { width: calc(100vw - 1.5rem); max-height: calc(100dvh - 1.5rem); }
   .global-ai__panel.is-text { width: calc(100vw - 1.5rem); }
-  .global-ai__activity { width: calc(100vw - 1.5rem); }
+  .global-ai__activity { width: calc(100vw - 1.5rem); max-height: calc(100dvh - 1.5rem); }
   .global-ai__nudge { max-width: calc(100vw - 1.5rem); }
 }
 

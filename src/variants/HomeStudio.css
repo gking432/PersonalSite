@@ -503,6 +503,8 @@
   .studio-proof__item { border-right: none; border-bottom: 1px solid var(--line); }
   .studio-hero__actions .studio-btn { width: 100%; justify-content: center; }
   .studio-mark { font-size: 1.25rem; }
+  .studio-status { gap: .42rem; padding: .38rem .7rem; font-size: .66rem; }
+  .studio-status i { width: 6px; height: 6px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .studio-status i { animation: none; }

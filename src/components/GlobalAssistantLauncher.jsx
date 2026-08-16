@@ -20,6 +20,10 @@ const pageNames = {
 // load and asked a stranger to talk to a bot before they had seen anything.
 const INVITE_DELAY_MS = 15000
 
+function phoneViewport() {
+  return typeof window !== 'undefined' && window.matchMedia('(max-width: 560px)').matches
+}
+
 function inviteAlreadySeen() {
   try { return sessionStorage.getItem('gunnar-ai-intro-seen') === 'true' } catch { return false }
 }
@@ -62,7 +66,7 @@ function TextAssistant({ chat, onNavigate, onSessionStart }) {
       {chat.error && <p className="global-ai__text-error">{chat.error}</p>}
     </div>
     {!!chat.suggestions.length && <div className="global-ai__suggestions">{chat.suggestions.slice(0, 2).map((suggestion) => <button type="button" key={suggestion} onClick={() => sendSuggestion(suggestion)} disabled={chat.sending}>{suggestion}</button>)}</div>}
-    <form className="global-ai__composer" onSubmit={submit}><label htmlFor="global-ai-message">Ask Gunnar's AI assistant</label><div><input id="global-ai-message" value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="Ask about Gunnar…" autoComplete="off" autoFocus /><button type="submit" disabled={chat.sending || !draft.trim()} aria-label="Send message">↑</button></div></form>
+    <form className="global-ai__composer" onSubmit={submit}><label htmlFor="global-ai-message">Ask Gunnar's AI assistant</label><div><input id="global-ai-message" value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="Ask about Gunnar…" autoComplete="off" autoFocus={!phoneViewport()} /><button type="submit" disabled={chat.sending || !draft.trim()} aria-label="Send message">↑</button></div></form>
   </div>
 }
 
@@ -75,9 +79,9 @@ function GlobalAssistantLauncher({ hidden = false }) {
   const [activityOpen, setActivityOpen] = useState(false)
   const [voiceSessionStarted, setVoiceSessionStarted] = useState(false)
   const [activitySource, setActivitySource] = useState('text')
-  // Text is the default: a hiring manager is likely at work, possibly on a
-  // phone. Voice is an upgrade they opt into, not a toll gate.
-  const [mode, setMode] = useState('text')
+  // Phones open on the voice-first choice screen. Desktop keeps text as the
+  // quiet default for visitors who may be browsing at work.
+  const [mode, setMode] = useState(() => phoneViewport() ? 'choose' : 'text')
   const [pendingContext, setPendingContext] = useState('')
   const previousPath = useRef(location.pathname)
   const previousSection = useRef('')
@@ -106,13 +110,15 @@ function GlobalAssistantLauncher({ hidden = false }) {
   const openAssistant = () => {
     dismissInvite()
     setActivityOpen(false)
+    if (phoneViewport() && !assistant.active && !chat.started) setMode('choose')
     setOpen(true)
   }
 
   const toggleAssistant = () => {
     dismissInvite()
     setActivityOpen(false)
-    setOpen((value) => !value)
+    if (!open && phoneViewport() && !assistant.active && !chat.started) setMode('choose')
+    setOpen(!open)
   }
 
   const toggleActivity = () => {
@@ -123,7 +129,7 @@ function GlobalAssistantLauncher({ hidden = false }) {
 
   const endConversation = () => {
     assistant.end()
-    setMode('text')
+    setMode(phoneViewport() ? 'choose' : 'text')
     setOpen(false)
   }
 

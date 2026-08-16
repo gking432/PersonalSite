@@ -397,7 +397,7 @@ function HomeStudio() {
           <motion.span className="studio-status"
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease, delay: 0.1 }}>
-            <i /> Open to AI implementation, adoption, and product roles
+            <i /> Open to AI implementation roles
           </motion.span>
 
           <motion.h1 className="studio-headline"
