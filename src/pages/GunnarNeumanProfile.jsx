@@ -146,8 +146,8 @@ function GunnarNeumanProfile() {
         <section>
           <h2 style={{ fontSize: '1.35rem', fontWeight: 600, marginTop: '36px', marginBottom: '16px' }}>Products & Projects</h2>
           <p>
-            Neuman has built and launched multiple products across different domains, each managed end-to-end
-            from concept to market:
+            Neuman has built functional demonstrations and prototypes across different domains, taking each
+            from concept to a working experience:
           </p>
           <ul style={{ paddingLeft: '20px' }}>
             <li style={{ marginBottom: '10px' }}>
@@ -155,17 +155,17 @@ function GunnarNeumanProfile() {
               call summaries, follow-up, quote preparation, appointments, review monitoring, and human approval.
             </li>
             <li style={{ marginBottom: '10px' }}>
-              <strong>PrepMe</strong>: A functional AI interview product that uses a résumé and target job
+              <strong>PrepMe</strong>: A functional AI interview demo that uses a résumé and target job
               description to run a personalized interview and provide structured feedback.
             </li>
             <li style={{ marginBottom: '10px' }}>
-              <strong>MoveMint</strong>: A live token launcher for creating and deploying tokens on Aptos,
-              with bonding curve mechanics translated into a more accessible product experience. Available at{' '}
+              <strong>MoveMint</strong>: A functional Aptos testnet prototype for creating and deploying test
+              tokens, with bonding curve mechanics translated into a more accessible product experience. Available at{' '}
               <a href="https://movemint.fun" target="_blank" rel="noopener noreferrer">movemint.fun</a>.
             </li>
             <li style={{ marginBottom: '10px' }}>
-              <strong>Terralis Print Studio</strong>: A live custom topography print studio combining
-              cartography, design, and eCommerce product development. Available at{' '}
+              <strong>Terralis Print Studio</strong>: An in-progress functional prototype combining custom
+              cartography, design, product configuration, and a demo ordering flow. Available at{' '}
               <a href="https://cartoprint.vercel.app/" target="_blank" rel="noopener noreferrer">cartoprint.vercel.app</a>.
             </li>
           </ul>

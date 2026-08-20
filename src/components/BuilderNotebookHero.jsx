@@ -67,7 +67,7 @@ const spineStages = [
     progress: 0.46,
     target: '/projects',
     signal: 'proof over polish',
-    output: 'live products',
+    output: 'working prototypes',
     nextLabel: 'Products & Systems'
   },
   {

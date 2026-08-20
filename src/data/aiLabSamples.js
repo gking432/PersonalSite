@@ -87,7 +87,7 @@ export const roleMatchSample = {
     },
     {
       title: 'Hands-on AI product work',
-      evidence: 'He built PrepMe and a functional home-services CRM demonstration with AI embedded inside complete user workflows.',
+      evidence: 'He built a functional PrepMe interview demo and a functional home-services CRM demonstration that models AI assistance inside complete user workflows.',
       relevance: 'He can move beyond a recommendation and produce something stakeholders can test.'
     },
     {
@@ -98,7 +98,7 @@ export const roleMatchSample = {
   ],
   relevantProjects: [
     { name: 'Home-Services AI CRM', reason: 'Best proof of workflow design, connected AI assistance, and human approval.', href: 'https://new-teal-delta.vercel.app/app' },
-    { name: 'PrepMe', reason: 'Best proof of a live, end-to-end AI product built around user-specific inputs.', href: 'https://prep-me-wheat.vercel.app/' }
+    { name: 'PrepMe', reason: 'A functional interview demo built around user-specific inputs and a complete practice workflow.', href: 'https://prep-me-wheat.vercel.app/' }
   ],
   transferableEvidence: ['Cross-functional launch support', 'Client and stakeholder discovery', 'Business reporting and user training', 'Rapid functional prototyping', 'Customer and commercial judgment'],
   discussionAreas: [

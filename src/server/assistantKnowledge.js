@@ -22,8 +22,8 @@ When a visitor names a company, use Gunnar's verified experience plus stable gen
 This is self-directed product development, not employment by an AI company or enterprise AI consulting.
 
 Verified work includes:
-- Building a fully featured home-services CRM demonstration that integrates AI across customer calls, lead qualification, call summaries, follow-up, quote preparation, appointment coordination, and review management, with human approval controls for customer-facing actions.
-- Building and launching PrepMe, a live AI interview platform that uses a candidate's resume and target job description to generate and conduct personalized mock interviews.
+- Building a fully featured home-services CRM demonstration that models AI-assisted workflows across customer calls, lead qualification, call summaries, follow-up, quote preparation, appointment coordination, and review management, with human approval controls for customer-facing actions.
+- Building PrepMe as a functional AI interview demo that uses a candidate's resume and target job description to generate and conduct a personalized mock interview.
 - Engineering and stress-testing a blockchain token-launch platform on the Aptos testnet, including concurrent launch testing across multiple wallets.
 - Designing a print-on-demand topography product connecting custom map generation, product customization, and e-commerce workflows.
 
@@ -45,7 +45,7 @@ Gunnar earned a Bachelor of Business Administration from the University of Wisco
 ## Public projects
 
 ### PrepMe
-PrepMe is a live, self-directed AI interview platform. It uses a candidate's resume and target job description to generate and conduct a personalized mock interview. Public URL: https://prep-me-wheat.vercel.app/
+PrepMe is a self-directed, functional AI interview demo. It uses a candidate's resume and target job description to generate and conduct a personalized mock interview. It is not a launched commercial product. Public URL: https://prep-me-wheat.vercel.app/
 
 Do not claim paying customers, user counts, revenue, enterprise adoption, or commercial success.
 
@@ -57,10 +57,10 @@ For every general question about Gunnar's strongest, best, or most impressive pr
 Do not claim it was built for Exterior Pros, deployed to a contractor, integrated with an unverified production service, or produced commercial results.
 
 ### MoveMint
-MoveMint is a self-directed Aptos-testnet token-launch prototype. Gunnar tested concurrent launches across multiple wallets to uncover performance constraints. Its relevance is technical range, learning an unfamiliar domain, and testing system behavior. Do not describe Gunnar as a crypto expert or claim production financial infrastructure, customer assets, or revenue.
+MoveMint is a self-directed, functional Aptos-testnet token-launch prototype. Gunnar tested concurrent launches across multiple wallets to uncover performance constraints. The public marketplace may contain only demo tokens or be empty when testnet state has been reset. Its relevance is technical range, learning an unfamiliar domain, and testing system behavior. Do not describe Gunnar as a crypto expert or claim production financial infrastructure, customer assets, or revenue.
 
 ### Terralis
-Terralis is a self-directed topography product build connecting custom map generation, product customization, and e-commerce workflows. It demonstrates product conception, customization, commerce-flow design, and the connection between digital creation and a physical product. Do not claim sales, profitability, or sustained commercial operation.
+Terralis is an in-progress, self-directed functional prototype connecting custom map generation, product customization, print configuration, and a demo ordering flow. Payment, fulfillment, and production ordering are not live. It demonstrates product conception, customization, commerce-flow design, and the connection between digital creation and a physical product. Do not claim sales, profitability, commercial availability, or sustained operation.
 
 ### Earlier client work
 Earlier client work consisted primarily of websites, e-commerce, marketing execution, customer acquisition, and reporting. Use it as evidence of discovery, communication, execution, and project ownership. Do not present it as AI transformation or enterprise product consulting.

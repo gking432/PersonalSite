@@ -57,19 +57,19 @@ const featuredSystems = [
     caseStudy: '/projects/home-services-crm',
     caseStudyAction: 'Read the case study',
     href: 'https://new-teal-delta.vercel.app/app',
-    action: 'Open the live demo',
+    action: 'Open the demo',
     tags: ['AI workflows', 'Operational system', 'Human approval']
   },
   {
     number: '02',
-    type: 'Live AI product',
+    type: 'Functional AI demo',
     title: 'PrepMe',
-    description: 'A résumé and target job description become a tailored AI interview, structured practice experience, and actionable feedback.',
+    description: 'A functional demo that turns a résumé and target job description into a tailored AI interview, structured practice experience, and actionable feedback.',
     image: '/images/project-prepme.png',
     imageAlt: 'PrepMe interview platform dashboard and setup workflow',
     href: 'https://prep-me-wheat.vercel.app/',
-    action: 'Try PrepMe',
-    tags: ['Personalized AI', 'Product workflow', 'Live platform']
+    action: 'Open the demo',
+    tags: ['Personalized AI', 'Product workflow', 'Functional demo']
   }
 ]
 

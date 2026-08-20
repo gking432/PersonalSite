@@ -237,7 +237,7 @@ function CrmCaseStudy() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Open the live demo ↗
+                Open the demo ↗
               </a>
               <Link className="btn btn-secondary" to="/projects">All projects</Link>
             </motion.div>

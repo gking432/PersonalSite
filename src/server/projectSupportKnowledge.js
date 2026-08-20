@@ -12,7 +12,7 @@ export const projectSupportKnowledge = `
 
 ## PrepMe
 Public URL: https://prep-me-wheat.vercel.app/
-What it is: A live, self-directed AI interview product that uses a resume and target job description to create a personalized interview and feedback experience.
+What it is: A self-directed, functional AI interview demo that uses a resume and target job description to create a personalized interview and feedback experience. It is not a launched commercial product.
 Normal path:
 1. Enter the company and role.
 2. Add the job posting.
@@ -48,7 +48,7 @@ Truth boundary: Never describe this as a system deployed for a contractor, a pay
 
 ## Terralis Print Studio
 Public URL: https://cartoprint.vercel.app/
-What it is: A functional product prototype that connects place search, generated map design, customization, print-proof generation, and a demo ordering flow.
+What it is: An in-progress functional product prototype that connects place search, generated map design, customization, print-proof generation, and a demo ordering flow. Payment, fulfillment, and production ordering are not live.
 Normal path:
 1. Search for a city or choose a popular city.
 2. Select Customize.

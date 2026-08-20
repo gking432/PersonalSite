@@ -23,31 +23,31 @@ const projects = [
     elementId: 'project-crm',
     name: 'Home-Services AI CRM',
     type: 'Business Workflow',
-    status: 'Live Demo',
+    status: 'Functional Demonstration',
     shortDesc:
-      'A home-services command center that uses AI to organize leads, calls, quotes, appointments, and follow-up while keeping customer communication under human control.',
+      'A home-services command center that models AI-assisted workflows across leads, calls, quotes, appointments, and follow-up while keeping customer communication under human control.',
     image: '/images/project-northstar.png',
     imagePosition: 'top center',
     imageAlt: 'Home-services CRM dashboard showing lead pipeline, task management, AI insights, and business metrics',
     caseStudy: '/projects/home-services-crm',
     caseStudyLabel: 'Read the case study',
     url: 'https://new-teal-delta.vercel.app/app',
-    buttonLabel: 'Open the live demo',
+    buttonLabel: 'Open the demo',
     tech: ['AI Workflows', 'CRM', 'Human Approval']
   },
   {
     assistantSection: 'projects-prepme',
     elementId: 'project-prepme',
     name: 'PrepMe',
-    type: 'AI Interview Product',
-    status: 'Live Demo',
+    type: 'AI Interview Demo',
+    status: 'Functional Demo',
     shortDesc:
-      'PrepMe turns a résumé and target job description into a tailored AI interview with structured feedback.',
+      'PrepMe is a functional demo that turns a résumé and target job description into a tailored AI interview with structured feedback.',
     image: '/images/project-prepme.png',
     imagePosition: 'center center',
     imageAlt: 'PrepMe dashboard showing interview setup flow',
     url: 'https://prep-me-wheat.vercel.app/',
-    buttonLabel: 'Try PrepMe',
+    buttonLabel: 'Open the demo',
     tech: ['Résumé Analysis', 'AI Interview', 'Feedback']
   },
   {
@@ -55,14 +55,14 @@ const projects = [
     elementId: 'project-terralis',
     name: 'Terralis Print Studio',
     type: 'Print Commerce',
-    status: 'Live Product',
+    status: 'Functional Prototype',
     shortDesc:
-      'Terralis turns a meaningful location into a customizable topographic print through one connected product and buying flow.',
+      'Terralis is an in-progress functional prototype that turns a meaningful location into a customizable topographic print and demo ordering flow.',
     image: '/images/project-terralis.png',
     imagePosition: 'center center',
     imageAlt: 'Terralis landing page preview',
     url: 'https://cartoprint.vercel.app/',
-    buttonLabel: 'Visit Terralis',
+    buttonLabel: 'Open the prototype',
     tech: ['Generated Design', 'Customization', 'eCommerce']
   },
   {
@@ -70,14 +70,14 @@ const projects = [
     elementId: 'project-movemint',
     name: 'MoveMint',
     type: 'Technical Range',
-    status: 'Aptos Testnet Build',
+    status: 'Aptos Testnet Prototype',
     shortDesc:
-      'I built MoveMint to see whether I could enter an unfamiliar technical domain, understand the mechanics well enough to make product decisions, and ship a working experience.',
+      'MoveMint is a functional Aptos testnet prototype built to test token launches, bonding-curve mechanics, wallet interactions, and concurrent activity.',
     image: '/images/project-movemint.png',
     imagePosition: 'top center',
     imageAlt: 'MoveMint landing page preview',
     url: 'https://movemint.fun',
-    buttonLabel: 'Visit MoveMint',
+    buttonLabel: 'Open the testnet prototype',
     tech: ['Aptos', 'Bonding Curves', 'Stress Testing']
   }
 ]
@@ -203,7 +203,7 @@ function Projects() {
                 </div>
                 <div className="hero-meta-item">
                   <span className="hero-meta-label">Strongest proof</span>
-                  <span className="hero-meta-value">Home-services CRM and PrepMe</span>
+                  <span className="hero-meta-value">Home-services CRM case study</span>
                 </div>
                 <div className="hero-meta-item">
                   <span className="hero-meta-label">Focus</span>

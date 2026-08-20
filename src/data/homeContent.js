@@ -41,7 +41,7 @@ export const resumeHighlights = [
   {
     value: 'Working proof',
     label: 'AI Products',
-    detail: 'The interview platform and home-services CRM turn AI use cases into complete, usable product experiences.'
+    detail: 'The interview demo and home-services CRM turn AI use cases into complete, testable product experiences.'
   },
   {
     value: 'Full-cycle',

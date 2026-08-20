@@ -23,7 +23,7 @@ version, and planning the pilot that shows whether it worked.
 ### AI Product & Implementation, Independent
 **Milwaukee, WI · October 2025 – Present**
 
-- Built a full home-services CRM demonstration integrating AI across customer calls, lead
+- Built a full home-services CRM demonstration modeling AI-assisted workflows across customer calls, lead
   qualification, call summarization, follow-up, quote preparation, appointment coordination,
   and review management, with human approval required for all customer-facing actions.
 - Published the implementation reasoning as a written case study: where AI is used and
@@ -34,7 +34,7 @@ version, and planning the pilot that shows whether it worked.
   read-only actions run automatically, while consequential actions such as sending email and booking
   against a live calendar stop for explicit human confirmation. Application state and
   permissions are enforced in software, not by the model.
-- Built and launched PrepMe, a live AI interview platform that generates and conducts a
+- Built PrepMe as a functional AI interview demo that generates and conducts a
   personalized mock interview from a candidate's résumé and target job description.
 - Engineered and stress-tested a blockchain token-launch platform on the Aptos testnet,
   including concurrent launch testing across multiple wallets.
