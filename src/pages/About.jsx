@@ -408,13 +408,7 @@ function About() {
         </div>
       </div>
 
-      {/* ═══════ ADOPTION STORY; the pre-AI proof ═══════ */}
-      {/* NOTE (Gunnar): the middle paragraph is written from what the site already
-          claims as verified (you built the reports and trained external sales teams
-          on them). The characterisation of *why* adoption was hard is inference, not
-          recorded fact. Replace it with what actually happened: how long it really
-          took, what people resisted, and what finally moved it. That version will be
-          both truer and more specific than this one. */}
+      {/* ═══════ IMPLEMENTATION; recent product proof ═══════ */}
       <section className="adoption-section section" data-assistant-section="about-adoption">
         <div className="container">
           <motion.p
@@ -424,7 +418,7 @@ function About() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, ease: ndsEase }}
           >
-            Adoption
+            Implementation
           </motion.p>
           <motion.h2
             className="section-heading adoption-heading"
@@ -433,7 +427,7 @@ function About() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1, ease: ndsEase }}
           >
-            The closest thing I&rsquo;ve done to this job, before AI existed.
+            I build around the workflow, not just the AI output.
           </motion.h2>
           <motion.div
             className="adoption-body"
@@ -443,19 +437,20 @@ function About() {
             viewport={{ once: true, margin: '-60px' }}
           >
             <motion.p variants={staggerItem}>
-              At Sub-Zero I built custom Power BI reporting tools for sales teams, and then had
-              to get external dealers and reps to use them. The second part turned out
-              to be the whole job.
+              My home-services CRM demonstration connects lead analysis, call summaries,
+              quote preparation, appointments, review monitoring, and follow-up inside one
+              working system. AI supports specific parts of the process while customer-facing
+              actions remain under human control.
             </motion.p>
             <motion.p variants={staggerItem}>
-              Building the reports took less effort than changing how people accessed sales
-              data. Everyone already had habits, existing
-              spreadsheets, and no particular reason to trust something new from someone in a
-              rotational program. Training people on the tools became most of the project.
+              I have taken the same end-to-end approach across other functional prototypes,
+              including an interview system, a configurable product studio, and a testnet
+              token-launch platform. Each required more than generating an output. I had to
+              design the interface, rules, system state, error handling, and complete user journey.
             </motion.p>
             <motion.p variants={staggerItem}>
-              The same failure mode appears with AI tools now. Model quality rarely stops a
-              project. Adoption fails when the intended users quietly return to the old process.
+              That is the work I want to keep doing: understand how a process works, decide
+              where AI belongs, and implement a system people can actually use.
             </motion.p>
           </motion.div>
         </div>
