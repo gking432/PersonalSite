@@ -417,10 +417,9 @@ function HomeStudio() {
           <motion.p className="studio-sub"
             initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease, delay: 0.35 }}>
-            Five years in sales operations, product launches, and client delivery
-            taught me how the work gets done. Now I build systems around that
-            work. I decide where AI helps, where plain software works better, and where
-            a person needs to stay in control.
+            My background is in customers, sales teams, product launches, and client
+            problems. Today I pair that business experience with hands-on product
+            development to build working systems, often with AI at the center.
           </motion.p>
 
           <motion.div className="studio-hero__actions"
@@ -436,19 +435,6 @@ function HomeStudio() {
           transition={{ duration: 1.1, ease, delay: 0.3 }}>
           <Globe />
         </motion.div>
-      </section>
-
-      {/* ─── WHY THE TRANSITION ─── */}
-      {/* The question every recruiter has, answered before they have to dig for
-          it. The long version still lives on the About page. */}
-      <section className="studio-pivot">
-        <motion.p
-          initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }} transition={{ duration: 0.8, ease }}>
-          I spent five years close to customers, sales teams, and client delivery.
-          When AI lowered the cost of building, I learned enough to take an idea past
-          the slide and test whether it improves the work.
-        </motion.p>
       </section>
 
       {/* ─── WHAT THE WORK IS ─── */}
