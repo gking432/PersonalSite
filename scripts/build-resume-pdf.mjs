@@ -1,7 +1,9 @@
 #!/usr/bin/env node
-// Renders resume/resume.html to public/Gunnar-Neuman-Resume.pdf, which is what the
-// site's Resume button serves. Chromium's print pipeline produces real selectable
-// text, so applicant tracking systems can parse it; edit the HTML and re-run.
+// NOTE: Gunnar now formats the résumé himself. public/Gunnar-Neuman-Resume.pdf is
+// his file; this script writes to resume/generated-resume.pdf so it can never
+// clobber it. resume/resume.html is kept only as a plain-text/ATS reference.
+// Renders resume/resume.html through Chromium's print pipeline, which produces
+// real selectable text that applicant tracking systems can parse.
 //
 //   node scripts/build-resume-pdf.mjs
 
@@ -12,7 +14,7 @@ import { statSync } from 'node:fs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const source = resolve(here, '../resume/resume.html')
-const output = resolve(here, '../public/Gunnar-Neuman-Resume.pdf')
+const output = resolve(here, '../resume/generated-resume.pdf')
 
 const configuredBrowser = process.env.RESUME_CHROMIUM_PATH
 const localChrome = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
