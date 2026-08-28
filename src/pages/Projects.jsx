@@ -2,7 +2,6 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import PageTransition from '../components/PageTransition'
 import SqueezeSection from '../components/SqueezeSection'
-import { aiAssistantEnabled } from '../config/features'
 import './Projects.css'
 
 const ndsEase = [0.22, 1, 0.36, 1]
@@ -146,14 +145,6 @@ function ProjectCard({ project, index }) {
 }
 
 function Projects() {
-  const openProjectSupport = () => {
-    window.dispatchEvent(new CustomEvent('portfolio-assistant:open', {
-      detail: {
-        context: 'The visitor opened you from the Projects support notice. Ask which public project they are using and what is happening. Troubleshoot one step at a time without claiming you can see their other tab or screen.'
-      }
-    }))
-  }
-
   return (
     <PageTransition>
       <div className="projects">
@@ -219,25 +210,6 @@ function Projects() {
         </section>
 
         <section className="projects-gallery">
-          {aiAssistantEnabled && (
-            <div className="container">
-              <motion.aside
-                className="projects-support"
-                aria-label="Project demo support"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-40px' }}
-                transition={{ duration: 0.5, ease: ndsEase }}
-              >
-                <span className="projects-support-label">Demo support</span>
-                <div>
-                  <h2>Trying one of the projects?</h2>
-                  <p>If something does not work the way you expect, come back here and ask my AI assistant. It knows the intended workflows, the common failure points, and what to try next.</p>
-                </div>
-                <button type="button" onClick={openProjectSupport}>Ask the assistant for help</button>
-              </motion.aside>
-            </div>
-          )}
           <div className="container projects-grid">
             {projects.map((project, index) => (
               <ProjectCard key={project.name} project={project} index={index} />

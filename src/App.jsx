@@ -9,9 +9,7 @@ import Contact from './pages/Contact'
 import ClientWork from './pages/ClientWork'
 import CrmCaseStudy from './pages/CrmCaseStudy'
 import GunnarNeumanProfile from './pages/GunnarNeumanProfile'
-import GlobalAssistantLauncher from './components/GlobalAssistantLauncher'
 import HomeStudio from './variants/HomeStudio'
-import { aiAssistantEnabled } from './config/features'
 
 function App() {
   const location = useLocation()
@@ -55,12 +53,7 @@ function App() {
     )
   }
 
-  return (
-    <>
-      {page}
-      <GlobalAssistantLauncher hidden={!aiAssistantEnabled} />
-    </>
-  )
+  return page
 }
 
 export default App
