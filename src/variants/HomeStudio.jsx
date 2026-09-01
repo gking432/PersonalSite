@@ -70,6 +70,17 @@ const featuredSystems = [
     href: 'https://prep-me-wheat.vercel.app/',
     action: 'Open the demo',
     tags: ['Personalized AI', 'Product workflow', 'Functional demo']
+  },
+  {
+    number: '03',
+    type: 'Functional AI demonstration',
+    title: 'Steward',
+    description: 'A financial-planning system that turns sample account activity into spending insights, paycheck plans, and AI guidance grounded in deterministic rules.',
+    image: '/images/project-steward.jpg',
+    imageAlt: 'Steward financial planning demonstration showing imported account analysis and planning insights',
+    href: 'https://steward-financial-os.vercel.app/demo',
+    action: 'Open the demo',
+    tags: ['AI guidance', 'Financial workflow', 'Deterministic rules']
   }
 ]
 
@@ -521,7 +532,7 @@ function HomeStudio() {
 
         <div className="studio-work__grid">
           {featuredSystems.map((project, index) => (
-            <motion.article className="studio-system" key={project.title}
+            <motion.article className={`studio-system${index === 0 ? ' studio-system--flagship' : ''}`} key={project.title}
               initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-8%' }} transition={{ duration: 0.75, ease, delay: index * 0.1 }}>
               {project.caseStudy ? (

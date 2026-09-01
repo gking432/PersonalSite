@@ -16,12 +16,11 @@ const staggerContainer = {
   visible: { opacity: 1, transition: { staggerChildren: 0.12 } }
 }
 
-const projects = [
-  {
+const flagshipProject = {
     assistantSection: 'projects-crm',
     elementId: 'project-crm',
     name: 'Home-Services AI CRM',
-    type: 'Business Workflow',
+    type: 'Flagship AI Case Study',
     status: 'Functional Demonstration',
     shortDesc:
       'A home-services command center that models AI-assisted workflows across leads, calls, quotes, appointments, and follow-up while keeping customer communication under human control.',
@@ -33,6 +32,23 @@ const projects = [
     url: 'https://new-teal-delta.vercel.app/app',
     buttonLabel: 'Open the demo',
     tech: ['AI Workflows', 'CRM', 'Human Approval']
+}
+
+const aiProjects = [
+  {
+    assistantSection: 'projects-steward',
+    elementId: 'project-steward',
+    name: 'Steward',
+    type: 'AI Financial System',
+    status: 'Functional Demonstration',
+    shortDesc:
+      'A functional financial-planning demo that turns sample account activity into spending insights, paycheck plans, and recommendations while keeping the financial calculations deterministic.',
+    image: '/images/project-steward.jpg',
+    imagePosition: 'top center',
+    imageAlt: 'Steward financial planning demonstration showing imported account analysis and planning insights',
+    url: 'https://steward-financial-os.vercel.app/demo',
+    buttonLabel: 'Open the demo',
+    tech: ['AI Guidance', 'Financial Workflows', 'Deterministic Rules']
   },
   {
     assistantSection: 'projects-prepme',
@@ -48,7 +64,10 @@ const projects = [
     url: 'https://prep-me-wheat.vercel.app/',
     buttonLabel: 'Open the demo',
     tech: ['Résumé Analysis', 'AI Interview', 'Feedback']
-  },
+  }
+]
+
+const otherBuilds = [
   {
     assistantSection: 'projects-terralis',
     elementId: 'project-terralis',
@@ -62,7 +81,8 @@ const projects = [
     imageAlt: 'Terralis landing page preview',
     url: 'https://cartoprint.vercel.app/',
     buttonLabel: 'Open the prototype',
-    tech: ['Generated Design', 'Customization', 'eCommerce']
+    tech: ['Generated Design', 'Customization', 'eCommerce'],
+    note: 'Built with AI-assisted development'
   },
   {
     assistantSection: 'projects-movemint',
@@ -77,7 +97,8 @@ const projects = [
     imageAlt: 'MoveMint landing page preview',
     url: 'https://movemint.fun',
     buttonLabel: 'Open the testnet prototype',
-    tech: ['Aptos', 'Bonding Curves', 'Stress Testing']
+    tech: ['Aptos', 'Bonding Curves', 'Stress Testing'],
+    note: 'Built with AI-assisted development'
   }
 ]
 
@@ -139,6 +160,64 @@ function ProjectCard({ project, index }) {
             </a>
           </div>
         </div>
+      </div>
+    </motion.article>
+  )
+}
+
+function FlagshipProject({ project }) {
+  return (
+    <motion.article
+      id={project.elementId}
+      data-assistant-section={project.assistantSection}
+      className="project-feature"
+      initial={{ opacity: 0, y: 32 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.65, ease: ndsEase }}
+    >
+      <ProjectVisual project={project} />
+      <div className="project-feature-content">
+        <p className="project-card-meta">{project.type} · {project.status}</p>
+        <h2>{project.name}</h2>
+        <p>{project.shortDesc}</p>
+        <div className="project-card-tech">
+          {project.tech.map((tech) => <span key={tech}>{tech}</span>)}
+        </div>
+        <div className="project-card-links">
+          <Link to={project.caseStudy} className="project-card-link">
+            {project.caseStudyLabel} <span aria-hidden="true">→</span>
+          </Link>
+          <a href={project.url} target="_blank" rel="noopener noreferrer" className="project-card-link project-card-link-muted">
+            {project.buttonLabel} <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </div>
+    </motion.article>
+  )
+}
+
+function OtherBuild({ project }) {
+  return (
+    <motion.article
+      id={project.elementId}
+      className="other-build"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.5, ease: ndsEase }}
+    >
+      <a href={project.url} target="_blank" rel="noopener noreferrer" className="other-build-media" aria-label={`${project.buttonLabel} in a new tab`}>
+        <img src={project.image} alt={project.imageAlt} loading="lazy" style={{ objectPosition: project.imagePosition }} />
+      </a>
+      <div className="other-build-copy">
+        <p className="project-card-meta">{project.type} · {project.status}</p>
+        <h3>{project.name}</h3>
+        <p>{project.shortDesc}</p>
+        <span className="other-build-note">{project.note}</span>
+        <a href={project.url} target="_blank" rel="noopener noreferrer" className="project-card-link">
+          {project.buttonLabel} <span aria-hidden="true">↗</span>
+        </a>
       </div>
     </motion.article>
   )
@@ -210,10 +289,31 @@ function Projects() {
         </section>
 
         <section className="projects-gallery">
-          <div className="container projects-grid">
-            {projects.map((project, index) => (
-              <ProjectCard key={project.name} project={project} index={index} />
-            ))}
+          <div className="container">
+            <div className="projects-section-heading projects-section-heading--feature">
+              <p>Start here</p>
+              <h2>The strongest example of how I think about AI implementation.</h2>
+            </div>
+            <FlagshipProject project={flagshipProject} />
+
+            <div className="projects-section-heading">
+              <p>More AI products</p>
+              <h2>Two focused products with working AI at the center.</h2>
+            </div>
+            <div className="projects-grid projects-grid--supporting">
+              {aiProjects.map((project, index) => (
+                <ProjectCard key={project.name} project={project} index={index + 1} />
+              ))}
+            </div>
+
+            <div className="projects-section-heading projects-section-heading--other">
+              <p>Other builds</p>
+              <h2>Technical range beyond AI products.</h2>
+              <span>These are not AI products. I used AI-assisted development to build and test them.</span>
+            </div>
+            <div className="other-builds">
+              {otherBuilds.map((project) => <OtherBuild key={project.name} project={project} />)}
+            </div>
           </div>
         </section>
 
