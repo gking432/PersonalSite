@@ -187,12 +187,12 @@ function FlagshipProject({ project }) {
           <div><span>Control</span><p>Human approval</p></div>
         </div>
         <div className="project-card-links">
-          <Link to={project.caseStudy} className="project-card-link">
-            Case study <span aria-hidden="true">→</span>
-          </Link>
-          <a href={project.url} target="_blank" rel="noopener noreferrer" className="project-card-link project-card-link-muted">
+          <a href={project.url} target="_blank" rel="noopener noreferrer" className="project-feature-action project-feature-action--primary">
             Live demo <span aria-hidden="true">↗</span>
           </a>
+          <Link to={project.caseStudy} className="project-feature-action project-feature-action--secondary">
+            Case study <span aria-hidden="true">→</span>
+          </Link>
         </div>
       </div>
     </motion.article>

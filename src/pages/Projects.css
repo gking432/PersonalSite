@@ -144,9 +144,40 @@ Client Work-inspired portfolio layout for dev projects.
   border-top: 0;
 }
 
-.project-feature-content .project-card-link {
-  font-size: 0.76rem;
+.project-feature-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 2.4rem;
+  padding: 0.62rem 0.82rem;
+  border: 1px solid var(--forest-green);
+  color: var(--forest-green);
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
   white-space: nowrap;
+  transition: background 180ms var(--ease-out), color 180ms var(--ease-out), transform 180ms var(--ease-out);
+}
+
+.project-feature-action:hover {
+  transform: translateY(-1px);
+}
+
+.project-feature-action--primary {
+  background: var(--forest-green);
+  color: var(--cream);
+}
+
+.project-feature-action--primary:hover {
+  background: var(--charcoal);
+  border-color: var(--charcoal);
+}
+
+.project-feature-action--secondary:hover {
+  background: rgba(31, 64, 52, 0.07);
 }
 
 .project-feature-points {
