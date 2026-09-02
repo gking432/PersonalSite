@@ -98,8 +98,8 @@ const failures = [
     surfaced: 'Office manager, before dispatch'
   },
   {
-    failure: 'Low-confidence job classification',
-    detection: 'Confidence below threshold',
+    failure: 'Ambiguous job classification',
+    detection: 'Required classification details are missing or conflicting, or no supported category is returned',
     behaviour: 'Creates the lead and routes it to human triage for assignment',
     surfaced: 'Triage queue'
   },
@@ -116,8 +116,8 @@ const failures = [
     surfaced: 'Escalation queue'
   },
   {
-    failure: 'Caller is angry or threatening to cancel',
-    detection: 'Sentiment flag on the transcript',
+    failure: 'Caller asks to cancel, escalate, or makes a threat',
+    detection: 'The transcript contains a defined escalation signal: cancellation intent, a request for management, abusive language, or a threat',
     behaviour: 'No automated message is sent at all. The workflow stops and hands the whole thing over',
     surfaced: 'Owner, directly'
   }
@@ -372,8 +372,8 @@ function CrmCaseStudy() {
             </table>
           </div>
           <p className="cs-footnote">
-            When confidence drops, the system routes the work to a person. Confidence
-            directly controls the next step in the workflow.
+            When required information is missing, conflicting, or outside defined workflow
+            boundaries, the system routes the work to a person.
           </p>
         </Section>
 
