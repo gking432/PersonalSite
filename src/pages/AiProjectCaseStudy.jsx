@@ -18,7 +18,10 @@ const studies = {
     title: 'PrepMe',
     headline: 'Answers become targeted coaching.',
     summary:
-      'PrepMe runs a live AI interview, structures the transcript, grades six HR signals, and routes weak answers into targeted practice.',
+      'PrepMe runs a live AI interview, structures the transcript, evaluates answers against six defined HR-screen signals, and routes weaker areas into targeted practice.',
+    demonstrates:
+      'PrepMe coordinates interviewing, evaluation, feedback, and coaching in one connected workflow.',
+    footerHeading: 'Try PrepMe, then see how the workflow is built.',
     disclosure:
       'Self-directed demo of one complete HR-screen workflow. All sample candidate and employer information is fictional.',
     demoUrl: 'https://prep-me-wheat.vercel.app/',
@@ -27,7 +30,7 @@ const studies = {
     stats: [
       ['5', 'Connected stages'],
       ['6', 'HR signals'],
-      ['18 / 18', 'Tests passed']
+      ['8', 'AI scenarios']
     ],
     flow: [
       ['Context', 'A résumé and job description become one interview profile.', 'software'],
@@ -50,14 +53,14 @@ const studies = {
       {
         label: 'Human controls',
         owner: 'human',
-        text: 'Voice or text, the interview session, which feedback to inspect, and which coaching to complete.'
+        text: 'The candidate controls the information they provide, whether to continue, and how they use the feedback. PrepMe does not make a hiring decision.'
       }
     ],
     decisions: [
       ['Task-based routing', 'Interviewing, transcription, grading, reporting, and coaching use a central task registry. The product can change one capability without scattering model choices across the application.'],
       ['Structured contracts', 'Grading and coaching responses are parsed and schema checked before the interface can use them. A malformed response fails cleanly instead of rendering a partial result.'],
       ['Evidence before advice', 'Feedback remains tied to the transcript excerpt and question that produced it. The product can explain why a signal was flagged and route that exact weakness into practice.'],
-      ['Useful fallbacks', 'Typed replies cover microphone problems. Sparse interviews follow a defined repair path. A completed fictional sample lets reviewers inspect the full feedback and coaching loop.']
+      ['Useful fallbacks', 'Typed replies cover microphone problems. Sparse interviews follow a defined repair path. A completed fictional sample lets visitors inspect the full feedback and coaching loop.']
     ],
     proves: [
       'Realtime AI inside a complete product workflow',
@@ -84,14 +87,14 @@ const studies = {
         items: [
           ['Validated model contracts', 'Zod schemas check grading, rewrites, and coaching output before rendering.'],
           ['Sparse-session handling', 'An interrupted interview cannot receive inflated or invented feedback.'],
-          ['Public-input controls', 'Request limits, throttling, and private-network URL rejection protect public endpoints.'],
+          ['Public-input controls', 'Request limits, throttling, and private-network URL rejection reduce abuse risk on public endpoints.'],
           ['Fictional sample isolation', 'Demo data is labeled and checked so it cannot be confused with Gunnar’s work history.']
         ]
       },
       evals: {
-        title: 'Checked behavior',
-        intro: 'The reviewed build passed 18 tests, including all 8 published AI evaluation scenarios.',
-        metric: '18 / 18 tests passed',
+        title: 'Tested behavior',
+        intro: 'The reviewed build includes eight checked-in AI evaluation scenarios plus broader application tests.',
+        metric: '8 AI evaluation scenarios',
         items: [
           ['Fictional data isolation', 'Sample context stays separate from Gunnar’s background.'],
           ['Sparse and complete coverage', 'Short and substantive sessions take different, defined paths.'],
@@ -109,6 +112,9 @@ const studies = {
     headline: 'Rules own the math. AI explains it.',
     summary:
       'Steward pairs deterministic financial planning with a bounded AI layer for questions, explanations, and guided setup.',
+    demonstrates:
+      'Steward separates financial calculation from AI explanation and keeps plan changes under user control.',
+    footerHeading: 'Try Steward, then see how the system separates calculation, explanation, and approval.',
     disclosure:
       'Self-directed functional demo using controlled data. It does not move money or provide financial advice.',
     demoUrl: 'https://steward-financial-os.vercel.app/demo',
@@ -117,10 +123,10 @@ const studies = {
     stats: [
       ['Rules first', 'Calculation model'],
       ['Human', 'Final approval'],
-      ['185 / 185', 'Tests passed']
+      ['185', 'Automated checks']
     ],
     flow: [
-      ['Activity', 'Account and transaction data create a bounded financial workspace.', 'software'],
+      ['Activity', 'Controlled sample account and transaction data create the financial workspace.', 'software'],
       ['Observations', 'Rules identify patterns, obligations, and missing facts.', 'software'],
       ['Conversation', 'Steward asks only for context the data cannot establish.', 'ai'],
       ['Plan', 'A deterministic engine calculates buckets, tradeoffs, and safe-to-spend.', 'software'],
@@ -140,7 +146,7 @@ const studies = {
       {
         label: 'Human controls',
         owner: 'human',
-        text: 'Goals, corrections, priorities, proposed changes, plan approval, and every consequential action.'
+        text: 'The user controls goals, corrections, priorities, and whether a proposed plan change is applied. Steward never moves money.'
       }
     ],
     decisions: [
@@ -161,7 +167,7 @@ const studies = {
         title: 'A rules-first financial workflow',
         intro: 'AI makes the system easier to use; deterministic code remains the source of truth.',
         items: [
-          ['01', 'Read activity', 'Build the workspace from controlled account and transaction data.'],
+          ['01', 'Read activity', 'Build the workspace from controlled sample account and transaction data.'],
           ['02', 'Find patterns', 'Derive income, obligations, spending, and open questions.'],
           ['03', 'Collect intent', 'Translate natural language into a draft the user can confirm.'],
           ['04', 'Calculate', 'Run allocations and tradeoffs through the financial engine.'],
@@ -180,8 +186,8 @@ const studies = {
       },
       evals: {
         title: 'Tested rules and failure cases',
-        intro: 'The current reviewed build passed 185 automated checks across planning, AI guards, onboarding, data conversion, and approval behavior.',
-        metric: '185 / 185 tests passed',
+        intro: 'The reviewed build passed 185 automated checks across planning, AI safeguards, onboarding, data conversion, and approval behavior.',
+        metric: '185 automated checks',
         items: [
           ['AI grounding', 'Invented figures are rejected while grounded restatements pass.'],
           ['Missing-data honesty', 'Unknown paydays, rates, and amounts remain unknown instead of becoming guesses.'],
@@ -230,7 +236,7 @@ function ImplementationDrawer({ study, open, onClose }) {
           {[
             ['flow', 'Flow'],
             ['safety', 'Safety'],
-            ['evals', 'Evals']
+            ['evals', 'Testing']
           ].map(([key, label]) => (
             <button
               key={key}
@@ -387,13 +393,13 @@ function AiProjectCaseStudy({ project }) {
               </div>
             </div>
             <aside className="ai-study-proves">
-              <p>What this proves</p>
-              <h2>{study.title} shows how implementation decisions shape the interface.</h2>
+              <p>What the system demonstrates</p>
+              <h2>{study.demonstrates}</h2>
               <ul>
                 {study.proves.map((item) => <li key={item}>{item}</li>)}
               </ul>
               <button type="button" onClick={() => setDrawerOpen(true)}>
-                Explore flow, safety, and evals <span aria-hidden="true">→</span>
+                Explore flow, safety, and testing <span aria-hidden="true">→</span>
               </button>
             </aside>
           </div>
@@ -403,7 +409,7 @@ function AiProjectCaseStudy({ project }) {
           <div className="container">
             <div>
               <p>See the system directly</p>
-              <h2>Try {study.title}, then inspect the implementation notes.</h2>
+              <h2>{study.footerHeading}</h2>
             </div>
             <div className="ai-study-footer__actions">
               <a href={study.demoUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary">Open live demo ↗</a>

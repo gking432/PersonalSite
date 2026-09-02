@@ -181,13 +181,10 @@
 .ai-study-section--tint { background: var(--study-soft); }
 
 .ai-study-section__head {
-  display: grid;
-  grid-template-columns: 9rem minmax(0, 1fr);
-  align-items: start;
   margin-bottom: 2rem;
 }
 
-.ai-study-section__head > p { margin-top: 0.35rem; }
+.ai-study-section__head > p { margin: 0 0 0.7rem; }
 
 .ai-study-section__head h2,
 .ai-study-proves h2,
@@ -332,8 +329,6 @@
   gap: clamp(2rem, 7vw, 6rem);
   align-items: start;
 }
-
-.ai-study-detail-grid .ai-study-section__head { grid-template-columns: 9rem minmax(0, 1fr); }
 
 .ai-study-decisions {
   border-top: 1px solid var(--study-line);
@@ -601,8 +596,6 @@
   .ai-study-stats > div { justify-content: space-between; }
   .ai-study-stats > div:not(:last-child) { border-right: 0; border-bottom: 1px solid var(--study-line); }
   .ai-study-section { padding: 3.25rem 0; }
-  .ai-study-section__head,
-  .ai-study-detail-grid .ai-study-section__head { grid-template-columns: 1fr; gap: 0.3rem; }
   .ai-study-flow { grid-template-columns: 1fr; }
   .ai-study-flow article,
   .ai-study-flow article:nth-child(2n),

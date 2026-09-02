@@ -25,7 +25,7 @@ const staggerContainer = {
   visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
 }
 
-// The workflow, in order. `owner` drives the colour coding and the legend.
+// The workflow, in order. `owner` drives the color coding and the legend.
 const workflow = [
   { step: 'Inbound call', owner: 'ai' },
   { step: 'Intake conversation', owner: 'ai' },
@@ -61,7 +61,7 @@ const decisions = [
   {
     step: 'Classify job type and urgency',
     owner: 'ai',
-    why: 'Judgment over a fuzzy description of a problem. This is what models are genuinely good at.'
+    why: 'AI can interpret an unstructured description and map it to a defined job type and urgency level.'
   },
   {
     step: 'Assign a technician',
@@ -86,7 +86,7 @@ const decisions = [
   {
     step: 'Flag a review for a response',
     owner: 'mixed',
-    why: 'Classification is cheap. The reply is public and reputational, and the volume is low enough that automating the send buys nothing.'
+    why: 'AI can flag the review type, while a person approves any public response.'
   }
 ]
 
@@ -133,7 +133,7 @@ const pilot = [
   {
     phase: 'Days 31–60',
     title: 'One narrow use case',
-    detail: 'After-hours missed calls only. Every AI output is reviewed by a person before it reaches a customer. Nothing else about the business changes, so anything that moves can be attributed.',
+    detail: 'After-hours missed calls only. Every AI output is reviewed by a person before it reaches a customer. Keeping the scope narrow makes it easier to compare the pilot against the existing process.',
     gate: 'Review shows the extraction is trustworthy and staff are not working around it'
   },
   {
@@ -147,10 +147,10 @@ const pilot = [
 const metrics = [
   { metric: 'Missed-call recovery rate', baseline: 'Phone log, 30 days prior', decision: 'The core value case. If this does not move, stop the project' },
   { metric: 'Time to first response', baseline: 'Lead created → first contact timestamp', decision: 'Whether speed is genuinely improving or just moving somewhere else' },
-  { metric: 'Intake completeness', baseline: 'Share of leads with every required field', decision: 'Whether AI intake outperforms a person taking the call' },
+  { metric: 'Intake completeness', baseline: 'Share of leads with every required field', decision: 'Whether AI intake captures the required information more consistently' },
   { metric: 'Edit rate on AI drafts', baseline: 'Share of drafts changed before sending', decision: 'Quality signal. High and staying high means the drafts are not earning their place' },
   { metric: 'Escalation rate', baseline: 'Share of calls handed to a person', decision: 'Scope signal. Tells you where the real boundary sits' },
-  { metric: 'What the staff say at day 90', baseline: 'Ask them', decision: 'The adoption question. Everything else can look fine while this quietly fails' }
+  { metric: 'Staff adoption and confidence', baseline: 'Structured staff interviews before launch and at day 90', decision: 'Whether the workflow fits how the team actually works or needs to change' }
 ]
 
 function Section({ id, kicker, heading, intro, children, assistantSection }) {
@@ -203,10 +203,9 @@ function CrmCaseStudy() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.75, delay: 0.25, ease: ndsEase }}
             >
-              A working demonstration of an AI-enhanced CRM, and the reasoning behind
-              every decision in it: what the model handles, what stays ordinary
-              software, where a person keeps control, and how I would find out whether
-              any of it worked.
+              A working AI-enhanced CRM demonstration showing what AI handles, what
+              ordinary software handles, where people keep control, and how I would
+              evaluate the result.
             </motion.p>
 
             {/* The honesty banner. First thing anyone reads. */}
@@ -218,10 +217,9 @@ function CrmCaseStudy() {
             >
               <span className="cs-disclosure__tag">What this is</span>
               <p>
-                <strong>A self-built demonstration.</strong> No client, no users, no
-                production data, and no commercial results. I built it to work through
-                how AI should sit inside a real operational workflow, and to have
-                something concrete that makes the decisions visible and testable.
+                <strong>A self-directed functional demonstration built with fictional
+                data.</strong> It shows how AI, software, and human review can work
+                together across a home-services customer workflow.
               </p>
             </motion.aside>
 
@@ -249,7 +247,7 @@ function CrmCaseStudy() {
           id="problem"
           assistantSection="crm-case-problem"
           kicker="The problem"
-          heading="A missed call is a lost job."
+          heading="A missed call can become a lost job."
         >
           <motion.div
             className="cs-prose"
@@ -285,7 +283,7 @@ function CrmCaseStudy() {
           assistantSection="crm-case-workflow"
           kicker="The workflow"
           heading="One path, from ringing phone to review request."
-          intro="Colour shows who owns each step. The grey steps use ordinary software because deterministic logic handles them well."
+          intro="Color shows who owns each step. Gray marks deterministic software, green marks AI, and gold marks human review."
         >
           <motion.div
             className="cs-flow"
@@ -316,7 +314,7 @@ function CrmCaseStudy() {
               <p className="cs-kicker">The decisions</p>
               <h2>How each step is implemented.</h2>
               <p className="cs-intro">
-                Three steps use ordinary software even though a model could handle them.
+                Some steps use ordinary software even though AI could handle them.
                 Those choices matter as much as the AI features.
               </p>
             </div>
@@ -348,17 +346,17 @@ function CrmCaseStudy() {
           id="failures"
           assistantSection="crm-case-failures"
           kicker="When it goes wrong"
-          heading="Every step has a defined way to fail."
-          intro="Real design includes failure paths. These are the cases that matter in a business, where the cost of a confident wrong answer lands on a customer."
+          heading="Important failure paths need a defined response."
+          intro="These examples show how a production implementation should detect problems, stop safely, and route work to a person."
         >
           <div className="cs-table-scroll">
             <table className="cs-table">
               <thead>
                 <tr>
-                  <th scope="col">What goes wrong</th>
-                  <th scope="col">How it’s detected</th>
-                  <th scope="col">What the system does</th>
-                  <th scope="col">Who finds out</th>
+                  <th scope="col">Failure scenario</th>
+                  <th scope="col">Detection rule</th>
+                  <th scope="col">Expected response</th>
+                  <th scope="col">Human owner</th>
                 </tr>
               </thead>
               <tbody>
@@ -385,7 +383,7 @@ function CrmCaseStudy() {
           assistantSection="crm-case-pilot"
           kicker="Rollout"
           heading="How I would put this into a real business."
-          intro="Deployment status: portfolio demonstration. For a twelve-person home-services company, this is the plan I would bring to the first meeting."
+          intro="For a small home-services team, I would start with one narrow use case and expand only after the workflow proves useful."
         >
           <motion.div
             className="cs-phases"
@@ -451,19 +449,12 @@ function CrmCaseStudy() {
               <motion.p className="cs-kicker" variants={fadeUp}>Limits</motion.p>
               <motion.h2 variants={fadeUp}>Current limits.</motion.h2>
               <motion.p variants={fadeUp}>
-                The demonstration has no exposure to real customers, live call volume,
-                or technician schedules. It has no operating baseline or measured comparison
-                between AI intake and a person answering the phone. It has also had no
-                security review, and all data is fictional.
+                This demonstration uses fictional data. It does not include real customers,
+                live call volume, production schedules, measured results, or a security review.
               </motion.p>
               <motion.p variants={fadeUp}>
                 This demonstration tests the workflow and implementation choices. It does
                 not prove team adoption inside an established process.
-              </motion.p>
-              <motion.p variants={fadeUp}>
-                The value of this case study is the reasoning: what I would build, where
-                people remain in control, how the workflow handles failure, and how I
-                would measure whether it works.
               </motion.p>
               <motion.div className="cs-limits__actions" variants={fadeUp}>
                 <Link className="btn btn-primary" to="/contact">Get in touch</Link>
