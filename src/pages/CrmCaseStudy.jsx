@@ -457,9 +457,8 @@ function CrmCaseStudy() {
                 security review, and all data is fictional.
               </motion.p>
               <motion.p variants={fadeUp}>
-                A demonstration cannot test adoption by a team with an established process.
-                I handled that challenge with Power BI reporting at Sub-Zero; earning adoption
-                took far longer than building the reports.
+                This demonstration tests the workflow and implementation choices. It does
+                not prove team adoption inside an established process.
               </motion.p>
               <motion.p variants={fadeUp}>
                 The value of this case study is the reasoning: what I would build, where
