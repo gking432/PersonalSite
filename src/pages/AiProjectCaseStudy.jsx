@@ -30,7 +30,7 @@ const studies = {
     stats: [
       ['5', 'Connected stages'],
       ['6', 'HR signals'],
-      ['8', 'AI scenarios']
+      ['8 / 8', 'AI scenarios passed', 'evals']
     ],
     flow: [
       ['Context', 'A résumé and job description become one interview profile.', 'software'],
@@ -94,7 +94,7 @@ const studies = {
       evals: {
         title: 'Tested behavior',
         intro: 'The reviewed build includes eight checked-in AI evaluation scenarios plus broader application tests.',
-        metric: '8 AI evaluation scenarios',
+        metric: '8 / 8 AI scenarios passed',
         items: [
           ['Fictional data isolation', 'Sample context stays separate from Gunnar’s background.'],
           ['Sparse and complete coverage', 'Short and substantive sessions take different, defined paths.'],
@@ -123,7 +123,7 @@ const studies = {
     stats: [
       ['Rules first', 'Calculation model'],
       ['Human', 'Final approval'],
-      ['185', 'Automated checks']
+      ['185 / 185', 'Tests passed', 'evals']
     ],
     flow: [
       ['Activity', 'Controlled sample account and transaction data create the financial workspace.', 'software'],
@@ -187,7 +187,7 @@ const studies = {
       evals: {
         title: 'Tested rules and failure cases',
         intro: 'The reviewed build passed 185 automated checks across planning, AI safeguards, onboarding, data conversion, and approval behavior.',
-        metric: '185 automated checks',
+        metric: '185 / 185 tests passed',
         items: [
           ['AI grounding', 'Invented figures are rejected while grounded restatements pass.'],
           ['Missing-data honesty', 'Unknown paydays, rates, and amounts remain unknown instead of becoming guesses.'],
@@ -201,11 +201,12 @@ const studies = {
   }
 }
 
-function ImplementationDrawer({ study, open, onClose }) {
+function ImplementationDrawer({ study, open, onClose, initialPanel = 'flow' }) {
   const [active, setActive] = useState('flow')
 
   useEffect(() => {
     if (!open) return undefined
+    setActive(initialPanel)
     const previous = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     const handleKey = (event) => {
@@ -216,7 +217,7 @@ function ImplementationDrawer({ study, open, onClose }) {
       document.body.style.overflow = previous
       window.removeEventListener('keydown', handleKey)
     }
-  }, [open, onClose])
+  }, [initialPanel, open, onClose])
 
   if (!open) return null
   const panel = study.panels[active]
@@ -280,6 +281,12 @@ function ImplementationDrawer({ study, open, onClose }) {
 function AiProjectCaseStudy({ project }) {
   const study = studies[project]
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [drawerPanel, setDrawerPanel] = useState('flow')
+
+  const openDrawer = (panel = 'flow') => {
+    setDrawerPanel(panel)
+    setDrawerOpen(true)
+  }
 
   return (
     <PageTransition>
@@ -299,7 +306,7 @@ function AiProjectCaseStudy({ project }) {
                 <a href={study.demoUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
                   Open live demo <span aria-hidden="true">↗</span>
                 </a>
-                <button type="button" className="btn btn-secondary ai-study-system-button" onClick={() => setDrawerOpen(true)} aria-label={`See how ${study.title} uses AI`}>
+                <button type="button" className="btn btn-secondary ai-study-system-button" onClick={() => openDrawer('flow')} aria-label={`See how ${study.title} uses AI`}>
                   How the AI works <span aria-hidden="true">→</span>
                 </button>
               </div>
@@ -329,8 +336,22 @@ function AiProjectCaseStudy({ project }) {
               <p>{study.disclosure}</p>
             </div>
             <div className="ai-study-stats">
-              {study.stats.map(([value, label]) => (
-                <div key={label}><strong>{value}</strong><span>{label}</span></div>
+              {study.stats.map(([value, label, panel]) => (
+                <div key={label}>
+                  {panel ? (
+                    <button
+                      type="button"
+                      className="ai-study-stat-button"
+                      onClick={() => openDrawer(panel)}
+                      aria-label={`View ${study.title} tests`}
+                    >
+                      <span className="ai-study-stat-value"><strong>{value}</strong><span>{label}</span></span>
+                      <span className="ai-study-stat-action">View tests →</span>
+                    </button>
+                  ) : (
+                    <><strong>{value}</strong><span>{label}</span></>
+                  )}
+                </div>
               ))}
             </div>
           </div>
@@ -398,7 +419,7 @@ function AiProjectCaseStudy({ project }) {
               <ul>
                 {study.proves.map((item) => <li key={item}>{item}</li>)}
               </ul>
-              <button type="button" onClick={() => setDrawerOpen(true)}>
+              <button type="button" onClick={() => openDrawer('flow')}>
                 Explore flow, safety, and testing <span aria-hidden="true">→</span>
               </button>
             </aside>
@@ -413,12 +434,12 @@ function AiProjectCaseStudy({ project }) {
             </div>
             <div className="ai-study-footer__actions">
               <a href={study.demoUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary">Open live demo ↗</a>
-              <button type="button" className="btn btn-secondary" onClick={() => setDrawerOpen(true)}>How the AI works</button>
+              <button type="button" className="btn btn-secondary" onClick={() => openDrawer('flow')}>How the AI works</button>
             </div>
           </div>
         </section>
 
-        <ImplementationDrawer study={study} open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+        <ImplementationDrawer study={study} open={drawerOpen} onClose={() => setDrawerOpen(false)} initialPanel={drawerPanel} />
       </main>
     </PageTransition>
   )
