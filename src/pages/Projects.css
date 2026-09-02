@@ -355,6 +355,18 @@ Client Work-inspired portfolio layout for dev projects.
   text-transform: uppercase;
 }
 
+.other-build-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.other-build-actions .project-feature-action {
+  min-height: 2.15rem;
+  padding: 0.5rem 0.68rem;
+  font-size: 0.64rem;
+}
+
 .project-card {
   display: flex;
   min-width: 0;

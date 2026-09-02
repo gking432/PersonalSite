@@ -47,6 +47,7 @@ const aiProjects = [
     imagePosition: 'top center',
     imageAlt: 'Steward financial planning demonstration showing imported account analysis and planning insights',
     url: 'https://steward-financial-os.vercel.app/demo',
+    caseStudy: '/projects/steward',
     buttonLabel: 'Open the demo',
     tech: ['AI Guidance', 'Financial Workflows', 'Deterministic Rules']
   },
@@ -62,6 +63,7 @@ const aiProjects = [
     imagePosition: 'center center',
     imageAlt: 'PrepMe dashboard showing interview setup flow',
     url: 'https://prep-me-wheat.vercel.app/',
+    caseStudy: '/projects/prepme',
     buttonLabel: 'Open the demo',
     tech: ['Résumé Analysis', 'AI Interview', 'Feedback']
   }
@@ -217,9 +219,20 @@ function OtherBuild({ project }) {
         <h3>{project.name}</h3>
         <p>{project.shortDesc}</p>
         {project.note && <span className="other-build-note">{project.note}</span>}
-        <a href={project.url} target="_blank" rel="noopener noreferrer" className="project-card-link">
-          {project.buttonLabel} <span aria-hidden="true">↗</span>
-        </a>
+        {project.caseStudy ? (
+          <div className="other-build-actions">
+            <a href={project.url} target="_blank" rel="noopener noreferrer" className="project-feature-action project-feature-action--primary">
+              Live demo <span aria-hidden="true">↗</span>
+            </a>
+            <Link to={project.caseStudy} className="project-feature-action project-feature-action--secondary">
+              How it works <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+        ) : (
+          <a href={project.url} target="_blank" rel="noopener noreferrer" className="project-card-link">
+            {project.buttonLabel} <span aria-hidden="true">↗</span>
+          </a>
+        )}
       </div>
     </motion.article>
   )
