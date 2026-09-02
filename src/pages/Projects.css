@@ -48,25 +48,15 @@ Client Work-inspired portfolio layout for dev projects.
 }
 
 .projects-section-heading {
-  display: grid;
-  grid-template-columns: minmax(7rem, 0.25fr) minmax(0, 1fr);
-  align-items: end;
-  gap: clamp(1.25rem, 4vw, 4rem);
-  margin: clamp(3.5rem, 7vw, 5rem) 0 clamp(1rem, 2vw, 1.5rem);
-  padding-top: clamp(1rem, 2vw, 1.35rem);
-  border-top: 1px solid rgba(42, 42, 42, 0.16);
+  margin: clamp(4rem, 7vw, 5rem) 0 clamp(1.5rem, 3vw, 2rem);
 }
 
 .projects-section-heading--feature {
   margin-top: 0;
 }
 
-.projects-section-heading--other {
-  border-top: 0;
-}
-
 .projects-section-heading p {
-  margin: 0;
+  margin: 0 0 0.65rem;
   color: var(--forest-green);
   font-family: var(--font-sans);
   font-size: 0.7rem;
@@ -87,9 +77,9 @@ Client Work-inspired portfolio layout for dev projects.
 }
 
 .projects-section-heading > span {
-  grid-column: 2;
+  display: block;
   max-width: 650px;
-  margin-top: -0.6rem;
+  margin-top: 0.85rem;
   color: var(--slate);
   font-size: 0.93rem;
   line-height: 1.6;
@@ -819,9 +809,6 @@ Client Work-inspired portfolio layout for dev projects.
   }
 
   .projects-section-heading {
-    grid-template-columns: 1fr;
-    align-items: start;
-    gap: 0.65rem;
     margin-top: 4.5rem;
   }
 
@@ -830,8 +817,7 @@ Client Work-inspired portfolio layout for dev projects.
   }
 
   .projects-section-heading > span {
-    grid-column: 1;
-    margin-top: 0;
+    margin-top: 0.75rem;
   }
 
   .project-feature {
