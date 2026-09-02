@@ -30,7 +30,7 @@ const studies = {
     stats: [
       ['5', 'Connected stages'],
       ['6', 'HR signals'],
-      ['8 / 8', 'AI scenarios passed', 'evals']
+      ['8 / 8', 'AI scenarios passed']
     ],
     flow: [
       ['Context', 'A résumé and job description become one interview profile.', 'software'],
@@ -123,7 +123,7 @@ const studies = {
     stats: [
       ['Rules first', 'Calculation model'],
       ['Human', 'Final approval'],
-      ['185 / 185', 'Tests passed', 'evals']
+      ['185 / 185', 'Tests passed']
     ],
     flow: [
       ['Activity', 'Controlled sample account and transaction data create the financial workspace.', 'software'],
@@ -336,21 +336,9 @@ function AiProjectCaseStudy({ project }) {
               <p>{study.disclosure}</p>
             </div>
             <div className="ai-study-stats">
-              {study.stats.map(([value, label, panel]) => (
+              {study.stats.map(([value, label]) => (
                 <div key={label}>
-                  {panel ? (
-                    <button
-                      type="button"
-                      className="ai-study-stat-button"
-                      onClick={() => openDrawer(panel)}
-                      aria-label={`View ${study.title} tests`}
-                    >
-                      <span className="ai-study-stat-value"><strong>{value}</strong><span>{label}</span></span>
-                      <span className="ai-study-stat-action">View tests →</span>
-                    </button>
-                  ) : (
-                    <><strong>{value}</strong><span>{label}</span></>
-                  )}
+                  <strong>{value}</strong><span>{label}</span>
                 </div>
               ))}
             </div>
