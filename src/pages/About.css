@@ -355,28 +355,6 @@ Reads like a biography in a private club's member directory
   position: relative;
 }
 
-.statement-section-video {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 0;
-  /* Keep the warm brown footage, nudge it slightly toward amber/gold */
-  filter: sepia(0.22) saturate(1.08) contrast(1.02);
-}
-
-/* Warm left-side scrim purely for text legibility; fades to clear footage */
-.statement-section::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: linear-gradient(105deg, rgba(26, 16, 6, 0.66) 0%, rgba(26, 16, 6, 0.3) 42%, rgba(26, 16, 6, 0) 72%);
-  pointer-events: none;
-}
-
 .statement-section .container {
   position: relative;
   z-index: 1;
