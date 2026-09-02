@@ -84,6 +84,9 @@ const featuredSystems = [
   }
 ]
 
+const flagshipSystem = featuredSystems[0]
+const supportingSystems = featuredSystems.slice(1)
+
 const fallbackLand = [
   [[[-168, 72], [-140, 70], [-120, 58], [-103, 52], [-96, 42], [-82, 31], [-82, 24], [-98, 18], [-116, 23], [-128, 42], [-151, 58], [-168, 72]]],
   [[[-82, 12], [-68, 8], [-52, -6], [-40, -24], [-54, -55], [-72, -52], [-80, -22], [-82, 12]]],
@@ -530,35 +533,45 @@ function HomeStudio() {
           <p>These are self-directed builds, presented honestly. They show how I turn an AI capability into a complete workflow with an interface, decisions, and a useful outcome.</p>
         </div>
 
-        <div className="studio-work__grid">
-          {featuredSystems.map((project, index) => (
-            <motion.article className={`studio-system${index === 0 ? ' studio-system--flagship' : ''}`} key={project.title}
-              initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-8%' }} transition={{ duration: 0.75, ease, delay: index * 0.1 }}>
-              {project.caseStudy ? (
-                <Link className="studio-system__visual" to={project.caseStudy} aria-label={project.caseStudyAction}>
-                  <img src={project.image} alt={project.imageAlt} loading="lazy" />
-                  <span>{project.number}</span>
-                </Link>
-              ) : (
-                <a className="studio-system__visual" href={project.href} target="_blank" rel="noreferrer" aria-label={`${project.action} in a new tab`}>
-                  <img src={project.image} alt={project.imageAlt} loading="lazy" />
-                  <span>{project.number}</span>
-                </a>
-              )}
-              <div className="studio-system__copy">
+        <motion.article className="studio-work__feature"
+          initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-8%' }} transition={{ duration: 0.75, ease }}>
+          <Link className="studio-work__feature-visual" to={flagshipSystem.caseStudy} aria-label={flagshipSystem.caseStudyAction}>
+            <img src={flagshipSystem.image} alt={flagshipSystem.imageAlt} loading="lazy" />
+          </Link>
+          <div className="studio-work__feature-copy">
+            <span className="studio-system__type">Flagship case study</span>
+            <h3>{flagshipSystem.title}</h3>
+            <p>{flagshipSystem.description}</p>
+            <div className="studio-work__case-points">
+              <div><span>Workflow</span><p>Leads, calls, quotes, appointments, follow-up, and reviews</p></div>
+              <div><span>AI role</span><p>Analysis, summaries, drafts, and recommendations</p></div>
+              <div><span>Control</span><p>Human approval before customer-facing action</p></div>
+            </div>
+            <div className="studio-system__actions">
+              <Link className="studio-system__link" to={flagshipSystem.caseStudy}>{flagshipSystem.caseStudyAction} <span>→</span></Link>
+              <a className="studio-system__link studio-system__link--muted" href={flagshipSystem.href} target="_blank" rel="noreferrer">{flagshipSystem.action} <span>↗</span></a>
+            </div>
+          </div>
+        </motion.article>
+
+        <div className="studio-work__support-head">
+          <span>Other AI builds</span>
+          <p>Smaller products that demonstrate focused AI workflows.</p>
+        </div>
+        <div className="studio-work__supporting">
+          {supportingSystems.map((project, index) => (
+            <motion.article className="studio-system-compact" key={project.title}
+              initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-8%' }} transition={{ duration: 0.65, ease, delay: index * 0.08 }}>
+              <a className="studio-system-compact__visual" href={project.href} target="_blank" rel="noreferrer" aria-label={`${project.action} in a new tab`}>
+                <img src={project.image} alt={project.imageAlt} loading="lazy" />
+              </a>
+              <div className="studio-system-compact__copy">
                 <span className="studio-system__type">{project.type}</span>
                 <h3>{project.title}</h3>
                 <p>{project.description}</p>
-                <div className="studio-tags">
-                  {project.tags.map((tag) => <span key={tag}>{tag}</span>)}
-                </div>
-                <div className="studio-system__actions">
-                  {project.caseStudy && (
-                    <Link className="studio-system__link" to={project.caseStudy}>{project.caseStudyAction} <span>→</span></Link>
-                  )}
-                  <a className={`studio-system__link${project.caseStudy ? ' studio-system__link--muted' : ''}`} href={project.href} target="_blank" rel="noreferrer">{project.action} <span>↗</span></a>
-                </div>
+                <a className="studio-system__link" href={project.href} target="_blank" rel="noreferrer">{project.action} <span>↗</span></a>
               </div>
             </motion.article>
           ))}
