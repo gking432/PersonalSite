@@ -81,7 +81,7 @@ const otherBuilds = [
     image: '/images/project-terralis.png',
     imagePosition: 'center center',
     imageAlt: 'Terralis landing page preview',
-    url: 'https://cartoprint.vercel.app/',
+    url: 'https://teralis-tau.vercel.app/',
     buttonLabel: 'Open the prototype',
     tech: ['Generated Design', 'Customization', 'eCommerce'],
     note: 'Built with AI-assisted development'

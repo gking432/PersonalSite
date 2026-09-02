@@ -47,7 +47,7 @@ Known issues and safe fixes:
 Truth boundary: Never describe this as a system deployed for a contractor, a paying customer, or an employer. Never claim real sends, production integrations, or measured business results.
 
 ## Terralis Print Studio
-Public URL: https://cartoprint.vercel.app/
+Public URL: https://teralis-tau.vercel.app/
 What it is: An in-progress functional product prototype that connects place search, generated map design, customization, print-proof generation, and a demo ordering flow. Payment, fulfillment, and production ordering are not live.
 Normal path:
 1. Search for a city or choose a popular city.
