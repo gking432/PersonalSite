@@ -6,15 +6,21 @@ import './AiProjectCaseStudy.css'
 
 const ease = [0.22, 1, 0.36, 1]
 
+const ownerLabels = {
+  ai: 'AI',
+  software: 'Software',
+  mixed: 'AI with human control'
+}
+
 const studies = {
   prepme: {
     eyebrow: 'Implementation breakdown · Functional demo',
     title: 'PrepMe',
-    headline: 'From interview context to evidence-linked coaching.',
+    headline: 'Answers become targeted coaching.',
     summary:
-      'PrepMe turns a résumé and job description into a live interview, a structured transcript, rubric-based feedback, and targeted coaching. Each stage has a defined job and a checked output.',
+      'PrepMe runs a live AI interview, structures the transcript, grades six HR signals, and routes weak answers into targeted practice.',
     disclosure:
-      'This is a self-directed portfolio demo, not an employer or client deployment. The public path demonstrates one complete HR-screen workflow. All sample candidate and employer information is fictional.',
+      'Self-directed demo of one complete HR-screen workflow. All sample candidate and employer information is fictional.',
     demoUrl: 'https://prep-me-wheat.vercel.app/',
     image: '/images/project-prepme.png',
     imageAlt: 'PrepMe interview setup screen',
@@ -24,23 +30,26 @@ const studies = {
       ['18 / 18', 'Tests passed']
     ],
     flow: [
-      ['Context', 'A résumé and job description become a normalized interview profile.'],
-      ['Interview', 'OpenAI Realtime runs the HR screen through voice or text.'],
-      ['Transcript', 'The conversation becomes structured question-and-answer turns.'],
-      ['Evaluation', 'A grading task checks six explicit HR-screen signals.'],
-      ['Coaching', 'Weak signals route to the matching interactive workshop.']
+      ['Context', 'A résumé and job description become one interview profile.', 'software'],
+      ['Interview', 'OpenAI Realtime runs the HR screen through voice or text.', 'ai'],
+      ['Transcript', 'The conversation becomes structured question-and-answer turns.', 'software'],
+      ['Evaluation', 'A grading task checks six explicit HR-screen signals.', 'ai'],
+      ['Coaching', 'Weak signals route to the matching interactive workshop.', 'mixed']
     ],
     boundaries: [
       {
         label: 'AI handles',
+        owner: 'ai',
         text: 'Realtime conversation, rubric grading, feedback synthesis, and coaching suggestions.'
       },
       {
         label: 'Software handles',
+        owner: 'software',
         text: 'Context assembly, transcript structure, task routing, state, validation, and workshop mapping.'
       },
       {
-        label: 'The user controls',
+        label: 'Human controls',
+        owner: 'human',
         text: 'Voice or text, the interview session, which feedback to inspect, and which coaching to complete.'
       }
     ],
@@ -97,11 +106,11 @@ const studies = {
   steward: {
     eyebrow: 'Implementation breakdown · Functional demo',
     title: 'Steward',
-    headline: 'AI explains the plan. Rules protect the math.',
+    headline: 'Rules own the math. AI explains it.',
     summary:
-      'Steward turns account activity, obligations, goals, and user choices into a working financial plan. Deterministic software owns every critical calculation; AI helps interpret intent and explain the result.',
+      'Steward pairs deterministic financial planning with a bounded AI layer for questions, explanations, and guided setup.',
     disclosure:
-      'This is a self-directed functional demo, not a financial service or client deployment. The public demo uses controlled data and does not move money or provide regulated financial advice.',
+      'Self-directed functional demo using controlled data. It does not move money or provide financial advice.',
     demoUrl: 'https://steward-financial-os.vercel.app/demo',
     image: '/images/project-steward.jpg',
     imageAlt: 'Steward financial planning demo',
@@ -111,23 +120,26 @@ const studies = {
       ['185 / 185', 'Tests passed']
     ],
     flow: [
-      ['Activity', 'Account and transaction data create a bounded financial workspace.'],
-      ['Observations', 'Rules identify pay cadence, spending patterns, obligations, and missing facts.'],
-      ['Conversation', 'Steward asks only for context the data cannot establish.'],
-      ['Plan', 'A deterministic engine calculates buckets, tradeoffs, and safe-to-spend.'],
-      ['Explanation', 'AI explains the verified result without replacing the calculation.']
+      ['Activity', 'Account and transaction data create a bounded financial workspace.', 'software'],
+      ['Observations', 'Rules identify patterns, obligations, and missing facts.', 'software'],
+      ['Conversation', 'Steward asks only for context the data cannot establish.', 'ai'],
+      ['Plan', 'A deterministic engine calculates buckets, tradeoffs, and safe-to-spend.', 'software'],
+      ['Explanation', 'AI explains the verified result without replacing the calculation.', 'mixed']
     ],
     boundaries: [
       {
         label: 'AI handles',
+        owner: 'ai',
         text: 'Natural-language intent, focused onboarding dialogue, and concise explanations of verified results.'
       },
       {
         label: 'Software handles',
+        owner: 'software',
         text: 'Paydays, obligations, allocations, affordability, reconciliation, data rules, and persistence.'
       },
       {
-        label: 'The user controls',
+        label: 'Human controls',
+        owner: 'human',
         text: 'Goals, corrections, priorities, proposed changes, plan approval, and every consequential action.'
       }
     ],
@@ -273,6 +285,7 @@ function AiProjectCaseStudy({ project }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.65, ease }}
             >
+              <Link to="/projects" className="ai-study-back">← Projects</Link>
               <p className="ai-study-eyebrow">{study.eyebrow}</p>
               <h1>{study.headline}</h1>
               <p className="ai-study-summary">{study.summary}</p>
@@ -280,11 +293,9 @@ function AiProjectCaseStudy({ project }) {
                 <a href={study.demoUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
                   Open live demo <span aria-hidden="true">↗</span>
                 </a>
-                <button type="button" className="ai-study-how" onClick={() => setDrawerOpen(true)} aria-label={`See how ${study.title} uses AI`}>
-                  <span className="ai-study-how__icon" aria-hidden="true">AI</span>
-                  <span className="ai-study-how__label">How the AI works</span>
+                <button type="button" className="btn btn-secondary ai-study-system-button" onClick={() => setDrawerOpen(true)} aria-label={`See how ${study.title} uses AI`}>
+                  How the AI works <span aria-hidden="true">→</span>
                 </button>
-                <Link to="/projects" className="ai-study-back">Back to projects</Link>
               </div>
             </motion.div>
 
@@ -326,13 +337,21 @@ function AiProjectCaseStudy({ project }) {
               <h2>Where AI fits in the product.</h2>
             </div>
             <div className="ai-study-flow">
-              {study.flow.map(([title, text], index) => (
-                <article key={title}>
-                  <span>{String(index + 1).padStart(2, '0')}</span>
+              {study.flow.map(([title, text, owner], index) => (
+                <article key={title} className={`owner-${owner}`}>
+                  <div className="ai-study-flow__meta">
+                    <span>{String(index + 1).padStart(2, '0')}</span>
+                    <strong>{ownerLabels[owner]}</strong>
+                  </div>
                   <h3>{title}</h3>
                   <p>{text}</p>
                 </article>
               ))}
+            </div>
+            <div className="ai-study-legend" aria-label="Workflow ownership legend">
+              <span className="owner-ai">AI</span>
+              <span className="owner-software">Software</span>
+              <span className="owner-mixed">AI with human control</span>
             </div>
           </div>
         </section>
@@ -341,11 +360,11 @@ function AiProjectCaseStudy({ project }) {
           <div className="container">
             <div className="ai-study-section__head">
               <p>Responsibility</p>
-              <h2>Each part of the system has a clear job.</h2>
+              <h2>AI, software, and human control.</h2>
             </div>
             <div className="ai-study-boundaries">
-              {study.boundaries.map((boundary, index) => (
-                <article key={boundary.label} className={`boundary-${index + 1}`}>
+              {study.boundaries.map((boundary) => (
+                <article key={boundary.label} className={`boundary-${boundary.owner}`}>
                   <span>{boundary.label}</span>
                   <p>{boundary.text}</p>
                 </article>

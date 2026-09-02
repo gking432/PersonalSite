@@ -291,6 +291,20 @@ Client Work-inspired portfolio layout for dev projects.
   margin-bottom: 0;
 }
 
+.projects-ai-builds .other-build-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.projects-ai-builds .other-build-copy .project-card-meta {
+  min-height: 2.1em;
+}
+
+.projects-ai-builds .other-build-copy > p:not(.project-card-meta) {
+  flex: 1;
+}
+
 .other-build {
   display: grid;
   grid-template-columns: minmax(8rem, 0.42fr) minmax(0, 0.58fr);
@@ -359,6 +373,7 @@ Client Work-inspired portfolio layout for dev projects.
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  margin-top: auto;
 }
 
 .other-build-actions .project-feature-action {
@@ -839,6 +854,10 @@ Client Work-inspired portfolio layout for dev projects.
 
   .other-build {
     grid-template-columns: minmax(7.5rem, 0.38fr) minmax(0, 0.62fr);
+  }
+
+  .projects-ai-builds .other-build-copy .project-card-meta {
+    min-height: 0;
   }
 
   .projects-support {
