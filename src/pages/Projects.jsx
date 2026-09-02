@@ -178,18 +178,20 @@ function FlagshipProject({ project }) {
     >
       <ProjectVisual project={project} />
       <div className="project-feature-content">
-        <p className="project-card-meta">{project.type} · {project.status}</p>
+        <p className="project-card-meta">Flagship case study</p>
         <h2>{project.name}</h2>
-        <p>{project.shortDesc}</p>
-        <div className="project-card-tech">
-          {project.tech.map((tech) => <span key={tech}>{tech}</span>)}
+        <p>A functional demo of AI working across a complete home-services customer workflow.</p>
+        <div className="project-feature-points">
+          <div><span>Workflow</span><p>Lead to follow-up</p></div>
+          <div><span>AI role</span><p>Analyze and recommend</p></div>
+          <div><span>Control</span><p>Human approval</p></div>
         </div>
         <div className="project-card-links">
           <Link to={project.caseStudy} className="project-card-link">
-            {project.caseStudyLabel} <span aria-hidden="true">→</span>
+            Case study <span aria-hidden="true">→</span>
           </Link>
           <a href={project.url} target="_blank" rel="noopener noreferrer" className="project-card-link project-card-link-muted">
-            {project.buttonLabel} <span aria-hidden="true">↗</span>
+            Live demo <span aria-hidden="true">↗</span>
           </a>
         </div>
       </div>
@@ -214,7 +216,7 @@ function OtherBuild({ project }) {
         <p className="project-card-meta">{project.type} · {project.status}</p>
         <h3>{project.name}</h3>
         <p>{project.shortDesc}</p>
-        <span className="other-build-note">{project.note}</span>
+        {project.note && <span className="other-build-note">{project.note}</span>}
         <a href={project.url} target="_blank" rel="noopener noreferrer" className="project-card-link">
           {project.buttonLabel} <span aria-hidden="true">↗</span>
         </a>
@@ -292,18 +294,16 @@ function Projects() {
           <div className="container">
             <div className="projects-section-heading projects-section-heading--feature">
               <p>Start here</p>
-              <h2>The strongest example of how I think about AI implementation.</h2>
+              <h2>The strongest implementation case study.</h2>
             </div>
             <FlagshipProject project={flagshipProject} />
 
             <div className="projects-section-heading">
               <p>More AI products</p>
-              <h2>Two focused products with working AI at the center.</h2>
+              <h2>Focused AI workflows.</h2>
             </div>
-            <div className="projects-grid projects-grid--supporting">
-              {aiProjects.map((project, index) => (
-                <ProjectCard key={project.name} project={project} index={index + 1} />
-              ))}
+            <div className="other-builds projects-ai-builds">
+              {aiProjects.map((project) => <OtherBuild key={project.name} project={project} />)}
             </div>
 
             <div className="projects-section-heading projects-section-heading--other">
