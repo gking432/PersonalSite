@@ -51,8 +51,7 @@ Client Work-inspired portfolio layout for dev projects.
   display: grid;
   grid-template-columns: minmax(7rem, 0.25fr) minmax(0, 1fr);
   align-items: end;
-  column-gap: clamp(1.25rem, 4vw, 4rem);
-  row-gap: 0.55rem;
+  gap: clamp(1.25rem, 4vw, 4rem);
   margin: clamp(3.5rem, 7vw, 5rem) 0 clamp(1rem, 2vw, 1.5rem);
   padding-top: clamp(1rem, 2vw, 1.35rem);
   border-top: 1px solid rgba(42, 42, 42, 0.16);
@@ -63,7 +62,6 @@ Client Work-inspired portfolio layout for dev projects.
 }
 
 .projects-section-heading--other {
-  margin-top: 0;
   border-top: 0;
 }
 
@@ -91,7 +89,7 @@ Client Work-inspired portfolio layout for dev projects.
 .projects-section-heading > span {
   grid-column: 2;
   max-width: 650px;
-  margin-top: 0;
+  margin-top: -0.6rem;
   color: var(--slate);
   font-size: 0.93rem;
   line-height: 1.6;

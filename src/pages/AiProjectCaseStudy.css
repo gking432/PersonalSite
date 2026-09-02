@@ -176,7 +176,6 @@
 
 .ai-study-section {
   padding: clamp(3.5rem, 7vw, 6rem) 0;
-  border-top: 1px solid var(--study-line);
 }
 
 .ai-study-section--tint { background: var(--study-soft); }
@@ -401,7 +400,6 @@
 
 .ai-study-footer {
   padding: 2.5rem 0;
-  border-top: 1px solid var(--study-line);
   background: var(--cream);
 }
 
