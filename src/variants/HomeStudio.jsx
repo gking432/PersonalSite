@@ -542,15 +542,15 @@ function HomeStudio() {
           <div className="studio-work__feature-copy">
             <span className="studio-system__type">Flagship case study</span>
             <h3>{flagshipSystem.title}</h3>
-            <p>{flagshipSystem.description}</p>
+            <p>A working AI system across an end-to-end customer workflow.</p>
             <div className="studio-work__case-points">
-              <div><span>Workflow</span><p>Leads, calls, quotes, appointments, follow-up, and reviews</p></div>
-              <div><span>AI role</span><p>Analysis, summaries, drafts, and recommendations</p></div>
-              <div><span>Control</span><p>Human approval before customer-facing action</p></div>
+              <div><span>Workflow</span><p>Lead to follow-up</p></div>
+              <div><span>AI role</span><p>Analyze and recommend</p></div>
+              <div><span>Control</span><p>Human approval</p></div>
             </div>
             <div className="studio-system__actions">
-              <Link className="studio-system__link" to={flagshipSystem.caseStudy}>{flagshipSystem.caseStudyAction} <span>→</span></Link>
-              <a className="studio-system__link studio-system__link--muted" href={flagshipSystem.href} target="_blank" rel="noreferrer">{flagshipSystem.action} <span>↗</span></a>
+              <Link className="studio-system__link" to={flagshipSystem.caseStudy}>Case study <span>→</span></Link>
+              <a className="studio-system__link studio-system__link--muted" href={flagshipSystem.href} target="_blank" rel="noreferrer">Live demo <span>↗</span></a>
             </div>
           </div>
         </motion.article>

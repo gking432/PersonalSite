@@ -293,7 +293,8 @@
 }
 .studio-work__feature {
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(20rem, .55fr);
+  grid-template-columns: minmax(0, 3fr) minmax(15rem, 1fr);
+  align-items: start;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 22px;
@@ -303,7 +304,8 @@
 .studio-work__feature:hover { transform: translateY(-3px); box-shadow: 0 26px 60px rgba(25,24,20,.09); }
 .studio-work__feature-visual {
   display: block;
-  min-height: 440px;
+  min-height: 0;
+  aspect-ratio: 1550 / 885;
   overflow: hidden;
   border-right: 1px solid var(--line);
   background: #e9eee9;
@@ -317,7 +319,7 @@
   transition: transform .6s var(--ease-out);
 }
 .studio-work__feature:hover .studio-work__feature-visual img { transform: scale(1.018); }
-.studio-work__feature-copy { padding: clamp(1.7rem, 3vw, 2.5rem); }
+.studio-work__feature-copy { padding: clamp(1.25rem, 2vw, 1.7rem); }
 .studio-system__type {
   color: var(--gold);
   font-size: .7rem;
@@ -329,17 +331,17 @@
   margin: .55rem 0 .7rem;
   color: var(--ink);
   font-family: var(--font-display);
-  font-size: clamp(2.25rem, 3.5vw, 3.25rem);
+  font-size: clamp(2rem, 2.8vw, 2.7rem);
   font-weight: 400;
   line-height: .98;
 }
-.studio-work__feature-copy > p { margin: 0; color: var(--ink-soft); font-size: .94rem; line-height: 1.62; }
-.studio-work__case-points { margin-top: 1.35rem; border-top: 1px solid var(--line); }
+.studio-work__feature-copy > p { margin: 0; color: var(--ink-soft); font-size: .86rem; line-height: 1.5; }
+.studio-work__case-points { margin-top: 1rem; border-top: 1px solid var(--line); }
 .studio-work__case-points > div {
   display: grid;
-  grid-template-columns: 5.2rem 1fr;
-  gap: .8rem;
-  padding: .72rem 0;
+  grid-template-columns: 4.4rem 1fr;
+  gap: .55rem;
+  padding: .55rem 0;
   border-bottom: 1px solid var(--line);
 }
 .studio-work__case-points span {
@@ -349,7 +351,9 @@
   letter-spacing: .09em;
   text-transform: uppercase;
 }
-.studio-work__case-points p { margin: 0; color: var(--ink-soft); font-size: .8rem; line-height: 1.45; }
+.studio-work__case-points p { margin: 0; color: var(--ink-soft); font-size: .73rem; line-height: 1.38; }
+.studio-work__feature-copy .studio-system__actions { flex-wrap: nowrap; gap: .8rem; }
+.studio-work__feature-copy .studio-system__link { margin-top: .85rem; font-size: .76rem; white-space: nowrap; }
 .studio-work__support-head {
   display: flex;
   justify-content: space-between;
