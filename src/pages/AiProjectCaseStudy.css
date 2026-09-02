@@ -115,7 +115,7 @@
 .ai-study-preview__label strong { color: var(--forest-green); font-weight: 700; }
 
 .ai-study-proof {
-  padding: 0 0 3.5rem;
+  padding: 0;
 }
 
 .ai-study-disclosure {
@@ -147,9 +147,7 @@
 .ai-study-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  margin-top: 1.2rem;
-  border-top: 1px solid var(--study-line);
-  border-bottom: 1px solid var(--study-line);
+  margin-top: 0;
 }
 
 .ai-study-stats > div {
