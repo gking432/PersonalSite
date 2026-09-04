@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/list-pdfs.js && node scripts/fetch-substack.mjs && vite",
-    "build": "node scripts/list-pdfs.js && node scripts/fetch-substack.mjs && vite build",
+    "build": "node scripts/list-pdfs.js && node scripts/fetch-substack.mjs && vite build && vite build --ssr src/entry-server.jsx --outDir dist/server --emptyOutDir false && node scripts/prerender.mjs",
     "preview": "vite preview",
     "compress-images": "node scripts/compress-images.js",
     "compress-images:dry": "node scripts/compress-images.js --dry-run"

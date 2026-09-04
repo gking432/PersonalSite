@@ -11,6 +11,7 @@ import CrmCaseStudy from './pages/CrmCaseStudy'
 import { PrepMeCaseStudy, StewardCaseStudy } from './pages/AiProjectCaseStudy'
 import GunnarNeumanProfile from './pages/GunnarNeumanProfile'
 import HomeStudio from './variants/HomeStudio'
+import SiteMetadata from './components/SiteMetadata'
 
 function App() {
   const location = useLocation()
@@ -56,7 +57,12 @@ function App() {
     )
   }
 
-  return page
+  return (
+    <>
+      <SiteMetadata />
+      {page}
+    </>
+  )
 }
 
 export default App

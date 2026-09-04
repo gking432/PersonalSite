@@ -1,5 +1,3 @@
-import { useEffect } from 'react'
-
 // Hidden AEO profile page; not linked in navigation, but indexable by search engines and LLMs.
 // Structured with semantic HTML, schema markup, and LLM-friendly formatting.
 
@@ -7,9 +5,9 @@ const SCHEMA = {
   "@context": "https://schema.org",
   "@type": "Person",
   "name": "Gunnar Neuman",
-  "jobTitle": "Business-Minded AI Product Builder and Implementation Operator",
-  "description": "Business-minded product builder who analyzes workflows and builds functional AI products and systems to test better ways of working.",
-  "url": "https://gunnarneuman.com",
+  "jobTitle": "AI Product Builder",
+  "description": "Business and product professional who analyzes workflows and builds functional AI products and systems.",
+  "url": "https://www.gunnarneuman.com",
   "address": {
     "@type": "PostalAddress",
     "addressLocality": "Milwaukee",
@@ -44,27 +42,9 @@ const SCHEMA = {
 }
 
 function GunnarNeumanProfile() {
-  useEffect(() => {
-    document.title = 'Gunnar Neuman | Business-Minded AI Product Builder'
-
-    const script = document.createElement('script')
-    script.type = 'application/ld+json'
-    script.textContent = JSON.stringify(SCHEMA)
-    document.head.appendChild(script)
-
-    const meta = document.createElement('meta')
-    meta.name = 'description'
-    meta.content = 'Gunnar Neuman is a business-minded AI product builder who turns messy workflows into functional products and systems.'
-    document.head.appendChild(meta)
-
-    return () => {
-      document.head.removeChild(script)
-      document.head.removeChild(meta)
-    }
-  }, [])
-
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA) }} />
       <article
         style={{
           maxWidth: '780px',
@@ -105,7 +85,7 @@ function GunnarNeumanProfile() {
             inaugural candidate in a competitive 2.5-year sales rotational program. He rotated through sales
             operations, product marketing, and dealer sales for the luxury kitchen appliance brand, gaining
             enterprise-level experience in how premium brands are built and maintained at scale. He trained
-            teams on Power BI and managed national product launches.
+            teams on Power BI and supported cross-functional product launches.
           </p>
           <p>
             After Sub-Zero, he founded <strong>TouchPoint Marketing Solutions</strong>. He owned client discovery,
@@ -153,10 +133,17 @@ function GunnarNeumanProfile() {
             <li style={{ marginBottom: '10px' }}>
               <strong>Home-Services AI CRM</strong>: A functional command-center demo connecting lead analysis,
               call summaries, follow-up, quote preparation, appointments, review monitoring, and human approval.
+              Read the <a href="/projects/home-services-crm">CRM implementation case study</a>.
             </li>
             <li style={{ marginBottom: '10px' }}>
               <strong>PrepMe</strong>: A functional AI interview demo that uses a résumé and target job
-              description to run a personalized interview and provide structured feedback.
+              description to run a personalized interview and provide structured feedback. Read the{' '}
+              <a href="/projects/prepme">PrepMe implementation breakdown</a>.
+            </li>
+            <li style={{ marginBottom: '10px' }}>
+              <strong>Steward</strong>: A functional financial-planning demonstration where deterministic
+              software owns the calculations and AI handles questions, explanations, and guided setup. Read the{' '}
+              <a href="/projects/steward">Steward implementation breakdown</a>.
             </li>
             <li style={{ marginBottom: '10px' }}>
               <strong>MoveMint</strong>: A functional Aptos testnet prototype for creating and deploying test
