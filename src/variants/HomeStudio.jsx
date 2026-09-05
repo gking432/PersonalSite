@@ -57,7 +57,7 @@ const featuredSystems = [
     imageAlt: 'Home-services CRM dashboard with lead pipeline, tasks, AI insights, and business metrics',
     caseStudy: '/projects/home-services-crm',
     caseStudyAction: 'Read the case study',
-    href: 'https://new-teal-delta.vercel.app/app',
+    href: 'https://crmdemo.gunnarneuman.com/',
     action: 'Open the demo',
     tags: ['AI workflows', 'Operational system', 'Human approval']
   },
@@ -68,7 +68,7 @@ const featuredSystems = [
     description: 'A functional demo that turns a résumé and target job description into a tailored AI interview, structured practice experience, and actionable feedback.',
     image: '/images/project-prepme.png',
     imageAlt: 'PrepMe interview platform dashboard and setup workflow',
-    href: 'https://prep-me-wheat.vercel.app/',
+    href: 'https://prepme.gunnarneuman.com/',
     action: 'Open the demo',
     tags: ['Personalized AI', 'Product workflow', 'Functional demo']
   },
@@ -79,7 +79,7 @@ const featuredSystems = [
     description: 'A financial-planning system that turns sample account activity into spending insights, paycheck plans, and AI guidance grounded in deterministic rules.',
     image: '/images/project-steward.jpg',
     imageAlt: 'Steward financial planning demonstration showing imported account analysis and planning insights',
-    href: 'https://steward-financial-os.vercel.app/demo',
+    href: 'https://steward.gunnarneuman.com/demo',
     action: 'Open the demo',
     tags: ['AI guidance', 'Financial workflow', 'Deterministic rules']
   }

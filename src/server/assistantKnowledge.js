@@ -45,7 +45,7 @@ Gunnar earned a Bachelor of Business Administration from the University of Wisco
 ## Public projects
 
 ### PrepMe
-PrepMe is a self-directed, functional AI interview demo. It uses a candidate's resume and target job description to generate and conduct a personalized mock interview. It is not a launched commercial product. Public URL: https://prep-me-wheat.vercel.app/
+PrepMe is a self-directed, functional AI interview demo. It uses a candidate's resume and target job description to generate and conduct a personalized mock interview. It is not a launched commercial product. Public URL: https://prepme.gunnarneuman.com/
 
 Do not claim paying customers, user counts, revenue, enterprise adoption, or commercial success.
 

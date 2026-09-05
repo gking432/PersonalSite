@@ -11,7 +11,7 @@ export const projectSupportKnowledge = `
 - Never tell a visitor to bypass a browser or wallet security warning.
 
 ## PrepMe
-Public URL: https://prep-me-wheat.vercel.app/
+Public URL: https://prepme.gunnarneuman.com/
 What it is: A self-directed, functional AI interview demo that uses a resume and target job description to create a personalized interview and feedback experience. It is not a launched commercial product.
 Normal path:
 1. Enter the company and role.
@@ -29,7 +29,7 @@ Known issues and safe fixes:
 Truth boundary: Do not claim paying users, revenue, enterprise adoption, or a production customer deployment.
 
 ## Home-services AI CRM
-Public URL: https://new-teal-delta.vercel.app/app
+Public URL: https://crmdemo.gunnarneuman.com/
 What it is: A self-directed functional demonstration of connected lead, call, follow-up, quote, appointment, review, and approval workflows. Classification: portfolio demonstration with no client deployment.
 Best first path:
 1. Choose Executive Tour for the shorter guided route or Full Guided Tour for the complete walkthrough.
@@ -47,7 +47,7 @@ Known issues and safe fixes:
 Truth boundary: Never describe this as a system deployed for a contractor, a paying customer, or an employer. Never claim real sends, production integrations, or measured business results.
 
 ## Terralis Print Studio
-Public URL: https://teralis-tau.vercel.app/
+Public URL: https://teralis.gunnarneuman.com/
 What it is: An in-progress functional product prototype that connects place search, generated map design, customization, print-proof generation, and a demo ordering flow. Payment, fulfillment, and production ordering are not live.
 Normal path:
 1. Search for a city or choose a popular city.

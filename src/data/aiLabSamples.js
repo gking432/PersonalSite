@@ -97,8 +97,8 @@ export const roleMatchSample = {
     }
   ],
   relevantProjects: [
-    { name: 'Home-Services AI CRM', reason: 'Best proof of workflow design, connected AI assistance, and human approval.', href: 'https://new-teal-delta.vercel.app/app' },
-    { name: 'PrepMe', reason: 'A functional interview demo built around user-specific inputs and a complete practice workflow.', href: 'https://prep-me-wheat.vercel.app/' }
+    { name: 'Home-Services AI CRM', reason: 'Best proof of workflow design, connected AI assistance, and human approval.', href: 'https://crmdemo.gunnarneuman.com/' },
+    { name: 'PrepMe', reason: 'A functional interview demo built around user-specific inputs and a complete practice workflow.', href: 'https://prepme.gunnarneuman.com/' }
   ],
   transferableEvidence: ['Cross-functional launch support', 'Client and stakeholder discovery', 'Business reporting and user training', 'Rapid functional prototyping', 'Customer and commercial judgment'],
   discussionAreas: [

@@ -23,9 +23,9 @@ export const assistantDestinations = {
   client_work: { href: '/client-work', label: 'See earlier client work' },
   contact: { href: '/contact', label: 'Contact Gunnar' },
   resume: { href: '/Gunnar-Neuman-Resume.pdf', label: 'Open my résumé', external: true },
-  prepme: { href: 'https://prep-me-wheat.vercel.app/', label: 'Open PrepMe', external: true },
-  crm: { href: 'https://new-teal-delta.vercel.app/app', label: 'Open the CRM demo', external: true },
-  terralis: { href: 'https://teralis-tau.vercel.app/', label: 'Open Terralis', external: true },
+  prepme: { href: 'https://prepme.gunnarneuman.com/', label: 'Open PrepMe', external: true },
+  crm: { href: 'https://crmdemo.gunnarneuman.com/', label: 'Open the CRM demo', external: true },
+  terralis: { href: 'https://teralis.gunnarneuman.com/', label: 'Open Terralis', external: true },
   movemint: { href: 'https://www.movemint.fun/', label: 'Open MoveMint', external: true },
 }
 

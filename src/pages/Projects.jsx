@@ -29,7 +29,7 @@ const flagshipProject = {
     imageAlt: 'Home-services CRM dashboard showing lead pipeline, task management, AI insights, and business metrics',
     caseStudy: '/projects/home-services-crm',
     caseStudyLabel: 'Read the case study',
-    url: 'https://new-teal-delta.vercel.app/app',
+    url: 'https://crmdemo.gunnarneuman.com/',
     buttonLabel: 'Open the demo',
     tech: ['AI Workflows', 'CRM', 'Human Approval']
 }
@@ -46,7 +46,7 @@ const aiProjects = [
     image: '/images/project-steward.jpg',
     imagePosition: 'top center',
     imageAlt: 'Steward financial planning demonstration showing imported account analysis and planning insights',
-    url: 'https://steward-financial-os.vercel.app/demo',
+    url: 'https://steward.gunnarneuman.com/demo',
     caseStudy: '/projects/steward',
     buttonLabel: 'Open the demo',
     tech: ['AI Guidance', 'Financial Workflows', 'Deterministic Rules']
@@ -62,7 +62,7 @@ const aiProjects = [
     image: '/images/project-prepme.png',
     imagePosition: 'center center',
     imageAlt: 'PrepMe dashboard showing interview setup flow',
-    url: 'https://prep-me-wheat.vercel.app/',
+    url: 'https://prepme.gunnarneuman.com/',
     caseStudy: '/projects/prepme',
     buttonLabel: 'Open the demo',
     tech: ['Résumé Analysis', 'AI Interview', 'Feedback']
@@ -81,7 +81,7 @@ const otherBuilds = [
     image: '/images/project-terralis.png',
     imagePosition: 'center center',
     imageAlt: 'Terralis landing page preview',
-    url: 'https://teralis-tau.vercel.app/',
+    url: 'https://teralis.gunnarneuman.com/',
     buttonLabel: 'Open the prototype',
     tech: ['Generated Design', 'Customization', 'eCommerce'],
     note: 'Built with AI-assisted development'

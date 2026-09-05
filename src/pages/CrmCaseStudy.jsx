@@ -231,7 +231,7 @@ function CrmCaseStudy() {
             >
               <a
                 className="btn btn-primary"
-                href="https://new-teal-delta.vercel.app/app"
+                href="https://crmdemo.gunnarneuman.com/"
                 target="_blank"
                 rel="noopener noreferrer"
               >

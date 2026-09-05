@@ -153,7 +153,7 @@ function GunnarNeumanProfile() {
             <li style={{ marginBottom: '10px' }}>
               <strong>Terralis Print Studio</strong>: An in-progress functional prototype combining custom
               cartography, design, product configuration, and a demo ordering flow. Available at{' '}
-              <a href="https://teralis-tau.vercel.app/" target="_blank" rel="noopener noreferrer">teralis-tau.vercel.app</a>.
+              <a href="https://teralis.gunnarneuman.com/" target="_blank" rel="noopener noreferrer">teralis.gunnarneuman.com</a>.
             </li>
           </ul>
         </section>

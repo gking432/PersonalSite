@@ -24,7 +24,7 @@ const studies = {
     footerHeading: 'Try PrepMe, then see how the workflow is built.',
     disclosure:
       'Self-directed demo of one complete HR-screen workflow. All sample candidate and employer information is fictional.',
-    demoUrl: 'https://prep-me-wheat.vercel.app/',
+    demoUrl: 'https://prepme.gunnarneuman.com/',
     image: '/images/project-prepme.png',
     imageAlt: 'PrepMe interview setup screen',
     stats: [
@@ -117,7 +117,7 @@ const studies = {
     footerHeading: 'Try Steward, then see how the system separates calculation, explanation, and approval.',
     disclosure:
       'Self-directed functional demo using controlled data. It does not move money or provide financial advice.',
-    demoUrl: 'https://steward-financial-os.vercel.app/demo',
+    demoUrl: 'https://steward.gunnarneuman.com/demo',
     image: '/images/project-steward.jpg',
     imageAlt: 'Steward financial planning demo',
     stats: [
