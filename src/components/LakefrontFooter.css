@@ -1,5 +1,5 @@
 .lakefront-footer {
-  background: #faf8f4;
+  background: var(--paper, var(--parchment));
   color: #355747;
   padding-top: clamp(64px, 7vw, 112px);
   overflow: hidden;

@@ -400,10 +400,8 @@ button.btn {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  background-color: rgba(250, 248, 243, 0.94);
+  background-color: var(--parchment);
   box-shadow: 0 10px 28px rgba(42, 42, 42, 0.08);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
 }
 
 .navbar-home-top {
