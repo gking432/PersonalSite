@@ -8,6 +8,7 @@ import {
   cta
 } from '../data/homeContent'
 import SqueezeSection from '../components/SqueezeSection'
+import LakefrontFooter from '../components/LakefrontFooter'
 import './HomeStudio.css'
 
 const ease = [0.22, 1, 0.36, 1]
@@ -627,14 +628,7 @@ function HomeStudio() {
         <Link to="/contact" className="studio-btn studio-btn--lg studio-btn--primary">Get in touch &rarr;</Link>
       </section>
 
-      <footer className="studio-footer">
-        <div className="studio-footer__inner">
-          <span>© {new Date().getFullYear()} Gunnar Neuman</span>
-          <div className="studio-footer__links">
-            <a href="mailto:gunnarneuman14@gmail.com">Email</a>
-          </div>
-        </div>
-      </footer>
+      <LakefrontFooter />
     </div>
   )
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import LakefrontFooter from './LakefrontFooter'
 
 function Layout({ children, showFooter = true }) {
   const location = useLocation()
@@ -158,15 +159,7 @@ function Layout({ children, showFooter = true }) {
       <main className="main-content">
         {children}
       </main>
-      {showFooter && (
-        <footer className="footer">
-          <div className="container">
-            <div className="footer-content">
-              <p>&copy; {new Date().getFullYear()} Gunnar Neuman</p>
-            </div>
-          </div>
-        </footer>
-      )}
+      {showFooter && <LakefrontFooter />}
     </div>
   )
 }
