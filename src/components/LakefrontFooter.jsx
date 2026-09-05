@@ -27,6 +27,19 @@ export default function LakefrontFooter() {
       </div>
       <p className="lakefront-footer__copyright">© {new Date().getFullYear()} Gunnar Neuman</p>
       <div className="lakefront-footer__scene" aria-hidden="true">
+        <svg width="0" height="0" className="lakefront-footer__filters" focusable="false">
+          <defs>
+            <filter id="lakefront-green-ink" x="0" y="0" width="100%" height="100%" colorInterpolationFilters="sRGB">
+              {/* Convert paper brightness to transparency and retain a single green ink. */}
+              <feColorMatrix type="matrix" values="
+                0 0 0 0 0.208
+                0 0 0 0 0.341
+                0 0 0 0 0.278
+                -0.327 -1.100 -0.111 0 1.446
+              " />
+            </filter>
+          </defs>
+        </svg>
         <img src="/images/milwaukee-lakefront-footer.webp" alt="" loading="lazy" width="2169" height="725" />
       </div>
     </footer>
