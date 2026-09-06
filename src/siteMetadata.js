@@ -27,7 +27,7 @@ export const siteMetadata = {
   },
   '/client-work': {
     title: 'Client Work | Gunnar Neuman',
-    description: 'Selected client work from Gunnar Neuman across discovery, websites, commerce, customer acquisition, launch, and reporting.',
+    description: 'Selected website, e-commerce, and marketing work from TouchPoint Marketing Solutions, the agency Gunnar Neuman ran from 2023 to 2025 before focusing on AI products.',
   },
   '/writing': {
     title: 'Writing | Gunnar Neuman',

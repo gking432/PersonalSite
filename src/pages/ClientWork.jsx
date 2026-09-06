@@ -939,7 +939,7 @@ function ClientWork() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, ease: ndsEase }}
                 >
-                  Earlier Client Work
+                  Marketing Agency · 2023–2025
                 </motion.p>
                 <h1>
                   {'Client Delivery'.split(' ').map((word, i, words) => (
@@ -960,9 +960,10 @@ function ClientWork() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.4, ease: ndsEase }}
                 >
-                  Across my client-services work, I owned the delivery loop: understanding what
-                  a client needed, scoping it, building it, launching it, reporting on the result,
-                  and adjusting. That ownership is what carried forward into the product and AI work.
+                  I ran TouchPoint Marketing Solutions from 2023 to 2025, before shifting my
+                  focus to building AI products. This is a selection of my website, e-commerce,
+                  and marketing work from that period. I handled discovery, scope, delivery,
+                  and client communication; that experience still shapes how I build today.
                 </motion.p>
               </div>
               <motion.div
