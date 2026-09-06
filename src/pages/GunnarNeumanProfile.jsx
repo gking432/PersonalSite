@@ -136,13 +136,13 @@ function GunnarNeumanProfile() {
               Read the <a href="/projects/home-services-crm">CRM implementation case study</a>.
             </li>
             <li style={{ marginBottom: '10px' }}>
-              <strong>PrepMe</strong>: A functional AI interview demo that uses a résumé and target job
-              description to run a personalized interview and provide structured feedback. Read the{' '}
+              <strong>PrepMe</strong>: A connected AI interview workflow that uses candidate and role context
+              to run an interview, structure feedback, and guide targeted practice. Read the{' '}
               <a href="/projects/prepme">PrepMe implementation breakdown</a>.
             </li>
             <li style={{ marginBottom: '10px' }}>
-              <strong>Steward</strong>: A functional financial-planning demonstration where deterministic
-              software owns the calculations and AI handles questions, explanations, and guided setup. Read the{' '}
+              <strong>Steward</strong>: A functional AI planning workflow that interprets goals and corrections,
+              calls validated calculation tools, and prepares decisions for human approval. Read the{' '}
               <a href="/projects/steward">Steward implementation breakdown</a>.
             </li>
             <li style={{ marginBottom: '10px' }}>

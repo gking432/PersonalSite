@@ -65,7 +65,7 @@ const featuredSystems = [
     number: '02',
     type: 'Functional AI demo',
     title: 'PrepMe',
-    description: 'A functional demo that turns a résumé and target job description into a tailored AI interview, structured practice experience, and actionable feedback.',
+    description: 'An AI interview workflow that connects candidate context, live conversation, evidence-linked feedback, and targeted workshops with preserved practice progress.',
     image: '/images/project-prepme.png',
     imageAlt: 'PrepMe interview platform dashboard and setup workflow',
     href: 'https://prepme.gunnarneuman.com/',
@@ -76,12 +76,12 @@ const featuredSystems = [
     number: '03',
     type: 'Functional AI demonstration',
     title: 'Steward',
-    description: 'A financial-planning system that turns sample account activity into spending insights, paycheck plans, and AI guidance grounded in deterministic rules.',
+    description: 'An AI planning workflow that turns goals and corrections into reviewable decisions, with validated tools, deterministic calculations, and human approval.',
     image: '/images/project-steward.jpg',
     imageAlt: 'Steward financial planning demonstration showing imported account analysis and planning insights',
     href: 'https://steward.gunnarneuman.com/demo',
     action: 'Open the demo',
-    tags: ['AI guidance', 'Financial workflow', 'Deterministic rules']
+    tags: ['AI tool calling', 'Human approval', 'Workflow evaluation']
   }
 ]
 

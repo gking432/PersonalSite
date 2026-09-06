@@ -14,14 +14,14 @@ const ownerLabels = {
 
 const studies = {
   prepme: {
-    eyebrow: 'Implementation breakdown · Functional demo',
+    eyebrow: 'AI implementation case study · Functional demo',
     title: 'PrepMe',
-    headline: 'Answers become targeted coaching.',
+    headline: 'An AI interview workflow that turns practice into a clear next step.',
     summary:
-      'PrepMe runs a live AI interview, structures the transcript, evaluates answers against six defined HR-screen signals, and routes weaker areas into targeted practice.',
+      'PrepMe combines live conversation, structured interview evidence, rubric-based feedback, and targeted workshops. Each stage passes context into the next, helping candidates move from an interview answer to focused practice.',
     demonstrates:
-      'PrepMe coordinates interviewing, evaluation, feedback, and coaching in one connected workflow.',
-    footerHeading: 'Try PrepMe, then see how the workflow is built.',
+      'Connecting AI capabilities into a workflow people can start, understand, and continue.',
+    footerHeading: 'Try an interview or explore the sample, then follow the feedback into practice.',
     disclosure:
       'Self-directed demo of one complete HR-screen workflow. All sample candidate and employer information is fictional.',
     demoUrl: 'https://prepme.gunnarneuman.com/',
@@ -30,7 +30,7 @@ const studies = {
     stats: [
       ['5', 'Connected stages'],
       ['6', 'HR signals'],
-      ['8 / 8', 'AI scenarios passed']
+      ['27 / 27', 'Local automated tests · Sep 6, 2026']
     ],
     flow: [
       ['Context', 'A résumé and job description become one interview profile.', 'software'],
@@ -59,146 +59,255 @@ const studies = {
     decisions: [
       ['Task-based routing', 'Interviewing, transcription, grading, reporting, and coaching use a central task registry. The product can change one capability without scattering model choices across the application.'],
       ['Structured contracts', 'Grading and coaching responses are parsed and schema checked before the interface can use them. A malformed response fails cleanly instead of rendering a partial result.'],
-      ['Evidence before advice', 'Feedback remains tied to the transcript excerpt and question that produced it. The product can explain why a signal was flagged and route that exact weakness into practice.'],
-      ['Useful fallbacks', 'Typed replies cover microphone problems. Sparse interviews follow a defined repair path. A completed fictional sample lets visitors inspect the full feedback and coaching loop.']
+      ['From evidence to a next step', 'Feedback carries source questions and answer excerpts into targeted workshops. Candidates can revisit the answer behind a weakness and practice the relevant skill.'],
+      ['Make the workflow easy to try', 'Typed replies provide another way to participate. A completed fictional sample lets visitors explore feedback and workshops before committing to a live interview.'],
+      ['Preserve progress through practice', 'Demo session feedback and workshop completion persist in browser storage, so candidates can move between feedback and practice without losing their place.'],
+      ['Handle insufficient evidence explicitly', 'Sessions with insufficient interview evidence bypass model grading and follow a defined practice path. The workflow distinguishes missing evidence from a substantive interview.']
     ],
     proves: [
-      'Realtime AI inside a complete product workflow',
-      'Several model tasks coordinated through shared state',
-      'Validated outputs instead of unchecked generated text',
-      'Failure paths designed alongside the happy path',
-      'Evaluation claims tied to executable tests'
+      'Translating interview preparation into connected AI tasks',
+      'Coordinating conversation, assessment, and coaching through shared context',
+      'Reducing friction with typed replies and a complete sample experience',
+      'Turning feedback into focused practice with preserved progress',
+      'Defining output contracts and insufficient-evidence paths',
+      'Separating automated workflow checks from live-model quality evaluation'
     ],
     panels: {
       flow: {
         title: 'One connected pipeline',
-        intro: 'The output from each stage becomes controlled input for the next.',
+        intro: 'Candidate context and interview evidence carry through to feedback and practice, so users do not have to reconstruct the session at every step.',
         items: [
           ['01', 'Build context', 'Normalize the candidate and role into one interview profile.'],
           ['02', 'Run interview', 'Maintain one conversation state across voice and typed replies.'],
           ['03', 'Structure evidence', 'Preserve interviewer questions and candidate answers as traceable turns.'],
           ['04', 'Grade', 'Evaluate six named signals and reject malformed model output.'],
-          ['05', 'Coach', 'Map each weak signal to a specific workshop and source evidence.']
+          ['05', 'Coach', 'Map weak signals to workshops with source evidence, then preserve completed practice in the browser.']
         ]
       },
       safety: {
         title: 'Designed failure paths',
-        intro: 'The demo stays usable when the model, microphone, or user input does not follow the ideal path.',
+        intro: 'The workflow provides alternatives for participation and explicit handling for insufficient evidence or invalid output.',
         items: [
           ['Validated model contracts', 'Zod schemas check grading, rewrites, and coaching output before rendering.'],
-          ['Sparse-session handling', 'An interrupted interview cannot receive inflated or invented feedback.'],
+          ['Sparse-session handling', 'Sessions with insufficient interview evidence bypass model grading and follow a defined practice path.'],
           ['Public-input controls', 'Request limits, throttling, and private-network URL rejection reduce abuse risk on public endpoints.'],
-          ['Fictional sample isolation', 'Demo data is labeled and checked so it cannot be confused with Gunnar’s work history.']
+          ['Fictional sample isolation', 'Sample candidate and employer data are explicitly fictional. Automated checks look for leakage of the portfolio owner’s work history.']
         ]
       },
       evals: {
-        title: 'Tested behavior',
-        intro: 'The reviewed build includes eight checked-in AI evaluation scenarios plus broader application tests.',
-        metric: '8 / 8 AI scenarios passed',
+        title: 'Dated checks, clearly scoped',
+        intro: 'On September 6, 2026, the local working tree passed 27/27 automated tests. This includes eight fixture-based scenarios covering contracts, coverage, and routing. These are not eight live-model conversations or a verification of the deployed build.',
+        metric: '27 / 27 local automated tests passed',
         items: [
           ['Fictional data isolation', 'Sample context stays separate from Gunnar’s background.'],
           ['Sparse and complete coverage', 'Short and substantive sessions take different, defined paths.'],
           ['Six-area repair mapping', 'Every HR signal maps to one coaching route.'],
           ['Contract validation', 'Valid feedback passes; malformed output is rejected.'],
-          ['Coaching validation', 'Generated coaching follows its expected structure.'],
-          ['Safe JSON recovery', 'Wrapped valid JSON is recovered and checked before use.']
+          ['Coaching contract', 'A coaching fixture is checked against the expected output structure; this does not measure the quality of live coaching.'],
+          ['Safe JSON recovery', 'Wrapped valid JSON is recovered and checked before use.'],
+          ['Evidence limits', 'The tested local working tree includes uncommitted changes. Automated checks establish specific application behavior; live interview quality and coaching usefulness require separate evaluation.']
         ]
       }
     }
   },
   steward: {
-    eyebrow: 'Implementation breakdown · Functional demo',
-    title: 'Steward',
-    headline: 'Rules own the math. AI explains it.',
-    summary:
-      'Steward pairs deterministic financial planning with a bounded AI layer for questions, explanations, and guided setup.',
-    demonstrates:
-      'Steward separates financial calculation from AI explanation and keeps plan changes under user control.',
-    footerHeading: 'Try Steward, then see how the system separates calculation, explanation, and approval.',
-    disclosure:
-      'Self-directed functional demo using controlled data. It does not move money or provide financial advice.',
-    demoUrl: 'https://steward.gunnarneuman.com/demo',
-    image: '/images/project-steward.jpg',
-    imageAlt: 'Steward financial planning demo',
-    stats: [
-      ['Rules first', 'Calculation model'],
-      ['Human', 'Final approval'],
-      ['185 / 185', 'Tests passed']
-    ],
-    flow: [
-      ['Activity', 'Controlled sample account and transaction data create the financial workspace.', 'software'],
-      ['Observations', 'Rules identify patterns, obligations, and missing facts.', 'software'],
-      ['Conversation', 'Steward asks only for context the data cannot establish.', 'ai'],
-      ['Plan', 'A deterministic engine calculates buckets, tradeoffs, and safe-to-spend.', 'software'],
-      ['Explanation', 'AI explains the verified result without replacing the calculation.', 'mixed']
-    ],
-    boundaries: [
-      {
-        label: 'AI handles',
-        owner: 'ai',
-        text: 'Natural-language intent, focused onboarding dialogue, and concise explanations of verified results.'
-      },
-      {
-        label: 'Software handles',
-        owner: 'software',
-        text: 'Paydays, obligations, allocations, affordability, reconciliation, data rules, and persistence.'
-      },
-      {
-        label: 'Human controls',
-        owner: 'human',
-        text: 'The user controls goals, corrections, priorities, and whether a proposed plan change is applied. Steward never moves money.'
-      }
-    ],
-    decisions: [
-      ['Calculation and explanation split', 'Financial arithmetic runs in deterministic code. The model receives the finished answer and a bounded context, then explains it without recalculating.'],
-      ['Grounded-number guard', 'If a model response introduces a figure the system did not supply, the response is discarded and Steward uses the deterministic fallback.'],
-      ['Questions from real uncertainty', 'The system asks about irregular deposits, unclear recurring charges, and missing goals. It does not ask for facts it already derived or invent facts it cannot know.'],
-      ['Approval before change', 'A recommendation can become a proposal, but nothing is applied until the user confirms it. Stale and repeated proposals have explicit handling.']
-    ],
-    proves: [
-      'AI and deterministic rules assigned to different jobs',
-      'Model output constrained by verified business logic',
-      'Conversation driven by system state and missing context',
-      'Human approval attached to consequential changes',
-      'Extensive automated checks across the complete workflow'
-    ],
-    panels: {
-      flow: {
-        title: 'A rules-first financial workflow',
-        intro: 'AI makes the system easier to use; deterministic code remains the source of truth.',
-        items: [
-          ['01', 'Read activity', 'Build the workspace from controlled sample account and transaction data.'],
-          ['02', 'Find patterns', 'Derive income, obligations, spending, and open questions.'],
-          ['03', 'Collect intent', 'Translate natural language into a draft the user can confirm.'],
-          ['04', 'Calculate', 'Run allocations and tradeoffs through the financial engine.'],
-          ['05', 'Explain', 'Let AI communicate the verified answer in plain language.']
+    "eyebrow": "AI implementation case study · Functional demo",
+    "title": "Steward",
+    "headline": "An AI financial planning workflow that turns conversation into reviewable decisions.",
+    "summary": "Steward interprets goals, corrections, and purchase questions, invokes validated planning tools, and helps users explore trade-offs. Deterministic software calculates the amounts and projected dates; users approve changes before they become part of the saved plan.",
+    "demonstrates": "Turning AI capability into a usable workflow with clear controls and testable behavior.",
+    "footerHeading": "Try a goal, revise a detail, and see how conversation becomes a reviewable plan.",
+    "disclosure": "Self-directed functional demo using synthetic account data. Opening account analysis is deterministic. No real bank activity, money movement, or financial advice.",
+    "demoUrl": "https://steward.gunnarneuman.com/demo",
+    "image": "/images/project-steward.jpg",
+    "imageAlt": "Steward financial planning demo using sample account data",
+    "stats": [
+        [
+            "5 tools",
+            "Validated planning actions"
+        ],
+        [
+            "Human",
+            "Final plan approval"
+        ],
+        [
+            "255 / 255",
+            "Automated tests · Sep 6, 2026"
         ]
-      },
-      safety: {
-        title: 'Trust boundaries',
-        intro: 'The system limits what the model can decide and keeps every material change reviewable.',
-        items: [
-          ['No invented figures', 'A numeric grounding check rejects figures that are absent from the verified context.'],
-          ['Deterministic fallback', 'The product still returns a useful answer when the AI layer is unavailable or rejected.'],
-          ['Untrusted financial text', 'Merchant names, notes, and other records are treated as data, never instructions.'],
-          ['Explicit confirmation', 'The user must approve a proposal before the system applies it.']
+    ],
+    "flow": [
+        [
+            "Starting picture",
+            "Software analyzes sample accounts, obligations, and spending to establish the planning context.",
+            "software"
+        ],
+        [
+            "Conversation",
+            "AI interprets goals, corrections, and purchase questions while retaining the evolving draft.",
+            "ai"
+        ],
+        [
+            "Tool calls",
+            "AI requests validated planning actions and receives application-calculated results.",
+            "ai"
+        ],
+        [
+            "Calculations",
+            "The engine calculates allocations, affordability, and projected dates for scenario comparisons.",
+            "software"
+        ],
+        [
+            "Review & approval",
+            "The user reviews calculated figures and explicitly approves changes to the saved plan.",
+            "mixed"
         ]
-      },
-      evals: {
-        title: 'Tested rules and failure cases',
-        intro: 'The reviewed build passed 185 automated checks across planning, AI safeguards, onboarding, data conversion, and approval behavior.',
-        metric: '185 / 185 tests passed',
-        items: [
-          ['AI grounding', 'Invented figures are rejected while grounded restatements pass.'],
-          ['Missing-data honesty', 'Unknown paydays, rates, and amounts remain unknown instead of becoming guesses.'],
-          ['Plan reconciliation', 'Allocations balance and no money appears or disappears.'],
-          ['Approval gates', 'Ignored proposals change nothing; confirmation is the only path that applies them.'],
-          ['Conversation state', 'User choices survive model failure and cannot be silently reversed.'],
-          ['Persistence', 'Confirmed plans, corrections, and user rules survive save and reload.']
+    ],
+    "boundaries": [
+        {
+            "label": "AI handles",
+            "owner": "ai",
+            "text": "Interpreting intent, asking for clarification, requesting planning tools, and explaining trade-offs using their results."
+        },
+        {
+            "label": "Software handles",
+            "owner": "software",
+            "text": "Argument validation, financial calculations, scenario comparisons, draft state, approval checks, and persistence."
+        },
+        {
+            "label": "Human controls",
+            "owner": "human",
+            "text": "Goals, corrections, priorities, and final approval. Tool calls produce proposals; the user decides what becomes part of the saved plan."
+        }
+    ],
+    "decisions": [
+        [
+            "Connect conversation to actions",
+            "Five tools let the model read context, propose updates, calculate a plan, compare scenarios, and prepare review. Application results return to the model to inform its next response."
+        ],
+        [
+            "Validate and allow bounded repair",
+            "Invalid arguments return feedback so the model can correct them within explicit limits. Unsupported tools are rejected, required steps are enforced, and requests have a timeout."
+        ],
+        [
+            "Keep the plan editable across turns",
+            "Users can revise goals, contributions, deadlines, and scheduled bill changes without restarting. For example, a future rent increase affects eligible future bills while retaining the current bill and existing goals."
+        ],
+        [
+            "Separate financial figures from model prose",
+            "Application-rendered cards supply calculated amounts and projected dates. The conversation path replaces model prose containing digits, dollar signs, or specified consequential phrases with a neutral follow-up."
+        ],
+        [
+            "Make failure and approval explicit",
+            "If the conversation service is unavailable, it reports the failure and preserves the draft. Deterministic calculations remain separate from AI availability; saved plan changes still require user approval."
+        ],
+        [
+            "Evaluate behavior, then refine the workflow",
+            "Automated checks cover rules and failure handling. An earlier live-model evaluation exposed interpretation and missing-tool failures; tool descriptions and required-step enforcement were refined before the final 18-case rerun passed."
         ]
-      }
+    ],
+    "proves": [
+        "Translating a user need into a complete AI-assisted workflow",
+        "Connecting model tool calls to validated application logic",
+        "Designing corrections and review steps that keep users in control",
+        "Handling ambiguity and service failures without losing the draft",
+        "Using evaluation failures to improve the implementation",
+        "Distinguishing demonstrated capability from production readiness"
+    ],
+    "panels": {
+        "flow": {
+            "title": "From conversation to a reviewable decision",
+            "intro": "The model can request application actions and use their results. Tools never independently commit the financial plan.",
+            "items": [
+                [
+                    "01",
+                    "read_context",
+                    "Read the financial context and its confirmation status. Imported records are data, not instructions."
+                ],
+                [
+                    "02",
+                    "propose_update",
+                    "Submit a candidate draft for validation and receive engine-calculated proposal results."
+                ],
+                [
+                    "03",
+                    "calculate_plan",
+                    "Calculate the current candidate with the deterministic financial engine."
+                ],
+                [
+                    "04",
+                    "compare_scenarios",
+                    "Compare the previous draft with the candidate, including allocations and projected goal dates."
+                ],
+                [
+                    "05",
+                    "prepare_review",
+                    "Prepare calculated proposal information for review. The user still confirms the details and approves in the interface."
+                ]
+            ]
+        },
+        "safety": {
+            "title": "Controls around model actions",
+            "intro": "Validation, calculation, and approval are application responsibilities. These controls bound model behavior without treating every model response as reliable.",
+            "items": [
+                [
+                    "Bounded repair",
+                    "Rejected arguments return validation feedback. The tool loop allows up to four rounds and six tool attempts, with a 40-second provider-loop timeout."
+                ],
+                [
+                    "Required tool steps",
+                    "Every turn requires a successful proposed update; the trade-off stage also requires scenario comparison. Unsupported tools are rejected."
+                ],
+                [
+                    "Figures come from the application",
+                    "The conversation path filters digits, dollar signs, and specified claims from model-written prose. Calculated cards supply financial figures; this targeted filter is not a universal factual guarantee."
+                ],
+                [
+                    "Conversation failure",
+                    "AI unavailability is reported and the draft is preserved. The endpoint does not promise a replacement conversational answer; calculation availability is a separate concern."
+                ],
+                [
+                    "Untrusted imported text",
+                    "Merchant names, notes, and other imported records are treated as data. The earlier live evaluation includes a case testing embedded instructions."
+                ],
+                [
+                    "Approval before saving",
+                    "Model proposals update the planning draft. The user must approve the reviewed plan before it changes the saved plan."
+                ]
+            ]
+        },
+        "evals": {
+            "title": "Dated evidence, with clear limits",
+            "intro": "On September 6, 2026, commit e627472 passed 255/255 automated tests. The separate live-model result below is from an earlier build, not a fresh evaluation of this release.",
+            "metric": "255 / 255 automated tests passed",
+            "items": [
+                [
+                    "Current automated suite · Sep 6, 2026",
+                    "255 passed, zero failed. Coverage includes financial rules, conversation state, scheduled bill corrections, approval behavior, and mocked-provider protocol failures."
+                ],
+                [
+                    "Earlier live-model evaluation · Sep 5, 2026",
+                    "18/18 cases passed using gpt-5.6-sol against application commit dfbdddf. This is distinct from the automated suite and has not been rerun for e627472."
+                ],
+                [
+                    "Real conversation cases",
+                    "The live suite covered corrections, ambiguity, competing priorities, purchase questions, deadline changes, and untrusted imported text."
+                ],
+                [
+                    "Failures informed the design",
+                    "Earlier runs exposed misclassified goals, missing comparisons, and unsupported draft changes. Validation feedback, tool descriptions, and required tool steps were refined before the final successful rerun."
+                ],
+                [
+                    "Evaluation limits",
+                    "A small synthetic functional suite demonstrates specific behavior. It is not a statistical accuracy estimate, a comprehensive security benchmark, or evidence of customer adoption."
+                ],
+                [
+                    "Demonstration scope",
+                    "Opening account analysis uses deterministic sample-data processing. Real bank integration and receipt reading are not presented here as verified live capabilities."
+                ]
+            ]
+        }
     }
-  }
+}
 }
 
 function ImplementationDrawer({ study, open, onClose, initialPanel = 'flow' }) {

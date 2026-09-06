@@ -42,14 +42,14 @@ const aiProjects = [
     type: 'AI Financial System',
     status: 'Demo',
     shortDesc:
-      'Rules calculate the financial plan. AI handles questions and explanations.',
+      'AI turns goals and corrections into reviewable plans through validated tools and deterministic calculations.',
     image: '/images/project-steward.jpg',
     imagePosition: 'top center',
     imageAlt: 'Steward financial planning demonstration showing imported account analysis and planning insights',
     url: 'https://steward.gunnarneuman.com/demo',
     caseStudy: '/projects/steward',
     buttonLabel: 'Open the demo',
-    tech: ['AI Guidance', 'Financial Workflows', 'Deterministic Rules']
+    tech: ['AI Tool Calling', 'Human Approval', 'Workflow Evaluation']
   },
   {
     assistantSection: 'projects-prepme',
@@ -58,14 +58,14 @@ const aiProjects = [
     type: 'AI Interview System',
     status: 'Demo',
     shortDesc:
-      'A live AI interview with evidence-linked feedback and targeted coaching.',
+      'A connected AI interview workflow that carries answer evidence into feedback and targeted practice.',
     image: '/images/project-prepme.png',
     imagePosition: 'center center',
     imageAlt: 'PrepMe dashboard showing interview setup flow',
     url: 'https://prepme.gunnarneuman.com/',
     caseStudy: '/projects/prepme',
     buttonLabel: 'Open the demo',
-    tech: ['Résumé Analysis', 'AI Interview', 'Feedback']
+    tech: ['Realtime AI', 'Workflow Design', 'Targeted Practice']
   }
 ]
 

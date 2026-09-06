@@ -19,11 +19,11 @@ export const siteMetadata = {
   },
   '/projects/prepme': {
     title: 'PrepMe AI Interview System | Gunnar Neuman',
-    description: 'See how PrepMe connects a live AI interview to structured evidence, evaluation, feedback, and targeted coaching.',
+    description: 'See how PrepMe connects live AI interviews, structured evidence, and targeted practice through shared context, validated outputs, and a workflow designed for adoption.',
   },
   '/projects/steward': {
     title: 'Steward AI Financial System | Gunnar Neuman',
-    description: 'See how Steward combines deterministic financial planning with a bounded AI layer for questions, explanations, and guided setup.',
+    description: 'See how Steward turns conversation into reviewable financial plans through validated AI tool calls, deterministic calculations, human approval, and dated evaluation evidence.',
   },
   '/client-work': {
     title: 'Client Work | Gunnar Neuman',
