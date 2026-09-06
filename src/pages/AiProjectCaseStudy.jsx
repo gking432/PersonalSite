@@ -23,7 +23,7 @@ const studies = {
       'Connecting AI capabilities into a workflow people can start, understand, and continue.',
     footerHeading: 'Try an interview or explore the sample, then follow the feedback into practice.',
     disclosure:
-      'Self-directed demo of one complete HR-screen workflow. All sample candidate and employer information is fictional.',
+      'Self-directed demo of one complete HR-screen workflow. Use your own résumé and real job details, or explore the provided fictional sample.',
     demoUrl: 'https://prepme.gunnarneuman.com/',
     image: '/images/project-prepme.png',
     imageAlt: 'PrepMe interview setup screen',
@@ -91,7 +91,7 @@ const studies = {
           ['Validated model contracts', 'Zod schemas check grading, rewrites, and coaching output before rendering.'],
           ['Sparse-session handling', 'Sessions with insufficient interview evidence bypass model grading and follow a defined practice path.'],
           ['Public-input controls', 'Request limits, throttling, and private-network URL rejection reduce abuse risk on public endpoints.'],
-          ['Fictional sample isolation', 'Sample candidate and employer data are explicitly fictional. Automated checks look for leakage of the portfolio owner’s work history.']
+          ['Fictional sample isolation', 'The provided sample uses fictional candidate and employer details; users can supply their own résumé and real job information. Automated checks look for leakage of the portfolio owner’s work history into the sample.']
         ]
       },
       evals: {
