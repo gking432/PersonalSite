@@ -22,45 +22,31 @@ function App() {
     document.body.scrollTop = 0
   }, [location.pathname])
 
-  let page
-
-  // Home renders with its own chrome rather than the shared Layout.
-  if (location.pathname === '/') {
-    page = (
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<HomeStudio />} />
-      </Routes>
-    )
-  } else {
-    page = (
-      <Layout>
-      <AnimatePresence mode="wait">
-        <Routes location={location} key={location.pathname}>
-          <Route path="/about" element={<About />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/projects/home-services-crm" element={<CrmCaseStudy />} />
-          <Route path="/projects/prepme" element={<PrepMeCaseStudy />} />
-          <Route path="/projects/steward" element={<StewardCaseStudy />} />
-          <Route path="/writing" element={<Writing />} />
-          <Route path="/client-work" element={<ClientWork />} />
-          <Route path="/lab" element={<Navigate to="/" replace />} />
-          <Route path="/ai-lab" element={<Navigate to="/" replace />} />
-          <Route path="/ai-demos" element={<Navigate to="/" replace />} />
-          <Route path="/ai-assistant" element={<Navigate to="/" replace />} />
-          <Route path="/ask-ai" element={<Navigate to="/" replace />} />
-          <Route path="/insights/gunnar-neuman-profile" element={<GunnarNeumanProfile />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </AnimatePresence>
-      </Layout>
-    )
-  }
-
   return (
     <>
       <SiteMetadata />
-      {page}
+      <Layout>
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<HomeStudio />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/projects/home-services-crm" element={<CrmCaseStudy />} />
+            <Route path="/projects/prepme" element={<PrepMeCaseStudy />} />
+            <Route path="/projects/steward" element={<StewardCaseStudy />} />
+            <Route path="/writing" element={<Writing />} />
+            <Route path="/client-work" element={<ClientWork />} />
+            <Route path="/lab" element={<Navigate to="/" replace />} />
+            <Route path="/ai-lab" element={<Navigate to="/" replace />} />
+            <Route path="/ai-demos" element={<Navigate to="/" replace />} />
+            <Route path="/ai-assistant" element={<Navigate to="/" replace />} />
+            <Route path="/ask-ai" element={<Navigate to="/" replace />} />
+            <Route path="/insights/gunnar-neuman-profile" element={<GunnarNeumanProfile />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </AnimatePresence>
+      </Layout>
     </>
   )
 }

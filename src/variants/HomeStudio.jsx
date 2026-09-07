@@ -7,8 +7,6 @@ import {
   resumeTimeline,
   cta
 } from '../data/homeContent'
-import SqueezeSection from '../components/SqueezeSection'
-import LakefrontFooter from '../components/LakefrontFooter'
 import './HomeStudio.css'
 
 const ease = [0.22, 1, 0.36, 1]
@@ -379,33 +377,8 @@ function Globe() {
 }
 
 function HomeStudio() {
-  const [menuOpen, setMenuOpen] = useState(false)
-
   return (
     <div className="studio">
-      <header className="studio-topbar">
-        <div className="studio-topbar__inner">
-          <Link to="/" className="studio-mark">Gunnar&nbsp;Neuman</Link>
-          <button
-            type="button"
-            className={`studio-menu-button${menuOpen ? ' is-open' : ''}`}
-            onClick={() => setMenuOpen((value) => !value)}
-            aria-label="Toggle navigation menu"
-            aria-expanded={menuOpen}
-          >
-            <span />
-            <span />
-            <span />
-          </button>
-          <nav className={`studio-nav${menuOpen ? ' is-open' : ''}`}>
-            <Link to="/about" onClick={() => setMenuOpen(false)}>About</Link>
-            <Link to="/projects" onClick={() => setMenuOpen(false)}>Projects</Link>
-            <Link to="/client-work" onClick={() => setMenuOpen(false)}>Client Work</Link>
-            <Link to="/contact" onClick={() => setMenuOpen(false)}>Contact</Link>
-          </nav>
-        </div>
-      </header>
-
       {/* ─── HERO ─── */}
       <section className="studio-hero" data-assistant-section="home-overview">
         <div className="studio-hero__copy">
@@ -462,9 +435,9 @@ function HomeStudio() {
         ))}
       </section>
 
-      {/* ─── APPROACH (tinted squeeze panel) ─── */}
+      {/* ─── APPROACH (tinted panel) ─── */}
       <section className="studio-band studio-approach" data-assistant-section="home-approach">
-        <SqueezeSection className="studio-panel studio-panel--tint">
+        <div className="studio-panel studio-panel--tint">
           <div className="studio-panel__inner">
             <div className="studio-section__head">
               <span className="studio-kicker">Approach</span>
@@ -486,7 +459,7 @@ function HomeStudio() {
               ))}
             </div>
           </div>
-        </SqueezeSection>
+        </div>
       </section>
 
       {/* ─── DECISION RUBRIC ─── */}
@@ -581,9 +554,9 @@ function HomeStudio() {
         <Link className="studio-work__all" to="/projects">See all projects <span>→</span></Link>
       </section>
 
-      {/* ─── EXPERIENCE (tinted squeeze panel) ─── */}
+      {/* ─── EXPERIENCE (tinted panel) ─── */}
       <section className="studio-band" data-assistant-section="home-experience">
-        <SqueezeSection className="studio-panel studio-panel--tint">
+        <div className="studio-panel studio-panel--tint">
           <div className="studio-panel__inner">
             <div className="studio-section__head">
               <span className="studio-kicker">Experience</span>
@@ -614,7 +587,7 @@ function HomeStudio() {
               ))}
             </div>
           </div>
-        </SqueezeSection>
+        </div>
       </section>
 
       {/* ─── CTA (plain, parchment; the page resolves calm) ─── */}
@@ -628,7 +601,6 @@ function HomeStudio() {
         <Link to="/contact" className="studio-btn studio-btn--lg studio-btn--primary">Get in touch &rarr;</Link>
       </section>
 
-      <LakefrontFooter />
     </div>
   )
 }

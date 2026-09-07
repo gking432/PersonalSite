@@ -4,7 +4,7 @@
    "Government should feel like an Apple Store."; clear, beautiful, delightful.
    ═══════════════════════════════════════════ */
 .studio {
-  --paper: #fcfaf4;
+  --paper: var(--parchment);
   --paper-2: #f3efe5;
   --ink: #191814;
   --ink-soft: #5c574c;
@@ -19,6 +19,7 @@
 
   position: relative;
   min-height: 100vh;
+  padding-top: var(--header-height);
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-ui);
@@ -27,59 +28,15 @@
 }
 .studio ::selection { background: var(--green); color: var(--paper); }
 
-.studio-topbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  padding: 1.4rem 0;
-  background: var(--paper);
-  border-bottom: none;
-  transition: opacity 0.45s var(--ease-out), transform 0.45s var(--ease-out);
-}
-.studio-topbar__inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 clamp(1.5rem, 5vw, 4rem);
-}
-.studio-topbar.is-hidden { opacity: 0; transform: translateY(-110%); pointer-events: none; }
-.studio-mark { font-family: var(--font-display); font-size: 1.5rem; letter-spacing: -0.01em; color: var(--ink); }
-.studio-nav { display: flex; align-items: center; gap: 2rem; }
-.studio-nav a { font-size: 0.82rem; font-weight: 500; letter-spacing: 0.02em; color: var(--ink-soft); }
-.studio-nav a:hover { color: var(--ink); }
-.studio-menu-button {
-  display: none;
-  width: 2.4rem;
-  height: 2.4rem;
-  padding: 0.55rem;
-  border: 0;
-  background: transparent;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.28rem;
-}
-.studio-menu-button span {
-  display: block;
-  width: 100%;
-  height: 1px;
-  background: var(--ink);
-  transition: transform .25s var(--ease-out), opacity .2s ease;
-}
-.studio-menu-button.is-open span:nth-child(1) { transform: translateY(5px) rotate(45deg); }
-.studio-menu-button.is-open span:nth-child(2) { opacity: 0; }
-.studio-menu-button.is-open span:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
-
 /* ─── HERO ─── */
 .studio-hero {
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
   align-items: center;
   gap: clamp(2rem, 5vw, 5rem);
-  max-width: 1280px;
+  max-width: var(--max-width);
   margin: 0 auto;
-  padding: clamp(3rem, 9vh, 8rem) clamp(1.5rem, 5vw, 4rem) clamp(3rem, 7vh, 6rem);
+  padding: clamp(3rem, 9vh, 8rem) var(--gutter) clamp(3rem, 7vh, 6rem);
   min-height: calc(100vh - 70px);
 }
 
@@ -164,12 +121,12 @@
 .studio-proof {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  max-width: 1280px;
+  max-width: var(--max-width);
   margin: 0 auto;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
-.studio-proof__item { padding: clamp(1.6rem, 3vw, 2.4rem) clamp(1.5rem, 5vw, 4rem); border-right: 1px solid var(--line); }
+.studio-proof__item { padding: clamp(1.6rem, 3vw, 2.4rem) var(--gutter); border-right: 1px solid var(--line); }
 .studio-proof__item:last-child { border-right: none; }
 .studio-proof__value { display: block; font-family: var(--font-display); font-size: clamp(2rem, 3.4vw, 2.8rem); line-height: 1; color: var(--green); }
 .studio-proof__label { display: block; margin-top: 0.5rem; font-size: 0.82rem; font-weight: 500; color: var(--ink-soft); }
@@ -185,9 +142,9 @@
 
 /* ─── WHY THE TRANSITION ─── */
 .studio-pivot {
-  max-width: 1280px;
+  max-width: var(--max-width);
   margin: 0 auto;
-  padding: clamp(2.5rem, 6vh, 4.5rem) clamp(1.5rem, 5vw, 4rem) clamp(3rem, 7vh, 5rem);
+  padding: clamp(2.5rem, 6vh, 4.5rem) var(--gutter) clamp(3rem, 7vh, 5rem);
 }
 .studio-pivot p {
   max-width: 44rem;
@@ -234,7 +191,7 @@
 .studio-rubric__close strong { color: var(--ink); font-weight: 650; }
 
 /* ─── SECTIONS ─── */
-.studio-section { max-width: 1280px; margin: 0 auto; padding: clamp(5rem, 12vh, 9rem) clamp(1.5rem, 5vw, 4rem); }
+.studio-section { max-width: var(--max-width); margin: 0 auto; padding: clamp(5rem, 12vh, 9rem) var(--gutter); }
 .studio-section__head { max-width: 880px; margin-bottom: clamp(2.5rem, 5vw, 4rem); }
 .studio-kicker {
   display: block; margin-bottom: 1.2rem;
@@ -261,9 +218,9 @@
 
 /* Working proof; a light, image-led bridge between the two tinted panels. */
 .studio-work {
-  max-width: 1280px;
+  max-width: var(--max-width);
   margin: 0 auto;
-  padding: clamp(5rem, 12vh, 9rem) clamp(1.5rem, 5vw, 4rem);
+  padding: clamp(5rem, 12vh, 9rem) var(--gutter);
 }
 .studio-work__head {
   display: grid;
@@ -411,7 +368,7 @@
 
 /* Experience */
 .studio-experience { background: linear-gradient(180deg, var(--paper), var(--paper-2)); max-width: none; }
-.studio-experience > * { max-width: 1280px; margin-left: auto; margin-right: auto; }
+.studio-experience > * { max-width: var(--max-width); margin-left: auto; margin-right: auto; }
 .studio-exp__list { display: flex; flex-direction: column; }
 .studio-exp {
   display: grid; grid-template-columns: 230px 1fr; gap: clamp(1.5rem, 4vw, 3.5rem);
@@ -428,19 +385,19 @@
 
 /* CTA */
 .studio-cta {
-  max-width: 1280px; margin: 0 auto;
-  padding: clamp(5rem, 12vh, 9rem) clamp(1.5rem, 5vw, 4rem);
+  max-width: var(--max-width); margin: 0 auto;
+  padding: clamp(5rem, 12vh, 9rem) var(--gutter);
   text-align: center;
 }
 .studio-cta h2 { margin: 0 auto; max-width: 16ch; font-family: var(--font-display); font-size: clamp(2.6rem, 7vw, 5rem); font-weight: 400; line-height: 1; letter-spacing: -0.02em; color: var(--ink); }
 .studio-cta p { max-width: 36rem; margin: 1.4rem auto 2.4rem; font-size: 1.12rem; line-height: 1.65; color: var(--ink-soft); }
 
-/* ─── SQUEEZE PANELS (NDS); sections pull into rounded, inset cards on scroll ─── */
+/* ─── TINTED PANELS; content follows the shared page gutters ─── */
 .studio-band { padding: clamp(1.5rem, 4vh, 3.5rem) 0; }
 .studio-panel { padding: clamp(3.5rem, 8vh, 7rem) 0; }
 .studio-panel__inner {
-  max-width: 1280px; margin: 0 auto;
-  padding: 0 clamp(1.5rem, 5vw, 4rem);
+  max-width: var(--max-width); margin: 0 auto;
+  padding: 0 var(--gutter);
 }
 .studio-panel--tint { background: var(--paper-2); }
 .studio-panel--cta { background: var(--green); color: var(--paper); }
@@ -461,7 +418,7 @@
 .studio-statement { position: relative; background: var(--paper); }
 .studio-statement__intro {
   max-width: 760px; margin: 0 auto; text-align: center;
-  padding: clamp(4rem, 11vh, 8rem) clamp(1.5rem, 5vw, 4rem) clamp(2.5rem, 6vh, 4rem);
+  padding: clamp(4rem, 11vh, 8rem) var(--gutter) clamp(2.5rem, 6vh, 4rem);
 }
 .studio-statement__intro h2 {
   margin: 1rem 0 0; font-family: var(--font-display);
@@ -494,7 +451,6 @@
   .studio-work__feature-visual { min-height: 0; aspect-ratio: 16 / 9; border-right: 0; border-bottom: 1px solid var(--line); }
   .studio-proof { grid-template-columns: repeat(3, 1fr); }
   .studio-exp { grid-template-columns: 1fr; gap: 0.7rem; }
-  .studio-nav { gap: 1.1rem; }
 }
 @media (max-width: 700px) {
   .studio-hero__globe { display: none; }
@@ -508,30 +464,7 @@
   .studio-system-compact { grid-template-columns: 1fr; }
   .studio-system-compact__visual { min-height: 0; aspect-ratio: 2.1 / 1; border-right: 0; border-bottom: 1px solid var(--line); }
 }
-@media (max-width: 760px) {
-  .studio-topbar__inner { align-items: center; }
-  .studio-menu-button { display: flex; }
-  .studio-nav {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    display: none;
-    width: 100%;
-    padding: 1rem 1.5rem 1.35rem;
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    background: rgba(252,250,244,.98);
-    box-shadow: 0 18px 40px rgba(25,24,20,.08);
-  }
-  .studio-nav.is-open { display: grid; }
-  .studio-nav a { padding: .58rem 0; font-size: .9rem; }
-}
 @media (max-width: 540px) {
-  .studio-topbar__inner {
-    align-items: center;
-    flex-direction: row;
-  }
   .studio-hero {
     padding-top: 2.5rem;
   }
@@ -541,7 +474,6 @@
   .studio-proof { grid-template-columns: 1fr; }
   .studio-proof__item { border-right: none; border-bottom: 1px solid var(--line); }
   .studio-hero__actions .studio-btn { width: 100%; justify-content: center; }
-  .studio-mark { font-size: 1.25rem; }
   .studio-status { gap: .42rem; padding: .38rem .7rem; font-size: .66rem; }
   .studio-status i { width: 6px; height: 6px; }
 }
