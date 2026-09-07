@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { approachPrinciples } from '../data/homeContent'
 import './Somewhere.css'
 
-const places = [
+export const places = [
   { id: 'library', number: '01', name: 'The Library', label: 'Case studies', x: 23, y: 48, description: 'The thinking behind the things I build.' },
   { id: 'workshop', number: '02', name: 'The Workshop', label: 'Working demos', x: 73, y: 47, description: 'A few things you can actually try.' },
   { id: 'garden', number: '03', name: 'The Garden', label: 'A little about me', x: 17, y: 72, description: 'Rooted in the Midwest. Curious about what comes next.' },
@@ -65,7 +65,7 @@ function useBells() {
   return { enabled, unavailable, toggle, chime }
 }
 
-function PlaceContent({ place }) {
+export function PlaceContent({ place }) {
   const [copied, setCopied] = useState(false)
   const [copyFailed, setCopyFailed] = useState(false)
   if (place.id === 'library' || place.id === 'workshop') return (

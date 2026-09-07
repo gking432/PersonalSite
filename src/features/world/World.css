@@ -1,0 +1,54 @@
+.world3d.somewhere { height: 100svh; min-height: 580px; overflow: hidden; background: #9cbaa9; color: #fff8e8; }
+.world-canvas { position: absolute; inset: 0; z-index: 0; }
+.world-canvas canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; outline-offset: -5px; }
+.world-canvas canvas:active { cursor: grabbing; }
+.world-header { position: relative; z-index: 2; display: flex; justify-content: space-between; padding: 24px 32px; pointer-events: none; background: linear-gradient(#213b4266, transparent); }
+.world-header a { pointer-events: auto; text-shadow: 0 1px 12px #173e41; }
+.world-brand { display: flex; gap: 12px; align-items: center; font: 1.9rem var(--font-serif); line-height: 1; }
+.world-brand small { display: block; font: .61rem var(--font-sans); letter-spacing: .17em; margin-top: 8px; }
+.world-header nav { display: flex; align-items: center; gap: 30px; font-size: .8rem; }
+.world-interface { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.world-welcome { position: absolute; left: 6%; top: 21%; padding: 28px 32px; background: linear-gradient(110deg,#213e3fbd,#213e3f66); backdrop-filter: blur(5px); border-left: 1px solid #f8e7b26e; max-width: 470px; pointer-events: auto; }
+.world-welcome > p:first-child { font-size: .65rem; letter-spacing: .17em; }
+.world-welcome h1 { font: 400 clamp(3.2rem,5.4vw,5rem)/.95 var(--font-serif); color: #fff7e5; margin: 22px 0; }
+.world-welcome p { color: #fff7e5; font-size: .95rem; line-height: 1.6; }
+.world-welcome button { display: block; padding: 14px 24px; margin: 25px 0 18px; border: 1px solid #fff2cf; background: #f7ebc8; color: #264237; border-radius: 2px; }
+.world-welcome button:disabled { opacity: .6; }
+.world-welcome > span { display: block; font-size: .7rem; }
+.world-location { position: absolute; top: 115px; left: 50%; transform: translateX(-50%); text-align: center; text-shadow: 0 2px 12px #132d34; width: 90%; }
+.world-location > span { font-size: .63rem; letter-spacing: .2em; }
+.world-location h1 { font: 400 2.3rem var(--font-serif); color: #fff9e8; margin-top: 5px; }
+.world-crosshair { position: absolute; top: 50%; left: 50%; color: #fff; font-size: 30px; text-shadow: 0 0 3px #333; }
+.world-room-action { pointer-events: auto; position: absolute; bottom: 150px; left: 50%; transform: translateX(-50%); color: #294335 !important; background: #fff3cf; border: 1px solid #fff9e4; padding: 15px 24px; border-radius: 3px; box-shadow: 0 3px 25px #112a3550; }
+.world-map { position: absolute; z-index: 3; right: 28px; top: 120px; width: 240px; background: #1e3736db; border: 1px solid #f7eac544; border-radius: 4px; backdrop-filter: blur(15px); }
+.world-map button { color: #fff7e5; background: transparent; border: 0; }
+.world-map-toggle { width: 100%; text-align: left; padding: 13px 17px; font-size: .78rem !important; }
+.world-map-content { padding: 0 17px 18px; }
+.world-map-content > p { font: italic 1.1rem var(--font-serif); color: #e7d6b1; padding: 10px 0; }
+.world-map-content > button { width: 100%; text-align: left; display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid #fff2; font-size: .78rem; }
+.world-map-content > button:disabled { opacity: .45; }
+.world-map-content small { display: block; font-size: .7rem; line-height: 1.5; margin-top: 15px; color: #e0d8bf; }
+.world-bottom { position: absolute; z-index: 2; bottom: 0; left: 0; right: 0; display: flex; align-items: end; justify-content: space-between; gap: 20px; padding: 45px 28px 24px; background: linear-gradient(transparent,#1a2e32bf); pointer-events: none; }
+.world-bottom button, .world-bottom nav { pointer-events: auto; }
+.world-look { display: flex; gap: 10px; align-items: center; }
+.world-look span { font-size: .57rem; letter-spacing: .1em; }
+.world-look button { border: 1px solid #fff7d75c; background: #223c37b3; width: 44px; height: 44px; font-size: 1.3rem; border-radius: 50%; }
+.world-travel { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 560px; }
+.world-travel button { border: 1px solid #efe4c366; color: #fff8e7; background: #223c37e6; backdrop-filter: blur(10px); border-radius: 4px; padding: 13px 17px; font-size: .8rem; }
+.world-travel button span { margin-left: 12px; }
+.world-travel button:disabled { opacity: .55; }
+.world-settings { display: flex; flex-direction: column; gap: 8px; align-items: end; }
+.world-settings button { background: #223c3799; border: 0; color: #fff7e5; padding: 8px 12px; font-size: .7rem; border-radius: 3px; }
+.world3d .somewhere-dialog { color: #233b35; }
+.world3d button:hover:not(:disabled) { filter: brightness(1.15); }
+.world3d :focus-visible { outline-color: #eeba69; }
+@media(max-width:760px) {
+.world-header { padding: 20px; } .world-brand { font-size: 1.5rem; } .world-header nav { gap: 18px; font-size: .73rem; }
+.world-welcome { left: 20px; right: 20px; top: 23%; padding: 24px; max-width: 380px; } .world-welcome h1 { font-size: 3.5rem; }
+.world-map { top: 88px; right: 20px; width: 195px; } .world-map-content > button { font-size: .8rem; }
+.world-location { top: 150px; } .world-location h1 { font-size: 1.8rem; }
+.world-bottom { padding: 30px 16px 16px; flex-wrap: wrap; align-items: center; gap: 10px; } .world-travel { order: -1; width: 100%; max-width: none; } .world-travel button { padding: 12px; font-size: .77rem; }
+.world-look span { display: none; } .world-settings { flex-direction: row; } .world-room-action { bottom: 160px; width: max-content; max-width: 92%; font-size: .85rem; }
+}
+@media(prefers-reduced-motion:reduce) { .world3d * { animation: none !important; transition: none !important; } }
+.world-location { width: max-content; max-width: 90%; padding: 10px 24px 13px; border-radius: 4px; background: #203b368c; backdrop-filter: blur(8px); text-shadow: none; }

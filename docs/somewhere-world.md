@@ -1,24 +1,56 @@
-# Somewhere in the Midwest
+# Somewhere in the Midwest — 3D world
 
-The homepage is a point-and-click portfolio world, implemented with React, two
-compressed environment images, CSS camera transitions, and native HTML dialogs.
-It is not a walkable 3D environment. Existing project and case-study routes remain
-the source of detailed capability and evaluation evidence.
+Updated September 6, 2026. The homepage now renders a real Three.js environment,
+with perspective, geometric buildings, open doorways, furnished interiors,
+lighting, shadows, and camera travel. The earlier illustrated homepage is retained
+in `src/variants/Somewhere.jsx`; its content panels are reused by the new world.
 
 ## Visitor workflow
 
-- Enter through the arrival scene or use the always-visible portfolio links.
-- The Library opens case studies; the Workshop links to functional demos.
-- The Garden introduces Gunnar and links to his background, writing, and résumé.
-- The Post Office provides email and clipboard actions.
-- Optional evening lighting, synthesized chimes, and a fountain wish reward exploration.
-- Sound starts only after consent and suspends when the page becomes hidden.
-- Native dialogs support Escape, focus containment, and focus restoration.
-- Motion can be paused; system reduced-motion changes are respected immediately.
-- Phones receive an in-flow illustration and destination grid, including at enlarged text sizes.
+- Click a glowing ground circle or a nearby-destination button to walk there.
+- Drag with a mouse or touch to look around; arrow keys and turn buttons also work.
+- The map follows connected paths to distant destinations. It does not teleport
+  through scenery. Movement is waypoint-based, not unrestricted WASD walking.
+- Walk from the cornfield road through the stone arch and around the fountain.
+- Enter the workshop to inspect app screens and open the working demos.
+- Enter the library to read the case studies, or visit the garden to meet Gunnar.
+- Enter the chapel's quiet room to open contact information.
+- Portfolio and contact links remain available without exploring the world.
 
-Visited places and wishes are temporary React state. Nothing is sent to a server.
-The new homepage makes no new model-evaluation or business-outcome claims.
+The environment is a stylized, procedurally modeled first playable version. It is
+not a photographic panorama, scanned environment, or finished photorealistic game.
+No Blender installation or external model download is required.
+
+## Implementation and accessibility
+
+`worldNavigation.js` owns the connected route graph. `worldScene.js` builds the
+world and handles raycasting, camera interpolation, and resource disposal. React
+owns the accessible navigation, location announcements, map, and native dialogs.
+Three.js is loaded asynchronously on the client; existing routes still prerender.
+Vegetation and paving use instancing, pixel density is capped, and the renderer
+pauses behind content dialogs and when the tab is hidden. System reduced motion
+removes travel animation, camera bob, and ambient movement. A separate toggle is
+also available. WebGL failure presents portfolio links and a reload action.
+
+## Local verification — September 6, 2026
+
+- Production build and prerender of all 10 existing public routes passed.
+- `node scripts/check-world-navigation.mjs` checks all 121 pairs of locations,
+  return paths, fountain clearance, and passage through door openings.
+- Local Chrome browser checks covered animated entry, multi-stop travel to the
+  workshop, library and chapel, content links, Escape, turn and arrow controls,
+  390px mobile layout, and reduced motion without runtime errors.
+- A real touchscreen tap on the projected ground marker moved to the arch.
+- A browser launched with WebGL disabled displayed the fallback correctly.
+
+These are local browser and geometry checks, not live-model evaluations or proof
+of performance on all phones. Existing case studies retain their own dated
+capability and evaluation evidence. No AI backend or evaluation result changed.
+
+## Earlier illustrated version
+
+The following art remains in the repository for reference. It is not used as the
+new 3D environment background.
 
 ## Artwork provenance
 

@@ -10,7 +10,7 @@ import ClientWork from './pages/ClientWork'
 import CrmCaseStudy from './pages/CrmCaseStudy'
 import { PrepMeCaseStudy, StewardCaseStudy } from './pages/AiProjectCaseStudy'
 import GunnarNeumanProfile from './pages/GunnarNeumanProfile'
-import Somewhere from './variants/Somewhere'
+import World from './features/world/World'
 import SiteMetadata from './components/SiteMetadata'
 
 function App() {
@@ -28,7 +28,7 @@ function App() {
   if (location.pathname === '/') {
     page = (
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Somewhere />} />
+        <Route path="/" element={<World />} />
       </Routes>
     )
   } else {
