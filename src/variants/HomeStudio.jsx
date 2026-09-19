@@ -7,6 +7,7 @@ import {
   resumeTimeline,
   cta
 } from '../data/homeContent'
+import SqueezeSection from '../components/SqueezeSection'
 import './HomeStudio.css'
 
 const ease = [0.22, 1, 0.36, 1]
@@ -435,9 +436,9 @@ function HomeStudio() {
         ))}
       </section>
 
-      {/* ─── APPROACH (tinted panel) ─── */}
+      {/* ─── APPROACH (tinted squeeze panel) ─── */}
       <section className="studio-band studio-approach" data-assistant-section="home-approach">
-        <div className="studio-panel studio-panel--tint">
+        <SqueezeSection className="studio-panel studio-panel--tint">
           <div className="studio-panel__inner">
             <div className="studio-section__head">
               <span className="studio-kicker">Approach</span>
@@ -459,7 +460,7 @@ function HomeStudio() {
               ))}
             </div>
           </div>
-        </div>
+        </SqueezeSection>
       </section>
 
       {/* ─── DECISION RUBRIC ─── */}
@@ -554,9 +555,9 @@ function HomeStudio() {
         <Link className="studio-work__all" to="/projects">See all projects <span>→</span></Link>
       </section>
 
-      {/* ─── EXPERIENCE (tinted panel) ─── */}
+      {/* ─── EXPERIENCE (tinted squeeze panel) ─── */}
       <section className="studio-band" data-assistant-section="home-experience">
-        <div className="studio-panel studio-panel--tint">
+        <SqueezeSection className="studio-panel studio-panel--tint">
           <div className="studio-panel__inner">
             <div className="studio-section__head">
               <span className="studio-kicker">Experience</span>
@@ -587,7 +588,7 @@ function HomeStudio() {
               ))}
             </div>
           </div>
-        </div>
+        </SqueezeSection>
       </section>
 
       {/* ─── CTA (plain, parchment; the page resolves calm) ─── */}
