@@ -26,40 +26,135 @@ try {
     .getByRole("button", { name: "Explore the kinetic machine" })
     .click();
   await page.waitForFunction(
-    () => window.__marbleGame.snapshot().escapeCount > 0,
+    () => window.__marbleGame.snapshot().emitted === 1,
   );
-  // Catch a real marble emitted by the machine, using the pointer a visitor uses.
-  for (let attempt = 0; attempt < 6; attempt++) {
-    const target = await page.evaluate(() => {
-      const game = window.__marbleGame;
-      if (game.snapshot().caught) return "caught";
-      const r = document
-        .querySelector(".kinetic-machine__model")
-        .getBoundingClientRect();
-      const ball = game.physics.balls.find(
-        (b) => b.y < r.bottom + scrollY - 20 && b.y > r.top + scrollY,
-      );
-      if (!ball) return null;
-      const delta = r.bottom + scrollY - 9 - ball.y;
-      const t = (-ball.vy + Math.sqrt(ball.vy ** 2 + 2 * 620 * delta)) / 620;
-      return { x: ball.x + ball.vx * t, y: r.bottom - 15 };
+  await page.waitForTimeout(3000);
+  const opening = await page.evaluate(() => window.__marbleGame.snapshot());
+  assert.equal(opening.emitted, 1, "Only one opening marble");
+  assert.equal(opening.speed, 0.6);
+  assert.equal(opening.elapsed, 0);
+  await page.screenshot({ path: `${output}/three-track-machine.png` });
+  // Click the actual projected sphere on the track, using a real mouse event.
+  const target = await page.evaluate(
+    () => window.__marbleGame.machineTargets()[0],
+  );
+  assert.ok(target);
+  await page.mouse.click(target.x, target.y);
+  const firstCatch = await page.evaluate(() => window.__marbleGame.snapshot());
+  assert.equal(firstCatch.caught, 1);
+  assert.equal(firstCatch.score, 1);
+  assert.equal(
+    firstCatch.emitted,
+    2,
+    "First catch immediately releases the second marble",
+  );
+  assert.equal(firstCatch.opening, false);
+  await page.waitForTimeout(5100);
+  const overlap = await page.evaluate(() => window.__marbleGame.snapshot());
+  assert.equal(overlap.emitted, 3);
+  assert.equal(
+    overlap.inFlight,
+    2,
+    "Second and third overlap at a gentle starting pace",
+  );
+  assert.ok(overlap.speed > 0.6 && overlap.speed < 0.65);
+  assert.match(
+    await page.locator(".marble-controls__score").innerText(),
+    /1 caught/,
+  );
+  // Exercise each real branch with controlled random input, then restore randomness.
+  for (const [route, value] of [
+    [0, 0.1],
+    [1, 0.45],
+    [2, 0.9],
+  ]) {
+    const count = await page.evaluate(
+      ({ route, value }) => {
+        const game = window.__marbleGame;
+        window.__savedRandom = Math.random;
+        Math.random = () => value;
+        game.round.nextIn = 0;
+        return game.snapshot().routeUses[route];
+      },
+      { route, value },
+    );
+    await page.waitForFunction(
+      ({ route, count }) =>
+        window.__marbleGame.snapshot().routeUses[route] > count,
+      { route, count },
+    );
+    await page.evaluate(() => {
+      Math.random = window.__savedRandom;
+      delete window.__savedRandom;
     });
-    if (target === "caught") break;
-    if (target) await page.mouse.move(target.x, target.y);
-    await page.waitForTimeout(1100);
   }
-  assert.ok(
-    await page.evaluate(() => window.__marbleGame.snapshot().caught > 0),
-    "Pointer catches a machine marble",
-  );
   await page.mouse.move(80, 150);
   await page.waitForFunction(
-    () => window.__marbleGame.snapshot().inkContacts > 0,
-    { timeout: 15000 },
+    () => window.__marbleGame.snapshot().missed > 0,
+    null,
+    { timeout: 20000 },
   );
+  const score = await page.evaluate(() => window.__marbleGame.snapshot());
+  assert.equal(score.score, score.caught - score.missed);
   await page.locator(".studio-proof").scrollIntoViewIfNeeded();
   await page.waitForTimeout(2500);
   await page.screenshot({ path: `${output}/text-collisions.png` });
+  // A late click removes a marble but cannot recover its lost point.
+  const missed = await page.evaluate(() => {
+    const game = window.__marbleGame;
+    const ball = game.physics.balls.find((b) => b.hitText);
+    if (!ball) return null;
+    window.__lateBall = ball;
+    return { y: ball.y };
+  });
+  assert.ok(missed, "A machine marble really hit page text");
+  await page.evaluate(
+    (y) => scrollTo(0, Math.max(0, y - innerHeight / 2)),
+    missed.y,
+  );
+  await page.waitForTimeout(600);
+  const late = await page.evaluate(() => ({
+    x: window.__lateBall.x,
+    y: window.__lateBall.y - scrollY,
+    caught: window.__marbleGame.round.caught,
+    cleaned: window.__marbleGame.round.cleaned,
+  }));
+  await page.mouse.click(late.x, late.y);
+  const cleaned = await page.evaluate(() => window.__marbleGame.snapshot());
+  assert.equal(cleaned.cleaned, late.cleaned + 1);
+  assert.equal(cleaned.caught, late.caught);
+  assert.equal(
+    await page.evaluate(() =>
+      window.__marbleGame.physics.balls.includes(window.__lateBall),
+    ),
+    false,
+  );
+  // Catch a page marble away from the machine; the ordinary link underneath stays put.
+  const anywhere = await page.evaluate(() => {
+    const game = window.__marbleGame;
+    const link = document.querySelector(".studio-btn");
+    link.scrollIntoView({ block: "center" });
+    const r = link.getBoundingClientRect();
+    const ball = game.physics.add({
+      x: r.left + r.width / 2,
+      y: r.top + scrollY + r.height / 2,
+      radius: 8,
+    });
+    ball.sleep = 1;
+    return { x: ball.x, y: ball.y - scrollY, caught: game.round.caught };
+  });
+  await page.mouse.click(anywhere.x, anywhere.y);
+  assert.equal(
+    await page.evaluate(() => window.__marbleGame.round.caught),
+    anywhere.caught + 1,
+  );
+  assert.equal(
+    page.url(),
+    base + "/",
+    "Catching over a link does not navigate",
+  );
+  await page.locator(".studio-proof").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(600);
   const proof = await page.evaluate(() => {
     const s = window.__marbleGame.surfaces.find(
       (s) =>
@@ -87,12 +182,16 @@ try {
     JSON.stringify(squeezed),
   );
   await page.getByRole("button", { name: "Pause marbles" }).click();
-  const pausedTime = await page.evaluate(
-    () => window.__marbleGame.physics.time,
-  );
+  const pausedTime = await page.evaluate(() => ({
+    physics: window.__marbleGame.physics.time,
+    ramp: window.__marbleGame.round.elapsed,
+  }));
   await page.waitForTimeout(700);
-  assert.equal(
-    await page.evaluate(() => window.__marbleGame.physics.time),
+  assert.deepEqual(
+    await page.evaluate(() => ({
+      physics: window.__marbleGame.physics.time,
+      ramp: window.__marbleGame.round.elapsed,
+    })),
     pausedTime,
   );
   await page.getByRole("button", { name: "Resume marbles" }).click();
@@ -100,12 +199,16 @@ try {
   await page.waitForFunction(() => !window.__marbleGame.snapshot().enabled);
   assert.equal(await page.locator(".kinetic-machine").isVisible(), false);
   assert.equal(await page.locator(".marble-overlay").isVisible(), false);
-  const narrowTime = await page.evaluate(
-    () => window.__marbleGame.physics.time,
-  );
+  const narrowTime = await page.evaluate(() => ({
+    physics: window.__marbleGame.physics.time,
+    ramp: window.__marbleGame.round.elapsed,
+  }));
   await page.waitForTimeout(700);
-  assert.equal(
-    await page.evaluate(() => window.__marbleGame.physics.time),
+  assert.deepEqual(
+    await page.evaluate(() => ({
+      physics: window.__marbleGame.physics.time,
+      ramp: window.__marbleGame.round.elapsed,
+    })),
     narrowTime,
   );
   await page.setViewportSize({ width: 1440, height: 1000 });
@@ -116,6 +219,9 @@ try {
   );
   await page.evaluate(() => scrollTo(0, 0));
   await page.waitForTimeout(800);
+  const caughtBeforeNavigation = await page.evaluate(
+    () => window.__marbleGame.round.caught,
+  );
   await page.locator('.nav-links a[href="/about"]').click();
   await page.waitForURL("**/about");
   await page.waitForFunction(
@@ -129,6 +235,10 @@ try {
     () => window.__marbleGame.physics.balls.length > 0,
   );
   assert.equal(await page.locator(".marble-overlay").count(), 1);
+  assert.equal(
+    await page.evaluate(() => window.__marbleGame.round.caught),
+    caughtBeforeNavigation,
+  );
   await page.locator(".navbar .logo").click();
   await page.waitForURL(base + "/");
   await page.waitForFunction(
@@ -153,6 +263,34 @@ try {
   await page.waitForFunction(
     () => window.__marbleGame.snapshot().geometryReady,
   );
+  assert.equal(await page.evaluate(() => window.__marbleGame.round.score), 0);
+  await page.waitForFunction(
+    () => window.__marbleGame.snapshot().inFlight === 1,
+  );
+  // Aim in both axes with the keyboard and catch a page marble.
+  const aim = { x: 70, y: 220 };
+  await page.mouse.move(aim.x, aim.y);
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("ArrowDown");
+  await page.evaluate(({ x, y }) => {
+    const ball = window.__marbleGame.physics.add({
+      x: x + 14,
+      y: y + scrollY + 14,
+      radius: 7,
+    });
+    ball.sleep = 1;
+  }, aim);
+  await page.keyboard.press("Enter");
+  assert.equal(await page.evaluate(() => window.__marbleGame.round.caught), 1);
+  // Advance the pacing clock without waiting 90 seconds; verify its cap in the live loop.
+  await page.evaluate(() => {
+    window.__marbleGame.round.elapsed = 90;
+    window.__marbleGame.round.nextIn = 0;
+  });
+  await page.waitForTimeout(1100);
+  const maxPace = await page.evaluate(() => window.__marbleGame.snapshot());
+  assert.equal(maxPace.speed, 1);
+  assert.ok(Math.abs(maxPace.interval - 1.05) < 1e-10);
   // Load the bounded pool, then let the real integration/renderer run.
   await page.evaluate(() => {
     const r = document.querySelector(".studio-proof").getBoundingClientRect();
@@ -192,7 +330,15 @@ try {
         status: "PASS",
         checks: [
           "idle until clicked",
-          "pointer catch",
+          "one slow opening marble",
+          "first catch unlocks overlapping acceleration",
+          "three randomly chosen tracks",
+          "click track and page marbles",
+          "cleanup preserves penalty",
+          "catch count and score",
+          "click interception over links",
+          "keyboard aim and catch",
+          "previous maximum pace retained",
           "real text collision",
           "squeeze alignment",
           "pause",

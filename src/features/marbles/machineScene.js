@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { chooseRoute } from "./marbleRound";
 
 export function createMachine(host, onEscape) {
   const { Vector3: V } = THREE;
@@ -175,6 +176,7 @@ export function createMachine(host, onEscape) {
     cylinder(0.067, 0.07, enamel, [x, h - 0.12, z]);
   }
   const leadPoints = [
+    [-1.8, 4.46, -0.65],
     [-1.8, 4.02, -0.65],
     [-1.8, 3.82, -0.65],
     [-1.6, 3.61, -0.69],
@@ -194,9 +196,9 @@ export function createMachine(host, onEscape) {
   const exit = new THREE.CatmullRomCurve3(
     [
       [1.13, 1.49, 0],
-      [1.8, 1.28, 0.23],
-      [2.6, 1.02, 0.72],
-      [3.02, 0.95, 1.04],
+      [1.25, 1.22, 0.8],
+      [0.75, 1.02, 1.9],
+      [0.4, 0.94, 2.2],
     ].map((p) => new V(...p)),
   );
   const short = new THREE.CatmullRomCurve3(
@@ -205,14 +207,28 @@ export function createMachine(host, onEscape) {
       [0.92, 3.19, -1.35],
       [1.82, 2.94, -1.03],
       [2.02, 2.64, -0.26],
-      [1.66, 2.37, 0.63],
-      [0.73, 2.07, 1.3],
-      [0.5, 1.72, 1.37],
-      [1.65, 1.23, 1.22],
-      [2.5, 1.02, 1.13],
-      [3.02, 0.95, 1.04],
+      [2.25, 2.12, -0.36],
+      [2.68, 1.5, -0.56],
+      [3.05, 1.12, -0.4],
     ].map((p) => new V(...p)),
   );
+  const left = new THREE.CatmullRomCurve3(
+    [
+      [0, 3.28, -1.13],
+      [-0.95, 3.04, -1.45],
+      [-1.8, 2.72, -1.12],
+      [-2.02, 2.25, -0.36],
+      [-1.9, 1.86, 0.45],
+      [-2.4, 1.38, 1.16],
+      [-3.02, 0.94, 1.22],
+    ].map((p) => new V(...p)),
+  );
+  const routes = [
+    [lead, left],
+    [lead, spiral, exit],
+    [lead, short],
+  ];
+  const routeUses = [0, 0, 0];
   function rail(curve) {
     const pts = [[], []];
     const N = Math.ceil(curve.getLength() * 36);
@@ -253,7 +269,10 @@ export function createMachine(host, onEscape) {
       rod(a.toArray(), b.toArray(), 0.018, black);
     }
   }
-  [lead, spiral, exit, short].forEach(rail);
+  [lead, spiral, exit, short, left].forEach(rail);
+  pole(-1.82, -1.12, 2.65);
+  pole(-2.03, -0.36, 2.12);
+  pole(2.64, -0.56, 1.36);
   pole(-1.8, -0.65, 3.7);
   pole(-1.1, 0.15, 2.64);
   pole(0.03, 1.13, 2.82);
@@ -272,14 +291,8 @@ export function createMachine(host, onEscape) {
   rim.rotation.x = Math.PI / 2;
   rim.position.set(-1.8, 4.37, -0.65);
   cylinder(0.278, 0.015, black, [-1.8, 4.365, -0.65]);
-  for (let i = 0; i < 3; i++) {
-    const m = mesh(new THREE.SphereGeometry(0.115, 24, 16), ballMat);
-    m.position.set(
-      -1.8 + (i - 1) * 0.16,
-      4.42 + Math.abs(i - 1) * 0.02,
-      -0.65 + (i % 2) * 0.11,
-    );
-  }
+  const waitingBall = mesh(new THREE.SphereGeometry(0.13, 24, 16), ballMat);
+  waitingBall.position.set(-1.8, 4.46, -0.65);
   const lever = new THREE.Group();
   lever.position.set(-1.8, 3.91, -0.48);
   machine.add(lever);
@@ -379,21 +392,10 @@ export function createMachine(host, onEscape) {
   );
   label.position.set(0.14, 0.295, 1.721);
 
-  const flights = [],
-    returns = [];
+  const flights = [];
   let yaw = -0.2,
     pulse = 0;
   machine.rotation.y = yaw;
-  const elevator = new THREE.CatmullRomCurve3(
-    [
-      [-2.3, 0.65, -0.6],
-      [-2.4, 1.3, -0.7],
-      [-2.4, 3.6, -0.7],
-      [-2.05, 4.52, -0.65],
-      [-1.8, 4.43, -0.65],
-    ].map((p) => new V(...p)),
-  );
-  mesh(new THREE.TubeGeometry(elevator, 70, 0.035, 8), brass);
   const ballGeometry = new THREE.SphereGeometry(0.13, 24, 16);
   let width = 1,
     height = 1,
@@ -408,7 +410,7 @@ export function createMachine(host, onEscape) {
     height = host.clientHeight;
     if (!width || !height) return;
     renderer.setSize(width, height);
-    const span = 6.5;
+    const span = 7.25;
     camera.left = (-span * width) / height / 2;
     camera.right = -camera.left;
     camera.top = span / 2;
@@ -420,11 +422,15 @@ export function createMachine(host, onEscape) {
     if (!disposed) renderer.render(scene, camera);
   }
   function emit() {
+    waitingBall.visible = false;
+    const route = chooseRoute();
+    routeUses[route]++;
     const ball = mesh(ballGeometry, ballMat),
-      curves = [lead, spiral, exit],
+      curves = routes[route],
       lengths = curves.map((c) => c.getLength());
     ball.position.copy(lead.getPoint(0));
     flights.push({
+      route,
       ball,
       curves,
       lengths,
@@ -433,26 +439,13 @@ export function createMachine(host, onEscape) {
     });
     pulse = 0.4;
   }
-  function returned() {
-    const ball = mesh(ballGeometry, ballMat);
-    returns.push({ ball, age: 0 });
-  }
   function tick(dt, visible = true) {
     if (disposed) return;
     pulse = Math.max(0, pulse - dt);
     lever.rotation.z = -Math.sin((pulse * Math.PI) / 0.4) * 0.55;
-    if (flights.length || returns.length) {
+    if (flights.length) {
       wheel.rotation.z -= dt * 1.7;
       littleWheel.rotation.z += dt * 4.5;
-    }
-    for (let i = returns.length - 1; i >= 0; i--) {
-      const f = returns[i];
-      f.age += dt;
-      f.ball.position.copy(elevator.getPointAt(Math.min(f.age / 1.9, 1)));
-      if (f.age >= 1.9) {
-        machine.remove(f.ball);
-        returns.splice(i, 1);
-      }
     }
     for (let i = flights.length - 1; i >= 0; i--) {
       const f = flights[i];
@@ -462,15 +455,17 @@ export function createMachine(host, onEscape) {
         index = 0;
       while (index < f.curves.length - 1 && distance > f.lengths[index])
         distance -= f.lengths[index++];
+      if (index > 0) selector.rotation.y = [-1.1, 0.2, 1.2][f.route];
       f.ball.position.copy(
         f.curves[index].getPointAt(Math.min(1, distance / f.lengths[index])),
       );
       if (progress >= 1) {
         const end = project(f.ball.position),
-          before = project(exit.getPointAt(0.95)),
+          before = project(f.curves.at(-1).getPointAt(0.95)),
           edge = project(f.ball.position.clone().add(new V(0.13, 0, 0)));
         onEscape({
           ...end,
+          route: f.route,
           vx: (end.x - before.x) * 7,
           vy: 25,
           radius: Math.max(
@@ -484,10 +479,32 @@ export function createMachine(host, onEscape) {
     }
     if (visible) render();
   }
+  function targets() {
+    return flights.map((f) => {
+      const p = project(f.ball.position);
+      const edge = project(f.ball.position.clone().add(new V(0.13, 0, 0)));
+      return {
+        ...p,
+        radius: Math.max(4.5, Math.hypot(edge.x - p.x, edge.y - p.y)),
+        flight: f,
+      };
+    });
+  }
+  function catchAt(x, y) {
+    const hit = targets()
+      .reverse()
+      .find((p) => Math.hypot(p.x - x, p.y - y) <= p.radius + 5);
+    if (!hit) return false;
+    const i = flights.indexOf(hit.flight);
+    machine.remove(hit.flight.ball);
+    flights.splice(i, 1);
+    render();
+    return true;
+  }
   function clear() {
-    for (const f of [...flights, ...returns]) machine.remove(f.ball);
+    waitingBall.visible = true;
+    for (const f of flights) machine.remove(f.ball);
     flights.length = 0;
-    returns.length = 0;
     render();
   }
   function rotate(delta) {
@@ -500,7 +517,11 @@ export function createMachine(host, onEscape) {
   resize();
   return {
     emit,
-    returned,
+    targets,
+    catchAt,
+    get routeUses() {
+      return [...routeUses];
+    },
     tick,
     rotate,
     clear,

@@ -59,20 +59,40 @@ test("marbles form a pile and incoming impacts wake resting marbles", () => {
   assert.ok(world.stats.ballContacts > 0);
   assert.ok(Number.isFinite(bottom.y + top.y));
 });
-test("catching consumes a marble and the long-session pool stays bounded", () => {
+test("click targeting removes a marble and wakes the rest of the pile", () => {
   const world = new MarblePhysics({ maxBalls: 12 });
-  let caught = 0;
-  world.add({ x: 100, y: 48, vy: 30, radius: 6 });
-  world.step(1 / 180, [], {
-    width: 300,
-    height: 900,
-    catcher: { x: 100, y: 54, width: 60 },
-    onCatch: () => caught++,
-  });
-  assert.equal(caught, 1);
-  assert.equal(world.balls.length, 0);
+  const ball = world.add({ x: 100, y: 100, radius: 6 });
+  assert.equal(world.hitTest(102, 98), ball);
+  assert.equal(world.hitTest(130, 100), null);
+  assert.ok(world.remove(ball));
+  assert.equal(world.hitTest(100, 100), null);
+  assert.equal(world.remove(ball), false);
   for (let i = 0; i < 500; i++) world.add({ x: 100, y: i * 15 });
   assert.equal(world.balls.length, 12);
   run(world, [], 3);
   assert.ok(world.balls.every((b) => Number.isFinite(b.x + b.y)));
+});
+test("only the first text impact costs a point, never an object impact", () => {
+  const ink = surface((x, y) => y >= 65 && y < 75);
+  const world = new MarblePhysics(),
+    ball = world.add({ x: 100, y: 15, radius: 6 });
+  let misses = 0;
+  for (let i = 0; i < 720; i++)
+    world.step(1 / 180, [ink], {
+      width: 500,
+      height: 1000,
+      onTextHit: () => misses++,
+    });
+  assert.equal(misses, 1);
+  assert.equal(ball.hitText, true);
+  const other = new MarblePhysics(),
+    b = other.add({ x: 100, y: 15, radius: 6 });
+  for (let i = 0; i < 720; i++)
+    other.step(1 / 180, [{ ...ink, kind: "object" }], {
+      width: 500,
+      height: 1000,
+      onTextHit: () => misses++,
+    });
+  assert.equal(misses, 1);
+  assert.equal(b.hitText, false);
 });

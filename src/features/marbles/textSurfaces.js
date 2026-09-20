@@ -126,6 +126,7 @@ export async function buildTextSurfaces(container, isCancelled = () => false) {
     const alpha = new Uint8Array(canvas.width * canvas.height);
     for (let i = 0; i < alpha.length; i++) alpha[i] = pixels[i * 4 + 3];
     surfaces.push({
+      kind: "object",
       el,
       field: inkDistanceField(alpha, canvas.width, canvas.height),
       baseWidth: w,

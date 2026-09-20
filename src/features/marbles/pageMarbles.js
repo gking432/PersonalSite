@@ -1,5 +1,6 @@
 import { createMachine } from "./machineScene";
 import { MarblePhysics } from "./marblePhysics";
+import { MarbleRound } from "./marbleRound";
 import { buildTextSurfaces, positionTextSurfaces } from "./textSurfaces";
 
 export function createPageMarbles(onState) {
@@ -9,6 +10,10 @@ export function createPageMarbles(onState) {
   document.body.appendChild(canvas);
   const ctx = canvas.getContext("2d");
   const physics = new MarblePhysics();
+  const round = new MarbleRound();
+  const flashes = [];
+  let pointer = { x: innerWidth / 2, y: 200 },
+    showHint = true;
   const state = {
     started: false,
     paused: false,
@@ -24,8 +29,6 @@ export function createPageMarbles(onState) {
   let raf = 0,
     last = 0,
     accumulator = 0,
-    feed = 0,
-    catcherX = 0,
     width = innerWidth,
     height = innerHeight;
   let generation = 0,
@@ -36,7 +39,7 @@ export function createPageMarbles(onState) {
   let lastEmissionX = 0.8,
     frameMs = 0,
     escapeCount = 0;
-  const notify = () => onState({ ...state });
+  const notify = () => onState({ ...state, ...round.snapshot() });
   const running = () =>
     state.started && !state.paused && enabled && !document.hidden && !disposed;
   function sizeCanvas() {
@@ -97,7 +100,6 @@ export function createPageMarbles(onState) {
       try {
         scene = createMachine(host, escaped);
         state.ready = true;
-        catcherX = host.getBoundingClientRect().left + host.clientWidth / 2;
         notify();
       } catch {
         state.ready = false;
@@ -106,14 +108,52 @@ export function createPageMarbles(onState) {
       }
     }
   }
-  function catcher() {
-    if (!scene || !host?.isConnected) return null;
-    const r = host.getBoundingClientRect();
-    return {
-      x: Math.max(r.left + 26, Math.min(r.right - 26, catcherX)),
-      y: r.bottom + scrollY - 9,
-      width: 66,
-    };
+  function emit() {
+    if (scene) scene.emit();
+    else
+      physics.add({
+        x: Math.max(
+          12,
+          Math.min(
+            width - 12,
+            lastEmissionX * width + (Math.random() - 0.5) * width * 0.45,
+          ),
+        ),
+        y: -12,
+        vx: (Math.random() - 0.5) * 70,
+        radius: 6,
+        visibleTop: scrollY,
+        visibleBottom: scrollY + height,
+      });
+  }
+  function flash(x, y, label) {
+    flashes.push({ x, y, label, life: 1 });
+  }
+  function finishCatch(hitText, x, y) {
+    const result = round.catch(hitText);
+    flash(x, y, result.label);
+    if (result.emit) emit();
+    notify();
+    draw();
+  }
+  function catchAt(x, y) {
+    if (!running() || document.querySelector(".navbar-menu-open, dialog[open]"))
+      return false;
+    const ball = physics.hitTest(x, y + scrollY);
+    if (ball) {
+      physics.remove(ball);
+      finishCatch(ball.hitText, x, y + scrollY);
+      return true;
+    }
+    if (scene && host?.isConnected) {
+      const r = host.getBoundingClientRect(),
+        scale = r.width / (host.clientWidth || 1);
+      if (scene.catchAt((x - r.left) / scale, (y - r.top) / scale)) {
+        finishCatch(false, x, y + scrollY);
+        return true;
+      }
+    }
+    return false;
   }
   function drawBall(b) {
     const y = b.y - scrollY,
@@ -140,33 +180,32 @@ export function createPageMarbles(onState) {
     ctx.arc(b.x, y, r, 0, Math.PI * 2);
     ctx.fill();
   }
-  function drawCatcher(c) {
-    const y = c.y - scrollY;
-    if (y < -30 || y > height + 30) return;
-    ctx.save();
-    ctx.translate(c.x, y);
-    const fill = ctx.createLinearGradient(0, -5, 0, 22);
-    fill.addColorStop(0, "#547664");
-    fill.addColorStop(1, "#163e2e");
-    ctx.fillStyle = fill;
-    ctx.beginPath();
-    ctx.moveTo(-33, 0);
-    ctx.quadraticCurveTo(-26, 24, 0, 24);
-    ctx.quadraticCurveTo(26, 24, 33, 0);
-    ctx.fill();
-    ctx.fillStyle = "#1c362b";
-    ctx.beginPath();
-    ctx.ellipse(0, 0, 33, 6, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = "#c6a563";
-    ctx.lineWidth = 2.5;
-    ctx.stroke();
-    ctx.restore();
-  }
-  function draw(c) {
+  function draw() {
     ctx.clearRect(0, 0, width, height);
     for (const ball of physics.balls) drawBall(ball);
-    if (c) drawCatcher(c);
+    ctx.font = "500 12px Inter, sans-serif";
+    for (const f of flashes) {
+      ctx.globalAlpha = Math.min(1, f.life * 2);
+      ctx.fillStyle = f.label === "−1" ? "#9d442d" : "#27543b";
+      ctx.fillText(f.label, f.x + 9, f.y - scrollY - 14 - (1 - f.life) * 22);
+    }
+    ctx.globalAlpha = 1;
+    if (pointer && showHint && !state.paused) {
+      const hit = physics.hitTest(pointer.x, pointer.y + scrollY);
+      ctx.strokeStyle = hit?.hitText ? "#9d6b47" : "#53745e";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(pointer.x, pointer.y, 11, 0, Math.PI * 2);
+      ctx.stroke();
+      const label = hit?.hitText ? "Click to clean up" : "Click to catch";
+      const labelWidth = ctx.measureText(label).width;
+      const x = Math.min(width - labelWidth - 12, Math.max(10, pointer.x + 18));
+      const y = Math.max(20, Math.min(height - 12, pointer.y + 26));
+      ctx.fillStyle = "rgba(250,248,243,.92)";
+      ctx.fillRect(x - 5, y - 13, labelWidth + 10, 19);
+      ctx.fillStyle = "#365643";
+      ctx.fillText(label, x, y);
+    }
   }
   function requestFrame() {
     if (!raf && running()) {
@@ -187,40 +226,32 @@ export function createPageMarbles(onState) {
       return;
     }
     if (geometryReady) {
-      feed += dt;
-      if (feed >= 1.05) {
-        feed = 0;
-        if (scene) scene.emit();
-        else
-          physics.add({
-            x: Math.max(12, Math.min(width - 12, lastEmissionX * width)),
-            y: -12,
-            vx: (Math.random() - 0.5) * 70,
-            radius: 6,
-            visibleTop: scrollY,
-            visibleBottom: scrollY + height,
-          });
+      if (round.tick(dt, physics.balls.length + (scene?.inFlight || 0))) emit();
+      for (let i = flashes.length - 1; i >= 0; i--) {
+        flashes[i].life -= dt;
+        if (flashes[i].life <= 0) flashes.splice(i, 1);
       }
       const r = host?.getBoundingClientRect();
-      scene?.tick(dt, Boolean(r && r.bottom > 0 && r.top < height));
+      scene?.tick(
+        dt * round.speed,
+        Boolean(r && r.bottom > 0 && r.top < height),
+      );
       const connected = surfaces.filter((s) => s.el.isConnected);
       if (positionTextSurfaces(connected)) physics.wake();
-      const c = catcher();
-      accumulator = Math.min(accumulator + dt, 0.05);
+      accumulator = Math.min(accumulator + dt * round.speed, 0.05);
       while (accumulator >= 1 / 180) {
         physics.step(1 / 180, connected, {
           width,
           height: document.documentElement.scrollHeight,
-          catcher: c,
-          onCatch: () => {
-            state.caught++;
-            scene?.returned();
+          onTextHit: (ball) => {
+            round.miss();
+            flash(ball.x, ball.y, "−1");
             notify();
           },
         });
         accumulator -= 1 / 180;
       }
-      draw(c);
+      draw();
     }
     frameMs = frameMs * 0.95 + (performance.now() - began) * 0.05;
     raf = requestAnimationFrame(tick);
@@ -232,7 +263,6 @@ export function createPageMarbles(onState) {
     }
     if (state.started || !enabled || !scene) return;
     state.started = true;
-    feed = 1.05;
     notify();
     rebuild();
     requestFrame();
@@ -248,7 +278,8 @@ export function createPageMarbles(onState) {
   function reset() {
     state.started = false;
     state.paused = false;
-    state.caught = 0;
+    round.reset();
+    flashes.length = 0;
     cancelAnimationFrame(raf);
     raf = 0;
     clearTimeout(rebuildTimer);
@@ -257,28 +288,60 @@ export function createPageMarbles(onState) {
     physics.clear();
     scene?.clear();
     ctx.clearRect(0, 0, width, height);
-    feed = 0;
     notify();
   }
   function key(e) {
-    if (!state.started || !["ArrowLeft", "ArrowRight"].includes(e.key)) return;
-    e.preventDefault();
-    catcherX += e.key === "ArrowLeft" ? -25 : 25;
+    if (!state.started) return;
+    const directions = {
+      ArrowLeft: [-14, 0],
+      ArrowRight: [14, 0],
+      ArrowUp: [0, -14],
+      ArrowDown: [0, 14],
+    };
+    if (directions[e.key]) {
+      e.preventDefault();
+      const [x, y] = directions[e.key];
+      pointer = {
+        x: Math.max(0, Math.min(width, pointer.x + x)),
+        y: Math.max(0, Math.min(height, pointer.y + y)),
+      };
+      showHint = true;
+      draw();
+    } else if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      catchAt(pointer.x, pointer.y);
+    }
+  }
+  function click(e) {
+    if (e.target instanceof Element && e.target.closest(".marble-controls"))
+      return;
+    if (catchAt(e.clientX, e.clientY)) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }
   }
   function pointerDown(e) {
+    pointer = { x: e.clientX, y: e.clientY };
     if (!host?.contains(e.target)) return;
     drag = { x: e.clientX };
     dragged = false;
   }
   function pointerMove(e) {
-    if (state.started) catcherX = e.clientX;
-    else if (drag && scene) {
+    if (state.started) {
+      pointer = { x: e.clientX, y: e.clientY };
+      showHint = !(
+        e.target instanceof Element && e.target.closest(".marble-controls")
+      );
+    } else if (drag && scene) {
       const delta = e.clientX - drag.x;
       if (Math.abs(delta) > 2) dragged = true;
       scene.rotate(delta * 0.008);
       drag.x = e.clientX;
     }
   }
+  const pointerOut = (e) => {
+    if (!e.relatedTarget) showHint = false;
+  };
   const pointerUp = () => {
     drag = null;
   };
@@ -327,6 +390,8 @@ export function createPageMarbles(onState) {
       subtree: true,
       characterData: true,
     });
+  window.addEventListener("click", click, true);
+  window.addEventListener("pointerout", pointerOut);
   window.addEventListener("resize", resize);
   window.addEventListener("pointerdown", pointerDown);
   window.addEventListener("pointermove", pointerMove, { passive: true });
@@ -351,6 +416,8 @@ export function createPageMarbles(onState) {
       observer.disconnect();
       scene?.dispose();
       canvas.remove();
+      window.removeEventListener("click", click, true);
+      window.removeEventListener("pointerout", pointerOut);
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointerdown", pointerDown);
       window.removeEventListener("pointermove", pointerMove);
@@ -366,11 +433,25 @@ export function createPageMarbles(onState) {
     window.__marbleGame = {
       api,
       physics,
+      round,
+      machineTargets: () => {
+        const r = host?.getBoundingClientRect();
+        return r && scene
+          ? scene.targets().map((p) => ({
+              x: r.left + (p.x * r.width) / host.clientWidth,
+              y: r.top + (p.y * r.width) / host.clientWidth,
+              radius: p.radius,
+              route: p.flight.route,
+            }))
+          : [];
+      },
       get surfaces() {
         return surfaces;
       },
       snapshot: () => ({
         ...state,
+        ...round.snapshot(),
+        routeUses: scene?.routeUses || [],
         enabled,
         frameMs,
         geometryReady,

@@ -19,6 +19,9 @@
 .kinetic-machine__stage:active {
   cursor: grabbing;
 }
+.kinetic-machine__stage[data-playing="true"] {
+  cursor: crosshair;
+}
 .kinetic-machine__model {
   position: absolute;
   inset: 0;
@@ -83,4 +86,19 @@
   .marble-controls {
     display: none;
   }
+}
+.marble-controls__score {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.marble-controls__score strong {
+  color: #244b37;
+  font-size: 18px;
+  font-weight: 600;
+}
+.marble-controls__caught {
+  margin-left: 8px;
+  color: #667364;
 }

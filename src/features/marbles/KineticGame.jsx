@@ -12,6 +12,7 @@ export function KineticGameProvider({ children }) {
     started: false,
     paused: false,
     caught: 0,
+    score: 0,
     ready: false,
     error: "",
   });
@@ -73,7 +74,16 @@ export function KineticGameProvider({ children }) {
       {children}
       {game.started && wide && (
         <div className="marble-controls" aria-label="Marble game controls">
-          <span aria-live="polite">{game.caught} caught</span>
+          <span
+            className="marble-controls__score"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            Score <strong>{game.score}</strong>
+            <span className="marble-controls__caught">
+              {game.caught} caught
+            </span>
+          </span>
           <button type="button" onClick={() => engine.current?.togglePause()}>
             {game.paused ? "Resume marbles" : "Pause marbles"}
           </button>
@@ -97,9 +107,10 @@ export default function KineticMachine() {
       <button
         type="button"
         className="kinetic-machine__stage"
+        data-playing={game.started}
         aria-label={
           game.started
-            ? "Marble catcher. Use left and right arrow keys to catch marbles."
+            ? "Click marbles to catch them. Use arrow keys to aim and Enter to catch."
             : "Explore the kinetic machine"
         }
         onClick={start}
@@ -119,7 +130,7 @@ export default function KineticMachine() {
       <span className="kinetic-machine__caption" role="status">
         {game.error ||
           (game.started
-            ? "Move to catch. Misses become part of the page."
+            ? "Click to catch. +1 before text, −1 on the first text hit."
             : "A little working system.")}
       </span>
     </div>

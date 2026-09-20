@@ -120,10 +120,30 @@ export class MarblePhysics {
       radius,
       sleep: 0,
       contacts: 0,
+      hitText: false,
       born: this.time,
     };
     this.balls.push(ball);
     return ball;
+  }
+  hitTest(x, y, padding = 5) {
+    let hit = null,
+      nearest = Infinity;
+    for (const b of this.balls) {
+      const d = Math.hypot(b.x - x, b.y - y);
+      if (d <= b.radius + padding && d < nearest) {
+        hit = b;
+        nearest = d;
+      }
+    }
+    return hit;
+  }
+  remove(ball) {
+    const index = this.balls.indexOf(ball);
+    if (index < 0) return false;
+    this.balls.splice(index, 1);
+    this.wake();
+    return true;
   }
   wake() {
     for (const b of this.balls) b.sleep = 0;
@@ -131,7 +151,7 @@ export class MarblePhysics {
   clear() {
     this.balls.length = 0;
   }
-  step(dt, surfaces, { width, height, catcher, onCatch } = {}) {
+  step(dt, surfaces, { width, height, onTextHit } = {}) {
     this.time += dt;
     for (const ball of this.balls) {
       ball.contacts = 0;
@@ -148,27 +168,21 @@ export class MarblePhysics {
         ball.x = width - ball.radius;
         ball.vx = -Math.abs(ball.vx) * 0.5;
       }
-      if (
-        catcher &&
-        ball.vy > 0 &&
-        Math.abs(ball.x - catcher.x) < catcher.width / 2 &&
-        ball.y + ball.radius >= catcher.y &&
-        ball.y - ball.radius < catcher.y + 12
-      ) {
-        ball.caught = true;
-        onCatch?.(ball);
-        continue;
-      }
       for (let iteration = 0; iteration < 2; iteration++)
         for (const surface of surfaces) {
-          if (collideInk(ball, surface)) this.stats.inkContacts++;
+          if (collideInk(ball, surface)) {
+            this.stats.inkContacts++;
+            if (surface.kind !== "object" && !ball.hitText) {
+              ball.hitText = true;
+              onTextHit?.(ball);
+            }
+          }
         }
     }
     // A spatial hash bounds marble-to-marble work even when a pile grows.
     const grid = new Map(),
       cell = 24;
     for (const ball of this.balls) {
-      if (ball.caught) continue;
       const gx = Math.floor(ball.x / cell),
         gy = Math.floor(ball.y / cell);
       for (let dx = -1; dx <= 1; dx++)
@@ -219,7 +233,7 @@ export class MarblePhysics {
       else b.sleep = 0;
     }
     this.balls = this.balls.filter(
-      (b) => !b.caught && b.y < height + 120 && Number.isFinite(b.x + b.y),
+      (b) => b.y < height + 120 && Number.isFinite(b.x + b.y),
     );
   }
 }
