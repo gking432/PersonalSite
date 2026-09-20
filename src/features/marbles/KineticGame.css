@@ -1,0 +1,86 @@
+.kinetic-machine {
+  position: relative;
+  width: 100%;
+}
+.kinetic-machine__stage {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  cursor: grab;
+  color: var(--ink);
+  font: inherit;
+  touch-action: pan-y;
+}
+.kinetic-machine__stage:active {
+  cursor: grabbing;
+}
+.kinetic-machine__model {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+.kinetic-machine__model canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.kinetic-machine__fallback {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+}
+.kinetic-machine__caption {
+  display: block;
+  min-height: 2.8em;
+  padding-top: 0.4rem;
+  text-align: center;
+  color: var(--ink-faint);
+  font-size: 0.7rem;
+}
+.marble-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1100;
+}
+.marble-controls {
+  position: fixed;
+  z-index: 1101;
+  right: 20px;
+  bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid #dcd9cd;
+  border-radius: 22px;
+  background: #faf8f3f5;
+  color: #486152;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  box-shadow: 0 3px 15px #1f40340c;
+}
+.marble-controls button {
+  border: 0;
+  padding: 4px 0;
+  color: #284634;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+.marble-controls button:hover {
+  text-decoration: underline;
+}
+@media (max-width: 700px) {
+  .kinetic-machine,
+  .marble-overlay,
+  .marble-controls {
+    display: none;
+  }
+}
