@@ -12,8 +12,7 @@ export function createPageMarbles(onState) {
   const physics = new MarblePhysics();
   const round = new MarbleRound();
   const flashes = [];
-  let pointer = { x: innerWidth / 2, y: 200 },
-    showHint = true;
+  let pointer = { x: innerWidth / 2, y: 200 };
   const state = {
     started: false,
     paused: false,
@@ -132,7 +131,6 @@ export function createPageMarbles(onState) {
   function finishCatch(hitText, x, y) {
     const result = round.catch(hitText);
     flash(x, y, result.label);
-    if (result.emit) emit();
     notify();
     draw();
   }
@@ -182,17 +180,8 @@ export function createPageMarbles(onState) {
       ctx.fillText(f.label, f.x + 9, f.y - scrollY - 14 - (1 - f.life) * 22);
     }
     ctx.globalAlpha = 1;
-    if (pointer && showHint && !state.paused) {
-      const label = "Click to catch";
-      const labelWidth = ctx.measureText(label).width;
-      const x = Math.min(width - labelWidth - 12, Math.max(10, pointer.x + 18));
-      const y = Math.max(20, Math.min(height - 12, pointer.y + 26));
-      ctx.fillStyle = "rgba(250,248,243,.92)";
-      ctx.fillRect(x - 5, y - 13, labelWidth + 10, 19);
-      ctx.fillStyle = "#365643";
-      ctx.fillText(label, x, y);
-    }
   }
+
   function requestFrame() {
     if (!raf && running()) {
       last = performance.now();
@@ -212,7 +201,7 @@ export function createPageMarbles(onState) {
       return;
     }
     if (geometryReady) {
-      if (round.tick(dt, physics.balls.length + (scene?.inFlight || 0))) emit();
+      if (round.tick(dt)) emit();
       for (let i = flashes.length - 1; i >= 0; i--) {
         flashes[i].life -= dt;
         if (flashes[i].life <= 0) flashes.splice(i, 1);
@@ -240,10 +229,6 @@ export function createPageMarbles(onState) {
     raf = requestAnimationFrame(tick);
   }
   function start() {
-    if (dragged) {
-      dragged = false;
-      return;
-    }
     if (state.started || !enabled || !scene) return;
     state.started = true;
     notify();
@@ -288,14 +273,16 @@ export function createPageMarbles(onState) {
         x: Math.max(0, Math.min(width, pointer.x + x)),
         y: Math.max(0, Math.min(height, pointer.y + y)),
       };
-      showHint = true;
-      draw();
     } else if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       catchAt(pointer.x, pointer.y);
     }
   }
   function click(e) {
+    if (dragged) {
+      dragged = false;
+      return;
+    }
     if (e.target instanceof Element && e.target.closest(".marble-controls"))
       return;
     if (catchAt(e.clientX, e.clientY)) {
@@ -304,27 +291,24 @@ export function createPageMarbles(onState) {
     }
   }
   function pointerDown(e) {
+    if (!e.isPrimary || e.button !== 0) return;
     pointer = { x: e.clientX, y: e.clientY };
-    if (!host?.contains(e.target)) return;
-    drag = { x: e.clientX };
     dragged = false;
+    if (!host?.contains(e.target)) return;
+    drag = { x: e.clientX, pointerId: e.pointerId };
+    host.setPointerCapture(e.pointerId);
+    start();
   }
   function pointerMove(e) {
-    if (state.started) {
-      pointer = { x: e.clientX, y: e.clientY };
-      showHint = !(
-        e.target instanceof Element && e.target.closest(".marble-controls")
-      );
-    } else if (drag && scene) {
+    if (!e.isPrimary) return;
+    pointer = { x: e.clientX, y: e.clientY };
+    if (drag && scene && drag.pointerId === e.pointerId) {
       const delta = e.clientX - drag.x;
       if (Math.abs(delta) > 2) dragged = true;
       scene.rotate(delta * 0.008);
       drag.x = e.clientX;
     }
   }
-  const pointerOut = (e) => {
-    if (!e.relatedTarget) showHint = false;
-  };
   const pointerUp = () => {
     drag = null;
   };
@@ -365,7 +349,16 @@ export function createPageMarbles(onState) {
     geometryReady = false;
     scheduleRebuild();
   }
-  const observer = new MutationObserver(scheduleRebuild);
+  const observer = new MutationObserver((records) => {
+    // The score lives inside the homepage, but changing it does not reflow text.
+    if (
+      records.some(({ target }) => {
+        const el = target instanceof Element ? target : target.parentElement;
+        return !el?.closest(".kinetic-machine, .marble-controls");
+      })
+    )
+      scheduleRebuild();
+  });
   const main = document.querySelector(".main-content");
   if (main)
     observer.observe(main, {
@@ -374,7 +367,6 @@ export function createPageMarbles(onState) {
       characterData: true,
     });
   window.addEventListener("click", click, true);
-  window.addEventListener("pointerout", pointerOut);
   window.addEventListener("resize", resize);
   window.addEventListener("pointerdown", pointerDown);
   window.addEventListener("pointermove", pointerMove, { passive: true });
@@ -400,7 +392,6 @@ export function createPageMarbles(onState) {
       scene?.dispose();
       canvas.remove();
       window.removeEventListener("click", click, true);
-      window.removeEventListener("pointerout", pointerOut);
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointerdown", pointerDown);
       window.removeEventListener("pointermove", pointerMove);
@@ -435,6 +426,7 @@ export function createPageMarbles(onState) {
         ...state,
         ...round.snapshot(),
         routeUses: scene?.routeUses || [],
+        rotation: scene?.rotation ?? null,
         enabled,
         frameMs,
         geometryReady,

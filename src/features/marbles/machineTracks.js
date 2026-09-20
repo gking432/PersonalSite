@@ -1,5 +1,6 @@
 import { CatmullRomCurve3, Vector3 as V } from "three";
 
+export const TRACK_TRIP_SECONDS = 2.6;
 export const FLYWHEEL_CENTER = [-1.42, 1.47, 0.72];
 export const FLYWHEEL_RADIUS = 0.64;
 

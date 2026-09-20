@@ -74,16 +74,6 @@ export function KineticGameProvider({ children }) {
       {children}
       {game.started && wide && (
         <div className="marble-controls" aria-label="Marble game controls">
-          <span
-            className="marble-controls__score"
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            Score <strong>{game.score}</strong>
-            <span className="marble-controls__caught">
-              {game.caught} caught
-            </span>
-          </span>
           <button type="button" onClick={() => engine.current?.togglePause()}>
             {game.paused ? "Resume marbles" : "Pause marbles"}
           </button>
@@ -104,6 +94,15 @@ export default function KineticMachine() {
   const [mountRef] = useState(() => (element) => attachRef.current(element));
   return (
     <div className="kinetic-machine">
+      {game.started && (
+        <span
+          className="kinetic-machine__score"
+          role="status"
+          aria-label={`Score: ${game.score}`}
+        >
+          {game.score}
+        </span>
+      )}
       <button
         type="button"
         className="kinetic-machine__stage"

@@ -81,18 +81,15 @@
     display: none;
   }
 }
-.marble-controls__score {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
+.kinetic-machine__score {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  z-index: 1;
+  color: #858585;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
-}
-.marble-controls__score strong {
-  color: #244b37;
-  font-size: 18px;
-  font-weight: 600;
-}
-.marble-controls__caught {
-  margin-left: 8px;
-  color: #667364;
+  pointer-events: none;
 }

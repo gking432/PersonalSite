@@ -23,24 +23,55 @@ try {
     await page.evaluate(() => window.__marbleGame.snapshot().started),
     false,
   );
-  await page
-    .getByRole("button", { name: "Explore the kinetic machine" })
-    .click();
+  // A press that becomes a rotation drag starts the game immediately.
+  const stage = await page.locator(".kinetic-machine__stage").boundingBox();
+  const rotationBefore = await page.evaluate(
+    () => window.__marbleGame.snapshot().rotation,
+  );
+  await page.mouse.move(stage.x + stage.width / 2, stage.y + stage.height / 2);
+  await page.mouse.down();
+  await page.waitForFunction(() => window.__marbleGame.snapshot().started);
+  await page.mouse.move(
+    stage.x + stage.width / 2 + 44,
+    stage.y + stage.height / 2,
+    { steps: 6 },
+  );
+  await page.mouse.up();
+  assert.ok(
+    Math.abs(
+      (await page.evaluate(() => window.__marbleGame.snapshot().rotation)) -
+        rotationBefore,
+    ) > 0.3,
+    "Rotation still works after starting",
+  );
   await page.waitForFunction(
     () => window.__marbleGame.snapshot().emitted === 1,
   );
-  await page.waitForTimeout(3000);
-  const opening = await page.evaluate(() => window.__marbleGame.snapshot());
-  assert.equal(opening.emitted, 1, "Only one opening marble");
-  assert.equal(opening.elapsed, 0);
-  assert.ok(
-    (await page.evaluate(() => window.__marbleGame.physics.time)) > 2.8,
-    "Page physics runs at the original speed immediately",
-  );
+  await page.waitForTimeout(500);
   assert.equal(
     await page.locator(".kinetic-machine__caption").innerText(),
     "Click to catch",
   );
+  assert.equal(await page.locator(".kinetic-machine__score").innerText(), "0");
+  const counter = await page
+    .locator(".kinetic-machine__score")
+    .evaluate((el) => {
+      const rect = el.getBoundingClientRect(),
+        parent = el.parentElement.getBoundingClientRect(),
+        style = getComputedStyle(el);
+      return {
+        top: rect.top - parent.top,
+        right: parent.right - rect.right,
+        color: style.color,
+        size: parseFloat(style.fontSize),
+        position: style.position,
+      };
+    });
+  assert.ok(counter.top >= 0 && counter.top <= 12 && counter.right <= 16);
+  assert.equal(counter.color, "rgb(133, 133, 133)");
+  assert.ok(counter.size <= 14);
+  assert.equal(counter.position, "absolute");
+  assert.equal(await page.locator(".marble-controls__score").count(), 0);
   assert.equal(
     await page
       .locator(".kinetic-machine__stage")
@@ -50,66 +81,56 @@ try {
       .evaluate((el) => getComputedStyle(el).cursor),
   );
   await page.mouse.move(100, 140);
-  await page.waitForTimeout(100);
+  await page.waitForTimeout(70);
   assert.equal(
     await page.evaluate(() => {
       const canvas = document.querySelector(".marble-overlay");
       const dpr = canvas.width / document.documentElement.clientWidth;
       const pixels = canvas
         .getContext("2d")
-        .getImageData(88 * dpr, 128 * dpr, 24 * dpr, 24 * dpr).data;
+        .getImageData(80 * dpr, 120 * dpr, 160 * dpr, 80 * dpr).data;
       return pixels.every((v, i) => i % 4 !== 3 || v === 0);
     }),
     true,
-    "No visible catch circle is drawn",
+    "Neither a circle nor a label follows the cursor",
   );
   await page.screenshot({ path: `${output}/three-track-machine.png` });
-  // A real click on a projected track marble must NOT catch it.
+  // Clicking a sphere on its track cannot catch it.
   const target = await page.evaluate(
     () => window.__marbleGame.machineTargets()[0],
   );
   assert.ok(target);
   await page.mouse.click(target.x, target.y);
   assert.equal(await page.evaluate(() => window.__marbleGame.round.caught), 0);
-  assert.equal(
-    await page.evaluate(() => window.__marbleGame.snapshot().inFlight),
-    1,
-  );
   await page.waitForFunction(
     () => window.__marbleGame.snapshot().escapeCount === 1,
   );
   const escaped = await page.evaluate(() => {
     const game = window.__marbleGame;
     const ball = game.physics.balls[0];
-    return { x: ball.x, y: ball.y - scrollY, time: game.physics.time };
+    return {
+      x: ball.x,
+      y: ball.y - scrollY,
+      time: game.physics.time,
+      emitted: game.round.emitted,
+    };
   });
   assert.ok(
-    escaped.time >= 5.6 && escaped.time < 6.2,
-    `Original 5.8-second track trip: ${escaped.time}s`,
+    escaped.time >= 2.5 && escaped.time < 3.0,
+    `Faster 2.6-second track trip: ${escaped.time}s`,
   );
-  // The larger invisible catch area tolerates a click 20px beside the sphere.
+  assert.equal(escaped.emitted, 2, "The next marble releases before any catch");
   await page.mouse.click(escaped.x + 20, escaped.y);
   const firstCatch = await page.evaluate(() => window.__marbleGame.snapshot());
   assert.equal(firstCatch.caught, 1);
   assert.equal(firstCatch.score, 1);
-  assert.equal(
-    firstCatch.emitted,
-    2,
-    "First catch immediately releases the second marble",
-  );
-  assert.equal(firstCatch.opening, false);
-  await page.waitForTimeout(5100);
+  assert.equal(await page.locator(".kinetic-machine__score").innerText(), "1");
+  await page.waitForTimeout(5000);
   const overlap = await page.evaluate(() => window.__marbleGame.snapshot());
-  assert.equal(overlap.emitted, 3);
-  assert.equal(
-    overlap.inFlight,
-    2,
-    "Second and third overlap at a gentle starting pace",
-  );
-  assert.ok(overlap.interval < 4.8 && overlap.interval > 4.5);
-  assert.match(
-    await page.locator(".marble-controls__score").innerText(),
-    /1 caught/,
+  assert.ok(overlap.emitted >= 4);
+  assert.ok(
+    overlap.interval < 2.2 && overlap.interval > 1.9,
+    "Release interval steadily shrinks",
   );
   // Exercise each real branch with controlled random input, then restore randomness.
   for (const [route, value] of [
@@ -333,7 +354,7 @@ try {
   assert.equal(await page.evaluate(() => window.__marbleGame.round.caught), 1);
   // Advance the pacing clock without waiting 90 seconds; verify its cap in the live loop.
   await page.evaluate(() => {
-    window.__marbleGame.round.elapsed = 90;
+    window.__marbleGame.round.elapsed = 30;
     window.__marbleGame.round.nextIn = 0;
   });
   await page.waitForTimeout(1100);
@@ -378,15 +399,17 @@ try {
         status: "PASS",
         checks: [
           "idle until clicked",
-          "one opening marble at original speed",
+          "press or rotation drag starts the stream",
+          "2.6-second track trips",
+          "automatic acceleration without a catch gate",
+          "small grey score in the machine upper-right",
           "track marbles cannot be caught",
-          "original cursor with invisible larger catch area",
+          "original cursor with invisible larger catch area and no cursor label",
           "minimal click hint",
-          "first catch unlocks overlapping acceleration",
           "three randomly chosen tracks",
           "catch escaped marbles on the page",
           "cleanup preserves penalty",
-          "catch count and score",
+          "corner score",
           "click interception over links",
           "keyboard aim and catch",
           "previous maximum pace retained",
@@ -409,5 +432,6 @@ try {
     ),
   );
 } finally {
+  for (const context of browser.contexts()) await context.close();
   await browser.close();
 }

@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { chooseRoute } from "./marbleRound";
 import {
   createMachineTracks,
+  TRACK_TRIP_SECONDS,
   FLYWHEEL_CENTER,
   FLYWHEEL_RADIUS,
 } from "./machineTracks";
@@ -407,7 +408,7 @@ export function createMachine(host, onEscape) {
     for (let i = flights.length - 1; i >= 0; i--) {
       const f = flights[i];
       f.age += dt;
-      const progress = Math.min(1, f.age / 5.8);
+      const progress = Math.min(1, f.age / TRACK_TRIP_SECONDS);
       let distance = progress * f.length,
         index = 0;
       while (index < f.curves.length - 1 && distance > f.lengths[index])
@@ -464,6 +465,9 @@ export function createMachine(host, onEscape) {
   return {
     emit,
     targets,
+    get rotation() {
+      return yaw;
+    },
     get routeUses() {
       return [...routeUses];
     },
