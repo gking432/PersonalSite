@@ -107,11 +107,8 @@ export default function KineticMachine() {
       <button
         type="button"
         className="kinetic-machine__stage"
-        data-playing={game.started}
         aria-label={
-          game.started
-            ? "Click marbles to catch them. Use arrow keys to aim and Enter to catch."
-            : "Explore the kinetic machine"
+          game.started ? "Click to catch" : "Explore the kinetic machine"
         }
         onClick={start}
         onKeyDown={key}
@@ -129,9 +126,7 @@ export default function KineticMachine() {
       </button>
       <span className="kinetic-machine__caption" role="status">
         {game.error ||
-          (game.started
-            ? "Click to catch. +1 before text, −1 on the first text hit."
-            : "A little working system.")}
+          (game.started ? "Click to catch" : "A little working system.")}
       </span>
     </div>
   );

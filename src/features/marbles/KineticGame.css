@@ -11,16 +11,10 @@
   border: 0;
   border-radius: 12px;
   background: transparent;
-  cursor: grab;
+  cursor: inherit;
   color: var(--ink);
   font: inherit;
   touch-action: pan-y;
-}
-.kinetic-machine__stage:active {
-  cursor: grabbing;
-}
-.kinetic-machine__stage[data-playing="true"] {
-  cursor: crosshair;
 }
 .kinetic-machine__model {
   position: absolute;

@@ -1,5 +1,10 @@
 import * as THREE from "three";
 import { chooseRoute } from "./marbleRound";
+import {
+  createMachineTracks,
+  FLYWHEEL_CENTER,
+  FLYWHEEL_RADIUS,
+} from "./machineTracks";
 
 export function createMachine(host, onEscape) {
   const { Vector3: V } = THREE;
@@ -175,59 +180,7 @@ export function createMachine(host, onEscape) {
     cylinder(0.034, h - 0.55, brass, [x, (h + 0.55) / 2, z]);
     cylinder(0.067, 0.07, enamel, [x, h - 0.12, z]);
   }
-  const leadPoints = [
-    [-1.8, 4.46, -0.65],
-    [-1.8, 4.02, -0.65],
-    [-1.8, 3.82, -0.65],
-    [-1.6, 3.61, -0.69],
-    [-0.92, 3.41, -0.85],
-    [0, 3.28, -1.13],
-  ];
-  const lead = new THREE.CatmullRomCurve3(leadPoints.map((p) => new V(...p)));
-  const spiralPoints = [];
-  for (let i = 0; i <= 140; i++) {
-    const t = i / 140,
-      a = -Math.PI / 2 + t * Math.PI * 2 * 1.25;
-    spiralPoints.push(
-      new V(Math.cos(a) * 1.13, 3.28 - t * 1.79, Math.sin(a) * 1.13),
-    );
-  }
-  const spiral = new THREE.CatmullRomCurve3(spiralPoints);
-  const exit = new THREE.CatmullRomCurve3(
-    [
-      [1.13, 1.49, 0],
-      [1.25, 1.22, 0.8],
-      [0.75, 1.02, 1.9],
-      [0.4, 0.94, 2.2],
-    ].map((p) => new V(...p)),
-  );
-  const short = new THREE.CatmullRomCurve3(
-    [
-      [0, 3.28, -1.13],
-      [0.92, 3.19, -1.35],
-      [1.82, 2.94, -1.03],
-      [2.02, 2.64, -0.26],
-      [2.25, 2.12, -0.36],
-      [2.68, 1.5, -0.56],
-      [3.05, 1.12, -0.4],
-    ].map((p) => new V(...p)),
-  );
-  const left = new THREE.CatmullRomCurve3(
-    [
-      [0, 3.28, -1.13],
-      [-0.95, 3.04, -1.45],
-      [-1.8, 2.72, -1.12],
-      [-2.02, 2.25, -0.36],
-      [-1.9, 1.86, 0.45],
-      [-2.4, 1.38, 1.16],
-      [-3.02, 0.94, 1.22],
-    ].map((p) => new V(...p)),
-  );
-  const routes = [
-    [lead, left],
-    [lead, spiral, exit],
-    [lead, short],
-  ];
+  const { lead, spiral, exit, short, left, routes } = createMachineTracks();
   const routeUses = [0, 0, 0];
   function rail(curve) {
     const pts = [[], []];
@@ -271,7 +224,7 @@ export function createMachine(host, onEscape) {
   }
   [lead, spiral, exit, short, left].forEach(rail);
   pole(-1.82, -1.12, 2.65);
-  pole(-2.03, -0.36, 2.12);
+  pole(-2.55, -0.45, 2.02);
   pole(2.64, -0.56, 1.36);
   pole(-1.8, -0.65, 3.7);
   pole(-1.1, 0.15, 2.64);
@@ -307,9 +260,13 @@ export function createMachine(host, onEscape) {
   rod([0, 0.07, 0], [0.24, 0.07, 0.12], 0.045, lightBrass, selector);
   cylinder(0.055, 0.08, enamel, [0.24, 0.12, 0.12], selector);
   const wheel = new THREE.Group();
-  wheel.position.set(-1.42, 1.47, 0.72);
+  wheel.position.set(...FLYWHEEL_CENTER);
   machine.add(wheel);
-  const wr = mesh(new THREE.TorusGeometry(0.64, 0.07, 14, 72), enamel, wheel);
+  const wr = mesh(
+    new THREE.TorusGeometry(FLYWHEEL_RADIUS, 0.07, 14, 72),
+    enamel,
+    wheel,
+  );
   const inner = mesh(
     new THREE.TorusGeometry(0.53, 0.025, 10, 64),
     brass,
@@ -490,17 +447,6 @@ export function createMachine(host, onEscape) {
       };
     });
   }
-  function catchAt(x, y) {
-    const hit = targets()
-      .reverse()
-      .find((p) => Math.hypot(p.x - x, p.y - y) <= p.radius + 5);
-    if (!hit) return false;
-    const i = flights.indexOf(hit.flight);
-    machine.remove(hit.flight.ball);
-    flights.splice(i, 1);
-    render();
-    return true;
-  }
   function clear() {
     waitingBall.visible = true;
     for (const f of flights) machine.remove(f.ball);
@@ -518,7 +464,6 @@ export function createMachine(host, onEscape) {
   return {
     emit,
     targets,
-    catchAt,
     get routeUses() {
       return [...routeUses];
     },

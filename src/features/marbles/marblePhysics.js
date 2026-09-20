@@ -126,7 +126,7 @@ export class MarblePhysics {
     this.balls.push(ball);
     return ball;
   }
-  hitTest(x, y, padding = 5) {
+  hitTest(x, y, padding = 24) {
     let hit = null,
       nearest = Infinity;
     for (const b of this.balls) {

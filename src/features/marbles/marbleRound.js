@@ -1,7 +1,6 @@
 export const MAX_FEED_INTERVAL = 1.05;
 export const START_FEED_INTERVAL = 4.8;
 export const RAMP_SECONDS = 90;
-export const START_SPEED = 0.6;
 
 export function chooseRoute(random = Math.random) {
   return Math.max(0, Math.min(2, Math.floor(random() * 3)));
@@ -27,9 +26,6 @@ export class MarbleRound {
   }
   get progress() {
     return Math.min(1, this.elapsed / RAMP_SECONDS);
-  }
-  get speed() {
-    return START_SPEED + (1 - START_SPEED) * this.progress;
   }
   get interval() {
     return (
@@ -78,7 +74,6 @@ export class MarbleRound {
       cleaned: this.cleaned,
       score: this.score,
       opening: this.opening,
-      speed: this.speed,
       interval: this.interval,
       elapsed: this.elapsed,
       emitted: this.emitted,

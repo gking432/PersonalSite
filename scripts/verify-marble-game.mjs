@@ -15,6 +15,7 @@ try {
   const page = await browser.newPage({
     viewport: { width: 1440, height: 1000 },
   });
+  page.setDefaultTimeout(20000);
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto(base);
   await page.waitForFunction(() => window.__marbleGame?.snapshot().ready);
@@ -31,15 +32,63 @@ try {
   await page.waitForTimeout(3000);
   const opening = await page.evaluate(() => window.__marbleGame.snapshot());
   assert.equal(opening.emitted, 1, "Only one opening marble");
-  assert.equal(opening.speed, 0.6);
   assert.equal(opening.elapsed, 0);
+  assert.ok(
+    (await page.evaluate(() => window.__marbleGame.physics.time)) > 2.8,
+    "Page physics runs at the original speed immediately",
+  );
+  assert.equal(
+    await page.locator(".kinetic-machine__caption").innerText(),
+    "Click to catch",
+  );
+  assert.equal(
+    await page
+      .locator(".kinetic-machine__stage")
+      .evaluate((el) => getComputedStyle(el).cursor),
+    await page
+      .locator(".kinetic-machine")
+      .evaluate((el) => getComputedStyle(el).cursor),
+  );
+  await page.mouse.move(100, 140);
+  await page.waitForTimeout(100);
+  assert.equal(
+    await page.evaluate(() => {
+      const canvas = document.querySelector(".marble-overlay");
+      const dpr = canvas.width / document.documentElement.clientWidth;
+      const pixels = canvas
+        .getContext("2d")
+        .getImageData(88 * dpr, 128 * dpr, 24 * dpr, 24 * dpr).data;
+      return pixels.every((v, i) => i % 4 !== 3 || v === 0);
+    }),
+    true,
+    "No visible catch circle is drawn",
+  );
   await page.screenshot({ path: `${output}/three-track-machine.png` });
-  // Click the actual projected sphere on the track, using a real mouse event.
+  // A real click on a projected track marble must NOT catch it.
   const target = await page.evaluate(
     () => window.__marbleGame.machineTargets()[0],
   );
   assert.ok(target);
   await page.mouse.click(target.x, target.y);
+  assert.equal(await page.evaluate(() => window.__marbleGame.round.caught), 0);
+  assert.equal(
+    await page.evaluate(() => window.__marbleGame.snapshot().inFlight),
+    1,
+  );
+  await page.waitForFunction(
+    () => window.__marbleGame.snapshot().escapeCount === 1,
+  );
+  const escaped = await page.evaluate(() => {
+    const game = window.__marbleGame;
+    const ball = game.physics.balls[0];
+    return { x: ball.x, y: ball.y - scrollY, time: game.physics.time };
+  });
+  assert.ok(
+    escaped.time >= 5.6 && escaped.time < 6.2,
+    `Original 5.8-second track trip: ${escaped.time}s`,
+  );
+  // The larger invisible catch area tolerates a click 20px beside the sphere.
+  await page.mouse.click(escaped.x + 20, escaped.y);
   const firstCatch = await page.evaluate(() => window.__marbleGame.snapshot());
   assert.equal(firstCatch.caught, 1);
   assert.equal(firstCatch.score, 1);
@@ -57,7 +106,7 @@ try {
     2,
     "Second and third overlap at a gentle starting pace",
   );
-  assert.ok(overlap.speed > 0.6 && overlap.speed < 0.65);
+  assert.ok(overlap.interval < 4.8 && overlap.interval > 4.5);
   assert.match(
     await page.locator(".marble-controls__score").innerText(),
     /1 caught/,
@@ -289,7 +338,6 @@ try {
   });
   await page.waitForTimeout(1100);
   const maxPace = await page.evaluate(() => window.__marbleGame.snapshot());
-  assert.equal(maxPace.speed, 1);
   assert.ok(Math.abs(maxPace.interval - 1.05) < 1e-10);
   // Load the bounded pool, then let the real integration/renderer run.
   await page.evaluate(() => {
@@ -330,10 +378,13 @@ try {
         status: "PASS",
         checks: [
           "idle until clicked",
-          "one slow opening marble",
+          "one opening marble at original speed",
+          "track marbles cannot be caught",
+          "original cursor with invisible larger catch area",
+          "minimal click hint",
           "first catch unlocks overlapping acceleration",
           "three randomly chosen tracks",
-          "click track and page marbles",
+          "catch escaped marbles on the page",
           "cleanup preserves penalty",
           "catch count and score",
           "click interception over links",

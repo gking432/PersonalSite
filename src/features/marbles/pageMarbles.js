@@ -145,14 +145,6 @@ export function createPageMarbles(onState) {
       finishCatch(ball.hitText, x, y + scrollY);
       return true;
     }
-    if (scene && host?.isConnected) {
-      const r = host.getBoundingClientRect(),
-        scale = r.width / (host.clientWidth || 1);
-      if (scene.catchAt((x - r.left) / scale, (y - r.top) / scale)) {
-        finishCatch(false, x, y + scrollY);
-        return true;
-      }
-    }
     return false;
   }
   function drawBall(b) {
@@ -191,13 +183,7 @@ export function createPageMarbles(onState) {
     }
     ctx.globalAlpha = 1;
     if (pointer && showHint && !state.paused) {
-      const hit = physics.hitTest(pointer.x, pointer.y + scrollY);
-      ctx.strokeStyle = hit?.hitText ? "#9d6b47" : "#53745e";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.arc(pointer.x, pointer.y, 11, 0, Math.PI * 2);
-      ctx.stroke();
-      const label = hit?.hitText ? "Click to clean up" : "Click to catch";
+      const label = "Click to catch";
       const labelWidth = ctx.measureText(label).width;
       const x = Math.min(width - labelWidth - 12, Math.max(10, pointer.x + 18));
       const y = Math.max(20, Math.min(height - 12, pointer.y + 26));
@@ -232,13 +218,10 @@ export function createPageMarbles(onState) {
         if (flashes[i].life <= 0) flashes.splice(i, 1);
       }
       const r = host?.getBoundingClientRect();
-      scene?.tick(
-        dt * round.speed,
-        Boolean(r && r.bottom > 0 && r.top < height),
-      );
+      scene?.tick(dt, Boolean(r && r.bottom > 0 && r.top < height));
       const connected = surfaces.filter((s) => s.el.isConnected);
       if (positionTextSurfaces(connected)) physics.wake();
-      accumulator = Math.min(accumulator + dt * round.speed, 0.05);
+      accumulator = Math.min(accumulator + dt, 0.05);
       while (accumulator >= 1 / 180) {
         physics.step(1 / 180, connected, {
           width,

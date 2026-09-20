@@ -59,11 +59,15 @@ test("marbles form a pile and incoming impacts wake resting marbles", () => {
   assert.ok(world.stats.ballContacts > 0);
   assert.ok(Number.isFinite(bottom.y + top.y));
 });
-test("click targeting removes a marble and wakes the rest of the pile", () => {
+test("larger invisible click area targets the nearest marble and removes it", () => {
   const world = new MarblePhysics({ maxBalls: 12 });
   const ball = world.add({ x: 100, y: 100, radius: 6 });
   assert.equal(world.hitTest(102, 98), ball);
-  assert.equal(world.hitTest(130, 100), null);
+  assert.equal(world.hitTest(128, 100), ball);
+  assert.equal(world.hitTest(131, 100), null);
+  const neighbor = world.add({ x: 142, y: 100, radius: 6 });
+  assert.equal(world.hitTest(126, 100), neighbor);
+  assert.ok(world.remove(neighbor));
   assert.ok(world.remove(ball));
   assert.equal(world.hitTest(100, 100), null);
   assert.equal(world.remove(ball), false);

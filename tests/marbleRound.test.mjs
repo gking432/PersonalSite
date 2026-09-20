@@ -6,7 +6,6 @@ import {
   MAX_FEED_INTERVAL,
   START_FEED_INTERVAL,
   RAMP_SECONDS,
-  START_SPEED,
 } from "../src/features/marbles/marbleRound.js";
 
 test("one opening marble waits for a successful catch; missed cleanup retries one", () => {
@@ -15,7 +14,6 @@ test("one opening marble waits for a successful catch; missed cleanup retries on
   for (let i = 0; i < 600; i++) assert.equal(round.tick(0.1, 1), 0);
   assert.equal(round.emitted, 1);
   assert.equal(round.elapsed, 0);
-  assert.equal(round.speed, START_SPEED);
   round.miss();
   assert.equal(round.score, -1);
   assert.equal(round.catch(true).emit, 0);
@@ -43,27 +41,23 @@ test("first catch releases the next marble; another follows before that trip end
     spawnAt >= START_FEED_INTERVAL - 0.05 &&
       spawnAt <= START_FEED_INTERVAL + 0.1,
   );
-  assert.ok(spawnAt < 5.8 / round.speed);
+  assert.ok(spawnAt < 5.8);
 });
-test("pace increases gradually and never exceeds the previous maximum", () => {
+test("release frequency increases gradually and never exceeds the previous maximum", () => {
   const round = new MarbleRound();
   round.tick(0, 0);
   round.catch(false);
-  let previousInterval = round.interval,
-    previousSpeed = round.speed;
+  let previousInterval = round.interval;
   for (let i = 0; i < 10000; i++) {
     round.tick(0.02, 8);
     assert.ok(
       round.interval <= previousInterval &&
         round.interval >= MAX_FEED_INTERVAL - 1e-10,
     );
-    assert.ok(round.speed >= previousSpeed && round.speed <= 1);
     previousInterval = round.interval;
-    previousSpeed = round.speed;
   }
   assert.equal(round.elapsed, RAMP_SECONDS);
   assert.ok(Math.abs(round.interval - MAX_FEED_INTERVAL) < 1e-10);
-  assert.equal(round.speed, 1);
 });
 test("late cleanup cannot recover a missed point and reset clears the round", () => {
   const round = new MarbleRound();
