@@ -3,7 +3,7 @@ export const BLOCK_SPACING = 11;
 // Existing intersections retain their positions. The small two-plot hall ends
 // East Market's north arm; a pedestrian plaza ends Lakefront's south arm.
 export const JUNCTION_X = [0, BLOCK_SPACING, -15, BLOCK_SPACING, 0, -15, 0, 11];
-export const JUNCTION_LEVEL = [1, 2, 5, 9, 9, 9, 9, 9];
+export const JUNCTION_LEVEL = [1, 2, 5, 8, 8, 8, 11, 11];
 export const JUNCTION_Z = [0, 0, 0, -13, -13, -13, -26, -26];
 export const JUNCTION_NAMES = [
   "Water Street",
@@ -61,6 +61,7 @@ export class BridgeTraffic {
     this.requestedOpen = !this.requestedOpen;
   }
   tick(dt, cars, events, expanded = false) {
+    const minZ = typeof expanded === "number" ? expanded : RIVER.minZ;
     this.nextBoat -= dt;
     if (this.nextBoat <= 0) {
       if (this.boats.length < 4) {
@@ -69,7 +70,7 @@ export class BridgeTraffic {
           id: this.nextId++,
           p: expanded
             ? direction === 1
-              ? RIVER.minZ + 0.7
+              ? minZ + 0.7
               : -RIVER.maxZ + 0.7
             : -6.2,
           direction,
@@ -120,11 +121,7 @@ export class BridgeTraffic {
     this.boats = this.boats.filter((b) => {
       if (
         b.p >
-        (expanded
-          ? b.direction === 1
-            ? RIVER.maxZ - 0.4
-            : -RIVER.minZ - 0.4
-          : 6.9)
+        (expanded ? (b.direction === 1 ? RIVER.maxZ - 0.4 : -minZ - 0.4) : 6.9)
       ) {
         this.passed++;
         return false;

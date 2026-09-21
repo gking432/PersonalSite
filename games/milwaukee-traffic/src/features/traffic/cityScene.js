@@ -16,15 +16,15 @@ export function createCityScene(host, controls, onEscape) {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.17;
+  renderer.toneMappingExposure = 1.03;
   host.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
   const city = new THREE.Group();
   scene.add(city);
   const camera = new THREE.OrthographicCamera(-9, 9, 9, -9, 0.1, 260);
-  const sky = new THREE.HemisphereLight(0xfff8e8, 0x788576, 2.7);
+  const sky = new THREE.HemisphereLight(0xeaf6ff, 0x6695b6, 2.3);
   scene.add(sky);
-  const sun = new THREE.DirectionalLight(0xffedcf, 3.3);
+  const sun = new THREE.DirectionalLight(0xffeed5, 2.7);
   sun.position.set(-6, 15, 9);
   sun.castShadow = true;
   sun.shadow.mapSize.set(1536, 1536);
@@ -56,26 +56,26 @@ export function createCityScene(host, controls, onEscape) {
     return m;
   };
   const palette = {
-    base: material("#d7c8ab"),
-    edge: material("#e9dec9"),
-    asphalt: material("#676c69"),
-    pavement: material("#ddd8c8"),
-    curb: material("#eee7d7"),
-    cream: material("#cdbb8d"),
-    ivory: material("#ebdcbc"),
-    brick: material("#a67558"),
-    terra: material("#b88d6b"),
-    trim: material("#f0e4ca"),
-    roof: material("#5d6557"),
-    green: material("#295b48"),
-    glass: material("#42676a", { metalness: 0.22, roughness: 0.3 }),
-    dark: material("#253e38"),
-    black: material("#303c39"),
-    white: material("#f4ebd6"),
-    yellow: material("#d9be76"),
-    water: material("#779e95", { metalness: 0.25, roughness: 0.35 }),
-    leaves: material("#6a8660", { flatShading: true }),
-    leaves2: material("#8b9d6b", { flatShading: true }),
+    base: material("#81a9bf"),
+    edge: material("#49677d"),
+    asphalt: material("#425973"),
+    pavement: material("#c4dbe1"),
+    curb: material("#e4eff0"),
+    cream: material("#f1bc4d"),
+    ivory: material("#f8e9c7"),
+    brick: material("#dc725b"),
+    terra: material("#e6a566"),
+    trim: material("#fff1d2"),
+    roof: material("#54849b"),
+    green: material("#239eac"),
+    glass: material("#2a526b", { metalness: 0.22, roughness: 0.3 }),
+    dark: material("#293f59"),
+    black: material("#26374c"),
+    white: material("#fff8e6"),
+    yellow: material("#ffc75b"),
+    water: material("#39bcdc", { metalness: 0.25, roughness: 0.35 }),
+    leaves: material("#58b886", { flatShading: true }),
+    leaves2: material("#94d387", { flatShading: true }),
   };
   const unitBox = new THREE.BoxGeometry(1, 1, 1);
   geometries.add(unitBox);
@@ -834,8 +834,8 @@ export function createCityScene(host, controls, onEscape) {
   stampTarget.texture.colorSpace = THREE.SRGBColorSpace;
   stampTarget.samples = 4;
   const stampScene = new THREE.Scene();
-  stampScene.add(new THREE.HemisphereLight(0xfff8e8, 0x788576, 2.7));
-  const stampLight = new THREE.DirectionalLight(0xffedcf, 3.3);
+  stampScene.add(new THREE.HemisphereLight(0xeaf6ff, 0x6695b6, 2.3));
+  const stampLight = new THREE.DirectionalLight(0xffeed5, 2.7);
   stampLight.position.copy(sun.position);
   stampScene.add(stampLight);
   const stampCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 30);
@@ -890,9 +890,11 @@ export function createCityScene(host, controls, onEscape) {
   }
   let expansion = 0,
     westExpansion = 0,
+    neighborhoodExpansion = 0,
     districtExpansion = 0,
     currentIncidents = [],
-    currentPrograms = [];
+    currentPrograms = [],
+    currentStreet = null;
   let yaw = -0.12,
     pitch = 0.77,
     zoom = 1,
@@ -912,7 +914,7 @@ export function createCityScene(host, controls, onEscape) {
         (JUNCTION_X[2] / 2) * westExpansion -
         0.8 * (1 - expansion),
       0.95,
-      -11 * districtExpansion,
+      -5 * neighborhoodExpansion - 6 * districtExpansion,
     ).applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
     camera.position.add(focus);
     camera.lookAt(focus);
@@ -921,10 +923,13 @@ export function createCityScene(host, controls, onEscape) {
       Math.min(1.6, Math.max(1, width / height));
     // Standalone portrait screens need the same horizontal coverage as desktop.
     span /= Math.min(1, width / height);
-    if (districtExpansion > 0) {
+    if (neighborhoodExpansion > 0) {
       // Fit the actual nine-cell footprint at any rotation or viewport ratio.
       camera.updateMatrixWorld();
-      const bounds = DISTRICT_GRID.bounds;
+      const bounds = {
+        ...DISTRICT_GRID.bounds,
+        minZ: -20 - 13 * districtExpansion,
+      };
       let halfWidth = 0,
         halfHeight = 0;
       for (const x of [bounds.minX, bounds.maxX])
@@ -937,7 +942,7 @@ export function createCityScene(host, controls, onEscape) {
             halfHeight = Math.max(halfHeight, Math.abs(point.y));
           }
       const fitted = Math.max(halfHeight, (halfWidth * height) / width) * 2.12;
-      span += (fitted - span) * districtExpansion;
+      span += (fitted - span) * neighborhoodExpansion;
     }
     span /= zoom;
     camera.left = (-span * width) / height / 2;
@@ -966,6 +971,19 @@ export function createCityScene(host, controls, onEscape) {
   }
   function positionButtons() {
     signals.forEach((s, i) => place(buttons[i], signalPoint(s)));
+    if (controls.street?.current) {
+      const points =
+        currentStreet?.junctions.map((j) =>
+          project(new THREE.Vector3(JUNCTION_X[j], 0.38, JUNCTION_Z[j])),
+        ) ?? [];
+      points.sort((a, b) => a.x - b.x || a.y - b.y);
+      controls.street.current.setAttribute(
+        "d",
+        points.length > 1
+          ? `M${points.map((p) => `${p.x},${p.y}`).join(" L")}`
+          : "",
+      );
+    }
     controls.links?.forEach((path, j) => {
       const source = currentPrograms[j]?.source;
       if (source === undefined) return;
@@ -1019,10 +1037,12 @@ export function createCityScene(host, controls, onEscape) {
     const extra = additions.update(sim, dt);
     expansion = extra.growth;
     westExpansion = extra.westGrowth;
+    neighborhoodExpansion = extra.neighborhoodGrowth;
     districtExpansion = extra.districtGrowth;
-    stadium.update(sim, districtExpansion);
+    stadium.update(sim, districtExpansion, neighborhoodExpansion);
     currentIncidents = sim.incidents;
     currentPrograms = sim.programs.rules;
+    currentStreet = sim.linkedStreet;
     // Transfer overflow meshes before removing cars no longer in the simulation.
     for (const event of sim.events.splice(0)) {
       if (event.kind === "overflow") spill(event);
@@ -1036,7 +1056,7 @@ export function createCityScene(host, controls, onEscape) {
         p = carPose(car);
       const cargo =
         car.crashed && extra.cargo?.id === car.incident ? extra.cargo : null;
-      const road = sim.districtReady
+      const road = sim.neighborhoodReady
         ? roadElevation(p.x, p.z, p.yaw)
         : { y: 0, pitch: 0 };
       group.position.set(
@@ -1164,7 +1184,7 @@ export function createCityScene(host, controls, onEscape) {
     for (const m of carMeshes.values()) city.remove(m.group);
     carMeshes.clear();
     additions.clear();
-    expansion = westExpansion = districtExpansion = 0;
+    expansion = westExpansion = neighborhoodExpansion = districtExpansion = 0;
     currentIncidents = [];
     for (const f of effects) {
       city.remove(f.group);
@@ -1196,7 +1216,11 @@ export function createCityScene(host, controls, onEscape) {
       falling: falling.length,
       expansion,
       westExpansion,
+      neighborhoodExpansion,
       districtExpansion,
+      visibleJunctions: additions.blocks
+        .map((b, j) => (b.visible ? j : null))
+        .filter((j) => j !== null),
       fixedBridgeCars: [...carMeshes.entries()].filter(
         ([id, m]) =>
           typeof id === "number" &&

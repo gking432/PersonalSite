@@ -6,6 +6,7 @@ import {
   rampOffset,
   STADIUM_SCALE,
   FREEWAY_SUPPORTS,
+  FIXED_BRIDGES,
 } from "./districtLayout.js";
 import { LOTS, parkingSpace } from "./stadiumDistrict.js";
 import { JUNCTION_X, JUNCTION_Z } from "./cityChallenges.js";
@@ -21,7 +22,26 @@ export function createStadiumScene({
 }) {
   const district = new THREE.Group();
   city.add(district);
-  createRiverScene({ parent: district, palette, box, mesh, rod });
+  const neighborhood = new THREE.Group();
+  city.add(neighborhood);
+  createRiverScene({
+    parent: neighborhood,
+    palette,
+    box,
+    mesh,
+    rod,
+    minZ: -20,
+    bridges: [FIXED_BRIDGES[0]],
+  });
+  createRiverScene({
+    parent: district,
+    palette,
+    box,
+    mesh,
+    rod,
+    maxZ: -20,
+    bridges: [FIXED_BRIDGES[1]],
+  });
   const stadium = new THREE.Group();
   stadium.position.set(-15, 0.16, -26);
   stadium.scale.set(STADIUM_SCALE, 0.6, STADIUM_SCALE);
@@ -42,7 +62,7 @@ export function createStadiumScene({
   );
   mesh(
     new THREE.CylinderGeometry(5.9, 5.9, 0.02, 64),
-    palette.green,
+    palette.leaves,
     0,
     0.38,
     -0.2,
@@ -153,10 +173,12 @@ export function createStadiumScene({
     b(w, 0.035, d, x, 0.28, z, palette.asphalt, district);
   b(1.65, 0.035, 1.8, -15, 0.28, -19.6, palette.asphalt, district);
   // One normal building plot: shop at the back, three spaces at the front.
+  const beforeNeighborhood = new Set(district.children);
   b(3.65, 0.12, 4.7, -3.48, 0.34, -17.07, palette.curb, district);
   b(3.5, 0.025, 1.2, -3.48, 0.407, -15.4, palette.asphalt, district);
   b(0.95, 0.035, 1.5, -2.5, 0.28, -14.2, palette.asphalt, district);
   for (const [lot, data] of Object.entries(LOTS)) {
+    const beforeParking = new Set(district.children);
     for (let i = 0; i < data.capacity; i++) {
       const p = parkingSpace(lot, i),
         horizontal = lot === "stadium" && Math.floor(i / 6) % 2 === 1;
@@ -172,6 +194,9 @@ export function createStadiumScene({
           district,
         );
     }
+    if (lot === "stadium")
+      for (const child of district.children)
+        if (!beforeParking.has(child)) beforeNeighborhood.add(child);
   }
   neighborhoodBuilding({ box, mesh, palette }, district, {
     x: -3.48,
@@ -212,6 +237,8 @@ export function createStadiumScene({
     parent: district,
     size: 64,
   });
+  for (const child of [...district.children])
+    if (!beforeNeighborhood.has(child)) neighborhood.add(child);
   function tree(x, z) {
     b(0.12, 0.65, 0.12, x, 0.67, z, palette.dark, district);
     mesh(
@@ -399,7 +426,7 @@ export function createStadiumScene({
     );
   }
   // Batch the static stadium and district details; the lamps/sign remain mutable.
-  for (const parent of [stadium, district]) {
+  for (const parent of [stadium, district, neighborhood]) {
     const groups = new Map();
     for (const child of [...parent.children])
       if (child.geometry === unitBox && !lights.includes(child)) {
@@ -415,7 +442,9 @@ export function createStadiumScene({
     }
   }
   return {
-    update(sim, growth) {
+    update(sim, growth, neighborhoodGrowth) {
+      neighborhood.visible = sim.neighborhoodReady;
+      neighborhood.position.y = -4 * (1 - neighborhoodGrowth);
       district.visible = sim.districtReady;
       district.position.y = -4 * (1 - growth);
       lights.forEach((l) => {

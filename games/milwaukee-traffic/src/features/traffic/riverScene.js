@@ -1,13 +1,23 @@
 import * as THREE from "three";
 import { RIVER, FIXED_BRIDGES, bridgeHeight } from "./districtLayout.js";
 
-export function createRiverScene({ parent, palette, box, mesh, rod }) {
+export function createRiverScene({
+  parent,
+  palette,
+  box,
+  mesh,
+  rod,
+  minZ = RIVER.minZ,
+  maxZ = RIVER.maxZ,
+  bridges = FIXED_BRIDGES,
+}) {
   const b = (w, h, d, x, y, z, mat) => box(w, h, d, x, y, z, mat, parent);
   // Meet the original river exactly; both ends now reach the expanded map edge.
   for (const [start, end] of [
-    [RIVER.minZ, -6.75],
-    [6.75, RIVER.maxZ],
+    [minZ, Math.min(maxZ, -6.75)],
+    [Math.max(minZ, 6.75), maxZ],
   ]) {
+    if (end <= start) continue;
     b(
       RIVER.width,
       0.22,
@@ -42,7 +52,7 @@ export function createRiverScene({ parent, palette, box, mesh, rod }) {
           palette.edge,
         );
   }
-  for (const bridge of FIXED_BRIDGES) {
+  for (const bridge of bridges) {
     const vertices = [],
       sides = [];
     const point = (x, z, offset = 0) => [

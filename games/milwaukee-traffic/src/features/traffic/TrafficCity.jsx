@@ -1,9 +1,10 @@
 import DistrictIntro from "./DistrictIntro";
 import SignalProgrammer from "./SignalProgrammer";
+import StreetLinker from "./StreetLinker";
+import { UNLOCK } from "./progression";
 import {
   JUNCTION_X,
   JUNCTION_APPROACHES,
-  JUNCTION_LEVEL,
   JUNCTION_NAMES,
   EMERGENCY_LIMIT,
 } from "./cityChallenges";
@@ -13,7 +14,18 @@ import "./TrafficCity.css";
 
 function Icon({ name }) {
   const paths = {
-    program: <path d="M4 6h16M4 12h16M4 18h16M8 3v6m8 0v6M10 15v6" />,
+    program: (
+      <>
+        <circle cx="12" cy="12" r="8" />
+        <path d="M12 7v5l3 2" />
+      </>
+    ),
+    street: (
+      <>
+        <path d="M3 8h18M3 16h18M7 5v14M17 5v14" />
+        <path d="m3 12 3-2m-3 2 3 2m15-2-3-2m3 2-3 2" />
+      </>
+    ),
     roundabout: (
       <>
         <path d="M18 5a8 8 0 1 0 2 10M18 1v5h-5" />
@@ -66,6 +78,7 @@ export default function TrafficCity({ standalone = false }) {
     wrecks = useRef(new Map()),
     junctions = useRef(new Map()),
     links = useRef(new Map());
+  const street = useRef(null);
   const [fullscreen, setFullscreen] = useState(false);
   const [wide, setWide] = useState(standalone);
   const [game, setGame] = useState({
@@ -77,6 +90,12 @@ export default function TrafficCity({ standalone = false }) {
     gameOver: null,
     expansionPending: false,
     districtReady: false,
+    neighborhoodReady: false,
+    activeJunctions: [0],
+    streets: [],
+    linkedStreet: null,
+    tutorial: null,
+    streetMode: false,
     emergency: null,
     roundabout: null,
     programs: [],
@@ -124,6 +143,7 @@ export default function TrafficCity({ standalone = false }) {
             wrecks: wrecks.current,
             junctions: junctions.current,
             links: links.current,
+            street,
           },
           setGame,
         );
@@ -216,11 +236,15 @@ export default function TrafficCity({ standalone = false }) {
       data-standalone={standalone}
       data-fullscreen={fullscreen}
       data-expanded={game.level >= 2}
-      data-district={game.districtReady}
+      data-district={game.neighborhoodReady}
       onKeyDown={(e) => {
         if (e.key === "Escape") engine.current?.key(e);
       }}
     >
+      <div className="traffic-city__brand">
+        <span>MILWAUKEE</span>
+        <strong>Traffic</strong>
+      </div>
       <div className="traffic-city__toolbar">
         {game.started && !game.gameOver && (
           <button
@@ -242,7 +266,9 @@ export default function TrafficCity({ standalone = false }) {
         >
           <Icon name={fullscreen ? "exit" : "fullscreen"} />
         </button>
-        {game.level >= 6 && !game.gameOver && (
+      </div>
+      <div className="traffic-city__tools" role="group" aria-label="City tools">
+        {game.level >= UNLOCK.timer && !game.gameOver && (
           <button
             type="button"
             className="traffic-city__tool"
@@ -252,18 +278,34 @@ export default function TrafficCity({ standalone = false }) {
             onClick={() => engine.current?.toggleProgramMode()}
           >
             <Icon name="program" />
+            <span>Timer</span>
           </button>
         )}
-        {game.districtReady && game.roundabout === null && !game.gameOver && (
+        {game.neighborhoodReady &&
+          game.roundabout === null &&
+          !game.gameOver && (
+            <button
+              type="button"
+              className="traffic-city__tool"
+              aria-label="Place one roundabout"
+              title="Place one roundabout"
+              aria-pressed={game.roundaboutMode}
+              onClick={() => engine.current?.toggleRoundaboutMode()}
+            >
+              <Icon name="roundabout" />
+              <span>Roundabout</span>
+            </button>
+          )}
+        {game.streets.length > 0 && !game.gameOver && (
           <button
             type="button"
             className="traffic-city__tool"
-            aria-label="Place one roundabout"
-            title="Place one roundabout"
-            aria-pressed={game.roundaboutMode}
-            onClick={() => engine.current?.toggleRoundaboutMode()}
+            aria-label="Link street"
+            aria-pressed={game.streetMode}
+            onClick={() => engine.current?.toggleStreetMode()}
           >
-            <Icon name="roundabout" />
+            <Icon name="street" />
+            <span>Link street</span>
           </button>
         )}
       </div>
@@ -412,10 +454,13 @@ export default function TrafficCity({ standalone = false }) {
             className="traffic-city__signal"
             data-axis={signal.axis}
             data-junction={signal.junction}
+            data-linked={
+              game.linkedStreet?.junctions.includes(signal.junction) &&
+              signal.axis === game.linkedStreet.axis
+            }
             hidden={
               !signal.available ||
-              game.level < signal.level ||
-              (signal.level >= 9 && !game.districtReady) ||
+              !game.activeJunctions.includes(signal.junction) ||
               game.roundabout === signal.junction
             }
             aria-label={`${signal.label} light: ${game.allSignals[signal.junction][signal.axis]}`}
@@ -458,6 +503,7 @@ export default function TrafficCity({ standalone = false }) {
           onClick={() => engine.current?.toggleBridge()}
         />
         <svg className="traffic-city__links" aria-hidden="true">
+          <path ref={street} className="traffic-city__street-line" />
           {game.programs.map(
             (r, j) =>
               r.mode === "linked" && (
@@ -475,7 +521,7 @@ export default function TrafficCity({ standalone = false }) {
           !game.gameOver &&
           JUNCTION_X.map(
             (_, j) =>
-              game.level >= JUNCTION_LEVEL[j] &&
+              game.activeJunctions.includes(j) &&
               JUNCTION_APPROACHES[j].length === 4 && (
                 <button
                   type="button"
@@ -518,8 +564,17 @@ export default function TrafficCity({ standalone = false }) {
           onClose={() => engine.current?.closeProgram()}
         />
       )}
+      {game.streetMode && (
+        <StreetLinker
+          game={game}
+          onSelect={(key) => engine.current?.linkStreet(key)}
+          onClose={() => engine.current?.toggleStreetMode()}
+        />
+      )}
       {game.expansionPending && wide && (
         <DistrictIntro
+          key={game.tutorial.id}
+          tutorial={game.tutorial}
           onContinue={() => engine.current?.acknowledgeExpansion()}
         />
       )}
@@ -551,15 +606,22 @@ export default function TrafficCity({ standalone = false }) {
               : game.roundaboutMode
                 ? game.toolMessage || "Choose an intersection."
                 : game.programMode
-                  ? "Click a light to program it."
+                  ? "Tap a light to set its timer."
                   : game.cleanupMode
-                    ? "Click the accident."
+                    ? "Tap the accident."
                     : game.paused
                       ? "Paused."
                       : game.started
-                        ? "Click the lights."
-                        : "A little Milwaukee.")}
+                        ? game.linkedStreet
+                          ? `${game.linkedStreet.name} linked · tap a light`
+                          : "Tap the lights. Keep it moving."
+                        : "Tap the city to start")}
         </span>
+        {!game.started && (
+          <span className="traffic-city__gesture-hint">
+            Drag to rotate · pinch to zoom
+          </span>
+        )}
         {game.district && (
           <span className="traffic-city__district-status">
             {game.district.phase === "arrivals"

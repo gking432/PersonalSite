@@ -394,6 +394,7 @@ export function createCityAdditions({
     }
   let growth = 0,
     westGrowth = 0,
+    neighborhoodGrowth = 0,
     districtGrowth = 0;
 
   return {
@@ -401,13 +402,17 @@ export function createCityAdditions({
     westBlock,
     blocks,
     update(sim, dt) {
+      neighborhoodGrowth = sim.neighborhoodReady
+        ? Math.min(1, neighborhoodGrowth + dt / 2.4)
+        : 0;
+      const neighborhoodEased = 1 - Math.pow(1 - neighborhoodGrowth, 3);
       districtGrowth = sim.districtReady
         ? Math.min(1, districtGrowth + dt / 2.4)
         : 0;
       const districtEased = 1 - Math.pow(1 - districtGrowth, 3);
-      northBlocks.forEach((b) => {
-        b.visible = sim.districtReady;
-        b.position.y = -4 * (1 - districtEased);
+      northBlocks.forEach((b, i) => {
+        b.visible = i < 3 ? sim.neighborhoodReady : sim.districtReady;
+        b.position.y = -4 * (1 - (i < 3 ? neighborhoodEased : districtEased));
       });
       const westTarget = sim.level >= 5;
       westGrowth = westTarget ? Math.min(1, westGrowth + dt / 1.8) : 0;
@@ -417,7 +422,7 @@ export function createCityAdditions({
       const tow = sim.tow.active;
       towTruck.visible = !!tow;
       if (tow) {
-        const road = sim.districtReady
+        const road = sim.neighborhoodReady
           ? roadElevation(tow.x, tow.z, tow.yaw)
           : { y: 0, pitch: 0 };
         towTruck.position.set(tow.x, road.y, tow.z);
@@ -486,12 +491,13 @@ export function createCityAdditions({
       return {
         growth: eased,
         westGrowth: westEased,
+        neighborhoodGrowth: neighborhoodEased,
         districtGrowth: districtEased,
         cargo,
       };
     },
     clear() {
-      growth = westGrowth = districtGrowth = 0;
+      growth = westGrowth = neighborhoodGrowth = districtGrowth = 0;
       towTruck.visible = false;
       helicopter.visible = false;
       for (const group of boatMeshes.values()) city.remove(group);

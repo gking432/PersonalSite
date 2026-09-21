@@ -1,5 +1,6 @@
 import { TrafficSimulation } from "./trafficSimulation";
 import { createCityScene } from "./cityScene";
+import { UNLOCK } from "./progression.js";
 
 export function createCityRuntime(host, controls, onState) {
   const sim = new TrafficSimulation();
@@ -15,6 +16,7 @@ export function createCityRuntime(host, controls, onState) {
   });
   let cleanupMode = false,
     programMode = false,
+    streetMode = false,
     selectedJunction = null,
     roundaboutMode = false,
     toolMessage = "";
@@ -34,6 +36,7 @@ export function createCityRuntime(host, controls, onState) {
     paused,
     cleanupMode,
     programMode,
+    streetMode,
     selectedJunction,
     roundaboutMode,
     toolMessage,
@@ -56,6 +59,10 @@ export function createCityRuntime(host, controls, onState) {
       next.progress,
       next.gameOver,
       next.expansionPending,
+      next.tutorial?.id,
+      next.neighborhoodReady,
+      next.linkedStreet?.key,
+      streetMode,
       next.districtReady,
       next.emergency,
       next.allSignals,
@@ -173,7 +180,7 @@ export function createCityRuntime(host, controls, onState) {
       return;
     if (type === "tow" && sim.tow.active) return;
     if (!["tow", "helicopter"].includes(type)) return;
-    programMode = roundaboutMode = false;
+    programMode = streetMode = roundaboutMode = false;
     selectedJunction = null;
     cleanupMode = cleanupMode === type ? false : type;
     notify();
@@ -205,7 +212,7 @@ export function createCityRuntime(host, controls, onState) {
     stop();
     clearPointers();
     sim.reset();
-    cleanupMode = programMode = roundaboutMode = false;
+    cleanupMode = programMode = streetMode = roundaboutMode = false;
     selectedJunction = null;
     toolMessage = "";
     pendingFalls = [];
@@ -228,17 +235,22 @@ export function createCityRuntime(host, controls, onState) {
     else schedule();
   }
   function toggleProgramMode() {
-    if (sim.level < 6 || sim.gameOver || sim.expansionPending || !enabled)
+    if (
+      sim.level < UNLOCK.timer ||
+      sim.gameOver ||
+      sim.expansionPending ||
+      !enabled
+    )
       return;
     programMode = !programMode;
     selectedJunction = null;
-    cleanupMode = roundaboutMode = false;
+    cleanupMode = streetMode = roundaboutMode = false;
     toolMessage = "";
     notify();
   }
   function toggleRoundaboutMode() {
     if (
-      sim.level < 9 ||
+      !sim.neighborhoodReady ||
       sim.roundabout !== null ||
       sim.gameOver ||
       sim.expansionPending ||
@@ -246,7 +258,7 @@ export function createCityRuntime(host, controls, onState) {
     )
       return;
     roundaboutMode = !roundaboutMode;
-    programMode = cleanupMode = false;
+    programMode = streetMode = cleanupMode = false;
     selectedJunction = null;
     toolMessage = "";
     notify();
@@ -269,11 +281,33 @@ export function createCityRuntime(host, controls, onState) {
   function configureProgram(junction, rule) {
     if (sim.gameOver || sim.expansionPending || !enabled) return;
     if (sim.configureProgram(junction, rule)) {
-      toolMessage = "Program applied.";
-    } else
-      toolMessage = "Choose another source. Linked lights cannot form a loop.";
+      toolMessage = "";
+      selectedJunction = null;
+      programMode = false;
+    } else toolMessage = "Choose an unlocked crossing without a roundabout.";
     notify();
     schedule();
+  }
+  function toggleStreetMode() {
+    if (
+      sim.level < UNLOCK.street ||
+      sim.gameOver ||
+      sim.expansionPending ||
+      !enabled
+    )
+      return;
+    streetMode = !streetMode;
+    programMode = cleanupMode = roundaboutMode = false;
+    selectedJunction = null;
+    toolMessage = "";
+    notify();
+  }
+  function linkStreet(key) {
+    if (!sim.linkStreet(key)) return;
+    streetMode = false;
+    scene.update(sim);
+    scene.render();
+    notify();
   }
   function closeProgram() {
     selectedJunction = null;
@@ -358,7 +392,7 @@ export function createCityRuntime(host, controls, onState) {
   function key(e) {
     if (sim.expansionPending) return;
     if (e.key === "Escape") {
-      cleanupMode = programMode = roundaboutMode = false;
+      cleanupMode = programMode = streetMode = roundaboutMode = false;
       selectedJunction = null;
       toolMessage = "";
       notify();
@@ -406,12 +440,12 @@ export function createCityRuntime(host, controls, onState) {
     start,
     acknowledgeExpansion() {
       if (!sim.acknowledgeExpansion()) return;
-      cleanupMode = programMode = roundaboutMode = false;
+      cleanupMode = programMode = streetMode = roundaboutMode = false;
       selectedJunction = null;
       toolMessage = "";
       accumulator = 0;
       pageCars?.setEnabled(enabled && !paused && sim.started);
-      scene.update(sim);
+      scene.update(sim, paused ? 2.4 : 0);
       scene.render();
       notify();
       schedule();
@@ -420,6 +454,8 @@ export function createCityRuntime(host, controls, onState) {
     toggleSignal,
     toggleCleanup,
     toggleProgramMode,
+    toggleStreetMode,
+    linkStreet,
     toggleRoundaboutMode,
     selectJunction,
     configureProgram,

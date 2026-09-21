@@ -22,7 +22,8 @@ try {
     const s = window.__trafficCity.sim;
     s.cars = [];
     s.nextArrival = s.nextAmbulance = 10000;
-    s.passed = 159;
+    s.passed = 199;
+    s.acknowledgedTutorials = new Set(["timer", "roundabout", "street"]);
     s.spawn(0);
     Object.assign(s.cars[0], {
       p: 9.74,
@@ -36,7 +37,7 @@ try {
     await page.evaluate(() => window.__trafficCity.snapshot().districtReady),
     false,
   );
-  await button("Let’s grow the city").click();
+  await button("Let’s play ball").click();
   await page.waitForFunction(
     () => window.__trafficCity.snapshot().scene.districtExpansion === 1,
   );
@@ -109,7 +110,7 @@ try {
         status: "PASS",
         checks: [
           "desktop activation and progress",
-          "full level-nine expansion and 30 signals",
+          "full level-eleven expansion and 30 signals",
           "light programmer retained",
           "mobile touch activation and light controls",
           "single HTML runs locally without network or dev hook",

@@ -39,7 +39,7 @@ function setup(level = 1) {
   const s = new TrafficSimulation(() => 0.5);
   s.start();
   s.passed = (level - 1) * 20;
-  if (level >= 9) s.acknowledgeExpansion();
+  while (s.expansionPending) s.acknowledgeExpansion();
   s.nextArrival = 10000;
   s.nextAmbulance = Infinity;
   s.district.nextArrival = s.district.nextShop = 10000;
@@ -97,6 +97,7 @@ test("timers unlock at six and safely alternate greens through amber and clearan
   const s = setup(5);
   assert.equal(s.configureProgram(0, { mode: "timer", seconds: 4 }), false);
   s.passed = 100;
+  s.acknowledgeExpansion();
   assert.equal(s.configureProgram(0, { mode: "timer", seconds: 4 }), true);
   let ew = false,
     amber = false;
@@ -111,83 +112,137 @@ test("timers unlock at six and safely alternate greens through amber and clearan
   s.toggle("water");
   assert.equal(s.programs.rules[0].mode, "manual");
 });
-test("linked lights support green-wave offsets and opposite phases, reject loops and locked sources", () => {
+test("one fixed ten-second timer moves between crossings and locked modes are rejected", () => {
   const s = setup(6);
-  assert.equal(s.configureProgram(1, { mode: "linked", source: 0 }), false);
-  s.passed = 120;
-  s.configureProgram(0, { mode: "timer", seconds: 6 });
-  assert.ok(
-    s.configureProgram(1, {
-      mode: "linked",
-      source: 0,
-      offset: 2,
-      inverted: true,
-    }),
-  );
-  run(s, 3);
+  assert.ok(s.configureProgram(0, { mode: "timer", seconds: 4 }));
+  assert.equal(s.programs.rules[0].seconds, 10);
+  run(s, 9.9);
   assert.equal(s.signals.water.color, "green");
-  assert.equal(s.signals2.wisconsin.color, "green");
-  assert.equal(s.configureProgram(0, { mode: "linked", source: 1 }), false);
-  assert.equal(s.configureProgram(2, { mode: "linked", source: 5 }), false);
-  run(s, 5);
-  assert.equal(s.programs.rules[1].desired, "water");
-});
-test("queue sensors choose the busier approach, and ambulance priority can preempt a cycle", () => {
-  const s = setup(8);
-  for (let i = 0; i < 3; i++) {
-    s.spawn(1);
-    Object.assign(s.cars.at(-1), { p: -2.16 - i * 0.92, speed: 0 });
-  }
-  assert.ok(s.configureProgram(0, { mode: "sensor", seconds: 4 }));
-  run(s, 5);
+  run(s, 1);
   assert.equal(s.signals.wisconsin.color, "green");
-  s.cars = [];
-  s.signals.water.color = "red";
-  s.signals.wisconsin.color = "green";
-  ambulance(s, 0);
-  assert.ok(
-    s.configureProgram(0, { mode: "timer", seconds: 16, emergency: true }),
-  );
-  run(s, 1);
-  assert.equal(s.signals.water.color, "green");
-  assert.equal(s.signals.wisconsin.color, "red");
-  assert.equal(s.gameOver, null);
+  assert.ok(s.configureProgram(1, { mode: "timer" }));
+  assert.equal(s.programs.rules[0].mode, "manual");
+  assert.equal(s.programs.rules.filter((r) => r.mode === "timer").length, 1);
+  assert.equal(s.configureProgram(3, { mode: "timer" }), false);
+  assert.equal(s.configureProgram(1, { mode: "sensor" }), false);
+  assert.equal(s.configureProgram(1, { mode: "linked" }), false);
 });
-test("expansion pauses before activation, acknowledges once, and resets for a new round", () => {
-  const s = setup(8);
-  s.passed = 159;
-  const a = ambulance(s);
-  run(s, 3);
-  s.complete({ lane: 0, junction: 0, p: 10 });
-  assert.ok(s.expansionPending);
-  assert.equal(s.districtReady, false);
-  assert.equal(s.neighbor(1, 2), null);
-  const before = s.snapshot();
-  run(s, 40);
-  assert.deepEqual(s.snapshot(), before);
-  assert.ok(s.acknowledgeExpansion());
-  assert.equal(s.acknowledgeExpansion(), false);
-  assert.equal(s.expansionPending, false);
-  assert.ok(s.districtReady);
-  assert.equal(s.neighbor(1, 2), 3);
+test("one linked street changes all its lights safely and leaves other streets alone", () => {
+  const locked = setup(8);
+  assert.equal(locked.linkStreet("row-0"), false);
+  const s = setup(9);
+  assert.ok(s.linkStreet("row-0"));
+  assert.deepEqual(s.linkedStreet.junctions, [0, 1, 2]);
+  s.configureProgram(0, { mode: "timer" });
+  s.toggle("wisconsin", 1);
+  for (let frame = 0; frame < 120; frame++) {
+    s.tick(1 / 120);
+    for (const j of [0, 1, 2])
+      assert.ok(
+        !(
+          s.signalsAt(j).water.color === "green" &&
+          s.signalsAt(j).wisconsin.color === "green"
+        ),
+      );
+  }
+  for (const j of [0, 1, 2])
+    assert.equal(s.signalsAt(j).wisconsin.color, "green");
+  assert.equal(s.signalsAt(4).water.color, "green");
+  assert.equal(s.programs.rules[0].mode, "street");
+  s.toggle("water", 2);
   run(s, 1);
-  assert.ok(a.emergencyWait > 3.9 && a.emergencyWait < 4.1);
+  for (const j of [0, 1, 2]) assert.equal(s.signalsAt(j).water.color, "green");
+  assert.ok(s.linkStreet("column-1"));
+  assert.deepEqual(s.linkedStreet.junctions, [0, 4]);
+  assert.equal(s.programs.rules[1].mode, "manual");
+  assert.equal(s.linkStreet("row-2"), false);
+  assert.ok(s.linkStreet(null));
+  assert.equal(s.linkedStreet, null);
+});
+test("each unlock pauses clocks before activation, appears once, and resets with the run", () => {
+  const s = setup(5);
+  for (const [level, id] of [
+    [6, "timer"],
+    [8, "roundabout"],
+    [9, "street"],
+    [11, "stadium"],
+  ]) {
+    s.passed = (level - 1) * 20 - 1;
+    s.complete({ lane: 0, junction: 0, p: 10 });
+    assert.equal(s.tutorial.id, id);
+    const before = s.snapshot(),
+      time = s.time;
+    run(s, 40);
+    assert.deepEqual(s.snapshot(), before);
+    assert.equal(s.time, time);
+    assert.equal(s.configureProgram(0, { mode: "timer" }), false);
+    if (level === 8) {
+      assert.equal(s.neighborhoodReady, false);
+      assert.equal(s.neighbor(1, 2), null);
+    }
+    if (level === 11) assert.equal(s.districtReady, false);
+    assert.ok(s.acknowledgeExpansion());
+    assert.equal(s.acknowledgeExpansion(), false);
+    if (level === 8) {
+      assert.equal(s.neighborhoodReady, true);
+      assert.equal(s.districtReady, false);
+      assert.equal(s.neighbor(1, 2), 3);
+    }
+    if (level === 11) assert.equal(s.districtReady, true);
+  }
   s.reset();
-  s.passed = 160;
-  assert.ok(s.expansionPending);
+  s.passed = 100;
+  assert.equal(s.tutorial.id, "timer");
+  assert.equal(s.linkedStreet, null);
+});
+test("street changes wait for crossing traffic and leave a timer on another street running", () => {
+  const s = setup(9);
+  s.configureProgram(4, { mode: "timer" });
+  s.placeRoundabout(2);
+  s.linkStreet("row-0");
+  assert.deepEqual(s.linkedStreet.junctions, [0, 1]);
+  s.spawn(0, 0);
+  const crossing = s.cars[0];
+  Object.assign(crossing, { p: 0, committed: true });
+  s.toggle("wisconsin", 1);
+  // Hold the crossing occupied without advancing vehicle motion.
+  s.signals.water.color = "red";
+  s.programs.tick(1, s);
+  assert.equal(s.signals.wisconsin.color, "red");
+  assert.equal(s.programs.rules[4].mode, "timer");
+  s.cars = [];
+  s.programs.tick(0, s);
+  assert.equal(s.signals.wisconsin.color, "green");
+  assert.equal(s.roundabout, 2);
 });
 test("an emergency failure on the expansion milestone keeps restart available", () => {
-  const s = setup(8);
-  s.passed = 159;
+  const s = setup(10);
+  s.passed = 199;
   const a = ambulance(s);
   a.emergencyWait = EMERGENCY_LIMIT;
   s.spawn(0);
   Object.assign(s.cars.at(-1), { p: 10, committed: true, turn: "straight" });
   s.tick(1 / 120);
   assert.ok(s.gameOver);
-  assert.equal(s.level, 9);
+  assert.equal(s.level, 11);
   assert.equal(s.expansionPending, false);
   assert.equal(s.districtReady, false);
+});
+test("the six-unit neighborhood has six crossings, no stadium traffic, and a continuous river", () => {
+  const s = setup(8);
+  assert.deepEqual(s.snapshot().activeJunctions, [0, 1, 2, 3, 4, 5]);
+  assert.equal(s.neighbor(4, 2), null);
+  assert.equal(s.neighbor(5, 3), 4);
+  assert.equal(s.districtReady, false);
+  s.district.nextArrival = 0;
+  s.bridge.nextBoat = 0;
+  run(s, 0.1);
+  s.bridge.nextBoat = 0;
+  run(s, 0.1);
+  assert.equal(s.district.ramps.length, 0);
+  assert.ok(s.bridge.boats.find((b) => b.direction === 1).p > -23);
+  assert.ok(s.placeRoundabout(4));
+  assert.equal(s.placeRoundabout(0), false);
 });
 test("nine units keep the stadium and parking together while preserving continuous street handoffs", () => {
   const cells = DISTRICT_GRID.cells.flat();
@@ -196,7 +251,7 @@ test("nine units keep the stadium and parking together while preserving continuo
   assert.equal(cells.filter((c) => c === "shop-and-parking").length, 1);
   assert.equal(cells.filter((c) => c === "civic-hall").length, 1);
   for (const down of [false, true]) {
-    const s = setup(9),
+    const s = setup(11),
       from = down ? 3 : 1,
       to = down ? 1 : 3;
     s.spawn(down ? 1 : 2, from);
@@ -215,7 +270,7 @@ test("nine units keep the stadium and parking together while preserving continuo
     );
     assert.equal(s.progress, 0);
   }
-  const before = setup(8);
+  const before = setup(7);
   assert.equal(before.neighbor(1, 2), null);
 });
 test("the ramp stays in the grid, rises over an existing street, and joins without a jump", () => {
@@ -229,7 +284,7 @@ test("the ramp stays in the grid, rises over an existing street, and joins witho
     assert.ok(crossing.length > 0);
     assert.ok(crossing.every((p) => p.y > 3 && p.x > 16.5));
   }
-  const s = setup(9);
+  const s = setup(11);
   s.spawn(3, FREEWAY.junction, false, "freeway");
   const c = s.cars[0];
   s.signalsAt(FREEWAY.junction).wisconsin.color = "green";
@@ -245,7 +300,7 @@ test("the ramp stays in the grid, rises over an existing street, and joins witho
   assert.ok(s.district.visualCars()[0].y > 2);
 });
 test("backed-up ramp arrivals wait on the deck without evicting the surface queue", () => {
-  const s = setup(9);
+  const s = setup(11);
   s.district.nextArrival = 0;
   s.spawn(1, FREEWAY.junction);
   const tail = s.cars[0];
@@ -268,19 +323,19 @@ test("destination routes get freeway arrivals into the stadium and shop, then re
     [LOTS.shop.returnLane, LOTS.shop.junction, "freeway"],
     [1, 3, "shop"],
   ]) {
-    const s = setup(9);
+    const s = setup(11);
     for (let j = 0; j < JUNCTION_X.length; j++)
       s.signalsAt(j).water.color = s.signalsAt(j).wisconsin.color = "green";
     s.spawn(lane, junction, false, destination);
     run(s, 60);
     assert.ok(!s.cars.some((c) => c.id === 1), `${destination} route failed`);
-    assert.ok(s.passed > 160);
+    assert.ok(s.passed > 200);
     if (destination !== "freeway") assert.ok(s.district.arrivals > 0);
   }
 });
 test("parking capacity is real, shop visitors return, and stadium departures wait for the event", () => {
   const d = new StadiumDistrict(() => 0.5),
-    sim = setup(9);
+    sim = setup(11);
   d.nextArrival = d.nextShop = 10000;
   const car = { id: 1, color: 2, length: 0.72 };
   for (let i = 0; i < 24; i++) {
@@ -311,7 +366,7 @@ test("parking capacity is real, shop visitors return, and stadium departures wai
   assert.equal(shop.departures, 1);
 });
 test("stadium wave traffic is bounded, transitions through game and exit rush, and queues when parking is full", () => {
-  const s = setup(9);
+  const s = setup(11);
   s.district.nextArrival = 0;
   run(s, 10);
   assert.ok(s.cars.some((c) => c.destination === "stadium"));
@@ -332,7 +387,7 @@ test("stadium wave traffic is bounded, transitions through game and exit rush, a
 test("one roundabout can be placed on an empty eligible crossing and cars follow all twelve curved movements", () => {
   for (let lane = 0; lane < 4; lane++)
     for (const turn of ["left", "straight", "right"]) {
-      const s = setup(9);
+      const s = setup(11);
       assert.ok(s.placeRoundabout(2));
       assert.equal(s.placeRoundabout(1), false);
       s.spawn(lane, 2);
@@ -351,15 +406,16 @@ test("one roundabout can be placed on an empty eligible crossing and cars follow
       assert.ok(c.p > 0 || c.junction !== 2 || !s.cars.includes(c));
       assert.equal(s.crashes, 0);
     }
-  const s = setup(8);
+  const s = setup(7);
   assert.equal(s.placeRoundabout(0), false);
-  s.passed = 160;
+  s.passed = 140;
+  s.acknowledgeExpansion();
   s.spawn(0);
   s.cars[0].p = 0;
   assert.equal(s.placeRoundabout(0), false);
 });
 test("roundabout yields to circulating cars and clears competing arrivals without a red light", () => {
-  const s = setup(9);
+  const s = setup(11);
   s.placeRoundabout(0);
   s.signals.water.color = s.signals.wisconsin.color = "red";
   for (let lane = 0; lane < 4; lane++) {
@@ -377,7 +433,7 @@ test("roundabout yields to circulating cars and clears competing arrivals withou
 test("roundabout admission leaves clearance for buses under sustained mixed arrivals", () => {
   for (const seed of [1, 5, 18]) {
     let n = seed;
-    const s = setup(9);
+    const s = setup(11);
     s.random = () =>
       (n = (Math.imul(n, 1664525) + 1013904223) >>> 0) / 4294967296;
     s.placeRoundabout(0);
@@ -392,7 +448,7 @@ test("roundabout admission leaves clearance for buses under sustained mixed arri
     }
     assert.equal(s.crashes, 0, `seed ${seed}`);
     assert.equal(s.cars.length, 0, `seed ${seed} stopped circulating`);
-    assert.equal(transferred + s.passed - 160 + s.overflowed, 40);
+    assert.equal(transferred + s.passed - 200 + s.overflowed, 40);
   }
 });
 
@@ -444,7 +500,7 @@ test("T junctions reject their closed arms, force legal turns, and cannot become
   for (const j of [3, 7]) {
     for (const lane of JUNCTION_APPROACHES[j])
       for (const random of [0, 0.5, 0.99]) {
-        const s = setup(9);
+        const s = setup(11);
         s.random = () => random;
         assert.equal(s.spawn(j === 3 ? 0 : 2, j), false);
         assert.equal(s.placeRoundabout(j), false);
@@ -471,7 +527,7 @@ test("T junctions reject their closed arms, force legal turns, and cannot become
   }
 });
 test("destination routing can loop around a unit when a shop approach would require a U-turn", () => {
-  const s = setup(9);
+  const s = setup(11);
   s.spawn(3, 4, false, "shop");
   for (let j = 0; j < JUNCTION_X.length; j++)
     s.signalsAt(j).water.color = s.signalsAt(j).wisconsin.color = "green";
@@ -481,7 +537,7 @@ test("destination routing can loop around a unit when a shop approach would requ
 });
 test("parking returns at the same driveway position and all stall paths stay inside the grid", () => {
   for (const [name, lot] of Object.entries(LOTS)) {
-    const s = setup(9);
+    const s = setup(11);
     s.spawn(
       lot.returnLane,
       lot.junction,
@@ -509,7 +565,7 @@ test("parking returns at the same driveway position and all stall paths stay ins
 });
 test("tow trucks use each T junction’s open street and recover the wreck", () => {
   for (const j of [3, 7]) {
-    const s = setup(9),
+    const s = setup(11),
       incident = {
         id: 1,
         junction: j,
@@ -568,7 +624,7 @@ test("stadium stalls fit one unit and every driveway segment avoids the stadium"
   }
 });
 test("the two closed streets do not route traffic through the hall or plaza", () => {
-  const s = setup(9);
+  const s = setup(11);
   assert.equal(s.neighbor(3, 2), null);
   assert.equal(s.neighbor(7, 0), null);
   assert.equal(s.neighbor(5, 3), 4);
@@ -612,7 +668,7 @@ test("fixed bridges clear the full river channel and traffic follows their slope
     assert.equal(bridgeHeight(bridge.minX, bridge), 0);
     assert.equal(bridgeHeight(bridge.maxX, bridge), 0);
   }
-  const s = setup(9);
+  const s = setup(11);
   s.spawn(3, 5);
   const car = s.cars[0];
   Object.assign(car, {
@@ -630,7 +686,7 @@ test("fixed bridges clear the full river channel and traffic follows their slope
   assert.ok(Math.abs(after.y - before.y) < 0.02);
 });
 test("expanded river boats enter from both map edges and pass under fixed bridges", () => {
-  const s = setup(9);
+  const s = setup(11);
   s.bridge.nextBoat = 0;
   s.tick(1 / 120);
   assert.ok(

@@ -1,6 +1,7 @@
 import { SignalPrograms } from "./signalPrograms.js";
 import { StadiumDistrict, LOTS, FREEWAY } from "./stadiumDistrict.js";
 import { roundaboutPose } from "./roundabout.js";
+import { UNLOCK, TUTORIALS } from "./progression.js";
 import {
   JUNCTION_X,
   roadReach,
@@ -100,7 +101,8 @@ export class TrafficSimulation {
   reset() {
     this.started = false;
     this.gameOver = null;
-    this.districtAcknowledged = false;
+    this.acknowledgedTutorials = new Set();
+    this.linkedStreetKey = null;
     this.roundabout = null;
     this.programs = new SignalPrograms();
     this.district = new StadiumDistrict(this.random);
@@ -142,14 +144,37 @@ export class TrafficSimulation {
     return 1 + Math.floor(this.passed / LEVEL_SIZE);
   }
   get expansionPending() {
-    return !this.gameOver && this.level >= 9 && !this.districtAcknowledged;
+    return !!this.tutorial;
+  }
+  get tutorial() {
+    return this.gameOver
+      ? null
+      : (TUTORIALS.find(
+          (t) => this.level >= t.level && !this.acknowledgedTutorials.has(t.id),
+        ) ?? null);
+  }
+  get neighborhoodReady() {
+    return (
+      this.level >= UNLOCK.neighborhood &&
+      this.acknowledgedTutorials.has("roundabout")
+    );
   }
   get districtReady() {
-    return this.level >= 9 && this.districtAcknowledged;
+    return (
+      this.level >= UNLOCK.stadium && this.acknowledgedTutorials.has("stadium")
+    );
+  }
+  junctionActive(junction) {
+    return (
+      Number.isInteger(junction) &&
+      this.level >= JUNCTION_LEVEL[junction] &&
+      (junction < 3 ||
+        (junction < 6 ? this.neighborhoodReady : this.districtReady))
+    );
   }
   acknowledgeExpansion() {
     if (!this.expansionPending || this.gameOver) return false;
-    this.districtAcknowledged = true;
+    this.acknowledgedTutorials.add(this.tutorial.id);
     return true;
   }
   get progress() {
@@ -210,9 +235,31 @@ export class TrafficSimulation {
       this.gameOver ||
       this.expansionPending ||
       this.roundabout === junction ||
-      this.level < JUNCTION_LEVEL[junction]
+      !this.junctionActive(junction)
     )
       return;
+    const street = this.linkedStreet;
+    if (street?.junctions.includes(junction)) {
+      const rule = this.programs.rules[junction];
+      const current =
+        rule.mode === "street"
+          ? rule.desired
+          : this.signalsAt(junction)[street.axis].color === "green"
+            ? street.axis
+            : street.axis === "water"
+              ? "wisconsin"
+              : "water";
+      const wanted =
+        current === street.axis
+          ? street.axis === "water"
+            ? "wisconsin"
+            : "water"
+          : street.axis;
+      for (const j of street.junctions) this.programs.request(j, wanted);
+      this.programs.tick(0, this);
+      this.start();
+      return;
+    }
     this.programs.manual(junction);
     const signal = this.signalsAt(junction)[axis];
     if (!signal) return;
@@ -291,7 +338,7 @@ export class TrafficSimulation {
         dt,
         this.cars.map((c) => ({ ...c, ...carPose(c) })),
         this.events,
-        this.districtReady,
+        this.neighborhoodReady ? (this.districtReady ? -33 : -20) : false,
       );
     for (const signal of [
       ...Object.values(this.signals),
@@ -319,32 +366,44 @@ export class TrafficSimulation {
             [7, 0],
             [7, 1],
           ]
-        : this.level >= 5
+        : this.neighborhoodReady
           ? [
-              [0, 0],
-              [1, 1],
               [0, 2],
-              [1, 0],
-              [2, 3],
+              [1, 1],
               [1, 2],
-              [2, 0],
               [2, 2],
+              [2, 3],
+              [3, 1],
+              [4, 0],
+              [5, 0],
+              [5, 3],
             ]
-          : this.level >= 2
+          : this.level >= 5
             ? [
                 [0, 0],
                 [1, 1],
                 [0, 2],
                 [1, 0],
-                [0, 3],
+                [2, 3],
                 [1, 2],
+                [2, 0],
+                [2, 2],
               ]
-            : [
-                [0, 0],
-                [0, 1],
-                [0, 2],
-                [0, 3],
-              ];
+            : this.level >= 2
+              ? [
+                  [0, 0],
+                  [1, 1],
+                  [0, 2],
+                  [1, 0],
+                  [0, 3],
+                  [1, 2],
+                ]
+              : [
+                  [0, 0],
+                  [0, 1],
+                  [0, 2],
+                  [0, 3],
+                ];
       const index = this.arrivalIndex++;
       const [junction, lane] =
         entries[
@@ -714,8 +773,7 @@ export class TrafficSimulation {
     })).filter(
       (p) =>
         p.i !== junction &&
-        this.level >= JUNCTION_LEVEL[p.i] &&
-        (JUNCTION_LEVEL[p.i] < 9 || this.districtReady) &&
+        this.junctionActive(p.i) &&
         (dir.dx
           ? p.dz === 0 && p.dx * dir.dx > 0
           : p.dx === 0 && p.dz * dir.dz > 0),
@@ -765,15 +823,66 @@ export class TrafficSimulation {
     return options[0].turn;
   }
   configureProgram(junction, rule) {
-    return !this.gameOver && this.programs.configure(junction, rule, this);
+    return (
+      !this.gameOver &&
+      !this.expansionPending &&
+      this.programs.configure(junction, rule, this)
+    );
+  }
+  get streets() {
+    if (this.level < UNLOCK.street || !this.acknowledgedTutorials.has("street"))
+      return [];
+    return [
+      ...[0, -13, -26].map((coordinate, i) => ({
+        key: `row-${i}`,
+        axis: "wisconsin",
+        coordinate,
+        name: ["Wisconsin Avenue", "Market Avenue", "Stadium Avenue"][i],
+      })),
+      ...[-15, 0, 11].map((coordinate, i) => ({
+        key: `column-${i}`,
+        axis: "water",
+        coordinate,
+        name: ["Plankinton", "Water Street", "Broadway"][i],
+      })),
+    ]
+      .map((s) => ({
+        ...s,
+        junctions: JUNCTION_X.map((_, j) => j).filter(
+          (j) =>
+            this.junctionActive(j) &&
+            this.roundabout !== j &&
+            (s.axis === "water" ? JUNCTION_X[j] : JUNCTION_Z[j]) ===
+              s.coordinate,
+        ),
+      }))
+      .filter((s) => s.junctions.length >= 2);
+  }
+  get linkedStreet() {
+    return this.streets.find((s) => s.key === this.linkedStreetKey) ?? null;
+  }
+  linkStreet(key) {
+    if (
+      this.gameOver ||
+      this.expansionPending ||
+      this.level < UNLOCK.street ||
+      (key !== null && !this.streets.some((s) => s.key === key))
+    )
+      return false;
+    this.programs.rules.forEach((r, j) => {
+      if (r.mode === "street") this.programs.manual(j);
+    });
+    this.linkedStreetKey = key;
+    return true;
   }
   placeRoundabout(junction) {
     if (
       this.gameOver ||
-      !this.districtReady ||
+      this.expansionPending ||
+      !this.neighborhoodReady ||
       this.roundabout !== null ||
       JUNCTION_APPROACHES[junction]?.length !== 4 ||
-      this.level < JUNCTION_LEVEL[junction] ||
+      !this.junctionActive(junction) ||
       this.incidents.some((i) => i.junction === junction) ||
       this.tow.active?.junction === junction
     )
@@ -820,6 +929,13 @@ export class TrafficSimulation {
       started: this.started,
       gameOver: this.gameOver,
       expansionPending: this.expansionPending,
+      tutorial: this.tutorial,
+      neighborhoodReady: this.neighborhoodReady,
+      activeJunctions: JUNCTION_X.map((_, j) => j).filter((j) =>
+        this.junctionActive(j),
+      ),
+      streets: this.streets,
+      linkedStreet: this.linkedStreet,
       districtReady: this.districtReady,
       emergency: this.emergencySnapshot(),
       roundabout: this.roundabout,
