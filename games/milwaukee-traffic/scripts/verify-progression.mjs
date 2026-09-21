@@ -63,8 +63,8 @@ try {
     await button(action).tap();
     await page.getByRole("dialog").waitFor({ state: "detached" });
   };
-  await milestone(6, "timer", "Try the timer");
-  assert.deepEqual((await state()).activeJunctions, [0, 1, 2]);
+  await milestone(2, "timer", "Try the timer");
+  assert.deepEqual((await state()).activeJunctions, [0, 1]);
   assert.equal((await state()).neighborhoodReady, false);
   await button("Program lights").tap();
   await signal(0).tap();
@@ -75,7 +75,16 @@ try {
   await button("Move timer here").tap();
   assert.equal((await state()).programs[0].mode, "manual");
   assert.equal((await state()).programs[1].mode, "timer");
-  await page.screenshot({ path: `${output}/level-6-timer.png` });
+  await page.screenshot({ path: `${output}/level-2-timer.png` });
+  await milestone(3, "bridge", "Watch the bridge");
+  await button("Open the bridge").tap();
+  await page.waitForFunction(
+    () => window.__trafficCity.snapshot().bridge.lift === 1,
+  );
+  await button("Close the bridge").tap();
+  await page.waitForFunction(
+    () => window.__trafficCity.snapshot().bridge.lift === 0,
+  );
   await milestone(8, "roundabout", "Open the neighborhood");
   await page.waitForFunction(
     () => window.__trafficCity.snapshot().scene.neighborhoodExpansion === 1,
@@ -123,6 +132,59 @@ try {
   await page.screenshot({ path: `${output}/level-11-stadium.png` });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.screenshot({ path: `${output}/level-11-desktop.png` });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.evaluate(() => {
+    const s = window.__trafficCity.sim;
+    s.cars = [];
+    s.incidents = [];
+    s.spawn(0);
+    const wreck = s.cars[0];
+    Object.assign(wreck, {
+      p: 2.2,
+      turn: "straight",
+      speed: 0,
+      committed: true,
+      crashed: true,
+      incident: 90,
+    });
+    s.incidents.push({
+      id: 90,
+      junction: 0,
+      x: -0.57,
+      z: 2.2,
+      assigned: false,
+    });
+    s.spawn(0, 0, true);
+    Object.assign(s.cars[1], {
+      p: 1.18,
+      turn: "straight",
+      speed: 0,
+      committed: true,
+    });
+    for (let frame = 0; frame < 8 * 120; frame++) s.tick(1 / 120);
+  });
+  await page.getByRole("timer", { name: "Emergency countdown" }).waitFor();
+  assert.ok((await state()).emergency.remaining < 12.1);
+  await page.screenshot({ path: `${output}/ambulance-crash-countdown.png` });
+  await button("Pause traffic").tap();
+  const wait = await page.evaluate(
+    () => window.__trafficCity.sim.emergencySnapshot().remaining,
+  );
+  await page.waitForTimeout(200);
+  assert.equal(
+    await page.evaluate(
+      () => window.__trafficCity.sim.emergencySnapshot().remaining,
+    ),
+    wait,
+  );
+  await button("Resume traffic").tap();
+  await page.evaluate(() => {
+    for (let frame = 0; frame < 11 * 120; frame++)
+      window.__trafficCity.sim.tick(1 / 120);
+  });
+  await button("Try again").waitFor();
+  assert.ok((await state()).gameOver);
+  await button("Try again").tap();
   assert.deepEqual(errors, []);
   await button("Reset traffic").click();
   assert.equal((await state()).level, 1);
@@ -137,12 +199,14 @@ try {
       {
         status: "PASS",
         checks: [
-          "all four paused tutorial milestones",
-          "single timer assignment and relocation on 3x1",
+          "all five paused tutorial milestones",
+          "level-two timer assignment and relocation on 2x1",
+          "bridge tutorial and touch controls at level three",
           "six-unit map with one roundabout",
           "street selection, projected highlight and group switch",
           "stadium and freeway delayed until eleven",
           "phone and desktop layouts",
+          "crash-blocked ambulance HUD, pause, deadline and restart",
           "reset clears all tools",
         ],
         output,

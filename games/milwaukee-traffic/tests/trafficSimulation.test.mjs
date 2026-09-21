@@ -78,6 +78,7 @@ test("amber transitions to red but committed cars finish crossing", () => {
 test("crashes block the road until a requested helicopter pickup", () => {
   const s = isolated();
   s.passed = 60;
+  while (s.expansionPending) s.acknowledgeExpansion();
   s.toggle("wisconsin");
   s.spawn(0);
   s.spawn(1);

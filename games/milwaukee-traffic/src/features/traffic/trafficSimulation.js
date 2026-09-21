@@ -616,24 +616,11 @@ export class TrafficSimulation {
         car.committed = true;
       car.stopped = car.speed < 0.1 ? car.stopped + dt : 0;
       if (car.ambulance) {
-        const atLight =
-          !car.roundabout && !car.committed && car.p <= STOP_LINE + 0.05;
-        // Use world heading, not approach ownership: cars can wait on either
-        // bank, including after crossing a junction or behind a bridge queue.
-        const atBridge =
-          this.bridge.gated &&
-          Math.abs(pose.z) < 1 &&
-          ((pose.x < -7.05 && Math.sin(pose.yaw) > 0.99) ||
-            (pose.x > -4.9 && Math.sin(pose.yaw) < -0.99));
-        const waiting =
-          car.speed < 0.1 &&
-          (atLight || atBridge || car.emergencyCause === "bridge");
+        // Urgency follows the vehicle, not its location or signal state.
+        // This includes a committed ambulance trapped behind a wreck or a
+        // queue spilling back from another junction. Crashed cars skip this loop.
+        const waiting = car.speed < 0.1;
         car.emergencyWait = waiting ? (car.emergencyWait || 0) + dt : 0;
-        car.emergencyCause = waiting
-          ? atBridge
-            ? "bridge"
-            : car.emergencyCause || "light"
-          : null;
         if (car.emergencyWait > EMERGENCY_LIMIT + 1e-6)
           this.gameOver = {
             reason: `An ambulance waited over ${EMERGENCY_LIMIT} seconds.`,

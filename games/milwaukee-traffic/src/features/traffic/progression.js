@@ -1,4 +1,4 @@
-export const UNLOCK = { timer: 6, neighborhood: 8, street: 9, stadium: 11 };
+export const UNLOCK = { timer: 2, neighborhood: 8, street: 9, stadium: 11 };
 export const TIMER_SECONDS = 10;
 export const TUTORIALS = [
   {
@@ -6,20 +6,46 @@ export const TUTORIALS = [
     level: UNLOCK.timer,
     badge: "10s",
     title: "Give one light a timer.",
-    description: "Three crossings. One less thing to juggle.",
+    description: "A second crossing opens. Let one light help you out.",
     steps: [
-      ["Tap Timer", "Choose a light on the map to open its timer controls."],
       [
-        "Set it to auto",
-        "That crossing alternates directions every 10 seconds, with a safe amber changeover.",
+        "Tap Timer",
+        "Choose a light on the map, then tap Set 10-second timer. It alternates directions with a safe amber changeover.",
       ],
       [
-        "Choose just one",
-        "Setting another timer moves your single timer there. A direct light tap returns it to manual.",
+        "Automate one crossing",
+        "Setting another timer moves it there. Tap a light directly to take back manual control.",
+      ],
+      [
+        "Make way for ambulances",
+        "A stopped ambulance has 20 seconds to get moving. Red lights, bridge queues and crashes all count.",
       ],
     ],
     action: "Try the timer",
-    map: "3 × 1",
+    map: "2 × 1",
+  },
+  {
+    id: "bridge",
+    level: 3,
+    badge: "↟",
+    title: "Boats need a green light, too.",
+    description: "You control the lift bridge across the river.",
+    steps: [
+      [
+        "Tap the bridge",
+        "Tap the bridge itself to raise it. Cars already on it clear before it opens.",
+      ],
+      [
+        "Let the boats through",
+        "Boats wait by the bridge until it is fully raised. Keep an eye on both river approaches.",
+      ],
+      [
+        "Tap again for cars",
+        "Lower it after the boats pass. Cars wait while it is up, and an ambulance’s 20-second clock keeps ticking.",
+      ],
+    ],
+    action: "Watch the bridge",
+    map: "2 × 1",
   },
   {
     id: "roundabout",

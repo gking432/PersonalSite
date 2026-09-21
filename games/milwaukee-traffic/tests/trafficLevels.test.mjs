@@ -1,4 +1,5 @@
 import test from "node:test";
+import { TUTORIALS } from "../src/features/traffic/progression.js";
 import assert from "node:assert/strict";
 import {
   TrafficSimulation,
@@ -17,6 +18,7 @@ const run = (s, seconds) => {
 const setup = () => {
   const s = new TrafficSimulation(() => 0.5);
   s.start();
+  s.acknowledgedTutorials = new Set(TUTORIALS.map((t) => t.id));
   s.nextArrival = 10000;
   return s;
 };
@@ -256,6 +258,7 @@ test("helicopter unlocks at level four, while towing is available from level one
   assert.equal(s.dispatchTow(id), false);
   s.reset();
   s.start();
+  s.acknowledgedTutorials = new Set(TUTORIALS.map((t) => t.id));
   s.nextArrival = 10000;
   assert.equal(s.dispatchTow(crash(s)), true);
 });

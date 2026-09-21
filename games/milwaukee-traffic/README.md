@@ -13,7 +13,8 @@ The independent Sites checkout is `/Users/gkn/Documents/MilwaukeeTraffic-Sites`.
 - Twenty successful exits per level, multiple intersections, the stadium and parking, river crossings and freeway.
 - Ambulances with a 20-second deadline, boats and drawbridge controls.
 - Persistent crashes, tow trucks, helicopter recovery and refueling.
-- Level 6: one movable, fixed 10-second timer on the 3×1 map.
+- Level 2: one movable, fixed 10-second timer as soon as the second intersection opens.
+- Level 3: a paused bridge tutorial explaining how to let boats and cars through.
 - Level 8: a 3×2 neighborhood and one placeable roundabout.
 - Level 9: select one street; tap any of its lights to switch the strip together.
 - Level 11: the third row, stadium parking and freeway traffic.
@@ -39,6 +40,6 @@ From the repository root, `npm run game:dev`, `npm run game:build`, and `npm run
 
 ## Preservation and local verification
 
-The original extraction remains available in Git history. The revised progression passes 66 model/physics tests. The browser flow covers all four tutorials, timer relocation, six-unit expansion, roundabout placement while paused, street linking, the delayed stadium, and reset. Pinch checks cover native browser touch events, bounds, cancellation, light taps and screen rotation. These are emulated mobile-browser checks, not physical iPhone/Safari testing.
+The original extraction remains available in Git history. The revised progression passes 69 model/physics tests. The browser flow covers all five tutorials, timer relocation, six-unit expansion, roundabout placement while paused, street linking, the delayed stadium, crash-blocked ambulance countdowns, and reset. Pinch checks cover native browser touch events, bounds, cancellation, light taps and screen rotation. These are emulated mobile-browser checks, not physical iPhone/Safari testing.
 
 Verification on **2026-09-21** covers the local browser prototype. The Sites copy also passed a 390 × 844 touch-browser check for activation, light controls, screen fit and runtime errors. Its optional browser-agent controls passed a test-adapter check; native WebMCP was unavailable in the local browser. Sites reported successful private publication on the same date. The hosted URL was not independently browser-tested after publication. Native mobile builds and a Steam release remain future work.

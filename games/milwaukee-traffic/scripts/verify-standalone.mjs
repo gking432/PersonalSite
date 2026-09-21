@@ -23,7 +23,12 @@ try {
     s.cars = [];
     s.nextArrival = s.nextAmbulance = 10000;
     s.passed = 199;
-    s.acknowledgedTutorials = new Set(["timer", "roundabout", "street"]);
+    s.acknowledgedTutorials = new Set([
+      "timer",
+      "bridge",
+      "roundabout",
+      "street",
+    ]);
     s.spawn(0);
     Object.assign(s.cars[0], {
       p: 9.74,

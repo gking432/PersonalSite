@@ -93,10 +93,101 @@ test("moving and crashed ambulances do not consume the emergency timer", () => {
   run(s, 25);
   assert.equal(s.gameOver, null);
 });
-test("timers unlock at six and safely alternate greens through amber and clearance", () => {
-  const s = setup(5);
+function wreck(s, lane, junction, p) {
+  s.spawn(lane, junction);
+  const car = s.cars.at(-1);
+  Object.assign(car, {
+    p,
+    turn: "straight",
+    speed: 0,
+    committed: true,
+    crashed: true,
+    incident: 90,
+  });
+  s.incidents.push({ id: 90, junction, ...carPose(car), assigned: false });
+  return car;
+}
+test("committed ambulances behind a wreck, its queue, or the next crossing's queue reach the deadline", () => {
+  for (const scenario of ["crossing", "exit queue", "next junction"]) {
+    const s = setup(2);
+    s.bridge.nextBoat = Infinity;
+    const lane = scenario === "next junction" ? 3 : 0;
+    wreck(
+      s,
+      lane,
+      scenario === "next junction" ? 1 : 0,
+      scenario === "next junction" ? -7 : scenario === "exit queue" ? 4 : 2.2,
+    );
+    if (scenario === "exit queue") {
+      s.spawn(lane);
+      Object.assign(s.cars.at(-1), {
+        p: 3.08,
+        turn: "straight",
+        speed: 0,
+        committed: true,
+      });
+    }
+    s.spawn(lane, 0, true);
+    const a = s.cars.at(-1);
+    Object.assign(a, {
+      p:
+        scenario === "next junction"
+          ? 2.98
+          : scenario === "exit queue"
+            ? 2.06
+            : 1.18,
+      turn: "straight",
+      speed: 0,
+      committed: true,
+    });
+    run(s, 8);
+    assert.equal(a.crashed, 0, scenario);
+    assert.ok(a.emergencyWait > 7.9, scenario);
+    assert.ok(s.emergencySnapshot().remaining < 12.1, scenario);
+    s.toggle("wisconsin");
+    run(s, 2);
+    assert.ok(
+      a.emergencyWait > 9.9,
+      "flipping a light must not reset a blocked ambulance",
+    );
+    run(s, 10.02);
+    assert.equal(s.gameOver?.vehicle, a.id, scenario);
+  }
+});
+test("rescue dispatch does not clear an ambulance's crash wait; actual movement does", () => {
+  const s = setup(4),
+    blocked = wreck(s, 0, 0, 2.2);
+  s.spawn(0, 0, true);
+  const a = s.cars.at(-1);
+  Object.assign(a, { p: 1.18, turn: "straight", speed: 0, committed: true });
+  run(s, 6);
+  assert.ok(s.dispatchRescue(blocked.incident));
+  run(s, 3);
+  assert.ok(a.emergencyWait > 8.9);
+  run(s, 4);
+  assert.ok(a.p > 2);
+  assert.equal(a.emergencyWait, 0);
+  assert.equal(s.emergencySnapshot(), null);
+  assert.equal(s.gameOver, null);
+});
+test("the bridge introduction freezes an existing ambulance countdown until dismissed", () => {
+  const s = setup(2),
+    a = ambulance(s);
+  run(s, 7);
+  const waiting = a.emergencyWait;
+  s.passed = 40;
+  assert.equal(s.tutorial.id, "bridge");
+  run(s, 30);
+  assert.equal(a.emergencyWait, waiting);
+  assert.equal(s.gameOver, null);
+  s.acknowledgeExpansion();
+  run(s, 1);
+  assert.ok(a.emergencyWait > waiting + 0.99);
+});
+test("timers unlock at two and safely alternate greens through amber and clearance", () => {
+  const s = setup(1);
   assert.equal(s.configureProgram(0, { mode: "timer", seconds: 4 }), false);
-  s.passed = 100;
+  s.passed = 20;
   s.acknowledgeExpansion();
   assert.equal(s.configureProgram(0, { mode: "timer", seconds: 4 }), true);
   let ew = false,
@@ -113,7 +204,7 @@ test("timers unlock at six and safely alternate greens through amber and clearan
   assert.equal(s.programs.rules[0].mode, "manual");
 });
 test("one fixed ten-second timer moves between crossings and locked modes are rejected", () => {
-  const s = setup(6);
+  const s = setup(2);
   assert.ok(s.configureProgram(0, { mode: "timer", seconds: 4 }));
   assert.equal(s.programs.rules[0].seconds, 10);
   run(s, 9.9);
@@ -160,9 +251,10 @@ test("one linked street changes all its lights safely and leaves other streets a
   assert.equal(s.linkedStreet, null);
 });
 test("each unlock pauses clocks before activation, appears once, and resets with the run", () => {
-  const s = setup(5);
+  const s = setup(1);
   for (const [level, id] of [
-    [6, "timer"],
+    [2, "timer"],
+    [3, "bridge"],
     [8, "roundabout"],
     [9, "street"],
     [11, "stadium"],
