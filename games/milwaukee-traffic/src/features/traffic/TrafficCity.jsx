@@ -380,17 +380,21 @@ export default function TrafficCity({ standalone = false }) {
           )}
         </div>
       )}
-      <div className="traffic-city__stage">
+      <div
+        className="traffic-city__stage"
+        onPointerDownCapture={(e) => engine.current?.pointerDown(e)}
+        onPointerMoveCapture={(e) => engine.current?.pointerMove(e)}
+        onPointerUpCapture={(e) => engine.current?.pointerUp(e)}
+        onPointerCancelCapture={(e) => engine.current?.pointerUp(e)}
+        onLostPointerCapture={(e) => engine.current?.lostPointerCapture(e)}
+        onClickCapture={(e) => engine.current?.clickCapture(e)}
+      >
         <div
           ref={host}
           className="traffic-city__model"
           role="button"
           tabIndex={0}
           aria-label="Explore the Milwaukee intersection"
-          onPointerDown={(e) => engine.current?.pointerDown(e)}
-          onPointerMove={(e) => engine.current?.pointerMove(e)}
-          onPointerUp={() => engine.current?.pointerUp()}
-          onPointerCancel={() => engine.current?.pointerUp()}
           onKeyDown={(e) => engine.current?.key(e)}
           onClick={() => engine.current?.start()}
         >

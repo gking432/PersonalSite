@@ -895,6 +895,7 @@ export function createCityScene(host, controls, onEscape) {
     currentPrograms = [];
   let yaw = -0.12,
     pitch = 0.77,
+    zoom = 1,
     width = 1,
     height = 1,
     disposed = false;
@@ -938,6 +939,7 @@ export function createCityScene(host, controls, onEscape) {
       const fitted = Math.max(halfHeight, (halfWidth * height) / width) * 2.12;
       span += (fitted - span) * districtExpansion;
     }
+    span /= zoom;
     camera.left = (-span * width) / height / 2;
     camera.right = -camera.left;
     camera.top = span / 2;
@@ -1158,6 +1160,7 @@ export function createCityScene(host, controls, onEscape) {
     boat.position.y = 0.38 + Math.sin(sim.time * 1.6) * 0.022;
   }
   function clear() {
+    zoom = 1;
     for (const m of carMeshes.values()) city.remove(m.group);
     carMeshes.clear();
     additions.clear();
@@ -1181,8 +1184,13 @@ export function createCityScene(host, controls, onEscape) {
       pitch = Math.max(0.48, Math.min(1.16, pitch + dy * 0.004));
       render();
     },
+    zoomBy(factor) {
+      if (!Number.isFinite(factor) || factor <= 0) return;
+      zoom = Math.max(0.65, Math.min(4, zoom * factor));
+      render();
+    },
     get pose() {
-      return { yaw, pitch };
+      return { yaw, pitch, zoom };
     },
     diagnostics: () => ({
       falling: falling.length,

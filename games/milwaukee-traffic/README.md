@@ -16,7 +16,7 @@ The independent Sites checkout is `/Users/gkn/Documents/MilwaukeeTraffic-Sites`.
 - Timed/linked/sensor-controlled lights and a placeable roundabout.
 - Fullscreen, pause, restart, honks, and vehicles tumbling off the map.
 
-The standalone shell supports desktop and touch screens. Portrait framing keeps the city in view, and touch dragging rotates it. This is the browser prototype for the future mobile and Steam game; native app builds, Steam integration and store releases are future work.
+The standalone shell supports desktop and touch screens. Portrait framing keeps the city in view. Drag with one finger to rotate; pinch with two fingers to zoom from 0.65× to 4×. Pinching over a light does not switch it, and lifting one finger resumes rotation smoothly. Zoom works while paused, survives screen rotation, and returns to the original framing when the game resets. This is the browser prototype for the future mobile and Steam game; native app builds, Steam integration and store releases are future work.
 
 ## Development
 
@@ -35,6 +35,6 @@ From the repository root, `npm run game:dev`, `npm run game:build`, and `npm run
 
 ## Preservation and local verification
 
-The copied `src/features/traffic/trafficSimulation.js` retains SHA-256 `b02e09a41df7c9bfbd1e0cd1f424cb6e46ee69d59c0e5f8ddc7f096d29f336d0`. Packaging changes are confined to the standalone shell and portrait camera fitting; all 64 preserved model/physics tests pass.
+The copied `src/features/traffic/trafficSimulation.js` retains SHA-256 `b02e09a41df7c9bfbd1e0cd1f424cb6e46ee69d59c0e5f8ddc7f096d29f336d0`. Changes cover the standalone shell, portrait camera fitting and pinch/drag input; all 64 preserved model/physics tests pass. `scripts/verify-pinch.mjs` checks real browser touch events, zoom bounds, cancellation, control taps, pause, screen rotation and reset. These are emulated mobile-browser checks, not physical iPhone/Safari testing.
 
 Verification on **2026-09-21** covers the local browser prototype. The Sites copy also passed a 390 × 844 touch-browser check for activation, light controls, screen fit and runtime errors. Its optional browser-agent controls passed a test-adapter check; native WebMCP was unavailable in the local browser. Sites reported successful private publication on the same date. The hosted URL was not independently browser-tested after publication. Native mobile builds and a Steam release remain future work.

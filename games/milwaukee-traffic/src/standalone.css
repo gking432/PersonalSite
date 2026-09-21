@@ -33,6 +33,7 @@ button:not(:disabled) {
     max(12px, env(safe-area-inset-left));
 }
 .traffic-city[data-standalone="true"] .traffic-city__stage {
+  touch-action: none;
   flex: 1;
   min-height: 0;
   aspect-ratio: auto;

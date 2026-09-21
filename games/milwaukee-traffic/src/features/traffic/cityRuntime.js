@@ -25,8 +25,10 @@ export function createCityRuntime(host, controls, onState) {
   let raf = 0,
     last = 0,
     accumulator = 0,
-    drag = null,
     signature = "";
+  const pointers = new Map();
+  let pinchDistance = 0,
+    pinched = false;
   const state = () => ({
     ...sim.snapshot(),
     paused,
@@ -201,6 +203,7 @@ export function createCityRuntime(host, controls, onState) {
   }
   function reset() {
     stop();
+    clearPointers();
     sim.reset();
     cleanupMode = programMode = roundaboutMode = false;
     selectedJunction = null;
@@ -283,19 +286,74 @@ export function createCityRuntime(host, controls, onState) {
     host.focus({ preventScroll: true });
   }
   function pointerDown(e) {
-    if (!e.isPrimary || e.button !== 0 || sim.expansionPending) return;
-    drag = { x: e.clientX, y: e.clientY, id: e.pointerId };
-    host.setPointerCapture(e.pointerId);
-    start();
+    if (
+      (e.pointerType !== "touch" && (!e.isPrimary || e.button !== 0)) ||
+      sim.expansionPending ||
+      !enabled ||
+      disposed
+    )
+      return;
+    if (!pointers.size) pinched = false;
+    const rotate = host.contains(e.target);
+    // Observe touches on projected controls too, but preserve ordinary taps.
+    if (!rotate && e.pointerType !== "touch") return;
+    pointers.set(e.pointerId, {
+      x: e.clientX,
+      y: e.clientY,
+      rotate,
+      target: e.currentTarget,
+    });
+    if (rotate) e.currentTarget.setPointerCapture(e.pointerId);
+    if (pointers.size >= 2) {
+      pinched = true;
+      pinchDistance = distanceBetweenPointers();
+      for (const [id, pointer] of pointers) {
+        pointer.rotate = true;
+        pointer.target.setPointerCapture(id);
+      }
+    }
+    if (rotate || pinched) start();
+  }
+  function distanceBetweenPointers() {
+    const [a, b] = pointers.values();
+    return b ? Math.hypot(b.x - a.x, b.y - a.y) : 0;
   }
   function pointerMove(e) {
-    if (!drag || drag.id !== e.pointerId) return;
-    scene.rotate(e.clientX - drag.x, e.clientY - drag.y);
-    drag.x = e.clientX;
-    drag.y = e.clientY;
+    const pointer = pointers.get(e.pointerId);
+    if (!pointer) return;
+    const dx = e.clientX - pointer.x,
+      dy = e.clientY - pointer.y;
+    pointer.x = e.clientX;
+    pointer.y = e.clientY;
+    if (pointers.size >= 2) {
+      const distance = distanceBetweenPointers();
+      if (pinchDistance > 0 && distance > 0)
+        scene.zoomBy(distance / pinchDistance);
+      pinchDistance = distance;
+    } else if (pointer.rotate) scene.rotate(dx, dy);
   }
-  function pointerUp() {
-    drag = null;
+  function pointerUp(e) {
+    const pointer = pointers.get(e.pointerId);
+    if (!pointer) return;
+    pointers.delete(e.pointerId);
+    pinchDistance = distanceBetweenPointers();
+    if (pointer.target.hasPointerCapture(e.pointerId))
+      pointer.target.releasePointerCapture(e.pointerId);
+  }
+  function clearPointers() {
+    for (const id of [...pointers.keys()]) pointerUp({ pointerId: id });
+  }
+  function lostPointerCapture(e) {
+    const pointer = pointers.get(e.pointerId);
+    // Ignore a control releasing its implicit capture as a pinch takes over.
+    if (pointer && !pointer.target.hasPointerCapture(e.pointerId)) pointerUp(e);
+  }
+  function clickCapture(e) {
+    // A browser may synthesize a click after the last finger lifts.
+    if (pinched && e.detail !== 0) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
   }
   function key(e) {
     if (sim.expansionPending) return;
@@ -321,8 +379,10 @@ export function createCityRuntime(host, controls, onState) {
     scene.resize();
   }
   function visibility() {
-    if (document.hidden) stop();
-    else schedule();
+    if (document.hidden) {
+      clearPointers();
+      stop();
+    } else schedule();
   }
   const intersection = new IntersectionObserver(([entry]) => {
     visible = entry.isIntersecting;
@@ -372,6 +432,8 @@ export function createCityRuntime(host, controls, onState) {
     pointerDown,
     pointerMove,
     pointerUp,
+    lostPointerCapture,
+    clickCapture,
     key,
     setEnabled(value) {
       enabled = value;
@@ -385,10 +447,14 @@ export function createCityRuntime(host, controls, onState) {
       if (value) {
         scene.resize();
         schedule();
-      } else stop();
+      } else {
+        clearPointers();
+        stop();
+      }
     },
     dispose() {
       disposed = true;
+      clearPointers();
       stop();
       intersection.disconnect();
       size.disconnect();
