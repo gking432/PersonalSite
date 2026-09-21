@@ -7,7 +7,7 @@ import {
   cta
 } from '../data/homeContent'
 import SqueezeSection from '../components/SqueezeSection'
-import KineticMachine from '../features/marbles/KineticGame'
+import TrafficCity from '../features/traffic/TrafficCity'
 import './HomeStudio.css'
 
 const ease = [0.22, 1, 0.36, 1]
@@ -129,10 +129,10 @@ function HomeStudio() {
           </motion.div>
         </div>
 
-        <motion.div className="studio-hero__machine"
+        <motion.div className="studio-hero__city"
           initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.1, ease, delay: 0.3 }}>
-          <KineticMachine />
+          <TrafficCity />
         </motion.div>
       </section>
 

@@ -12,7 +12,6 @@ import { PrepMeCaseStudy, StewardCaseStudy } from './pages/AiProjectCaseStudy'
 import GunnarNeumanProfile from './pages/GunnarNeumanProfile'
 import HomeStudio from './variants/HomeStudio'
 import SiteMetadata from './components/SiteMetadata'
-import { KineticGameProvider } from './features/marbles/KineticGame'
 
 function App() {
   const location = useLocation()
@@ -26,30 +25,28 @@ function App() {
   return (
     <>
       <SiteMetadata />
-      <KineticGameProvider>
-        <Layout>
-          <AnimatePresence mode="wait">
-            <Routes location={location} key={location.pathname}>
-              <Route path="/" element={<HomeStudio />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/projects/home-services-crm" element={<CrmCaseStudy />} />
-              <Route path="/projects/prepme" element={<PrepMeCaseStudy />} />
-              <Route path="/projects/steward" element={<StewardCaseStudy />} />
-              <Route path="/writing" element={<Writing />} />
-              <Route path="/client-work" element={<ClientWork />} />
-              <Route path="/lab" element={<Navigate to="/" replace />} />
-              <Route path="/ai-lab" element={<Navigate to="/" replace />} />
-              <Route path="/ai-demos" element={<Navigate to="/" replace />} />
-              <Route path="/ai-assistant" element={<Navigate to="/" replace />} />
-              <Route path="/ask-ai" element={<Navigate to="/" replace />} />
-              <Route path="/insights/gunnar-neuman-profile" element={<GunnarNeumanProfile />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </AnimatePresence>
-        </Layout>
-      </KineticGameProvider>
+      <Layout>
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<HomeStudio />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/projects/home-services-crm" element={<CrmCaseStudy />} />
+            <Route path="/projects/prepme" element={<PrepMeCaseStudy />} />
+            <Route path="/projects/steward" element={<StewardCaseStudy />} />
+            <Route path="/writing" element={<Writing />} />
+            <Route path="/client-work" element={<ClientWork />} />
+            <Route path="/lab" element={<Navigate to="/" replace />} />
+            <Route path="/ai-lab" element={<Navigate to="/" replace />} />
+            <Route path="/ai-demos" element={<Navigate to="/" replace />} />
+            <Route path="/ai-assistant" element={<Navigate to="/" replace />} />
+            <Route path="/ask-ai" element={<Navigate to="/" replace />} />
+            <Route path="/insights/gunnar-neuman-profile" element={<GunnarNeumanProfile />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </AnimatePresence>
+      </Layout>
     </>
   )
 }

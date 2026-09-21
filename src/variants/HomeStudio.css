@@ -96,8 +96,8 @@
 .studio-btn--ghost:hover { border-color: var(--ink); transform: translateY(-2px); }
 .studio-btn--lg { padding: 1.05rem 2rem; font-size: 1rem; }
 
-/* Globe */
-.studio-hero__machine { position: relative; aspect-ratio: 1; width: 100%; max-width: 560px; margin: 0 auto; }
+/* Milwaukee miniature */
+.studio-hero__city { position: relative; aspect-ratio: 1; width: 100%; max-width: 560px; margin: 0 auto; }
 /* ─── PROOF STRIP ─── */
 .studio-proof {
   display: grid;
@@ -423,7 +423,7 @@
 
 @media (max-width: 920px) {
   .studio-hero { grid-template-columns: 1fr; min-height: 0; }
-  .studio-hero__machine { order: -1; max-width: 360px; }
+  .studio-hero__city { order: -1; max-width: 360px; }
   .studio-approach__grid { grid-template-columns: 1fr; }
   .studio-rubric__grid { grid-template-columns: 1fr; gap: 1.8rem; }
   .studio-work__head { grid-template-columns: 1fr; gap: 1.4rem; }
@@ -434,7 +434,7 @@
   .studio-exp { grid-template-columns: 1fr; gap: 0.7rem; }
 }
 @media (max-width: 700px) {
-  .studio-hero__machine { display: none; }
+  .studio-hero__city { display: none; }
   .studio-work__support-head { display: block; }
   .studio-work__support-head p { margin-top: .3rem; }
   .studio-work__supporting { grid-template-columns: 1fr; }
