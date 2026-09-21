@@ -1,6 +1,16 @@
 export const BLOCK_SPACING = 11;
-export const JUNCTION_X = [0, BLOCK_SPACING, -15];
-export const JUNCTION_LEVEL = [1, 2, 5];
+export const JUNCTION_X = [0, BLOCK_SPACING, -15, 0, BLOCK_SPACING, -15];
+export const JUNCTION_LEVEL = [1, 2, 5, 9, 9, 9];
+export const JUNCTION_Z = [0, 0, 0, -13, -13, -13];
+export const JUNCTION_NAMES = [
+  "Water Street",
+  "Broadway",
+  "Plankinton",
+  "River Market",
+  "East Market",
+  "Stadium District",
+];
+export const EMERGENCY_LIMIT = 10;
 export const LEVEL_SIZE = 20;
 export const RESCUE_DURATION = 7;
 export const RESCUE_RELOAD = 20;
@@ -153,7 +163,7 @@ export class TowRescue {
       targetX: incident.x,
       targetZ: incident.z,
       x: JUNCTION_X[incident.junction || 0] - 1.12,
-      z: -9.5,
+      z: JUNCTION_Z[incident.junction || 0] - 9.5,
       yaw: 0,
       phase: "approach",
       elapsed: 0,
@@ -166,7 +176,8 @@ export class TowRescue {
   tick(dt, cars, incidents, signals) {
     const t = this.active;
     if (!t) return;
-    const shoulder = JUNCTION_X[t.junction] - 1.12;
+    const shoulder = JUNCTION_X[t.junction] - 1.12,
+      originZ = JUNCTION_Z[t.junction];
     t.waiting = false;
     function drive(x, z) {
       const dx = x - t.x,
@@ -182,11 +193,11 @@ export class TowRescue {
     }
     if (t.phase === "approach") {
       if (!t.committed) {
-        if (drive(shoulder, -2.65)) {
+        if (drive(shoulder, originZ - 2.65)) {
           if (signals.water.color === "green") t.committed = true;
           else t.waiting = true;
         }
-      } else if (drive(shoulder, -1.55)) t.phase = "arriving";
+      } else if (drive(shoulder, originZ - 1.55)) t.phase = "arriving";
     } else if (t.phase === "arriving") {
       // Stop alongside the wreck; the boom draws it onto the recovery bed.
       if (drive(t.targetX - 0.65, t.targetZ)) t.phase = "pickup";
@@ -200,8 +211,8 @@ export class TowRescue {
         t.phase = "leaving";
       }
     } else if (t.phase === "leaving") {
-      if (drive(shoulder, -1.55)) t.phase = "returning";
-    } else if (drive(shoulder, -10.4)) this.active = null;
+      if (drive(shoulder, originZ - 1.55)) t.phase = "returning";
+    } else if (drive(shoulder, originZ - 10.4)) this.active = null;
   }
   snapshot() {
     return {

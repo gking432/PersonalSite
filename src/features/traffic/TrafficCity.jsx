@@ -1,9 +1,18 @@
+import SignalProgrammer from "./SignalProgrammer";
+import { JUNCTION_X, JUNCTION_LEVEL, JUNCTION_NAMES } from "./cityChallenges";
 import { useEffect, useRef, useState } from "react";
 import { SIGNALS } from "./signals";
 import "./TrafficCity.css";
 
 function Icon({ name }) {
   const paths = {
+    program: <path d="M4 6h16M4 12h16M4 18h16M8 3v6m8 0v6M10 15v6" />,
+    roundabout: (
+      <>
+        <path d="M18 5a8 8 0 1 0 2 10M18 1v5h-5" />
+        <circle cx="12" cy="12" r="3" />
+      </>
+    ),
     tow: (
       <>
         <path d="M3 15V9h8v6h4v-4h4l3 4v3H3zM6 9V4h3l4 5m-4-5 8 1v4" />
@@ -41,12 +50,15 @@ function Icon({ name }) {
 }
 
 export default function TrafficCity() {
-  const root = useRef(null),
+  const retry = useRef(null),
+    root = useRef(null),
     host = useRef(null),
     buttons = useRef([]),
     engine = useRef(null),
     bridge = useRef(null),
-    wrecks = useRef(new Map());
+    wrecks = useRef(new Map()),
+    junctions = useRef(new Map()),
+    links = useRef(new Map());
   const [fullscreen, setFullscreen] = useState(false);
   const [wide, setWide] = useState(false);
   const [game, setGame] = useState({
@@ -55,6 +67,15 @@ export default function TrafficCity() {
     paused: false,
     level: 1,
     progress: 0,
+    gameOver: null,
+    emergency: null,
+    roundabout: null,
+    programs: [],
+    allSignals: JUNCTION_X.map(() => ({ water: "green", wisconsin: "red" })),
+    programMode: false,
+    selectedJunction: null,
+    roundaboutMode: false,
+    toolMessage: "",
     incidents: [],
     cleanupMode: false,
     rescue: { busy: false, cooldown: 0, fuel: 100 },
@@ -87,7 +108,13 @@ export default function TrafficCity() {
         if (cancelled) return;
         engine.current = createCityRuntime(
           host.current,
-          { signals: buttons.current, bridge, wrecks: wrecks.current },
+          {
+            signals: buttons.current,
+            bridge,
+            wrecks: wrecks.current,
+            junctions: junctions.current,
+            links: links.current,
+          },
           setGame,
         );
       })
@@ -140,6 +167,23 @@ export default function TrafficCity() {
       setFullscreen(true);
     }
   }
+  useEffect(() => {
+    if (game.gameOver) retry.current?.focus({ preventScroll: true });
+  }, [game.gameOver]);
+  const programLinksKey = game.programs
+    .map((r) => (r.mode === "linked" ? r.source : ""))
+    .join(",");
+  // New projected targets also need a layout pass while the simulation is paused.
+  useEffect(() => {
+    engine.current?.refresh();
+  }, [
+    game.roundaboutMode,
+    game.cleanupMode,
+    game.programMode,
+    game.paused,
+    game.level,
+    programLinksKey,
+  ]);
   const unassigned = game.incidents.some((i) => !i.assigned);
   const helicopterLabel =
     game.level < 4
@@ -160,12 +204,13 @@ export default function TrafficCity() {
       ref={root}
       data-fullscreen={fullscreen}
       data-expanded={game.level >= 2}
+      data-district={game.level >= 9}
       onKeyDown={(e) => {
         if (e.key === "Escape") engine.current?.key(e);
       }}
     >
       <div className="traffic-city__toolbar">
-        {game.started && (
+        {game.started && !game.gameOver && (
           <button
             type="button"
             className="traffic-city__tool"
@@ -185,6 +230,30 @@ export default function TrafficCity() {
         >
           <Icon name={fullscreen ? "exit" : "fullscreen"} />
         </button>
+        {game.level >= 6 && !game.gameOver && (
+          <button
+            type="button"
+            className="traffic-city__tool"
+            aria-label="Program lights"
+            title="Program lights"
+            aria-pressed={game.programMode}
+            onClick={() => engine.current?.toggleProgramMode()}
+          >
+            <Icon name="program" />
+          </button>
+        )}
+        {game.level >= 9 && game.roundabout === null && !game.gameOver && (
+          <button
+            type="button"
+            className="traffic-city__tool"
+            aria-label="Place one roundabout"
+            title="Place one roundabout"
+            aria-pressed={game.roundaboutMode}
+            onClick={() => engine.current?.toggleRoundaboutMode()}
+          >
+            <Icon name="roundabout" />
+          </button>
+        )}
       </div>
       {game.started &&
         (game.incidents.length > 0 ||
@@ -202,7 +271,9 @@ export default function TrafficCity() {
               title={towLabel}
               aria-label={towLabel}
               aria-pressed={game.cleanupMode === "tow"}
-              disabled={game.paused || game.tow.busy || !unassigned}
+              disabled={
+                game.paused || !!game.gameOver || game.tow.busy || !unassigned
+              }
               onClick={() => engine.current?.toggleCleanup("tow")}
             >
               <Icon name="tow" />
@@ -216,6 +287,7 @@ export default function TrafficCity() {
                 aria-pressed={game.cleanupMode === "helicopter"}
                 disabled={
                   game.paused ||
+                  !!game.gameOver ||
                   game.level < 4 ||
                   game.rescue.busy ||
                   game.rescue.cooldown > 0 ||
@@ -267,6 +339,31 @@ export default function TrafficCity() {
           >
             <span key={game.level} style={{ width: `${game.progress * 5}%` }} />
           </div>
+          {(game.emergency || game.gameOver) && (
+            <div
+              className="traffic-city__emergency"
+              role="timer"
+              aria-label="Emergency countdown"
+              aria-live="off"
+            >
+              <span>
+                {game.gameOver
+                  ? "Emergency delayed"
+                  : `Ambulance · ${game.emergency.remaining.toFixed(1)}s`}
+              </span>
+              <div
+                role="progressbar"
+                aria-label="Emergency time remaining"
+                aria-valuemin={0}
+                aria-valuemax={10}
+                aria-valuenow={game.emergency?.remaining || 0}
+              >
+                <i
+                  style={{ width: `${(game.emergency?.remaining || 0) * 10}%` }}
+                />
+              </div>
+            </div>
+          )}
         </div>
       )}
       <div className="traffic-city__stage">
@@ -297,27 +394,82 @@ export default function TrafficCity() {
             className="traffic-city__signal"
             data-axis={signal.axis}
             data-junction={signal.junction}
-            hidden={game.level < signal.level}
-            aria-label={`${signal.label} light: ${[game.signals, game.signals2, game.signals3][signal.junction][signal.axis]}`}
-            disabled={!game.started || game.cleanupMode || game.paused}
+            hidden={
+              game.level < signal.level || game.roundabout === signal.junction
+            }
+            aria-label={`${signal.label} light: ${game.allSignals[signal.junction][signal.axis]}`}
+            disabled={
+              !game.started ||
+              !!game.gameOver ||
+              game.cleanupMode ||
+              game.roundaboutMode ||
+              (game.paused && !game.programMode)
+            }
             tabIndex={game.started ? 0 : -1}
             onClick={() =>
               engine.current?.toggleSignal(signal.axis, signal.junction)
             }
-          />
+          >
+            {i % 4 === 0 &&
+              game.programs[signal.junction]?.mode !== "manual" &&
+              game.programs[signal.junction]?.remaining != null && (
+                <span className="traffic-city__signal-timer">
+                  {game.programs[signal.junction].remaining}s
+                </span>
+              )}
+          </button>
         ))}
         <button
           ref={bridge}
           type="button"
           className="traffic-city__signal traffic-city__bridge"
           hidden={game.level < 3}
-          disabled={game.paused || game.cleanupMode}
+          disabled={
+            game.paused ||
+            !!game.gameOver ||
+            game.cleanupMode ||
+            game.roundaboutMode
+          }
           aria-label={
             game.bridge.requestedOpen ? "Close the bridge" : "Open the bridge"
           }
           title={game.bridge.requestedOpen ? "Close bridge" : "Open bridge"}
           onClick={() => engine.current?.toggleBridge()}
         />
+        <svg className="traffic-city__links" aria-hidden="true">
+          {game.programs.map(
+            (r, j) =>
+              r.mode === "linked" && (
+                <path
+                  key={j}
+                  ref={(node) => {
+                    if (node) links.current.set(j, node);
+                    else links.current.delete(j);
+                  }}
+                />
+              ),
+          )}
+        </svg>
+        {game.roundaboutMode &&
+          !game.gameOver &&
+          JUNCTION_X.map(
+            (_, j) =>
+              game.level >= JUNCTION_LEVEL[j] && (
+                <button
+                  type="button"
+                  key={j}
+                  ref={(node) => {
+                    if (node) junctions.current.set(j, node);
+                    else junctions.current.delete(j);
+                  }}
+                  className="traffic-city__signal traffic-city__placement"
+                  aria-label={`Place roundabout at ${JUNCTION_NAMES[j]}`}
+                  onClick={() => engine.current?.selectJunction(j)}
+                >
+                  ↻
+                </button>
+              ),
+          )}
         {game.incidents.map((incident) => (
           <button
             key={incident.id}
@@ -327,7 +479,7 @@ export default function TrafficCity() {
               else wrecks.current.delete(incident.id);
             }}
             className="traffic-city__signal traffic-city__wreck"
-            hidden={!game.cleanupMode || incident.assigned}
+            hidden={!game.cleanupMode || incident.assigned || !!game.gameOver}
             aria-label={`Pick up accident ${incident.id}`}
             onClick={() => engine.current?.rescue(incident.id)}
           >
@@ -335,18 +487,63 @@ export default function TrafficCity() {
           </button>
         ))}
       </div>
+      {game.selectedJunction !== null && !game.gameOver && (
+        <SignalProgrammer
+          key={game.selectedJunction}
+          junction={game.selectedJunction}
+          game={game}
+          onApply={(j, r) => engine.current?.configureProgram(j, r)}
+          onClose={() => engine.current?.closeProgram()}
+        />
+      )}
+      {game.gameOver && (
+        <div
+          className="traffic-city__game-over"
+          role="alertdialog"
+          aria-labelledby="traffic-game-over-title"
+        >
+          <h3 id="traffic-game-over-title">Emergency delayed.</h3>
+          <p>{game.gameOver.reason}</p>
+          <span>
+            Level {game.level} · {game.passed} cars through
+          </span>
+          <button
+            type="button"
+            ref={retry}
+            onClick={() => engine.current?.restart()}
+          >
+            Try again
+          </button>
+        </div>
+      )}
       <div className="traffic-city__caption">
         <span role="status">
           {game.error ||
-            (game.cleanupMode
-              ? "Click the accident."
-              : game.paused
-                ? "Paused."
-                : game.started
-                  ? "Click the lights."
-                  : "A little Milwaukee.")}
+            (game.gameOver
+              ? ""
+              : game.roundaboutMode
+                ? game.toolMessage || "Choose an intersection."
+                : game.programMode
+                  ? "Click a light to program it."
+                  : game.cleanupMode
+                    ? "Click the accident."
+                    : game.paused
+                      ? "Paused."
+                      : game.started
+                        ? "Click the lights."
+                        : "A little Milwaukee.")}
         </span>
-        {game.started && (
+        {game.district && (
+          <span className="traffic-city__district-status">
+            {game.district.phase === "arrivals"
+              ? `First pitch in ${game.district.remaining}s`
+              : game.district.phase === "game"
+                ? `Game on · ${game.district.remaining}s`
+                : `Exit rush · ${game.district.remaining}s`}{" "}
+            · Parking {game.district.stadium}/24
+          </span>
+        )}
+        {game.started && !game.gameOver && (
           <div className="traffic-city__controls">
             <button
               type="button"

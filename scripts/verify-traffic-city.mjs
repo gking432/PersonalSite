@@ -332,7 +332,7 @@ try {
   assert.equal(Math.round(fullBounds.height), fullViewport.height);
   await shot("level-five-fullscreen");
   for (const target of await page.evaluate(() =>
-    window.__trafficCity.targets(),
+    window.__trafficCity.targets().filter((t) => t.junction < 3),
   )) {
     const r = await page
       .locator(".traffic-city__signal")

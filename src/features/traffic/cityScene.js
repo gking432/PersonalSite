@@ -1,8 +1,9 @@
+import { createStadiumScene } from "./stadiumScene";
 import * as THREE from "three";
 import { APPROACHES, carPose } from "./trafficSimulation";
 
 import { createCityAdditions } from "./cityAdditions";
-import { BLOCK_SPACING, JUNCTION_X } from "./cityChallenges";
+import { BLOCK_SPACING, JUNCTION_X, JUNCTION_Z } from "./cityChallenges";
 
 import { SIGNALS } from "./signals";
 
@@ -19,7 +20,7 @@ export function createCityScene(host, controls, onEscape) {
   const scene = new THREE.Scene();
   const city = new THREE.Group();
   scene.add(city);
-  const camera = new THREE.OrthographicCamera(-9, 9, 9, -9, 0.1, 70);
+  const camera = new THREE.OrthographicCamera(-9, 9, 9, -9, 0.1, 260);
   const sky = new THREE.HemisphereLight(0xfff8e8, 0x788576, 2.7);
   scene.add(sky);
   const sun = new THREE.DirectionalLight(0xffedcf, 3.3);
@@ -550,13 +551,26 @@ export function createCityScene(host, controls, onEscape) {
     unitBox,
     lampMaterials,
   });
+  const stadium = createStadiumScene({
+    city,
+    palette,
+    box,
+    mesh,
+    rod,
+    label,
+    unitBox,
+    lampMaterials,
+  });
   const signals = SIGNALS.map((config) => {
     const s = {
       ...config,
       x: config.x - JUNCTION_X[config.junction],
       postX: config.postX - JUNCTION_X[config.junction],
+      z: config.z - JUNCTION_Z[config.junction],
+      postZ: config.postZ - JUNCTION_Z[config.junction],
     };
-    const parent = [city, additions.block, additions.westBlock][s.junction];
+    const parent = new THREE.Group();
+    additions.blocks[s.junction].add(parent);
     cylinder(0.043, 1.4, s.postX, 1.08, s.postZ, palette.dark, parent);
     cylinder(0.095, 0.15, s.postX, 0.47, s.postZ, palette.dark, parent);
     rod(
@@ -599,7 +613,7 @@ export function createCityScene(host, controls, onEscape) {
       }
       bulbs.push(pair);
     }
-    return { ...config, head, bulbs };
+    return { ...config, head, bulbs, group: parent };
   });
   for (const s of [SIGNALS[1], SIGNALS[2]]) {
     label(
@@ -875,7 +889,9 @@ export function createCityScene(host, controls, onEscape) {
   }
   let expansion = 0,
     westExpansion = 0,
-    currentIncidents = [];
+    districtExpansion = 0,
+    currentIncidents = [],
+    currentPrograms = [];
   let yaw = -0.12,
     pitch = 0.77,
     width = 1,
@@ -883,7 +899,7 @@ export function createCityScene(host, controls, onEscape) {
     disposed = false;
   function view() {
     city.rotation.y = yaw;
-    const distance = 26;
+    const distance = 110;
     camera.position.set(
       Math.sin(0.7) * Math.cos(pitch) * distance,
       Math.sin(pitch) * distance,
@@ -892,14 +908,15 @@ export function createCityScene(host, controls, onEscape) {
     const focus = new THREE.Vector3(
       (BLOCK_SPACING / 2) * expansion +
         (JUNCTION_X[2] / 2) * westExpansion -
-        0.8 * (1 - expansion),
+        0.8 * (1 - expansion) -
+        9.5 * districtExpansion,
       0.95,
-      0,
+      -8.5 * districtExpansion,
     ).applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
     camera.position.add(focus);
     camera.lookAt(focus);
     const span =
-      (24 + 8.5 * expansion + 13 * westExpansion) /
+      (24 + 8.5 * expansion + 13 * westExpansion + 42 * districtExpansion) /
       Math.min(1.6, Math.max(1, width / height));
     camera.left = (-span * width) / height / 2;
     camera.right = -camera.left;
@@ -916,8 +933,7 @@ export function createCityScene(host, controls, onEscape) {
   function signalPoint(s) {
     return new THREE.Vector3(
       s.x,
-      1.51 +
-        [city, additions.block, additions.westBlock][s.junction].position.y,
+      1.51 + additions.blocks[s.junction].position.y,
       s.z,
     );
   }
@@ -928,6 +944,28 @@ export function createCityScene(host, controls, onEscape) {
   }
   function positionButtons() {
     signals.forEach((s, i) => place(buttons[i], signalPoint(s)));
+    controls.links?.forEach((path, j) => {
+      const source = currentPrograms[j]?.source;
+      if (source === undefined) return;
+      const a = project(
+        new THREE.Vector3(JUNCTION_X[source], 1.8, JUNCTION_Z[source]),
+      );
+      const b = project(new THREE.Vector3(JUNCTION_X[j], 1.8, JUNCTION_Z[j]));
+      path.setAttribute(
+        "d",
+        `M${a.x},${a.y} Q${(a.x + b.x) / 2},${Math.min(a.y, b.y) - 22} ${b.x},${b.y}`,
+      );
+    });
+    controls.junctions?.forEach((button, j) =>
+      place(
+        button,
+        new THREE.Vector3(
+          JUNCTION_X[j],
+          0.8 + additions.blocks[j].position.y,
+          JUNCTION_Z[j],
+        ),
+      ),
+    );
     place(controls.bridge.current, new THREE.Vector3(-5.95, 0.6, 0));
     for (const incident of currentIncidents)
       place(
@@ -959,7 +997,10 @@ export function createCityScene(host, controls, onEscape) {
     const extra = additions.update(sim, dt);
     expansion = extra.growth;
     westExpansion = extra.westGrowth;
+    districtExpansion = extra.districtGrowth;
+    stadium.update(sim, districtExpansion);
     currentIncidents = sim.incidents;
+    currentPrograms = sim.programs.rules;
     // Transfer overflow meshes before removing cars no longer in the simulation.
     for (const event of sim.events.splice(0)) {
       if (event.kind === "overflow") spill(event);
@@ -1000,11 +1041,27 @@ export function createCityScene(host, controls, onEscape) {
       });
       group.visible = !car.remove;
     }
+    if (sim.level >= 9)
+      for (const v of sim.district.visualCars()) {
+        live.add(v.id);
+        if (!carMeshes.has(v.id)) carMeshes.set(v.id, vehicle(v.car));
+        const model = carMeshes.get(v.id);
+        model.group.position.set(v.x, 0, v.z);
+        model.group.rotation.set(0, v.yaw, 0);
+        [...model.brakes, ...model.blinkers.flat(), ...model.beacons].forEach(
+          (l) => {
+            l.visible = false;
+          },
+        );
+      }
     for (const [id, m] of carMeshes)
       if (!live.has(id)) {
         city.remove(m.group);
         carMeshes.delete(id);
       }
+    signals.forEach((s) => {
+      s.group.visible = sim.roundabout !== s.junction;
+    });
     signals.forEach((s) =>
       s.bulbs.forEach((pair, i) =>
         pair.forEach((b) => {
@@ -1080,7 +1137,7 @@ export function createCityScene(host, controls, onEscape) {
     for (const m of carMeshes.values()) city.remove(m.group);
     carMeshes.clear();
     additions.clear();
-    expansion = westExpansion = 0;
+    expansion = westExpansion = districtExpansion = 0;
     currentIncidents = [];
     for (const f of effects) {
       city.remove(f.group);
@@ -1107,6 +1164,7 @@ export function createCityScene(host, controls, onEscape) {
       falling: falling.length,
       expansion,
       westExpansion,
+      districtExpansion,
       blinkersOn: [...carMeshes.values()]
         .flatMap((m) => m.blinkers.flat())
         .filter((b) => b.visible).length,

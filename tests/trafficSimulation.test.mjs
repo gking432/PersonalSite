@@ -243,7 +243,7 @@ test("a turning follower keeps its distance after joining an outgoing lane", () 
   }
   assert.equal(s.crashes, 0);
 });
-test("mixed traffic remains recoverable across levels using signals and rescue", () => {
+test("mixed civilian traffic remains recoverable across levels using signals and rescue", () => {
   for (const seed of [5, 8]) {
     let n = seed;
     const s = new TrafficSimulation(
@@ -251,8 +251,14 @@ test("mixed traffic remains recoverable across levels using signals and rescue",
     );
     s.start();
     for (let frame = 0; frame < 300 * 120; frame++) {
+      s.nextAmbulance = Infinity; // Emergency deadlines have dedicated countdown/priority tests.
       const phase = (frame / 120) % 30;
-      for (const signals of [s.signals, s.signals2, s.signals3]) {
+      for (const signals of [
+        s.signals,
+        s.signals2,
+        s.signals3,
+        ...s.extraSignals,
+      ]) {
         signals.water.color = phase < 10 ? "green" : "red";
         signals.wisconsin.color = phase >= 15 && phase < 25 ? "green" : "red";
       }

@@ -13,7 +13,11 @@ export function createCityRuntime(host, controls, onState) {
       if (pendingFalls.length > 16) pendingFalls.shift();
     }
   });
-  let cleanupMode = false;
+  let cleanupMode = false,
+    programMode = false,
+    selectedJunction = null,
+    roundaboutMode = false,
+    toolMessage = "";
   let paused = false,
     enabled = true,
     visible = true,
@@ -23,10 +27,20 @@ export function createCityRuntime(host, controls, onState) {
     accumulator = 0,
     drag = null,
     signature = "";
-  const state = () => ({ ...sim.snapshot(), paused, cleanupMode, ready: true });
+  const state = () => ({
+    ...sim.snapshot(),
+    paused,
+    cleanupMode,
+    programMode,
+    selectedJunction,
+    roundaboutMode,
+    toolMessage,
+    ready: true,
+  });
   const running = () =>
     sim.started &&
     !paused &&
+    !sim.gameOver &&
     enabled &&
     (visible || scene.diagnostics().falling > 0) &&
     !document.hidden &&
@@ -37,6 +51,16 @@ export function createCityRuntime(host, controls, onState) {
       next.started,
       next.level,
       next.progress,
+      next.gameOver,
+      next.emergency,
+      next.allSignals,
+      next.programs,
+      next.district,
+      next.roundabout,
+      programMode,
+      selectedJunction,
+      roundaboutMode,
+      toolMessage,
       next.signals2,
       next.signals3,
       next.tow,
@@ -74,6 +98,7 @@ export function createCityRuntime(host, controls, onState) {
       if (visible) sim.tick(1 / 120);
       accumulator -= 1 / 120;
     }
+    if (sim.gameOver) pageCars?.setEnabled(false);
     scene.update(sim, dt);
     scene.render();
     notify();
@@ -85,7 +110,7 @@ export function createCityRuntime(host, controls, onState) {
       .then(({ createPageCars }) => {
         if (disposed) return;
         pageCars = createPageCars(host);
-        pageCars.setEnabled(enabled && !paused && sim.started);
+        pageCars.setEnabled(enabled && !paused && sim.started && !sim.gameOver);
         for (const point of pendingFalls) pageCars.add(point);
         pendingFalls = [];
       })
@@ -97,15 +122,20 @@ export function createCityRuntime(host, controls, onState) {
       });
   }
   function start() {
-    if (!enabled || disposed) return;
+    if (!enabled || disposed || sim.gameOver) return;
     sim.start();
     preparePage();
-    pageCars?.setEnabled(enabled && !paused);
+    pageCars?.setEnabled(enabled && !paused && !sim.gameOver);
     notify();
     schedule();
   }
   function toggleSignal(axis, junction = 0) {
-    if (!enabled || disposed || paused || cleanupMode) return;
+    if (!enabled || disposed || sim.gameOver || cleanupMode) return;
+    if (programMode) {
+      selectJunction(junction);
+      return;
+    }
+    if (paused || roundaboutMode) return;
     sim.toggle(axis, junction);
     preparePage();
     scene.update(sim);
@@ -114,7 +144,7 @@ export function createCityRuntime(host, controls, onState) {
     schedule();
   }
   function toggleCleanup(type) {
-    if (paused || !enabled || disposed) return;
+    if (paused || !enabled || disposed || sim.gameOver) return;
     if (
       type === "helicopter" &&
       (sim.level < 4 || sim.rescue.active || sim.rescue.cooldown > 0)
@@ -122,11 +152,13 @@ export function createCityRuntime(host, controls, onState) {
       return;
     if (type === "tow" && sim.tow.active) return;
     if (!["tow", "helicopter"].includes(type)) return;
+    programMode = roundaboutMode = false;
+    selectedJunction = null;
     cleanupMode = cleanupMode === type ? false : type;
     notify();
   }
   function rescue(id) {
-    if (!cleanupMode || paused || !enabled) return;
+    if (!cleanupMode || paused || !enabled || sim.gameOver) return;
     const dispatched =
       cleanupMode === "tow" ? sim.dispatchTow(id) : sim.dispatchRescue(id);
     if (dispatched) {
@@ -136,7 +168,7 @@ export function createCityRuntime(host, controls, onState) {
     }
   }
   function toggleBridge() {
-    if (!enabled || paused) return;
+    if (!enabled || paused || sim.gameOver) return;
     sim.toggleBridge();
     notify();
     schedule();
@@ -144,7 +176,9 @@ export function createCityRuntime(host, controls, onState) {
   function reset() {
     stop();
     sim.reset();
-    cleanupMode = false;
+    cleanupMode = programMode = roundaboutMode = false;
+    selectedJunction = null;
+    toolMessage = "";
     pendingFalls = [];
     pageCars?.clear();
     paused = false;
@@ -155,11 +189,63 @@ export function createCityRuntime(host, controls, onState) {
     notify();
   }
   function togglePause() {
+    if (sim.gameOver) return;
     paused = !paused;
-    pageCars?.setEnabled(enabled && !paused);
+    pageCars?.setEnabled(enabled && !paused && !sim.gameOver);
     notify();
     if (paused) stop();
     else schedule();
+  }
+  function toggleProgramMode() {
+    if (sim.level < 6 || sim.gameOver || !enabled) return;
+    programMode = !programMode;
+    selectedJunction = null;
+    cleanupMode = roundaboutMode = false;
+    toolMessage = "";
+    notify();
+  }
+  function toggleRoundaboutMode() {
+    if (sim.level < 9 || sim.roundabout !== null || sim.gameOver || !enabled)
+      return;
+    roundaboutMode = !roundaboutMode;
+    programMode = cleanupMode = false;
+    selectedJunction = null;
+    toolMessage = "";
+    notify();
+  }
+  function selectJunction(junction) {
+    if (sim.gameOver || !enabled) return;
+    if (roundaboutMode) {
+      if (sim.placeRoundabout(junction)) {
+        roundaboutMode = false;
+        toolMessage = "";
+        scene.update(sim);
+        scene.render();
+      } else toolMessage = "Let the crossing clear first.";
+    } else if (programMode && sim.roundabout !== junction) {
+      selectedJunction = junction;
+      toolMessage = "";
+    }
+    notify();
+  }
+  function configureProgram(junction, rule) {
+    if (sim.gameOver || !enabled) return;
+    if (sim.configureProgram(junction, rule)) {
+      toolMessage = "Program applied.";
+    } else
+      toolMessage = "Choose another source. Linked lights cannot form a loop.";
+    notify();
+    schedule();
+  }
+  function closeProgram() {
+    selectedJunction = null;
+    toolMessage = "";
+    notify();
+  }
+  function restart() {
+    reset();
+    start();
+    host.focus({ preventScroll: true });
   }
   function pointerDown(e) {
     if (!e.isPrimary || e.button !== 0) return;
@@ -178,7 +264,9 @@ export function createCityRuntime(host, controls, onState) {
   }
   function key(e) {
     if (e.key === "Escape") {
-      cleanupMode = false;
+      cleanupMode = programMode = roundaboutMode = false;
+      selectedJunction = null;
+      toolMessage = "";
       notify();
     } else if (["Enter", " "].includes(e.key)) {
       e.preventDefault();
@@ -213,9 +301,21 @@ export function createCityRuntime(host, controls, onState) {
   scene.render();
   notify();
   const api = {
+    refresh() {
+      if (!disposed) {
+        scene.update(sim);
+        scene.render();
+      }
+    },
     start,
     toggleSignal,
     toggleCleanup,
+    toggleProgramMode,
+    toggleRoundaboutMode,
+    selectJunction,
+    configureProgram,
+    closeProgram,
+    restart,
     rescue,
     toggleBridge,
     reset,
@@ -226,7 +326,7 @@ export function createCityRuntime(host, controls, onState) {
     key,
     setEnabled(value) {
       enabled = value;
-      pageCars?.setEnabled(value && !paused && sim.started);
+      pageCars?.setEnabled(value && !paused && sim.started && !sim.gameOver);
       if (value) {
         scene.resize();
         schedule();
