@@ -104,7 +104,7 @@ try {
   assert.equal(await page.locator(".traffic-city__signal:visible").count(), 8);
   await shot("level-two");
   const targets = await page.evaluate(() => window.__trafficCity.targets());
-  for (const target of targets) {
+  for (const target of targets.filter((t) => t.junction < 2)) {
     const r = await page
       .locator(".traffic-city__signal")
       .nth(target.index)
@@ -167,13 +167,13 @@ try {
     window.__trafficCity.sim.bridge.boats.some((b) => b.waited > 0.2),
   );
   await shot("boat-waiting");
-  await button("Raise bridge").click();
+  await button("Open the bridge").click();
   await page.waitForFunction(() => window.__trafficCity.sim.bridge.lift === 1);
   await page.waitForFunction(() =>
     window.__trafficCity.sim.bridge.boats.some((b) => b.committed),
   );
   await shot("bridge-open");
-  await button("Lower bridge").click();
+  await button("Close the bridge").click();
   await page.waitForFunction(
     () => window.__trafficCity.sim.bridge.phase === "boat crossing",
   );
@@ -202,11 +202,78 @@ try {
   assert.equal((await snap()).incidents.length, 1);
   await shot("accident");
   const accident = (await snap()).incidents[0].id;
+  assert.equal(
+    await button("Helicopter unlocks at level 4").isDisabled(),
+    true,
+  );
+  assert.equal(
+    await page
+      .locator(".traffic-city__caption")
+      .getByRole("button", { name: /bridge/i })
+      .count(),
+    0,
+  );
+  const panel = await page.locator(".traffic-city").boundingBox();
+  const rescueTools = await page
+    .locator(".traffic-city__rescue-tools")
+    .boundingBox();
+  assert.ok(rescueTools.x > panel.x + panel.width * 0.8);
+  // A real truck passes a packed lane on the shoulder, waits for green, then tows away.
+  await page.evaluate(() => {
+    const s = window.__trafficCity.sim;
+    s.signals2.water.color = "red";
+    for (let i = 0; i < 7; i++) {
+      s.spawn(0, 1);
+      Object.assign(s.cars.at(-1), {
+        p: -2.16 - i * 0.92,
+        speed: 0,
+        turn: "straight",
+      });
+    }
+  });
+  await button("Select an accident for tow truck pickup").click();
+  await page.keyboard.press("Escape");
+  assert.equal((await snap()).cleanupMode, false);
+  await button("Select an accident for tow truck pickup").click();
+  await button(`Pick up accident ${accident}`).click();
+  await page.waitForFunction(
+    () => window.__trafficCity.sim.tow.active?.waiting,
+  );
+  await shot("tow-passing-queue");
+  await button("Broadway northbound light: red").click();
+  await page.waitForFunction(
+    () => window.__trafficCity.sim.tow.active?.phase === "pickup",
+  );
+  await shot("tow-pickup");
+  await page.waitForFunction(() => window.__trafficCity.sim.tow.active?.loaded);
+  await shot("tow-departure");
+  await page.waitForFunction(() => !window.__trafficCity.sim.tow.active);
+  assert.equal((await snap()).incidents.length, 0);
+  await milestone(59);
+  assert.equal((await snap()).level, 4);
+  await page.evaluate(() => {
+    const s = window.__trafficCity.sim;
+    s.cars = [];
+    s.spawn(0, 1);
+    s.spawn(1, 1);
+    s.cars.forEach((c, i) =>
+      Object.assign(c, {
+        p: i ? 0.57 : -0.57,
+        turn: "straight",
+        speed: 0,
+        committed: true,
+      }),
+    );
+  });
+  await page.waitForFunction(
+    () => window.__trafficCity.sim.incidents.length === 1,
+  );
+  const helicopterAccident = (await snap()).incidents[0].id;
   await button("Select an accident for helicopter pickup").click();
   await page.keyboard.press("Escape");
   assert.equal((await snap()).cleanupMode, false);
   await button("Select an accident for helicopter pickup").click();
-  await button(`Pick up accident ${accident}`).click();
+  await button(`Pick up accident ${helicopterAccident}`).click();
   await page.waitForFunction(
     () => window.__trafficCity.sim.rescue.active?.elapsed > 3.7,
   );
@@ -218,18 +285,80 @@ try {
   await page.waitForFunction(() => !window.__trafficCity.sim.rescue.active);
   assert.equal((await snap()).incidents.length, 0);
   assert.equal((await snap()).progress, 0);
-  assert.ok((await snap()).rescue.cooldown >= 14);
+  assert.ok((await snap()).rescue.cooldown >= 19);
   assert.equal(
-    await button("Select an accident for helicopter pickup").isDisabled(),
+    await page
+      .getByRole("button", { name: /Helicopter refueling/ })
+      .isDisabled(),
     true,
   );
-  // The full 15-second cooldown is covered in the simulation test.
+  const fuel = page.getByRole("progressbar", { name: "Helicopter fuel" });
+  const fuelBefore = Number(await fuel.getAttribute("aria-valuenow"));
+  await page.waitForTimeout(450);
+  assert.ok(Number(await fuel.getAttribute("aria-valuenow")) > fuelBefore);
+  await button("Pause traffic").click();
+  const pausedFuel = (await snap()).rescue.fuel;
+  await page.waitForTimeout(300);
+  assert.equal((await snap()).rescue.fuel, pausedFuel);
+  await shot("helicopter-refueling");
+  await button("Resume traffic").click();
+  // The full 20-second refuel is covered in the simulation test.
   await page.evaluate(() => {
     window.__trafficCity.sim.rescue.cooldown = 0.2;
   });
   await page.waitForFunction(
     () => window.__trafficCity.sim.rescue.cooldown === 0,
   );
+  await milestone(79);
+  await page.waitForFunction(
+    () => window.__trafficCity.snapshot().scene.westExpansion === 1,
+  );
+  assert.equal((await snap()).level, 5);
+  assert.equal(
+    await page.locator(".traffic-city__signal[data-axis]:visible").count(),
+    12,
+  );
+  await shot("level-five");
+  await button("Enter fullscreen").click();
+  await page.waitForFunction(() =>
+    document.fullscreenElement?.classList.contains("traffic-city"),
+  );
+  const fullBounds = await page.locator(".traffic-city").boundingBox();
+  const fullViewport = await page.evaluate(() => ({
+    width: innerWidth,
+    height: innerHeight,
+  }));
+  assert.equal(Math.round(fullBounds.width), fullViewport.width);
+  assert.equal(Math.round(fullBounds.height), fullViewport.height);
+  await shot("level-five-fullscreen");
+  for (const target of await page.evaluate(() =>
+    window.__trafficCity.targets(),
+  )) {
+    const r = await page
+      .locator(".traffic-city__signal")
+      .nth(target.index)
+      .boundingBox();
+    assert.ok(
+      Math.abs(r.x + r.width / 2 - target.x) < 1 &&
+        Math.abs(r.y + r.height / 2 - target.y) < 1,
+    );
+  }
+  await button("Plankinton Avenue northbound light: green").click();
+  await page.waitForFunction(
+    () => window.__trafficCity.sim.signals3.water.color === "red",
+  );
+  await button("Wisconsin Avenue at Plankinton westbound light: red").click();
+  await button("Pause traffic").click();
+  const fullTime = (await snap()).time;
+  await page.waitForTimeout(300);
+  assert.equal((await snap()).time, fullTime);
+  await button("Resume traffic").click();
+  await button("Exit fullscreen").click();
+  await page.waitForFunction(
+    () =>
+      !document.fullscreenElement && document.body.style.overflow !== "hidden",
+  );
+  assert.ok((await page.locator(".traffic-city").boundingBox()).width < 700);
   // Queues and honks still spill physical cars onto the webpage.
   await page.evaluate(() => {
     const s = window.__trafficCity.sim;
@@ -324,14 +453,18 @@ try {
           "real red-light queues and release",
           "pause/resume",
           "20-car unlock and connected second intersection",
-          "eight projected light targets",
+          "projected light targets after expansion and fullscreen",
           "transfer counts only at final exit",
           "turn blinkers and ambulance beacons",
           "level-three boat arrivals",
           "manual drawbridge and boat clearance",
-          "persistent accidents",
+          "persistent accidents and right-side rescue icons",
+          "tow shoulder bypass, red-light wait, pickup and departure",
+          "helicopter locked until level four",
+          "level-five west intersection",
+          "native fullscreen, controls and exit restoration",
           "select accident and dispatch helicopter",
-          "hook, lift, road clearance, and reload",
+          "hook, lift, road clearance, and 20-second fuel ring",
           "honk animations",
           "overflow onto page ink",
           "offscreen and narrow-screen suspension",

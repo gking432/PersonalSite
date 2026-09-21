@@ -1,4 +1,4 @@
-import { BLOCK_SPACING } from "./cityChallenges";
+import { JUNCTION_X, JUNCTION_LEVEL } from "./cityChallenges";
 
 const BASE_SIGNALS = [
   {
@@ -39,15 +39,24 @@ const BASE_SIGNALS = [
   },
 ];
 
-export const SIGNALS = [
-  ...BASE_SIGNALS.map((s) => ({ ...s, junction: 0 })),
-  ...BASE_SIGNALS.map((s) => ({
+export const SIGNALS = JUNCTION_X.flatMap((x, junction) =>
+  BASE_SIGNALS.map((s) => ({
     ...s,
-    junction: 1,
-    x: s.x + BLOCK_SPACING,
-    postX: s.postX + BLOCK_SPACING,
-    label: s.label
-      .replace("Water Street", "Broadway")
-      .replace("Wisconsin Avenue", "Wisconsin Avenue at Broadway"),
+    junction,
+    level: JUNCTION_LEVEL[junction],
+    x: s.x + x,
+    postX: s.postX + x,
+    label:
+      junction === 0
+        ? s.label
+        : s.label
+            .replace(
+              "Water Street",
+              junction === 1 ? "Broadway" : "Plankinton Avenue",
+            )
+            .replace(
+              "Wisconsin Avenue",
+              `Wisconsin Avenue at ${junction === 1 ? "Broadway" : "Plankinton"}`,
+            ),
   })),
-];
+);

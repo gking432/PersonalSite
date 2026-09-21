@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { APPROACHES, carPose } from "./trafficSimulation";
 
 import { createCityAdditions } from "./cityAdditions";
-import { BLOCK_SPACING } from "./cityChallenges";
+import { BLOCK_SPACING, JUNCTION_X } from "./cityChallenges";
 
 import { SIGNALS } from "./signals";
 
@@ -548,14 +548,15 @@ export function createCityScene(host, controls, onEscape) {
     cylinder,
     rod,
     unitBox,
+    lampMaterials,
   });
   const signals = SIGNALS.map((config) => {
     const s = {
       ...config,
-      x: config.x - config.junction * BLOCK_SPACING,
-      postX: config.postX - config.junction * BLOCK_SPACING,
+      x: config.x - JUNCTION_X[config.junction],
+      postX: config.postX - JUNCTION_X[config.junction],
     };
-    const parent = s.junction ? additions.block : city;
+    const parent = [city, additions.block, additions.westBlock][s.junction];
     cylinder(0.043, 1.4, s.postX, 1.08, s.postZ, palette.dark, parent);
     cylinder(0.095, 0.15, s.postX, 0.47, s.postZ, palette.dark, parent);
     rod(
@@ -873,6 +874,7 @@ export function createCityScene(host, controls, onEscape) {
     });
   }
   let expansion = 0,
+    westExpansion = 0,
     currentIncidents = [];
   let yaw = -0.12,
     pitch = 0.77,
@@ -888,13 +890,17 @@ export function createCityScene(host, controls, onEscape) {
       Math.cos(0.7) * Math.cos(pitch) * distance,
     );
     const focus = new THREE.Vector3(
-      (BLOCK_SPACING / 2) * expansion,
+      (BLOCK_SPACING / 2) * expansion +
+        (JUNCTION_X[2] / 2) * westExpansion -
+        0.8 * (1 - expansion),
       0.95,
       0,
     ).applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
     camera.position.add(focus);
     camera.lookAt(focus);
-    const span = 22.2 + 10.3 * expansion;
+    const span =
+      (24 + 8.5 * expansion + 13 * westExpansion) /
+      Math.min(1.6, Math.max(1, width / height));
     camera.left = (-span * width) / height / 2;
     camera.right = -camera.left;
     camera.top = span / 2;
@@ -910,7 +916,8 @@ export function createCityScene(host, controls, onEscape) {
   function signalPoint(s) {
     return new THREE.Vector3(
       s.x,
-      1.51 + (s.junction ? additions.block.position.y : 0),
+      1.51 +
+        [city, additions.block, additions.westBlock][s.junction].position.y,
       s.z,
     );
   }
@@ -951,6 +958,7 @@ export function createCityScene(host, controls, onEscape) {
   function update(sim, dt = 0) {
     const extra = additions.update(sim, dt);
     expansion = extra.growth;
+    westExpansion = extra.westGrowth;
     currentIncidents = sim.incidents;
     // Transfer overflow meshes before removing cars no longer in the simulation.
     for (const event of sim.events.splice(0)) {
@@ -1072,7 +1080,7 @@ export function createCityScene(host, controls, onEscape) {
     for (const m of carMeshes.values()) city.remove(m.group);
     carMeshes.clear();
     additions.clear();
-    expansion = 0;
+    expansion = westExpansion = 0;
     currentIncidents = [];
     for (const f of effects) {
       city.remove(f.group);
@@ -1098,6 +1106,7 @@ export function createCityScene(host, controls, onEscape) {
     diagnostics: () => ({
       falling: falling.length,
       expansion,
+      westExpansion,
       blinkersOn: [...carMeshes.values()]
         .flatMap((m) => m.blinkers.flat())
         .filter((b) => b.visible).length,

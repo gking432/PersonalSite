@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { BLOCK_SPACING } from "./cityChallenges";
+import { JUNCTION_X } from "./cityChallenges";
 
 export function createCityAdditions({
   city,
@@ -9,97 +9,148 @@ export function createCityAdditions({
   cylinder,
   rod,
   unitBox,
+  lampMaterials,
 }) {
-  const block = new THREE.Group();
-  city.add(block);
-  block.position.x = BLOCK_SPACING;
-  const b = (w, h, d, x, y, z, mat) => box(w, h, d, x, y, z, mat, block);
-  b(14.4, 0.34, 13.8, 0, -0.05, 0, palette.base);
-  b(14.5, 0.07, 13.9, 0, -0.24, 0, palette.edge);
-  b(14.25, 0.12, 13.65, 0, 0.18, 0, palette.pavement);
-  b(20, 0.045, 2.75, 0, 0.28, 0, palette.asphalt);
-  b(2.75, 0.045, 20, 0, 0.28, 0, palette.asphalt);
-  for (const s of [-1, 1]) {
-    b(2.95, 0.34, 3.3, 0, -0.05, s * 8.35, palette.base);
-    b(3.04, 0.07, 3.36, 0, -0.24, s * 8.35, palette.edge);
-    b(3.3, 0.34, 2.95, s * 8.35, -0.05, 0, palette.base);
-    b(3.36, 0.07, 3.04, s * 8.35, -0.24, 0, palette.edge);
-    for (let p = 2.5; p < 9.8; p += 0.68)
-      for (const line of [-0.035, 0.035]) {
-        b(0.025, 0.006, 0.42, line, 0.306, s * p, palette.yellow);
-        b(0.42, 0.006, 0.025, s * p, 0.306, line, palette.yellow);
+  function makeBlock(junction) {
+    const block = new THREE.Group();
+    city.add(block);
+    block.position.x = JUNCTION_X[junction];
+    const b = (w, h, d, x, y, z, mat) => box(w, h, d, x, y, z, mat, block);
+    b(14.4, 0.34, 13.8, 0, -0.05, 0, palette.base);
+    b(14.5, 0.07, 13.9, 0, -0.24, 0, palette.edge);
+    b(14.25, 0.12, 13.65, 0, 0.18, 0, palette.pavement);
+    b(
+      junction === 2 ? 18 : 20,
+      0.045,
+      2.75,
+      junction === 2 ? -1 : 0,
+      0.28,
+      0,
+      palette.asphalt,
+    );
+    b(2.75, 0.045, 20, 0, 0.28, 0, palette.asphalt);
+    for (const s of [-1, 1]) {
+      b(2.95, 0.34, 3.3, 0, -0.05, s * 8.35, palette.base);
+      b(3.04, 0.07, 3.36, 0, -0.24, s * 8.35, palette.edge);
+      if (junction !== 2 || s < 0) {
+        b(3.3, 0.34, 2.95, s * 8.35, -0.05, 0, palette.base);
+        b(3.36, 0.07, 3.04, s * 8.35, -0.24, 0, palette.edge);
       }
-    for (let i = -5; i <= 5; i++) {
-      b(0.12, 0.008, 0.38, i * 0.205, 0.307, s * 1.66, palette.white);
-      b(0.38, 0.008, 0.12, s * 1.66, 0.307, i * 0.205, palette.white);
-    }
-    b(1.08, 0.009, 0.045, -s * 0.64, 0.308, s * 2, palette.white);
-    b(0.045, 0.009, 1.08, s * 2, 0.308, s * 0.64, palette.white);
-    for (const side of [-1, 1]) {
-      const x = side * 3.48,
-        z = s * 3.72,
-        h = side === s ? 1.8 : 2.5;
-      b(3.65, 0.12, 4.7, x, 0.34, s * 4.07, palette.curb);
-      b(
-        2.32,
-        h,
-        2.7,
-        x,
-        0.41 + h / 2,
-        z,
-        side === s ? palette.brick : palette.ivory,
-      );
-      b(2.5, 0.12, 2.88, x, h + 0.46, z, palette.trim);
-      b(2.2, 0.06, 2.6, x, h + 0.54, z, palette.green);
-      for (let floor = 0; floor < 3; floor++)
-        for (let col = 0; col < 4; col++) {
-          const y = 0.77 + (floor * (h - 0.5)) / 3;
-          for (const face of [-1, 1]) {
-            b(
-              0.26,
-              0.32,
-              0.035,
-              x - 0.83 + col * 0.55,
-              y,
-              z + face * 1.37,
-              palette.glass,
-            );
-            b(
-              0.035,
-              0.32,
-              0.29,
-              x + face * 1.18,
-              y,
-              z - 1 + col * 0.66,
-              palette.glass,
-            );
-          }
+      for (let p = 2.5; p < 9.8; p += 0.68)
+        for (const line of [-0.035, 0.035]) {
+          b(0.025, 0.006, 0.42, line, 0.306, s * p, palette.yellow);
+          if (junction !== 2 || s * p < 7.8)
+            b(0.42, 0.006, 0.025, s * p, 0.306, line, palette.yellow);
         }
-      b(1.6, 0.1, 0.36, x, 0.96, z - s * 1.55, palette.green);
-      b(0.6, 0.14, 0.45, x + side * 1.5, 0.48, z + s * 1.35, palette.green);
-      mesh(
-        new THREE.IcosahedronGeometry(0.34, 1),
-        palette.leaves,
-        x + side * 1.5,
-        0.94,
-        z + s * 1.35,
-        block,
-      );
+      for (let i = -5; i <= 5; i++) {
+        b(0.12, 0.008, 0.38, i * 0.205, 0.307, s * 1.66, palette.white);
+        b(0.38, 0.008, 0.12, s * 1.66, 0.307, i * 0.205, palette.white);
+      }
+      b(1.08, 0.009, 0.045, -s * 0.64, 0.308, s * 2, palette.white);
+      b(0.045, 0.009, 1.08, s * 2, 0.308, s * 0.64, palette.white);
+      for (const side of [-1, 1]) {
+        const x = side * 3.48,
+          z = s * 3.72,
+          h = side === s ? 1.8 : 2.5;
+        b(3.65, 0.12, 4.7, x, 0.34, s * 4.07, palette.curb);
+        b(
+          2.32,
+          h,
+          2.7,
+          x,
+          0.41 + h / 2,
+          z,
+          side === s ? palette.brick : palette.ivory,
+        );
+        b(2.5, 0.12, 2.88, x, h + 0.46, z, palette.trim);
+        b(2.2, 0.06, 2.6, x, h + 0.54, z, palette.green);
+        for (let floor = 0; floor < 3; floor++)
+          for (let col = 0; col < 4; col++) {
+            const y = 0.77 + (floor * (h - 0.5)) / 3;
+            for (const face of [-1, 1]) {
+              b(
+                0.26,
+                0.32,
+                0.035,
+                x - 0.83 + col * 0.55,
+                y,
+                z + face * 1.37,
+                palette.glass,
+              );
+              b(
+                0.035,
+                0.32,
+                0.29,
+                x + face * 1.18,
+                y,
+                z - 1 + col * 0.66,
+                palette.glass,
+              );
+            }
+          }
+        b(1.6, 0.1, 0.36, x, 0.96, z - s * 1.55, palette.green);
+        b(0.6, 0.14, 0.45, x + side * 1.5, 0.48, z + s * 1.35, palette.green);
+        mesh(
+          new THREE.IcosahedronGeometry(0.34, 1),
+          palette.leaves,
+          x + side * 1.5,
+          0.94,
+          z + s * 1.35,
+          block,
+        );
+      }
     }
+    // Batch the new block independently so it can rise into place as one object.
+    const groups = new Map();
+    for (const child of [...block.children])
+      if (child.geometry === unitBox) {
+        if (!groups.has(child.material)) groups.set(child.material, []);
+        groups.get(child.material).push(child.matrix.clone());
+        block.remove(child);
+      }
+    for (const [material, matrices] of groups) {
+      const batch = new THREE.InstancedMesh(unitBox, material, matrices.length);
+      matrices.forEach((m, i) => batch.setMatrixAt(i, m));
+      batch.castShadow = batch.receiveShadow = true;
+      block.add(batch);
+    }
+
+    return block;
   }
-  // Batch the new block independently so it can rise into place as one object.
-  const groups = new Map();
-  for (const child of [...block.children])
-    if (child.geometry === unitBox) {
-      if (!groups.has(child.material)) groups.set(child.material, []);
-      groups.get(child.material).push(child.matrix.clone());
-      block.remove(child);
-    }
-  for (const [material, matrices] of groups) {
-    const batch = new THREE.InstancedMesh(unitBox, material, matrices.length);
-    matrices.forEach((m, i) => batch.setMatrixAt(i, m));
-    batch.castShadow = batch.receiveShadow = true;
-    block.add(batch);
+  const block = makeBlock(1),
+    westBlock = makeBlock(2);
+  // The west riverwalk is already inhabited before its intersection unlocks.
+  for (const side of [-1, 1]) {
+    box(3.3, 0.34, 5.2, -8.5, -0.05, side * 4.1, palette.base);
+    box(3.35, 0.07, 5.25, -8.5, -0.24, side * 4.1, palette.edge);
+    box(3.25, 0.12, 5.15, -8.5, 0.18, side * 4.1, palette.pavement);
+    box(2, 0.13, 3.15, -8.75, 0.34, side * 3.9, palette.curb);
+    const height = side > 0 ? 1.7 : 2.3;
+    box(
+      1.65,
+      height,
+      2.5,
+      -8.75,
+      0.4 + height / 2,
+      side * 3.9,
+      side > 0 ? palette.brick : palette.ivory,
+    );
+    box(1.85, 0.14, 2.7, -8.75, 0.45 + height, side * 3.9, palette.trim);
+    box(1.55, 0.06, 2.4, -8.75, 0.55 + height, side * 3.9, palette.roof);
+    for (let floor = 0; floor < 3; floor++)
+      for (let col = 0; col < 4; col++)
+        box(
+          0.035,
+          0.26,
+          0.25,
+          -7.91,
+          0.75 + floor * 0.48,
+          side * 3.9 - 0.87 + col * 0.58,
+          palette.glass,
+        );
+    rod([-7.1, 0.4, side * 1.9], [-7.1, 0.4, side * 6.5], 0.025, palette.dark);
+    for (let z = 2; z < 6.5; z += 0.5)
+      rod([-7.1, 0.3, side * z], [-7.1, 0.62, side * z], 0.015, palette.dark);
   }
 
   const leaves = [];
@@ -221,10 +272,79 @@ export function createCityAdditions({
     0,
     helicopter,
   );
-  let growth = 0;
+  const towTruck = new THREE.Group();
+  city.add(towTruck);
+  box(0.43, 0.18, 1.05, 0, 0.47, 0, palette.yellow, towTruck);
+  box(0.38, 0.25, 0.42, 0, 0.66, 0.26, palette.glass, towTruck);
+  box(0.43, 0.045, 0.48, 0, 0.8, 0.26, palette.yellow, towTruck);
+  box(0.43, 0.045, 0.59, 0, 0.59, -0.28, palette.dark, towTruck);
+  rod([0, 0.6, -0.1], [0, 1.05, -0.62], 0.04, palette.yellow, towTruck);
+  rod([0, 1.05, -0.62], [0, 0.55, -0.72], 0.015, palette.dark, towTruck);
+  const towLamps = [];
+  for (const side of [-1, 1]) {
+    for (const end of [-1, 1]) {
+      const wheel = mesh(
+        new THREE.CylinderGeometry(0.11, 0.11, 0.07, 10),
+        palette.black,
+        side * 0.23,
+        0.375,
+        end * 0.33,
+        towTruck,
+      );
+      wheel.rotation.z = Math.PI / 2;
+    }
+    towLamps.push(
+      box(
+        0.15,
+        0.08,
+        0.12,
+        side * 0.12,
+        0.87,
+        0.2,
+        lampMaterials.amber,
+        towTruck,
+      ),
+    );
+    box(0.08, 0.04, 0.025, side * 0.13, 0.54, 0.54, palette.white, towTruck);
+  }
+  const recovered = new THREE.Group();
+  towTruck.add(recovered);
+  box(0.36, 0.16, 0.7, 0, 0.48, -1.05, palette.brick, recovered);
+  box(0.3, 0.14, 0.32, 0, 0.63, -1.05, palette.glass, recovered);
+  for (const side of [-1, 1])
+    for (const end of [-1, 1]) {
+      const wheel = mesh(
+        new THREE.CylinderGeometry(0.095, 0.095, 0.05, 8),
+        palette.black,
+        side * 0.19,
+        0.38,
+        -1.05 + end * 0.23,
+        recovered,
+      );
+      wheel.rotation.z = Math.PI / 2;
+    }
+  let growth = 0,
+    westGrowth = 0;
+
   return {
     block,
+    westBlock,
     update(sim, dt) {
+      const westTarget = sim.level >= 5;
+      westGrowth = westTarget ? Math.min(1, westGrowth + dt / 1.8) : 0;
+      const westEased = 1 - Math.pow(1 - westGrowth, 3);
+      westBlock.visible = westTarget;
+      westBlock.position.y = -3 * (1 - westEased);
+      const tow = sim.tow.active;
+      towTruck.visible = !!tow;
+      if (tow) {
+        towTruck.position.set(tow.x, 0, tow.z);
+        towTruck.rotation.y = tow.yaw;
+        towLamps.forEach((lamp, i) => {
+          lamp.visible = Math.floor(sim.time * 9) % 2 === i;
+        });
+        recovered.visible = tow.loaded;
+      }
       const target = sim.level >= 2 ? 1 : 0;
       growth = target === 0 ? 0 : Math.min(1, growth + dt / 1.8);
       const eased = 1 - Math.pow(1 - growth, 3);
@@ -281,10 +401,11 @@ export function createCityAdditions({
           y: lift * 3 + departure * 6,
         };
       }
-      return { growth: eased, cargo };
+      return { growth: eased, westGrowth: westEased, cargo };
     },
     clear() {
-      growth = 0;
+      growth = westGrowth = 0;
+      towTruck.visible = false;
       helicopter.visible = false;
       for (const group of boatMeshes.values()) city.remove(group);
       boatMeshes.clear();

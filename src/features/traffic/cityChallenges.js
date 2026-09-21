@@ -1,7 +1,9 @@
 export const BLOCK_SPACING = 11;
+export const JUNCTION_X = [0, BLOCK_SPACING, -15];
+export const JUNCTION_LEVEL = [1, 2, 5];
 export const LEVEL_SIZE = 20;
 export const RESCUE_DURATION = 7;
-export const RESCUE_RELOAD = 15;
+export const RESCUE_RELOAD = 20;
 
 export class BridgeTraffic {
   constructor(random) {
@@ -130,6 +132,82 @@ export class HelicopterRescue {
     return {
       busy: !!this.active,
       cooldown: Math.ceil(this.cooldown),
+      fuel: Math.floor((1 - this.cooldown / RESCUE_RELOAD) * 100),
+      incident: this.active?.id ?? null,
+    };
+  }
+}
+
+// A local recovery truck comes down the north shoulder. Its dedicated service
+// path clears the stopped lane, but entering the crossing still requires green.
+export class TowRescue {
+  constructor() {
+    this.active = null;
+  }
+  dispatch(incident) {
+    if (!incident || incident.assigned || this.active) return false;
+    incident.assigned = true;
+    this.active = {
+      id: incident.id,
+      junction: incident.junction || 0,
+      targetX: incident.x,
+      targetZ: incident.z,
+      x: JUNCTION_X[incident.junction || 0] - 1.12,
+      z: -9.5,
+      yaw: 0,
+      phase: "approach",
+      elapsed: 0,
+      committed: false,
+      loaded: false,
+      waiting: false,
+    };
+    return true;
+  }
+  tick(dt, cars, incidents, signals) {
+    const t = this.active;
+    if (!t) return;
+    const shoulder = JUNCTION_X[t.junction] - 1.12;
+    t.waiting = false;
+    function drive(x, z) {
+      const dx = x - t.x,
+        dz = z - t.z;
+      const distance = Math.hypot(dx, dz),
+        step = Math.min(distance, 2.8 * dt);
+      if (distance > 0.001) {
+        t.yaw = Math.atan2(dx, dz);
+        t.x += (dx / distance) * step;
+        t.z += (dz / distance) * step;
+      }
+      return distance <= step + 0.001;
+    }
+    if (t.phase === "approach") {
+      if (!t.committed) {
+        if (drive(shoulder, -2.65)) {
+          if (signals.water.color === "green") t.committed = true;
+          else t.waiting = true;
+        }
+      } else if (drive(shoulder, -1.55)) t.phase = "arriving";
+    } else if (t.phase === "arriving") {
+      // Stop alongside the wreck; the boom draws it onto the recovery bed.
+      if (drive(t.targetX - 0.65, t.targetZ)) t.phase = "pickup";
+    } else if (t.phase === "pickup") {
+      t.elapsed += dt;
+      if (t.elapsed >= 2) {
+        t.loaded = true;
+        for (const c of cars) if (c.incident === t.id) c.remove = true;
+        const index = incidents.findIndex((i) => i.id === t.id);
+        if (index >= 0) incidents.splice(index, 1);
+        t.phase = "leaving";
+      }
+    } else if (t.phase === "leaving") {
+      if (drive(shoulder, -1.55)) t.phase = "returning";
+    } else if (drive(shoulder, -10.4)) this.active = null;
+  }
+  snapshot() {
+    return {
+      busy: !!this.active,
+      phase: this.active?.phase ?? "ready",
+      waiting: !!this.active?.waiting,
       incident: this.active?.id ?? null,
     };
   }

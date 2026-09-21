@@ -184,7 +184,7 @@ test("canceling a partial opening with waiting boats does not deadlock the bridg
   assert.equal(b.lift, 0);
   assert.equal(b.boats[0].p, -2.3);
 });
-test("helicopter cannot accept another accident until its 15-second reload ends", () => {
+test("helicopter cannot accept another accident until its 20-second refuel ends", () => {
   const h = new HelicopterRescue();
   const incidents = [
     { id: 1, x: 0, z: 0 },
@@ -194,15 +194,19 @@ test("helicopter cannot accept another accident until its 15-second reload ends"
   assert.ok(h.dispatch(incidents[0]));
   assert.equal(h.dispatch(incidents[1]), false);
   h.tick(7, cars, incidents);
-  assert.equal(h.cooldown, 15);
+  assert.equal(h.cooldown, 20);
+  assert.equal(h.snapshot().fuel, 0);
+  h.tick(10, cars, incidents);
+  assert.equal(h.snapshot().fuel, 50);
   assert.equal(h.dispatch(incidents[0]), false);
-  h.tick(14.9, cars, incidents);
+  h.tick(9.9, cars, incidents);
   assert.equal(h.dispatch(incidents[0]), false);
   h.tick(0.11, cars, incidents);
   assert.ok(h.dispatch(incidents[0]));
 });
 test("traffic waits behind an accident until the helicopter lifts the wrecks", () => {
   const s = setup();
+  s.passed = 60;
   s.spawn(0);
   s.spawn(1);
   s.cars.forEach((c, i) => {
@@ -223,4 +227,168 @@ test("traffic waits behind an accident until the helicopter lifts the wrecks", (
   assert.ok(follower.p <= STOP_LINE + 0.01);
   run(s, 2);
   assert.ok(follower.p > STOP_LINE + 0.2);
+});
+
+function crash(s, junction = 0) {
+  s.spawn(0, junction);
+  s.spawn(1, junction);
+  s.cars.slice(-2).forEach((c, i) =>
+    Object.assign(c, {
+      p: i ? 0.57 : -0.57,
+      turn: "straight",
+      speed: 0,
+      committed: true,
+    }),
+  );
+  s.tick(1 / 120);
+  return s.incidents.at(-1).id;
+}
+test("helicopter unlocks at level four, while towing is available from level one", () => {
+  const s = setup(),
+    id = crash(s);
+  for (const passed of [0, 20, 40, 59]) {
+    s.passed = passed;
+    assert.equal(s.dispatchRescue(id), false);
+    assert.equal(s.incidents[0].assigned, false);
+  }
+  s.passed = 60;
+  assert.equal(s.dispatchRescue(id), true);
+  assert.equal(s.dispatchTow(id), false);
+  s.reset();
+  s.start();
+  s.nextArrival = 10000;
+  assert.equal(s.dispatchTow(crash(s)), true);
+});
+test("tow truck bypasses a full queue, waits for green, recovers the wreck, and returns without scoring", () => {
+  for (const junction of [0, 1, 2]) {
+    const s = setup();
+    s.passed = junction === 2 ? 80 : junction === 1 ? 20 : 0;
+    const before = s.passed,
+      id = crash(s, junction);
+    s.signalsAt(junction).water.color = "red";
+    for (let i = 0; i < 8; i++) {
+      s.spawn(0, junction);
+      Object.assign(s.cars.at(-1), {
+        p: STOP_LINE - i * 0.92,
+        speed: 0,
+        turn: "straight",
+      });
+    }
+    assert.equal(s.dispatchTow(id), true);
+    assert.equal(s.dispatchTow(id), false);
+    run(s, 4);
+    assert.equal(s.tow.active.waiting, true);
+    assert.equal(s.tow.active.z, -2.65);
+    const truck = s.tow.active;
+    for (const c of s.cars.filter((c) => !c.crashed))
+      assert.ok(
+        Math.abs(truck.x - carPose(c).x) > 0.5,
+        "truck occupies the shoulder, clear of the queue",
+      );
+    run(s, 2);
+    assert.equal(truck.z, -2.65);
+    s.toggle("water", junction);
+    run(s, 2);
+    assert.equal(truck.phase, "pickup");
+    assert.equal(s.incidents.length, 1);
+    run(s, 2);
+    assert.equal(s.incidents.length, 0);
+    assert.equal(truck.loaded, true);
+    assert.equal(s.passed, before);
+    run(s, 5);
+    assert.equal(s.tow.active, null);
+    s.reset();
+    assert.equal(s.tow.snapshot().busy, false);
+  }
+});
+test("tow and helicopter can recover separate accidents concurrently", () => {
+  const s = setup();
+  s.passed = 60;
+  const first = crash(s, 0),
+    second = crash(s, 1);
+  assert.equal(s.dispatchTow(first), true);
+  assert.equal(s.dispatchRescue(first), false);
+  assert.equal(s.dispatchRescue(second), true);
+  run(s, 12);
+  assert.equal(s.incidents.length, 0);
+  assert.equal(s.tow.active, null);
+  assert.equal(s.rescue.active, null);
+});
+test("level five connects the west intersection continuously across the bridge in both directions", () => {
+  for (const junction of [0, 2]) {
+    const s = setup();
+    s.passed = 80;
+    s.spawn(junction === 0 ? 1 : 3, junction);
+    const c = s.cars[0];
+    Object.assign(c, {
+      p: 7.49,
+      turn: "straight",
+      speed: 2.4,
+      committed: true,
+    });
+    const before = carPose(c);
+    s.tick(1 / 120);
+    assert.equal(c.junction, junction === 0 ? 2 : 0);
+    assert.ok(
+      Math.hypot(carPose(c).x - before.x, carPose(c).z - before.z) < 0.03,
+    );
+    assert.equal(s.passed, 80);
+    run(s, 6);
+    assert.ok(Math.abs(c.p - STOP_LINE) < 0.02);
+    s.signalsAt(c.junction).wisconsin.color = "green";
+    // A car headed east travels through the original and Broadway blocks.
+    s.signals2.wisconsin.color = "green";
+    run(s, 16);
+    assert.equal(s.passed, 81);
+    assert.equal(s.cars.length, 0);
+  }
+});
+test("west lights stay locked through level four and new arrivals use exterior roads", () => {
+  const s = setup();
+  s.passed = 79;
+  s.toggle("wisconsin", 2);
+  assert.equal(s.signals3.wisconsin.color, "red");
+  s.complete({ lane: 0, p: EXIT });
+  s.toggle("wisconsin", 2);
+  assert.equal(s.signals3.wisconsin.color, "green");
+  const entries = [];
+  for (let i = 0; i < 24; i++) {
+    s.cars = [];
+    s.nextArrival = 0;
+    s.tick(1 / 120);
+    entries.push([s.cars[0].junction, s.cars[0].lane]);
+  }
+  assert.ok(entries.some(([j]) => j === 2));
+  assert.ok(
+    entries.every(
+      ([j, l]) =>
+        !(
+          (j === 0 && [1, 3].includes(l)) ||
+          (j === 1 && l === 3) ||
+          (j === 2 && l === 1)
+        ),
+    ),
+  );
+});
+
+test("the open bridge holds cars coming from both sides of the level-five road", () => {
+  const s = setup();
+  s.passed = 80;
+  s.spawn(3, 2);
+  s.spawn(1, 0);
+  Object.assign(s.cars[0], { p: 5.5, turn: "straight", committed: true });
+  Object.assign(s.cars[1], { p: 3.5, turn: "straight", committed: true });
+  s.toggleBridge();
+  run(s, 3);
+  assert.equal(s.bridge.lift, 1);
+  const [east, west] = s.cars;
+  assert.ok(carPose(east).x < -7.5);
+  assert.ok(carPose(west).x > -4.5);
+  s.bridge.boats = [];
+  s.bridge.nextBoat = 1000;
+  s.toggleBridge();
+  run(s, 5);
+  assert.equal(s.bridge.lift, 0);
+  assert.ok(carPose(east).x > -6.5);
+  assert.ok(carPose(west).x < -5.5);
 });

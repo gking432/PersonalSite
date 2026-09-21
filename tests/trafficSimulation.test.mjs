@@ -77,6 +77,7 @@ test("amber transitions to red but committed cars finish crossing", () => {
 });
 test("crashes block the road until a requested helicopter pickup", () => {
   const s = isolated();
+  s.passed = 60;
   s.toggle("wisconsin");
   s.spawn(0);
   s.spawn(1);
@@ -103,9 +104,9 @@ test("crashes block the road until a requested helicopter pickup", () => {
   run(s, 2.6);
   assert.equal(s.cars.length, 0);
   assert.equal(s.incidents.length, 0);
-  assert.ok(s.rescue.cooldown > 14);
+  assert.ok(s.rescue.cooldown > 19);
   assert.equal(s.progress, 0);
-  run(s, 15);
+  run(s, 20);
   assert.equal(s.rescue.cooldown, 0);
 });
 test("opposing cars on the same street pass without colliding", () => {
@@ -251,12 +252,14 @@ test("mixed traffic remains recoverable across levels using signals and rescue",
     s.start();
     for (let frame = 0; frame < 300 * 120; frame++) {
       const phase = (frame / 120) % 30;
-      for (const signals of [s.signals, s.signals2]) {
+      for (const signals of [s.signals, s.signals2, s.signals3]) {
         signals.water.color = phase < 10 ? "green" : "red";
         signals.wisconsin.color = phase >= 15 && phase < 25 ? "green" : "red";
       }
-      if (s.incidents.length && !s.rescue.active && s.rescue.cooldown === 0)
-        s.dispatchRescue(s.incidents[0].id);
+      for (const incident of s.incidents) {
+        if (incident.assigned) continue;
+        if (!s.dispatchRescue(incident.id)) s.dispatchTow(incident.id);
+      }
       s.tick(1 / 120);
       s.events.length = 0;
     }

@@ -1,8 +1,10 @@
 import {
-  BLOCK_SPACING,
+  JUNCTION_X,
+  JUNCTION_LEVEL,
   LEVEL_SIZE,
   BridgeTraffic,
   HelicopterRescue,
+  TowRescue,
 } from "./cityChallenges.js";
 export const APPROACHES = [
   { id: "north", axis: "water", dx: 0, dz: 1 },
@@ -45,7 +47,7 @@ export function carPose(car) {
     } else out = null;
   } else if (car.p < TURN_START) out = null;
   return {
-    x: lane.dz * x + lane.dx * z + (car.junction || 0) * BLOCK_SPACING,
+    x: lane.dz * x + lane.dx * z + JUNCTION_X[car.junction || 0],
     z: -lane.dx * x + lane.dz * z,
     yaw: Math.atan2(lane.dz * dx + lane.dx * dz, -lane.dx * dx + lane.dz * dz),
     exitLane,
@@ -98,6 +100,11 @@ export class TrafficSimulation {
     this.nextIncident = 1;
     this.bridge = new BridgeTraffic(this.random);
     this.rescue = new HelicopterRescue();
+    this.tow = new TowRescue();
+    this.signals3 = {
+      water: { color: "green", left: 0 },
+      wisconsin: { color: "red", left: 0 },
+    };
     this.signals2 = {
       water: { color: "green", left: 0 },
       wisconsin: { color: "red", left: 0 },
@@ -118,14 +125,20 @@ export class TrafficSimulation {
     return this.passed;
   }
   signalsAt(junction = 0) {
-    return junction ? this.signals2 : this.signals;
+    return [this.signals, this.signals2, this.signals3][junction];
   }
   chooseTurn() {
     const v = this.random();
     return v < 0.27 ? "left" : v > 0.73 ? "right" : "straight";
   }
   dispatchRescue(id) {
-    return this.rescue.dispatch(this.incidents.find((i) => i.id === id));
+    return (
+      this.level >= 4 &&
+      this.rescue.dispatch(this.incidents.find((i) => i.id === id))
+    );
+  }
+  dispatchTow(id) {
+    return this.tow.dispatch(this.incidents.find((i) => i.id === id));
   }
   toggleBridge() {
     if (this.level >= 3) this.bridge.toggle();
@@ -148,7 +161,7 @@ export class TrafficSimulation {
     this.started = true;
   }
   toggle(axis, junction = 0) {
-    if (junction && this.level < 2) return;
+    if (this.level < JUNCTION_LEVEL[junction]) return;
     const signal = this.signalsAt(junction)[axis];
     if (!signal) return;
     this.start();
@@ -202,6 +215,12 @@ export class TrafficSimulation {
     this.time += dt;
     this.honkCooldown -= dt;
     this.rescue.tick(dt, this.cars, this.incidents);
+    this.tow.tick(
+      dt,
+      this.cars,
+      this.incidents,
+      this.signalsAt(this.tow.active?.junction || 0),
+    );
     if (this.level >= 3)
       this.bridge.tick(
         dt,
@@ -211,6 +230,7 @@ export class TrafficSimulation {
     for (const signal of [
       ...Object.values(this.signals),
       ...Object.values(this.signals2),
+      ...Object.values(this.signals3),
     ]) {
       if (signal.color === "amber") {
         signal.left -= dt;
@@ -227,14 +247,25 @@ export class TrafficSimulation {
               [0, 2],
               [0, 3],
             ]
-          : [
-              [0, 0],
-              [1, 1],
-              [0, 2],
-              [1, 0],
-              [0, 3],
-              [1, 2],
-            ];
+          : this.level >= 5
+            ? [
+                [0, 0],
+                [1, 1],
+                [0, 2],
+                [1, 0],
+                [2, 3],
+                [1, 2],
+                [2, 0],
+                [2, 2],
+              ]
+            : [
+                [0, 0],
+                [1, 1],
+                [0, 2],
+                [1, 0],
+                [0, 3],
+                [1, 2],
+              ];
       const index = this.arrivalIndex++;
       const [junction, lane] =
         entries[
@@ -258,11 +289,15 @@ export class TrafficSimulation {
         "green";
       let gap = Infinity;
       if (
-        this.incidents.some(
+        (this.incidents.some(
           (i) =>
             i.junction === (car.junction || 0) &&
             this.cars.some((c) => c.incident === i.id && !c.lifted),
-        ) &&
+        ) ||
+          (this.tow.active?.junction === (car.junction || 0) &&
+            ["arriving", "pickup", "leaving"].includes(
+              this.tow.active.phase,
+            ))) &&
         car.p < -TURN_START
       )
         gap = STOP_LINE - (car.length - 0.72) / 2 - car.p;
@@ -381,10 +416,8 @@ export class TrafficSimulation {
       if (
         a.crashed ||
         a.remove ||
-        Math.max(
-          Math.abs(pa.x - (a.junction || 0) * BLOCK_SPACING),
-          Math.abs(pa.z),
-        ) > 2.4
+        Math.max(Math.abs(pa.x - JUNCTION_X[a.junction || 0]), Math.abs(pa.z)) >
+          2.4
       )
         continue;
       for (let j = i + 1; j < this.cars.length; j++) {
@@ -394,7 +427,7 @@ export class TrafficSimulation {
           b.crashed ||
           b.remove ||
           Math.max(
-            Math.abs(pb.x - (b.junction || 0) * BLOCK_SPACING),
+            Math.abs(pb.x - JUNCTION_X[b.junction || 0]),
             Math.abs(pb.z),
           ) > 2.4
         )
@@ -425,14 +458,15 @@ export class TrafficSimulation {
       const pose = carPose(car);
       if (car.crashed) return true;
       const junction = car.junction || 0;
-      const connects =
-        this.level >= 2 &&
-        ((junction === 0 && pose.exitLane === 3) ||
-          (junction === 1 && pose.exitLane === 1));
-      if (connects && pose.out !== null && pose.out >= BLOCK_SPACING / 2) {
-        car.junction = 1 - junction;
+      const next = this.neighbor(junction, pose.exitLane);
+      const distance =
+        next === null
+          ? Infinity
+          : Math.abs(JUNCTION_X[next] - JUNCTION_X[junction]);
+      if (next !== null && pose.out !== null && pose.out >= distance / 2) {
+        car.junction = next;
         car.lane = pose.exitLane;
-        car.p = pose.out - BLOCK_SPACING;
+        car.p = pose.out - distance;
         car.turn = car.p > -TURN_START ? "straight" : this.chooseTurn();
         car.committed = car.p > STOP_LINE + 0.02;
       } else if (pose.out !== null && pose.out > EXIT) {
@@ -442,6 +476,13 @@ export class TrafficSimulation {
       return true;
     });
   }
+  neighbor(junction, lane) {
+    if (this.level >= 2 && junction === 0 && lane === 3) return 1;
+    if (this.level >= 2 && junction === 1 && lane === 1) return 0;
+    if (this.level >= 5 && junction === 0 && lane === 1) return 2;
+    if (this.level >= 5 && junction === 2 && lane === 3) return 0;
+    return null;
+  }
   snapshot() {
     return {
       started: this.started,
@@ -450,6 +491,11 @@ export class TrafficSimulation {
       progress: this.progress,
       incidents: this.incidents.map((i) => ({ ...i })),
       rescue: this.rescue.snapshot(),
+      tow: this.tow.snapshot(),
+      signals3: {
+        water: this.signals3.water.color,
+        wisconsin: this.signals3.wisconsin.color,
+      },
       bridge: this.bridge.snapshot(),
       signals2: {
         water: this.signals2.water.color,

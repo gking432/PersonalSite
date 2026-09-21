@@ -38,6 +38,8 @@ export function createCityRuntime(host, controls, onState) {
       next.level,
       next.progress,
       next.signals2,
+      next.signals3,
+      next.tow,
       next.incidents,
       next.rescue,
       next.bridge.phase,
@@ -103,7 +105,7 @@ export function createCityRuntime(host, controls, onState) {
     schedule();
   }
   function toggleSignal(axis, junction = 0) {
-    if (!enabled || disposed) return;
+    if (!enabled || disposed || paused || cleanupMode) return;
     sim.toggle(axis, junction);
     preparePage();
     scene.update(sim);
@@ -111,14 +113,23 @@ export function createCityRuntime(host, controls, onState) {
     notify();
     schedule();
   }
-  function toggleCleanup() {
-    if (paused || sim.rescue.active || sim.rescue.cooldown > 0) return;
-    cleanupMode = !cleanupMode;
+  function toggleCleanup(type) {
+    if (paused || !enabled || disposed) return;
+    if (
+      type === "helicopter" &&
+      (sim.level < 4 || sim.rescue.active || sim.rescue.cooldown > 0)
+    )
+      return;
+    if (type === "tow" && sim.tow.active) return;
+    if (!["tow", "helicopter"].includes(type)) return;
+    cleanupMode = cleanupMode === type ? false : type;
     notify();
   }
   function rescue(id) {
     if (!cleanupMode || paused || !enabled) return;
-    if (sim.dispatchRescue(id)) {
+    const dispatched =
+      cleanupMode === "tow" ? sim.dispatchTow(id) : sim.dispatchRescue(id);
+    if (dispatched) {
       cleanupMode = false;
       notify();
       schedule();

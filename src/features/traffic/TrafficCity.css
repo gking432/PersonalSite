@@ -145,3 +145,114 @@
     display: none;
   }
 }
+
+.traffic-city__toolbar {
+  position: absolute;
+  left: 7px;
+  top: 0;
+  z-index: 4;
+  display: flex;
+  gap: 2px;
+}
+.traffic-city__tool {
+  width: 34px;
+  height: 34px;
+  padding: 8px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: #83877e;
+  background: #faf8f2dd;
+  cursor: inherit;
+}
+.traffic-city__tool svg {
+  width: 100%;
+  height: 100%;
+}
+.traffic-city__tool:hover:not(:disabled),
+.traffic-city__tool[aria-pressed="true"] {
+  background: #e5eadd;
+  color: #315b43;
+}
+.traffic-city__tool:focus-visible {
+  outline: 1px solid #557761;
+  outline-offset: 3px;
+}
+.traffic-city__tool:disabled {
+  color: #b6b7ad;
+}
+.traffic-city__rescue-tools {
+  position: absolute;
+  right: 5px;
+  top: 34%;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  z-index: 4;
+}
+.traffic-city__rescue-tools .traffic-city__tool {
+  width: 44px;
+  height: 44px;
+  padding: 11px;
+}
+.traffic-city__helicopter {
+  position: relative;
+}
+.traffic-city__fuel {
+  position: absolute;
+  inset: -2px;
+  width: 48px;
+  height: 48px;
+  pointer-events: none;
+  transform: rotate(-90deg);
+}
+.traffic-city__fuel circle {
+  fill: none;
+  stroke: #e5e5db;
+  stroke-width: 2;
+}
+.traffic-city__fuel .traffic-city__fuel-fill {
+  stroke: #6c8a73;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 180ms linear;
+}
+.traffic-city__lock {
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font: 9px var(--font-sans);
+  color: #a3a397;
+  pointer-events: none;
+}
+.traffic-city[data-fullscreen="true"],
+.traffic-city:fullscreen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  padding: 24px;
+  box-sizing: border-box;
+  background: #faf8f3;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+}
+.traffic-city[data-fullscreen="true"] .traffic-city__stage {
+  flex: 1;
+  min-height: 0;
+  aspect-ratio: auto;
+}
+.traffic-city[data-fullscreen="true"] .traffic-city__toolbar {
+  top: 20px;
+  left: 24px;
+}
+.traffic-city[data-fullscreen="true"] .traffic-city__progress {
+  inset: 26px 24px auto;
+}
+.traffic-city[data-fullscreen="true"] .traffic-city__rescue-tools {
+  right: 24px;
+}
