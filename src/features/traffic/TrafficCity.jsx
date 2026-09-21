@@ -1,5 +1,11 @@
+import DistrictIntro from "./DistrictIntro";
 import SignalProgrammer from "./SignalProgrammer";
-import { JUNCTION_X, JUNCTION_LEVEL, JUNCTION_NAMES } from "./cityChallenges";
+import {
+  JUNCTION_X,
+  JUNCTION_LEVEL,
+  JUNCTION_NAMES,
+  EMERGENCY_LIMIT,
+} from "./cityChallenges";
 import { useEffect, useRef, useState } from "react";
 import { SIGNALS } from "./signals";
 import "./TrafficCity.css";
@@ -68,6 +74,8 @@ export default function TrafficCity() {
     level: 1,
     progress: 0,
     gameOver: null,
+    expansionPending: false,
+    districtReady: false,
     emergency: null,
     roundabout: null,
     programs: [],
@@ -182,6 +190,7 @@ export default function TrafficCity() {
     game.programMode,
     game.paused,
     game.level,
+    game.districtReady,
     programLinksKey,
   ]);
   const unassigned = game.incidents.some((i) => !i.assigned);
@@ -204,7 +213,7 @@ export default function TrafficCity() {
       ref={root}
       data-fullscreen={fullscreen}
       data-expanded={game.level >= 2}
-      data-district={game.level >= 9}
+      data-district={game.districtReady}
       onKeyDown={(e) => {
         if (e.key === "Escape") engine.current?.key(e);
       }}
@@ -242,7 +251,7 @@ export default function TrafficCity() {
             <Icon name="program" />
           </button>
         )}
-        {game.level >= 9 && game.roundabout === null && !game.gameOver && (
+        {game.districtReady && game.roundabout === null && !game.gameOver && (
           <button
             type="button"
             className="traffic-city__tool"
@@ -355,11 +364,13 @@ export default function TrafficCity() {
                 role="progressbar"
                 aria-label="Emergency time remaining"
                 aria-valuemin={0}
-                aria-valuemax={10}
+                aria-valuemax={EMERGENCY_LIMIT}
                 aria-valuenow={game.emergency?.remaining || 0}
               >
                 <i
-                  style={{ width: `${(game.emergency?.remaining || 0) * 10}%` }}
+                  style={{
+                    width: `${((game.emergency?.remaining || 0) / EMERGENCY_LIMIT) * 100}%`,
+                  }}
                 />
               </div>
             </div>
@@ -395,7 +406,9 @@ export default function TrafficCity() {
             data-axis={signal.axis}
             data-junction={signal.junction}
             hidden={
-              game.level < signal.level || game.roundabout === signal.junction
+              game.level < signal.level ||
+              (signal.level >= 9 && !game.districtReady) ||
+              game.roundabout === signal.junction
             }
             aria-label={`${signal.label} light: ${game.allSignals[signal.junction][signal.axis]}`}
             disabled={
@@ -494,6 +507,11 @@ export default function TrafficCity() {
           game={game}
           onApply={(j, r) => engine.current?.configureProgram(j, r)}
           onClose={() => engine.current?.closeProgram()}
+        />
+      )}
+      {game.expansionPending && wide && (
+        <DistrictIntro
+          onContinue={() => engine.current?.acknowledgeExpansion()}
         />
       )}
       {game.gameOver && (

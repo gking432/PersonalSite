@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { RAMP_CENTER, rampOffset } from "./districtLayout.js";
 import { LOTS, parkingSpace } from "./stadiumDistrict.js";
 import { JUNCTION_X, JUNCTION_Z } from "./cityChallenges.js";
 export function createStadiumScene({
@@ -14,14 +15,21 @@ export function createStadiumScene({
   const district = new THREE.Group();
   city.add(district);
   const stadium = new THREE.Group();
-  stadium.position.set(-39, 0, -13);
+  stadium.position.set(-8, 0, -22);
+  stadium.scale.set(1.1, 1, 1.05);
   district.add(stadium);
   const b = (w, h, d, x, y, z, mat, parent = stadium, ry = 0) =>
     box(w, h, d, x, y, z, mat, parent, ry);
-  b(22, 0.34, 22, 0, -0.05, 0, palette.base);
-  b(22.1, 0.07, 22.1, 0, -0.24, 0, palette.edge);
-  b(21.7, 0.12, 21.7, 0, 0.18, 0, palette.pavement);
-  const turf = mesh(
+  // A single 2×2 footprint replaces four terrain cells, within the old grid.
+  b(27.7, 0.34, 26, -8.35, -0.05, -19.9, palette.base, district);
+  b(27.7, 0.07, 26, -8.35, -0.24, -19.9, palette.edge, district);
+  b(27.5, 0.12, 25.8, -8.35, 0.18, -19.9, palette.pavement, district);
+  // The shop is one ordinary-sized cell, sharing the adjoining street block.
+  b(12.7, 0.34, 13.8, 11.85, -0.05, -26, palette.base, district);
+  b(12.7, 0.07, 13.9, 11.85, -0.24, -26, palette.edge, district);
+  b(12.5, 0.12, 13.65, 11.85, 0.18, -26, palette.pavement, district);
+  b(2.75, 0.045, 4.5, 11, 0.28, -21.2, palette.asphalt, district);
+  mesh(
     new THREE.CylinderGeometry(6.8, 6.8, 0.08, 64),
     palette.leaves,
     0,
@@ -29,7 +37,7 @@ export function createStadiumScene({
     0,
     stadium,
   );
-  const outfield = mesh(
+  mesh(
     new THREE.CylinderGeometry(5.9, 5.9, 0.02, 64),
     palette.green,
     0,
@@ -135,8 +143,8 @@ export function createStadiumScene({
   for (const [lot, data] of Object.entries(LOTS)) {
     const center =
       lot === "stadium"
-        ? { x: -27.7, z: -13.3, w: 5.4, d: 12.5 }
-        : { x: 23.8, z: -14, w: 6.5, d: 7.5 };
+        ? { x: -10.65, z: -9.1, w: 23.1, d: 3.9 }
+        : { x: 11, z: -24.9, w: 8.1, d: 4.2 };
     b(center.w, 0.3, center.d, center.x, 0, center.z, palette.base, district);
     b(
       center.w - 0.1,
@@ -152,12 +160,12 @@ export function createStadiumScene({
       const p = parkingSpace(lot, i);
       for (const side of [-1, 1])
         b(
-          1.1,
-          0.008,
           0.025,
-          p.x,
+          0.008,
+          0.95,
+          p.x + side * 0.65,
           0.307,
-          p.z + side * 0.39,
+          p.z,
           palette.white,
           district,
         );
@@ -172,32 +180,76 @@ export function createStadiumScene({
       { parent: district, floor: true, size: 60 },
     );
   }
-  // Small corner shop with a canopy and six working spaces.
-  b(4, 1.6, 2.8, 23.8, 1.1, -19.3, palette.brick, district);
-  b(4.2, 0.16, 3, 23.8, 1.95, -19.3, palette.trim, district);
-  b(3.4, 0.7, 0.035, 23.8, 0.9, -17.88, palette.glass, district);
-  b(3.7, 0.13, 0.9, 23.8, 1.55, -17.55, palette.green, district);
-  label("CORNER MARKET", 3, 0.36, 23.8, 1.78, -17.77, {
+  // One shop and its six-space lot, on the same foundation as the other cells.
+  b(6.2, 1.7, 3.1, 12, 1.2, -30.1, palette.brick, district);
+  b(6.4, 0.16, 3.3, 12, 2.1, -30.1, palette.trim, district);
+  b(5.5, 0.8, 0.035, 12, 1.05, -28.53, palette.glass, district);
+  b(5.8, 0.13, 0.9, 12, 1.65, -28.2, palette.green, district);
+  label("CORNER MARKET", 4.5, 0.43, 12, 1.88, -28.1, {
     parent: district,
     size: 58,
   });
-  // Divided freeway, connected exit/entrance ramps, and an overhead wave sign.
-  b(66, 0.32, 3.5, -10.5, 0.02, -25.85, palette.base, district);
-  b(66, 0.04, 3.2, -10.5, 0.29, -25.85, palette.asphalt, district);
-  b(66, 0.15, 0.15, -10.5, 0.42, -25.85, palette.curb, district);
-  for (let x = -43; x < 22; x += 1.4)
-    for (const z of [-26.8, -24.9])
-      b(0.7, 0.01, 0.04, x, 0.318, z, palette.white, district);
-  for (const [x, z, angle] of [
-    [-18, -25.2, -0.35],
-    [-15.5, -23.65, -1.4],
-    [-12.4, -24.1, 0.38],
-  ])
-    b(5.4, 0.06, 1.3, x, 0.3, z, palette.asphalt, district, angle);
-  for (const x of [-24, -18])
-    rod([x, 0.3, -26], [x, 3.3, -26], 0.06, palette.dark, district);
-  rod([-24, 3.3, -26], [-18, 3.3, -26], 0.06, palette.dark, district);
-  const sign = label("STADIUM EXIT", 5.5, 0.85, -21, 3, -25.85, {
+  for (const [x, z] of [
+    [16.5, -30.5],
+    [16.5, -23],
+    [-20, -29],
+    [3, -29],
+  ]) {
+    b(0.14, 0.9, 0.14, x, 0.8, z, palette.dark, district);
+    mesh(
+      new THREE.IcosahedronGeometry(0.65, 1),
+      palette.leaves2,
+      x,
+      1.5,
+      z,
+      district,
+    );
+  }
+  // The only freeway geometry is this raised ramp. Rendering and car motion
+  // share the sampled curve so vehicles stay on the deck through the climb.
+  const vertices = [];
+  for (let i = 0; i < RAMP_CENTER.length - 1; i++) {
+    const a = rampOffset(i, -1.15),
+      b = rampOffset(i, 1.15),
+      c = rampOffset(i + 1, -1.15),
+      d = rampOffset(i + 1, 1.15);
+    for (const p of [a, b, c, b, d, c]) vertices.push(p.x, p.y + 0.305, p.z);
+    for (const side of [-1, 1]) {
+      const u = rampOffset(i, side * 1.08),
+        v = rampOffset(i + 1, side * 1.08);
+      rod(
+        [u.x, u.y + 0.43, u.z],
+        [v.x, v.y + 0.43, v.z],
+        0.07,
+        palette.curb,
+        district,
+      );
+    }
+    if (i % 3 === 0) {
+      const u = RAMP_CENTER[i],
+        v = RAMP_CENTER[i + 1];
+      rod(
+        [u.x, u.y + 0.325, u.z],
+        [v.x, v.y + 0.325, v.z],
+        0.02,
+        palette.yellow,
+        district,
+      );
+    }
+  }
+  const deck = new THREE.BufferGeometry();
+  deck.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+  deck.computeVertexNormals();
+  mesh(deck, palette.asphalt, 0, 0, 0, district);
+  for (const i of [32, 49, 60, 69]) {
+    const p = RAMP_CENTER[i];
+    b(0.35, p.y, 0.5, p.x, p.y / 2 + 0.16, p.z, palette.curb, district);
+    b(2.1, 0.15, 0.55, p.x, p.y + 0.18, p.z, palette.base, district);
+  }
+  label("I–94 ↗", 1.9, 0.48, 16.5, 1.4, -12.7, { parent: district, size: 64 });
+  for (const x of [-3.7, 1.7])
+    rod([x, 0.3, -12], [x, 2.6, -12], 0.06, palette.dark, district);
+  const sign = label("FIRST PITCH", 5.5, 0.85, -1, 2.3, -12, {
     parent: district,
     size: 68,
   });
@@ -268,7 +320,7 @@ export function createStadiumScene({
   }
   return {
     update(sim, growth) {
-      district.visible = sim.level >= 9;
+      district.visible = sim.districtReady;
       district.position.y = -4 * (1 - growth);
       lights.forEach((l) => {
         l.material =

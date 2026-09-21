@@ -438,3 +438,67 @@
   color: #8a8f7f;
   margin: 12px 0 18px;
 }
+
+.traffic-city__intro {
+  margin: auto;
+  inset: 0;
+  width: min(440px, calc(100vw - 48px));
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 28px;
+  color: #315548;
+  background: #f8f6ef;
+  border: 1px solid #d6d3c4;
+  border-radius: 14px;
+  box-shadow: 0 24px 80px #20392c26;
+  font-family: inherit;
+}
+.traffic-city__intro::backdrop {
+  background: #ece9de9e;
+  backdrop-filter: blur(4px);
+}
+.traffic-city__intro-kicker {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #777d70;
+}
+.traffic-city__intro h3 {
+  margin: 12px 0;
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.15;
+}
+.traffic-city__intro p,
+.traffic-city__intro li {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #60665c;
+}
+.traffic-city__intro ul {
+  padding-left: 17px;
+  margin: 18px 0 24px;
+}
+.traffic-city__intro li + li {
+  margin-top: 12px;
+}
+.traffic-city__intro strong {
+  color: #315548;
+  font-weight: 600;
+}
+.traffic-city__intro button {
+  width: 100%;
+  border: 0;
+  border-radius: 6px;
+  padding: 12px;
+  background: #315548;
+  color: #fffdf6;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.traffic-city__intro button:focus-visible {
+  outline: 2px solid #a68842;
+  outline-offset: 3px;
+}

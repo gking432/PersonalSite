@@ -1,16 +1,16 @@
 export const BLOCK_SPACING = 11;
-export const JUNCTION_X = [0, BLOCK_SPACING, -15, 0, BLOCK_SPACING, -15];
-export const JUNCTION_LEVEL = [1, 2, 5, 9, 9, 9];
-export const JUNCTION_Z = [0, 0, 0, -13, -13, -13];
+// The original front row stays in place. Four rear-left cells belong to the
+// stadium; the market occupies the rear-right cell, reached from East Market.
+export const JUNCTION_X = [0, BLOCK_SPACING, -15, BLOCK_SPACING];
+export const JUNCTION_LEVEL = [1, 2, 5, 9];
+export const JUNCTION_Z = [0, 0, 0, -13];
 export const JUNCTION_NAMES = [
   "Water Street",
   "Broadway",
   "Plankinton",
-  "River Market",
   "East Market",
-  "Stadium District",
 ];
-export const EMERGENCY_LIMIT = 10;
+export const EMERGENCY_LIMIT = 20;
 export const LEVEL_SIZE = 20;
 export const RESCUE_DURATION = 7;
 export const RESCUE_RELOAD = 20;

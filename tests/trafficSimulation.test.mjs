@@ -266,6 +266,7 @@ test("mixed civilian traffic remains recoverable across levels using signals and
         if (incident.assigned) continue;
         if (!s.dispatchRescue(incident.id)) s.dispatchTow(incident.id);
       }
+      s.acknowledgeExpansion();
       s.tick(1 / 120);
       s.events.length = 0;
     }

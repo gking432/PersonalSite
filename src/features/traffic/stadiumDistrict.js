@@ -1,32 +1,39 @@
+import { FREEWAY, RAMP_IN, RAMP_OUT } from "./districtLayout.js";
+export { FREEWAY } from "./districtLayout.js";
 export const LOTS = {
   stadium: {
-    junction: 5,
-    exitLane: 1,
-    returnLane: 3,
+    junction: 2,
+    exitLane: 2,
+    returnLane: 0,
     capacity: 24,
-    aisle: -27.9,
-    entry: { x: -24.75, z: -13.57 },
-    exit: { x: -24.5, z: -12.43 },
+    aisle: -9.1,
+    entry: { x: -14.43, z: -9.75 },
+    exit: { x: -15.57, z: -9.5 },
   },
   shop: {
-    junction: 4,
-    exitLane: 3,
-    returnLane: 1,
+    junction: 3,
+    exitLane: 2,
+    returnLane: 0,
     capacity: 6,
-    aisle: 23.8,
-    entry: { x: 20.75, z: -12.43 },
-    exit: { x: 20.5, z: -13.57 },
+    aisle: -24.9,
+    entry: { x: 11.57, z: -22.75 },
+    exit: { x: 10.43, z: -22.5 },
   },
 };
 export function parkingSpace(lot, slot) {
   return lot === "stadium"
-    ? { x: slot % 2 ? -26.8 : -29, z: -18.5 + Math.floor(slot / 2) * 0.95 }
-    : { x: slot % 2 ? 25 : 22.6, z: -16 + Math.floor(slot / 2) * 1.45 };
+    ? { x: -20 + Math.floor(slot / 2) * 1.7, z: slot % 2 ? -10.3 : -7.9 }
+    : { x: 9 + Math.floor(slot / 2) * 1.9, z: slot % 2 ? -26.1 : -23.7 };
 }
 function motion(points) {
   let length = 0;
   const path = points.map((p, i) => {
-    if (i) length += Math.hypot(p.x - points[i - 1].x, p.z - points[i - 1].z);
+    if (i)
+      length += Math.hypot(
+        p.x - points[i - 1].x,
+        p.z - points[i - 1].z,
+        (p.y || 0) - (points[i - 1].y || 0),
+      );
     return { ...p, d: length };
   });
   return { path, length, travel: 0 };
@@ -41,6 +48,11 @@ function position(move) {
   return {
     x: a.x + (b.x - a.x) * t,
     z: a.z + (b.z - a.z) * t,
+    y: (a.y || 0) + ((b.y || 0) - (a.y || 0)) * t,
+    pitch: Math.atan2(
+      (b.y || 0) - (a.y || 0),
+      Math.hypot(b.x - a.x, b.z - a.z),
+    ),
     yaw: Math.atan2(b.x - a.x, b.z - a.z),
   };
 }
@@ -90,8 +102,8 @@ export class StadiumDistrict {
       stay: 18 + this.random() * 18,
       ...motion([
         data.entry,
-        { x: data.aisle, z: data.entry.z },
-        { x: data.aisle, z: spot.z },
+        { x: data.entry.x, z: data.aisle },
+        { x: spot.x, z: data.aisle },
         spot,
       ]),
     });
@@ -103,12 +115,7 @@ export class StadiumDistrict {
       id: this.nextId++,
       kind: "out",
       car: { ...car },
-      ...motion([
-        { x: -14.43, z: -22.75 },
-        { x: -13.8, z: -24.1 },
-        { x: -10, z: -25.3 },
-        { x: 21, z: -25.3 },
-      ]),
+      ...motion(RAMP_OUT),
     });
   }
   tick(dt, sim) {
@@ -131,30 +138,49 @@ export class StadiumDistrict {
         id: this.nextId++,
         kind: "in",
         car,
-        ...motion([
-          { x: -42, z: -26.4 },
-          { x: -21, z: -26.4 },
-          { x: -16, z: -25 },
-          { x: -15.57, z: -22.5 },
-        ]),
+        ...motion(RAMP_IN),
       });
       this.nextArrival = arrival ? (this.time % 9 < 4 ? 0.9 : 3.5) : 7;
     }
     if (this.nextShop <= 0) {
-      sim.spawn(0, 4, false, "shop");
+      sim.spawn(1, 3, false, "shop");
       this.nextShop = 10 + this.random() * 8;
     }
     for (const r of this.ramps) {
-      r.travel = Math.min(r.length, r.travel + dt * (r.kind === "in" ? 6 : 7));
+      // Ramp queues remain on the deck and merge only when the surface lane
+      // has space. Arrivals never evict a car waiting at the nearby light.
+      let limit = r.length;
+      for (const ahead of this.ramps)
+        if (ahead !== r && ahead.kind === r.kind && ahead.travel > r.travel)
+          limit = Math.min(limit, ahead.travel - 1.05);
+      r.travel = Math.max(
+        r.travel,
+        Math.min(limit, r.travel + dt * (r.kind === "in" ? 4 : 5)),
+      );
       if (r.travel >= r.length) {
         if (r.kind === "out") {
           r.done = true;
           continue;
         }
+        const blocked = sim.cars.some(
+          (c) =>
+            c.junction === FREEWAY.junction &&
+            c.lane === FREEWAY.returnLane &&
+            Math.abs(c.p + FREEWAY.branch) < 1.15,
+        );
         if (
-          sim.spawn(0, 5, false, this.phase === "arrivals" ? "stadium" : "shop")
-        )
+          !blocked &&
+          sim.spawn(
+            FREEWAY.returnLane,
+            FREEWAY.junction,
+            false,
+            this.phase === "arrivals" ? "stadium" : "shop",
+            -FREEWAY.branch,
+          )
+        ) {
+          sim.cars.at(-1).color = r.car.color;
           r.done = true;
+        }
       }
     }
     this.ramps = this.ramps.filter((r) => !r.done);
@@ -172,8 +198,8 @@ export class StadiumDistrict {
             { stage: "leaving" },
             motion([
               spot,
-              { x: data.aisle, z: spot.z },
-              { x: data.aisle, z: data.exit.z },
+              { x: spot.x, z: data.aisle },
+              { x: data.exit.x, z: data.aisle },
               data.exit,
             ]),
           );

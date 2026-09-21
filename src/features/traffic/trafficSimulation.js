@@ -1,5 +1,5 @@
 import { SignalPrograms } from "./signalPrograms.js";
-import { StadiumDistrict, LOTS } from "./stadiumDistrict.js";
+import { StadiumDistrict, LOTS, FREEWAY } from "./stadiumDistrict.js";
 import { roundaboutPose } from "./roundabout.js";
 import {
   JUNCTION_X,
@@ -97,6 +97,7 @@ export class TrafficSimulation {
   reset() {
     this.started = false;
     this.gameOver = null;
+    this.districtAcknowledged = false;
     this.roundabout = null;
     this.programs = new SignalPrograms();
     this.district = new StadiumDistrict(this.random);
@@ -124,7 +125,7 @@ export class TrafficSimulation {
       water: { color: "green", left: 0 },
       wisconsin: { color: "red", left: 0 },
     };
-    this.extraSignals = Array.from({ length: 3 }, () => ({
+    this.extraSignals = Array.from({ length: JUNCTION_X.length - 3 }, () => ({
       water: { color: "green", left: 0 },
       wisconsin: { color: "red", left: 0 },
     }));
@@ -136,6 +137,17 @@ export class TrafficSimulation {
   }
   get level() {
     return 1 + Math.floor(this.passed / LEVEL_SIZE);
+  }
+  get expansionPending() {
+    return !this.gameOver && this.level >= 9 && !this.districtAcknowledged;
+  }
+  get districtReady() {
+    return this.level >= 9 && this.districtAcknowledged;
+  }
+  acknowledgeExpansion() {
+    if (!this.expansionPending || this.gameOver) return false;
+    this.districtAcknowledged = true;
+    return true;
   }
   get progress() {
     return this.passed % LEVEL_SIZE;
@@ -184,6 +196,7 @@ export class TrafficSimulation {
   toggle(axis, junction = 0) {
     if (
       this.gameOver ||
+      this.expansionPending ||
       this.roundabout === junction ||
       this.level < JUNCTION_LEVEL[junction]
     )
@@ -197,7 +210,13 @@ export class TrafficSimulation {
       signal.left = 0.65;
     } else if (signal.color === "red") signal.color = "green";
   }
-  spawn(lane, junction = 0, ambulance = false, destination = null) {
+  spawn(
+    lane,
+    junction = 0,
+    ambulance = false,
+    destination = null,
+    entry = ENTRY,
+  ) {
     if (this.gameOver) return false;
     const bus = !ambulance && !destination && this.random() < 0.09;
     const length = bus ? 1.08 : ambulance ? 0.92 : 0.72;
@@ -206,7 +225,7 @@ export class TrafficSimulation {
         (c.junction || 0) === junction &&
         c.lane === lane &&
         c.p < -TURN_START &&
-        c.p - ENTRY < (c.length + length) / 2 + 0.2,
+        Math.abs(c.p - entry) < (c.length + length) / 2 + 0.2,
     );
     for (const tail of displaced) {
       // The newest arrival shoves the back of an overflowing queue over the edge.
@@ -228,7 +247,7 @@ export class TrafficSimulation {
       emergencyWait: 0,
       destination,
       roundabout: this.roundabout === junction,
-      p: ENTRY,
+      p: entry,
       speed: 1.4,
       length,
       bus,
@@ -242,11 +261,11 @@ export class TrafficSimulation {
     return true;
   }
   tick(dt) {
-    if (!this.started || this.gameOver) return;
+    if (!this.started || this.gameOver || this.expansionPending) return;
     this.time += dt;
     this.honkCooldown -= dt;
     this.programs.tick(dt, this);
-    if (this.level >= 9) this.district.tick(dt, this);
+    if (this.districtReady) this.district.tick(dt, this);
     this.rescue.tick(dt, this.cars, this.incidents);
     this.tow.tick(
       dt,
@@ -273,43 +292,41 @@ export class TrafficSimulation {
     }
     this.nextArrival -= dt;
     if (this.nextArrival <= 0) {
-      const entries =
-        this.level >= 9
+      const entries = this.districtReady
+        ? [
+            [0, 2],
+            [1, 1],
+            [1, 2],
+            [2, 2],
+            [2, 3],
+            [3, 1],
+          ]
+        : this.level >= 5
           ? [
-              [0, 2],
+              [0, 0],
               [1, 1],
-              [1, 2],
-              [2, 2],
+              [0, 2],
+              [1, 0],
               [2, 3],
-              [3, 0],
-              [4, 0],
+              [1, 2],
+              [2, 0],
+              [2, 2],
             ]
-          : this.level >= 5
+          : this.level >= 2
             ? [
                 [0, 0],
                 [1, 1],
                 [0, 2],
                 [1, 0],
-                [2, 3],
+                [0, 3],
                 [1, 2],
-                [2, 0],
-                [2, 2],
               ]
-            : this.level >= 2
-              ? [
-                  [0, 0],
-                  [1, 1],
-                  [0, 2],
-                  [1, 0],
-                  [0, 3],
-                  [1, 2],
-                ]
-              : [
-                  [0, 0],
-                  [0, 1],
-                  [0, 2],
-                  [0, 3],
-                ];
+            : [
+                [0, 0],
+                [0, 1],
+                [0, 2],
+                [0, 3],
+              ];
       const index = this.arrivalIndex++;
       const [junction, lane] =
         entries[
@@ -521,22 +538,28 @@ export class TrafficSimulation {
       if (green && car.p > (car.roundabout ? stop : STOP_LINE) + 0.02)
         car.committed = true;
       car.stopped = car.speed < 0.1 ? car.stopped + dt : 0;
-      const bridgeWait =
-        this.bridge.gated &&
-        (car.junction || 0) === 0 &&
-        car.lane === 3 &&
-        pose.x < -4.8;
       if (car.ambulance) {
         const atLight =
-          !car.roundabout &&
-          !car.committed &&
-          car.p <= STOP_LINE + 0.05 &&
+          !car.roundabout && !car.committed && car.p <= STOP_LINE + 0.05;
+        // Use world heading, not approach ownership: cars can wait on either
+        // bank, including after crossing a junction or behind a bridge queue.
+        const atBridge =
+          this.bridge.gated &&
+          Math.abs(pose.z) < 1 &&
+          ((pose.x < -7.05 && Math.sin(pose.yaw) > 0.99) ||
+            (pose.x > -4.9 && Math.sin(pose.yaw) < -0.99));
+        const waiting =
           car.speed < 0.1 &&
-          !bridgeWait;
-        car.emergencyWait = atLight ? (car.emergencyWait || 0) + dt : 0;
+          (atLight || atBridge || car.emergencyCause === "bridge");
+        car.emergencyWait = waiting ? (car.emergencyWait || 0) + dt : 0;
+        car.emergencyCause = waiting
+          ? atBridge
+            ? "bridge"
+            : car.emergencyCause || "light"
+          : null;
         if (car.emergencyWait > EMERGENCY_LIMIT + 1e-6)
           this.gameOver = {
-            reason: "An ambulance waited over 10 seconds.",
+            reason: `An ambulance waited over ${EMERGENCY_LIMIT} seconds.`,
             vehicle: car.id,
             junction: car.junction,
             level: this.level,
@@ -600,6 +623,18 @@ export class TrafficSimulation {
       const pose = carPose(car);
       if (car.crashed) return true;
       const junction = car.junction || 0;
+      if (
+        this.districtReady &&
+        car.destination === "freeway" &&
+        junction === FREEWAY.junction &&
+        pose.exitLane === FREEWAY.exitLane &&
+        pose.out !== null &&
+        pose.out >= FREEWAY.branch
+      ) {
+        this.district.freewayExit(car);
+        this.complete(car);
+        return false;
+      }
       const next = this.neighbor(junction, pose.exitLane);
       const distance =
         next === null
@@ -622,7 +657,7 @@ export class TrafficSimulation {
         car.emergencyWait = 0;
         car.committed = car.p > STOP_LINE + 0.02;
       } else if (pose.out !== null && pose.out > EXIT) {
-        if (this.level >= 9 && car.destination && LOTS[car.destination]) {
+        if (this.districtReady && car.destination && LOTS[car.destination]) {
           const lot = LOTS[car.destination];
           if (
             car.junction === lot.junction &&
@@ -631,8 +666,6 @@ export class TrafficSimulation {
           )
             return true;
         }
-        if (this.level >= 9 && car.junction === 5 && pose.exitLane === 2)
-          this.district.freewayExit(car);
         this.complete(car);
         return false;
       }
@@ -651,6 +684,7 @@ export class TrafficSimulation {
       (p) =>
         p.i !== junction &&
         this.level >= JUNCTION_LEVEL[p.i] &&
+        (JUNCTION_LEVEL[p.i] < 9 || this.districtReady) &&
         (dir.dx
           ? p.dz === 0 && p.dx * dir.dx > 0
           : p.dx === 0 && p.dz * dir.dz > 0),
@@ -659,10 +693,7 @@ export class TrafficSimulation {
     return candidates[0]?.i ?? null;
   }
   routeTurn(junction, lane, destination) {
-    const goal =
-      destination === "freeway"
-        ? { junction: 5, exitLane: 2 }
-        : LOTS[destination];
+    const goal = destination === "freeway" ? FREEWAY : LOTS[destination];
     if (!goal) return this.chooseTurn();
     const options = [
       { turn: "straight", lane },
@@ -700,7 +731,7 @@ export class TrafficSimulation {
   placeRoundabout(junction) {
     if (
       this.gameOver ||
-      this.level < 9 ||
+      !this.districtReady ||
       this.roundabout !== null ||
       this.level < JUNCTION_LEVEL[junction] ||
       this.incidents.some((i) => i.junction === junction) ||
@@ -748,10 +779,12 @@ export class TrafficSimulation {
     return {
       started: this.started,
       gameOver: this.gameOver,
+      expansionPending: this.expansionPending,
+      districtReady: this.districtReady,
       emergency: this.emergencySnapshot(),
       roundabout: this.roundabout,
       programs: this.programs.snapshot(),
-      district: this.level >= 9 ? this.district.snapshot() : null,
+      district: this.districtReady ? this.district.snapshot() : null,
       allSignals: JUNCTION_X.map((_, j) => ({
         water: this.signalsAt(j).water.color,
         wisconsin: this.signalsAt(j).wisconsin.color,

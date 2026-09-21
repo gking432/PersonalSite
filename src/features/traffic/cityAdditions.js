@@ -20,10 +20,10 @@ export function createCityAdditions({
     b(14.5, 0.07, 13.9, 0, -0.24, 0, palette.edge);
     b(14.25, 0.12, 13.65, 0, 0.18, 0, palette.pavement);
     b(
-      [2, 5].includes(junction) ? 18 : 20,
+      junction === 2 ? 18 : 20,
       0.045,
       2.75,
-      [2, 5].includes(junction) ? -1 : 0,
+      junction === 2 ? -1 : 0,
       0.28,
       0,
       palette.asphalt,
@@ -32,14 +32,14 @@ export function createCityAdditions({
     for (const s of [-1, 1]) {
       b(2.95, 0.34, 3.3, 0, -0.05, s * 8.35, palette.base);
       b(3.04, 0.07, 3.36, 0, -0.24, s * 8.35, palette.edge);
-      if (![2, 5].includes(junction) || s < 0) {
+      if (junction !== 2 || s < 0) {
         b(3.3, 0.34, 2.95, s * 8.35, -0.05, 0, palette.base);
         b(3.36, 0.07, 3.04, s * 8.35, -0.24, 0, palette.edge);
       }
       for (let p = 2.5; p < 9.8; p += 0.68)
         for (const line of [-0.035, 0.035]) {
           b(0.025, 0.006, 0.42, line, 0.306, s * p, palette.yellow);
-          if (![2, 5].includes(junction) || s * p < 7.8)
+          if (junction !== 2 || s * p < 7.8)
             b(0.42, 0.006, 0.025, s * p, 0.306, line, palette.yellow);
         }
       for (let i = -5; i <= 5; i++) {
@@ -100,12 +100,6 @@ export function createCityAdditions({
         );
       }
     }
-    if (junction === 3) {
-      b(1.62, 0.04, 13.5, -5.92, 0.255, 0, palette.water);
-      // The north row has a fixed crossing; the original lift bridge remains interactive.
-      b(1.9, 0.1, 2.98, -5.92, 0.3, 0, palette.base);
-      b(1.9, 0.04, 2.75, -5.92, 0.37, 0, palette.asphalt);
-    }
     // Batch the new block independently so it can rise into place as one object.
     const groups = new Map();
     for (const child of [...block.children])
@@ -125,7 +119,7 @@ export function createCityAdditions({
   }
   const block = makeBlock(1),
     westBlock = makeBlock(2);
-  const northBlocks = [3, 4, 5].map(makeBlock);
+  const northBlocks = [3].map(makeBlock);
   const blocks = [city, block, westBlock, ...northBlocks];
   // The west riverwalk is already inhabited before its intersection unlocks.
   for (const side of [-1, 1]) {
@@ -340,11 +334,12 @@ export function createCityAdditions({
     westBlock,
     blocks,
     update(sim, dt) {
-      districtGrowth =
-        sim.level >= 9 ? Math.min(1, districtGrowth + dt / 2.4) : 0;
+      districtGrowth = sim.districtReady
+        ? Math.min(1, districtGrowth + dt / 2.4)
+        : 0;
       const districtEased = 1 - Math.pow(1 - districtGrowth, 3);
       northBlocks.forEach((b) => {
-        b.visible = sim.level >= 9;
+        b.visible = sim.districtReady;
         b.position.y = -4 * (1 - districtEased);
       });
       const westTarget = sim.level >= 5;

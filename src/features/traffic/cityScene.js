@@ -1,3 +1,4 @@
+import { DISTRICT_GRID } from "./districtLayout.js";
 import { createStadiumScene } from "./stadiumScene";
 import * as THREE from "three";
 import { APPROACHES, carPose } from "./trafficSimulation";
@@ -908,16 +909,33 @@ export function createCityScene(host, controls, onEscape) {
     const focus = new THREE.Vector3(
       (BLOCK_SPACING / 2) * expansion +
         (JUNCTION_X[2] / 2) * westExpansion -
-        0.8 * (1 - expansion) -
-        9.5 * districtExpansion,
+        0.8 * (1 - expansion),
       0.95,
-      -8.5 * districtExpansion,
+      -11 * districtExpansion,
     ).applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
     camera.position.add(focus);
     camera.lookAt(focus);
-    const span =
-      (24 + 8.5 * expansion + 13 * westExpansion + 42 * districtExpansion) /
+    let span =
+      (24 + 8.5 * expansion + 13 * westExpansion) /
       Math.min(1.6, Math.max(1, width / height));
+    if (districtExpansion > 0) {
+      // Fit the actual nine-cell footprint at any rotation or viewport ratio.
+      camera.updateMatrixWorld();
+      const bounds = DISTRICT_GRID.bounds;
+      let halfWidth = 0,
+        halfHeight = 0;
+      for (const x of [bounds.minX, bounds.maxX])
+        for (const z of [bounds.minZ, bounds.maxZ])
+          for (const y of [0, 6]) {
+            const point = new THREE.Vector3(x, y, z)
+              .applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw)
+              .applyMatrix4(camera.matrixWorldInverse);
+            halfWidth = Math.max(halfWidth, Math.abs(point.x));
+            halfHeight = Math.max(halfHeight, Math.abs(point.y));
+          }
+      const fitted = Math.max(halfHeight, (halfWidth * height) / width) * 2.12;
+      span += (fitted - span) * districtExpansion;
+    }
     camera.left = (-span * width) / height / 2;
     camera.right = -camera.left;
     camera.top = span / 2;
@@ -1041,13 +1059,13 @@ export function createCityScene(host, controls, onEscape) {
       });
       group.visible = !car.remove;
     }
-    if (sim.level >= 9)
+    if (sim.districtReady)
       for (const v of sim.district.visualCars()) {
         live.add(v.id);
         if (!carMeshes.has(v.id)) carMeshes.set(v.id, vehicle(v.car));
         const model = carMeshes.get(v.id);
-        model.group.position.set(v.x, 0, v.z);
-        model.group.rotation.set(0, v.yaw, 0);
+        model.group.position.set(v.x, v.y || 0, v.z);
+        model.group.rotation.set(-(v.pitch || 0), v.yaw, 0, "YXZ");
         [...model.brakes, ...model.blinkers.flat(), ...model.beacons].forEach(
           (l) => {
             l.visible = false;

@@ -8,12 +8,19 @@ import {
 } from "../src/features/traffic/trafficSimulation.js";
 import {
   JUNCTION_X,
+  EMERGENCY_LIMIT,
   JUNCTION_Z,
 } from "../src/features/traffic/cityChallenges.js";
 import {
   LOTS,
   StadiumDistrict,
 } from "../src/features/traffic/stadiumDistrict.js";
+import {
+  DISTRICT_GRID,
+  RAMP_IN,
+  RAMP_OUT,
+  FREEWAY,
+} from "../src/features/traffic/districtLayout.js";
 const run = (s, t) => {
   for (let i = 0; i < Math.round(t * 120); i++) s.tick(1 / 120);
 };
@@ -21,6 +28,7 @@ function setup(level = 1) {
   const s = new TrafficSimulation(() => 0.5);
   s.start();
   s.passed = (level - 1) * 20;
+  if (level >= 9) s.acknowledgeExpansion();
   s.nextArrival = 10000;
   s.nextAmbulance = Infinity;
   s.district.nextArrival = s.district.nextShop = 10000;
@@ -32,12 +40,12 @@ function ambulance(s, lane = 1) {
   Object.assign(c, { p: STOP_LINE - 0.1, speed: 0, turn: "straight" });
   return c;
 }
-test("emergency countdown starts on stopping, crosses ten seconds, freezes the round and resets", () => {
+test("emergency countdown starts on stopping, crosses twenty seconds, freezes the round and resets", () => {
   const s = setup(2),
     a = ambulance(s);
   run(s, 4);
-  assert.ok(Math.abs(s.emergencySnapshot().remaining - 6) < 0.11);
-  run(s, 5.99);
+  assert.ok(Math.abs(s.emergencySnapshot().remaining - 16) < 0.11);
+  run(s, 15.99);
   assert.equal(s.gameOver, null);
   run(s, 0.03);
   assert.equal(s.gameOver.vehicle, a.id);
@@ -63,19 +71,15 @@ test("a light toggle cannot erase waiting time; movement does, and the longest-w
   run(s, 0.4);
   assert.equal(a.emergencyWait, 0);
   assert.equal(s.emergencySnapshot().id, b.id);
-  assert.ok(s.emergencySnapshot().remaining < 8);
+  assert.ok(s.emergencySnapshot().remaining < 18);
 });
-test("moving, crashed, and bridge-held ambulances do not consume the light timer", () => {
-  const s = setup(3);
-  s.spawn(3, 0, true);
-  const a = s.cars[0];
-  Object.assign(a, { p: -8, speed: 0, turn: "straight" });
-  s.bridge.requestedOpen = true;
-  run(s, 12);
-  assert.equal(s.gameOver, null);
-  assert.equal(a.emergencyWait, 0);
-  a.crashed = true;
-  run(s, 11);
+test("moving and crashed ambulances do not consume the emergency timer", () => {
+  const s = setup(2);
+  s.spawn(0, 0, true);
+  run(s, 1);
+  assert.equal(s.emergencySnapshot(), null);
+  s.cars[0].crashed = true;
+  run(s, 25);
   assert.equal(s.gameOver, null);
 });
 test("timers unlock at six and safely alternate greens through amber and clearance", () => {
@@ -138,41 +142,122 @@ test("queue sensors choose the busier approach, and ambulance priority can preem
   assert.equal(s.signals.wisconsin.color, "red");
   assert.equal(s.gameOver, null);
 });
-test("six-block grid opens after level eight, with continuous handoff in both directions of all vertical roads", () => {
-  for (let j = 0; j < 3; j++)
-    for (const down of [false, true]) {
-      const s = setup(9);
-      const from = down ? j + 3 : j,
-        lane = down ? 0 : 2,
-        to = down ? j : j + 3;
-      s.spawn(lane, from);
-      const c = s.cars[0];
-      Object.assign(c, {
-        turn: "straight",
-        p: 6.49,
-        committed: true,
-        speed: 2.4,
-      });
-      const p = carPose(c);
-      s.tick(1 / 120);
-      assert.equal(c.junction, to);
-      assert.ok(Math.hypot(carPose(c).x - p.x, carPose(c).z - p.z) < 0.03);
-      assert.equal(s.progress, 0);
-    }
+test("expansion pauses before activation, acknowledges once, and resets for a new round", () => {
+  const s = setup(8);
+  s.passed = 159;
+  const a = ambulance(s);
+  run(s, 3);
+  s.complete({ lane: 0, junction: 0, p: 10 });
+  assert.ok(s.expansionPending);
+  assert.equal(s.districtReady, false);
+  assert.equal(s.neighbor(1, 2), null);
+  const before = s.snapshot();
+  run(s, 40);
+  assert.deepEqual(s.snapshot(), before);
+  assert.ok(s.acknowledgeExpansion());
+  assert.equal(s.acknowledgeExpansion(), false);
+  assert.equal(s.expansionPending, false);
+  assert.ok(s.districtReady);
+  assert.equal(s.neighbor(1, 2), 3);
+  run(s, 1);
+  assert.ok(a.emergencyWait > 3.9 && a.emergencyWait < 4.1);
+  s.reset();
+  s.passed = 160;
+  assert.ok(s.expansionPending);
+});
+test("an emergency failure on the expansion milestone keeps restart available", () => {
+  const s = setup(8);
+  s.passed = 159;
+  const a = ambulance(s);
+  a.emergencyWait = EMERGENCY_LIMIT;
+  s.spawn(0);
+  Object.assign(s.cars.at(-1), { p: 10, committed: true, turn: "straight" });
+  s.tick(1 / 120);
+  assert.ok(s.gameOver);
+  assert.equal(s.level, 9);
+  assert.equal(s.expansionPending, false);
+  assert.equal(s.districtReady, false);
+});
+test("nine terrain cells contain four stadium cells, one shop and the four connected street blocks", () => {
+  const cells = DISTRICT_GRID.cells.flat();
+  assert.equal(cells.length, 9);
+  assert.equal(cells.filter((c) => c === "stadium").length, 4);
+  assert.equal(cells.filter((c) => c === "shop").length, 1);
+  assert.equal(cells.filter((c) => c === "street").length, JUNCTION_X.length);
+  for (const down of [false, true]) {
+    const s = setup(9),
+      from = down ? 3 : 1,
+      to = down ? 1 : 3;
+    s.spawn(down ? 0 : 2, from);
+    const c = s.cars[0];
+    Object.assign(c, {
+      turn: "straight",
+      p: 6.49,
+      committed: true,
+      speed: 2.4,
+    });
+    const before = carPose(c);
+    s.tick(1 / 120);
+    assert.equal(c.junction, to);
+    assert.ok(
+      Math.hypot(carPose(c).x - before.x, carPose(c).z - before.z) < 0.03,
+    );
+    assert.equal(s.progress, 0);
+  }
   const before = setup(8);
-  assert.equal(before.neighbor(0, 2), null);
-  before.passed = 160;
-  assert.equal(before.neighbor(0, 2), 3);
+  assert.equal(before.neighbor(1, 2), null);
+});
+test("the ramp stays in the grid, rises over an existing street, and joins without a jump", () => {
+  const bounds = DISTRICT_GRID.bounds;
+  for (const p of [...RAMP_IN, ...RAMP_OUT]) {
+    assert.ok(p.x >= bounds.minX && p.x <= bounds.maxX);
+    assert.ok(p.z >= bounds.minZ && p.z <= bounds.maxZ);
+  }
+  for (const route of [RAMP_IN, RAMP_OUT]) {
+    const crossing = route.filter((p) => Math.abs(p.x - 11) < 0.6);
+    assert.ok(crossing.length > 0);
+    assert.ok(crossing.every((p) => p.y > 3 && p.z < -16 && p.z > -21));
+  }
+  const s = setup(9);
+  s.spawn(0, FREEWAY.junction, false, "freeway");
+  const c = s.cars[0];
+  s.signalsAt(3).wisconsin.color = "green";
+  let before;
+  for (let i = 0; i < 2000 && s.cars.includes(c); i++) {
+    before = carPose(c);
+    s.tick(1 / 120);
+  }
+  assert.ok(s.district.ramps.some((r) => r.kind === "out"));
+  const v = s.district.visualCars()[0];
+  assert.ok(Math.hypot(v.x - before.x, v.z - before.z) < 0.03);
+  run(s, 3);
+  assert.ok(s.district.visualCars()[0].y > 2);
+});
+test("backed-up ramp arrivals wait on the deck without evicting the surface queue", () => {
+  const s = setup(9);
+  s.district.nextArrival = 0;
+  s.spawn(1, 3);
+  const tail = s.cars[0];
+  Object.assign(tail, { p: -3.2, crashed: true, speed: 0 });
+  run(s, 20);
+  assert.ok(s.cars.includes(tail));
+  assert.equal(s.overflowed, 0);
+  const arrivals = s.district.ramps
+    .filter((r) => r.kind === "in")
+    .sort((a, b) => b.travel - a.travel);
+  assert.equal(arrivals.length, 5);
+  for (let i = 1; i < arrivals.length; i++)
+    assert.ok(arrivals[i - 1].travel - arrivals[i].travel >= 1.04);
 });
 test("destination routes get freeway arrivals into the stadium and shop, then return them to the freeway", () => {
   for (const [lane, junction, destination] of [
-    [0, 5, "stadium"],
-    [0, 5, "shop"],
-    [3, 5, "freeway"],
-    [1, 4, "freeway"],
+    [1, 3, "stadium"],
+    [1, 3, "shop"],
+    [0, 2, "freeway"],
+    [0, 3, "freeway"],
   ]) {
     const s = setup(9);
-    for (let j = 0; j < 6; j++)
+    for (let j = 0; j < JUNCTION_X.length; j++)
       s.signalsAt(j).water.color = s.signalsAt(j).wisconsin.color = "green";
     s.spawn(lane, junction, false, destination);
     run(s, 60);
@@ -226,7 +311,7 @@ test("stadium wave traffic is bounded, transitions through game and exit rush, a
   s.cars = [];
   s.district.nextArrival = s.district.nextShop = 10000;
   s.district.canPark = () => false;
-  s.spawn(0, 5, false, "stadium");
+  s.spawn(3, 2, false, "stadium");
   const c = s.cars[0];
   run(s, 20);
   assert.ok(s.cars.includes(c));
@@ -236,22 +321,22 @@ test("one roundabout can be placed on an empty eligible crossing and cars follow
   for (let lane = 0; lane < 4; lane++)
     for (const turn of ["left", "straight", "right"]) {
       const s = setup(9);
-      assert.ok(s.placeRoundabout(4));
-      assert.equal(s.placeRoundabout(3), false);
-      s.spawn(lane, 4);
+      assert.ok(s.placeRoundabout(3));
+      assert.equal(s.placeRoundabout(1), false);
+      s.spawn(lane, 3);
       const c = s.cars[0];
       c.turn = turn;
       c.p = -2.17;
       let prev = carPose(c);
-      for (let i = 0; i < 800 && c.junction === 4 && s.cars.includes(c); i++) {
+      for (let i = 0; i < 800 && c.junction === 3 && s.cars.includes(c); i++) {
         s.tick(1 / 120);
         const p = carPose(c);
         assert.ok(Math.hypot(p.x - prev.x, p.z - prev.z) < 0.03);
-        const r = Math.hypot(p.x - JUNCTION_X[4], p.z - JUNCTION_Z[4]);
+        const r = Math.hypot(p.x - JUNCTION_X[3], p.z - JUNCTION_Z[3]);
         assert.ok(r > 1.1, "drove through central island");
         prev = p;
       }
-      assert.ok(c.p > 0 || c.junction !== 4 || !s.cars.includes(c));
+      assert.ok(c.p > 0 || c.junction !== 3 || !s.cars.includes(c));
       assert.equal(s.crashes, 0);
     }
   const s = setup(8);
@@ -299,19 +384,46 @@ test("roundabout admission leaves clearance for buses under sustained mixed arri
   }
 });
 
-test("ambulances queued behind a raised bridge are not mistaken for a light delay", () => {
-  const s = setup(3);
+test("ambulances at either bridge bank, including committed cars and queues, share the 20-second deadline", () => {
+  for (const bank of ["west", "east", "queue"]) {
+    const s = setup(5);
+    s.bridge.requestedOpen = true;
+    s.bridge.nextBoat = Infinity;
+    s.signals.wisconsin.color = "green";
+    if (bank === "queue") {
+      s.spawn(3);
+      Object.assign(s.cars[0], { p: -7.51, speed: 0, turn: "straight" });
+    }
+    s.spawn(bank === "east" ? 1 : 3, 0, true);
+    const a = s.cars.at(-1);
+    Object.assign(a, {
+      p: bank === "east" ? 4.34 : bank === "queue" ? -8.6 : -7.61,
+      speed: 0,
+      turn: "straight",
+      committed: bank === "east",
+    });
+    run(s, 12);
+    assert.equal(s.gameOver, null);
+    assert.ok(a.emergencyWait > 11, bank);
+    assert.ok(s.emergencySnapshot().remaining <= 9, bank);
+    run(s, 10);
+    assert.equal(s.gameOver.vehicle, a.id, bank);
+  }
+});
+test("closing the bridge keeps its timer until traffic moves, then clears it", () => {
+  const s = setup(5);
   s.bridge.requestedOpen = true;
-  s.spawn(3);
-  Object.assign(s.cars[0], { p: -7.51, speed: 0, turn: "straight" });
-  s.spawn(3, 0, true);
-  s.cars[1].turn = "straight";
-  run(s, 13);
-  assert.equal(s.gameOver, null);
-  assert.equal(s.emergencySnapshot(), null);
-  // The separate red light on the far side of the junction still has a deadline.
+  s.bridge.nextBoat = Infinity;
   s.spawn(1, 0, true);
-  Object.assign(s.cars.at(-1), { p: -2.26, speed: 0, turn: "straight" });
-  run(s, 10.02);
-  assert.ok(s.gameOver);
+  const a = s.cars[0];
+  Object.assign(a, { p: 4.34, speed: 0, committed: true, turn: "straight" });
+  run(s, 12);
+  s.toggleBridge();
+  assert.ok(a.emergencyWait > 11.9);
+  run(s, 1);
+  assert.ok(a.emergencyWait > 12.9);
+  run(s, 2);
+  assert.equal(a.emergencyWait, 0);
+  assert.equal(s.gameOver, null);
+  assert.equal(EMERGENCY_LIMIT, 20);
 });
