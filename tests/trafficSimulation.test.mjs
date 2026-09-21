@@ -75,7 +75,7 @@ test("amber transitions to red but committed cars finish crossing", () => {
   run(s, 5);
   assert.equal(s.passed, 1);
 });
-test("conflicting greens can crash; one penalty per incident and wrecks clear", () => {
+test("crashes block the road until a requested helicopter pickup", () => {
   const s = isolated();
   s.toggle("wisconsin");
   s.spawn(0);
@@ -91,10 +91,22 @@ test("conflicting greens can crash; one penalty per incident and wrecks clear", 
   s.cars[0].p = -0.57;
   s.tick(1 / 120);
   assert.equal(s.crashes, 1);
-  assert.equal(s.score, -3);
-  run(s, 2);
+  assert.equal(s.progress, 0);
+  run(s, 4);
   assert.equal(s.crashes, 1);
+  assert.equal(s.cars.length, 2);
+  const incident = s.incidents[0].id;
+  assert.equal(s.dispatchRescue(incident), true);
+  assert.equal(s.dispatchRescue(incident), false);
+  run(s, 4.5);
+  assert.ok(s.cars.every((c) => c.lifted));
+  run(s, 2.6);
   assert.equal(s.cars.length, 0);
+  assert.equal(s.incidents.length, 0);
+  assert.ok(s.rescue.cooldown > 14);
+  assert.equal(s.progress, 0);
+  run(s, 15);
+  assert.equal(s.rescue.cooldown, 0);
 });
 test("opposing cars on the same street pass without colliding", () => {
   const s = isolated();
@@ -230,7 +242,7 @@ test("a turning follower keeps its distance after joining an outgoing lane", () 
   }
   assert.equal(s.crashes, 0);
 });
-test("mixed turns and buses keep flowing through repeated safe signal cycles", () => {
+test("mixed traffic remains recoverable across levels using signals and rescue", () => {
   for (const seed of [5, 8]) {
     let n = seed;
     const s = new TrafficSimulation(
@@ -239,12 +251,16 @@ test("mixed turns and buses keep flowing through repeated safe signal cycles", (
     s.start();
     for (let frame = 0; frame < 300 * 120; frame++) {
       const phase = (frame / 120) % 30;
-      s.signals.water.color = phase < 10 ? "green" : "red";
-      s.signals.wisconsin.color = phase >= 15 && phase < 25 ? "green" : "red";
+      for (const signals of [s.signals, s.signals2]) {
+        signals.water.color = phase < 10 ? "green" : "red";
+        signals.wisconsin.color = phase >= 15 && phase < 25 ? "green" : "red";
+      }
+      if (s.incidents.length && !s.rescue.active && s.rescue.cooldown === 0)
+        s.dispatchRescue(s.incidents[0].id);
       s.tick(1 / 120);
       s.events.length = 0;
     }
-    assert.equal(s.crashes, 0, `seed ${seed}`);
+    assert.ok(s.level >= 8, `seed ${seed} stopped progressing`);
     assert.ok(
       s.passed > 180,
       `traffic deadlock at seed ${seed}: ${s.passed} passed`,

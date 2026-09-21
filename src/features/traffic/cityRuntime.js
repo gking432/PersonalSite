@@ -1,18 +1,19 @@
 import { TrafficSimulation } from "./trafficSimulation";
 import { createCityScene } from "./cityScene";
 
-export function createCityRuntime(host, buttons, onState) {
+export function createCityRuntime(host, controls, onState) {
   const sim = new TrafficSimulation();
   let pageCars = null,
     pageLoading = null,
     pendingFalls = [];
-  const scene = createCityScene(host, buttons, (point) => {
+  const scene = createCityScene(host, controls, (point) => {
     if (pageCars) pageCars.add(point);
     else {
       pendingFalls.push(point);
       if (pendingFalls.length > 16) pendingFalls.shift();
     }
   });
+  let cleanupMode = false;
   let paused = false,
     enabled = true,
     visible = true,
@@ -22,7 +23,7 @@ export function createCityRuntime(host, buttons, onState) {
     accumulator = 0,
     drag = null,
     signature = "";
-  const state = () => ({ ...sim.snapshot(), paused, ready: true });
+  const state = () => ({ ...sim.snapshot(), paused, cleanupMode, ready: true });
   const running = () =>
     sim.started &&
     !paused &&
@@ -34,7 +35,15 @@ export function createCityRuntime(host, buttons, onState) {
     const next = state();
     const key = JSON.stringify([
       next.started,
-      next.score,
+      next.level,
+      next.progress,
+      next.signals2,
+      next.incidents,
+      next.rescue,
+      next.bridge.phase,
+      next.bridge.requestedOpen,
+      next.bridge.waiting,
+      cleanupMode,
       next.signals,
       paused,
     ]);
@@ -93,18 +102,38 @@ export function createCityRuntime(host, buttons, onState) {
     notify();
     schedule();
   }
-  function toggleSignal(axis) {
+  function toggleSignal(axis, junction = 0) {
     if (!enabled || disposed) return;
-    sim.toggle(axis);
+    sim.toggle(axis, junction);
     preparePage();
     scene.update(sim);
     scene.render();
     notify();
     schedule();
   }
+  function toggleCleanup() {
+    if (paused || sim.rescue.active || sim.rescue.cooldown > 0) return;
+    cleanupMode = !cleanupMode;
+    notify();
+  }
+  function rescue(id) {
+    if (!cleanupMode || paused || !enabled) return;
+    if (sim.dispatchRescue(id)) {
+      cleanupMode = false;
+      notify();
+      schedule();
+    }
+  }
+  function toggleBridge() {
+    if (!enabled || paused) return;
+    sim.toggleBridge();
+    notify();
+    schedule();
+  }
   function reset() {
     stop();
     sim.reset();
+    cleanupMode = false;
     pendingFalls = [];
     pageCars?.clear();
     paused = false;
@@ -137,7 +166,10 @@ export function createCityRuntime(host, buttons, onState) {
     drag = null;
   }
   function key(e) {
-    if (["Enter", " "].includes(e.key)) {
+    if (e.key === "Escape") {
+      cleanupMode = false;
+      notify();
+    } else if (["Enter", " "].includes(e.key)) {
       e.preventDefault();
       start();
     } else if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
@@ -172,6 +204,9 @@ export function createCityRuntime(host, buttons, onState) {
   const api = {
     start,
     toggleSignal,
+    toggleCleanup,
+    rescue,
+    toggleBridge,
     reset,
     togglePause,
     pointerDown,

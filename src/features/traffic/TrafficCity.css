@@ -33,15 +33,50 @@
   color: var(--ink-faint);
   font-size: 1.5rem;
 }
-.traffic-city__score {
+.traffic-city__progress {
   position: absolute;
-  right: 12px;
-  top: 8px;
+  inset: 8px 12px auto;
   z-index: 2;
-  color: #858585;
-  font: 400 14px var(--font-sans);
-  font-variant-numeric: tabular-nums;
   pointer-events: none;
+}
+.traffic-city__level {
+  display: block;
+  margin-bottom: 9px;
+  color: #8c8b83;
+  font: 400 11px var(--font-sans);
+  text-align: right;
+}
+.traffic-city__bar {
+  height: 3px;
+  border-radius: 3px;
+  background: #e8e5dd;
+  overflow: hidden;
+}
+.traffic-city__bar > span {
+  display: block;
+  height: 100%;
+  background: #6c8a73;
+  transition: width 240ms ease;
+}
+.traffic-city[data-expanded="true"] .traffic-city__signal {
+  width: 36px;
+  height: 36px;
+}
+.traffic-city__wreck {
+  border: 1px dashed #b8824b !important;
+  border-radius: 50%;
+  color: #a06f36;
+  font-size: 23px;
+  background: #fff8e988 !important;
+}
+.traffic-city__controls button:disabled {
+  opacity: 0.5;
+  cursor: default;
+  text-decoration: none;
+}
+.traffic-city__controls button[aria-pressed="true"] {
+  color: #27543b;
+  text-decoration: underline;
 }
 .traffic-city__signal {
   position: absolute;
@@ -106,5 +141,7 @@
   pointer-events: none;
 }
 @media (max-width: 700px) {
-  .traffic-city__overflow { display: none; }
+  .traffic-city__overflow {
+    display: none;
+  }
 }

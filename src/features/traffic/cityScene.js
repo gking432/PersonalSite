@@ -1,9 +1,13 @@
 import * as THREE from "three";
 import { APPROACHES, carPose } from "./trafficSimulation";
 
+import { createCityAdditions } from "./cityAdditions";
+import { BLOCK_SPACING } from "./cityChallenges";
+
 import { SIGNALS } from "./signals";
 
-export function createCityScene(host, buttons, onEscape) {
+export function createCityScene(host, controls, onEscape) {
+  const buttons = controls.signals;
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.7));
   renderer.shadowMap.enabled = true;
@@ -185,7 +189,9 @@ export function createCityScene(host, buttons, onEscape) {
         palette.edge,
       );
   }
-  box(14.25, 0.045, 2.75, 0, 0.28, 0, palette.asphalt);
+  // Leave the river span open for the two moving bridge leaves.
+  box(0.275, 0.045, 2.75, -6.9875, 0.28, 0, palette.asphalt);
+  box(12.175, 0.045, 2.75, 1.0375, 0.28, 0, palette.asphalt);
   box(2.75, 0.045, 13.65, 0, 0.28, 0, palette.asphalt);
   // Longer road arms hold eight cars per approach without making the buildings smaller.
   for (const q of [-1, 1]) {
@@ -235,7 +241,8 @@ export function createCityScene(host, buttons, onEscape) {
     for (let p = 2.5; p < 9.8; p += 0.68) {
       for (let lane of [-0.035, 0.035]) {
         box(0.025, 0.006, 0.42, lane, 0.306, q * p, palette.yellow);
-        box(0.42, 0.006, 0.025, q * p, 0.306, lane, palette.yellow);
+        if (q * p < -6.85 || q * p > -5.05)
+          box(0.42, 0.006, 0.025, q * p, 0.306, lane, palette.yellow);
       }
     }
     for (let i = -5; i <= 5; i++) {
@@ -245,10 +252,6 @@ export function createCityScene(host, buttons, onEscape) {
     box(1.08, 0.009, 0.045, -q * 0.64, 0.308, q * 2.0, palette.white);
     box(0.045, 0.009, 1.08, q * 2.0, 0.308, q * 0.64, palette.white);
     // Bridge balustrades and riverwalk railing.
-    box(1.9, 0.12, 0.12, -5.95, 0.45, q * 1.49, palette.terra);
-    rod([-6.85, 0.73, q * 1.49], [-5.05, 0.73, q * 1.49], 0.025, palette.dark);
-    for (let x = -6.8; x < -5; x += 0.23)
-      rod([x, 0.45, q * 1.49], [x, 0.73, q * 1.49], 0.015, palette.dark);
     for (let z = 2.25; z < 6.5; z += 0.36)
       rod([-5.03, 0.3, q * z], [-5.03, 0.65, q * z], 0.016, palette.dark);
     rod([-5.03, 0.66, q * 2.2], [-5.03, 0.66, q * 6.55], 0.025, palette.dark);
@@ -533,17 +536,39 @@ export function createCityScene(host, buttons, onEscape) {
   const lampMaterials = {
     red: bulbMaterial("#f35b43"),
     amber: bulbMaterial("#ffc849"),
+    blue: bulbMaterial("#6495ff"),
     green: bulbMaterial("#59e09a"),
     off: material("#263c32"),
   };
-  const signals = SIGNALS.map((s) => {
-    cylinder(0.043, 1.4, s.postX, 1.08, s.postZ, palette.dark);
-    cylinder(0.095, 0.15, s.postX, 0.47, s.postZ, palette.dark);
-    rod([s.postX, 1.72, s.postZ], [s.x, 1.72, s.z], 0.035, palette.dark);
+  const additions = createCityAdditions({
+    city,
+    palette,
+    box,
+    mesh,
+    cylinder,
+    rod,
+    unitBox,
+  });
+  const signals = SIGNALS.map((config) => {
+    const s = {
+      ...config,
+      x: config.x - config.junction * BLOCK_SPACING,
+      postX: config.postX - config.junction * BLOCK_SPACING,
+    };
+    const parent = s.junction ? additions.block : city;
+    cylinder(0.043, 1.4, s.postX, 1.08, s.postZ, palette.dark, parent);
+    cylinder(0.095, 0.15, s.postX, 0.47, s.postZ, palette.dark, parent);
+    rod(
+      [s.postX, 1.72, s.postZ],
+      [s.x, 1.72, s.z],
+      0.035,
+      palette.dark,
+      parent,
+    );
     const head = new THREE.Group();
     head.position.set(s.x, 1.51, s.z);
     head.rotation.y = s.yaw;
-    city.add(head);
+    parent.add(head);
     box(0.3, 0.81, 0.22, 0, 0, 0, palette.dark, head);
     const bulbs = [];
     for (let i = 0; i < 3; i++) {
@@ -573,7 +598,7 @@ export function createCityScene(host, buttons, onEscape) {
       }
       bulbs.push(pair);
     }
-    return { ...s, head, bulbs };
+    return { ...config, head, bulbs };
   });
   for (const s of [SIGNALS[1], SIGNALS[2]]) {
     label(
@@ -621,14 +646,23 @@ export function createCityScene(host, buttons, onEscape) {
     const group = new THREE.Group();
     city.add(group);
     const l = car.length,
-      paint = colors[car.color];
-    box(0.39, car.bus ? 0.31 : 0.18, l, 0, 0.48, 0, paint, group);
+      paint = car.ambulance ? palette.white : colors[car.color];
+    box(
+      0.39,
+      car.bus || car.ambulance ? 0.31 : 0.18,
+      l,
+      0,
+      0.48,
+      0,
+      paint,
+      group,
+    );
     box(
       0.33,
-      car.bus ? 0.22 : 0.17,
-      car.bus ? l * 0.8 : l * 0.48,
+      car.bus || car.ambulance ? 0.22 : 0.17,
+      car.bus || car.ambulance ? l * 0.8 : l * 0.48,
       0,
-      car.bus ? 0.68 : 0.65,
+      car.bus || car.ambulance ? 0.68 : 0.65,
       -0.045,
       palette.glass,
       group,
@@ -636,9 +670,9 @@ export function createCityScene(host, buttons, onEscape) {
     box(
       0.35,
       0.035,
-      car.bus ? l * 0.85 : l * 0.43,
+      car.bus || car.ambulance ? l * 0.85 : l * 0.43,
       0,
-      car.bus ? 0.8 : 0.75,
+      car.bus || car.ambulance ? 0.8 : 0.75,
       -0.045,
       paint,
       group,
@@ -681,15 +715,65 @@ export function createCityScene(host, buttons, onEscape) {
           group,
         ),
       );
-    return { group, brakes };
+    const blinkers = [-1, 1].map((side) =>
+      [-1, 1].map((end) =>
+        box(
+          0.065,
+          0.04,
+          0.024,
+          side * 0.17,
+          0.54,
+          end * (l / 2 + 0.022),
+          lampMaterials.amber,
+          group,
+        ),
+      ),
+    );
+    const beacons = [];
+    if (car.ambulance) {
+      const blue = lampMaterials.blue;
+      beacons.push(
+        box(0.15, 0.08, 0.13, -0.1, 0.86, 0.19, lampMaterials.red, group),
+      );
+      beacons.push(box(0.15, 0.08, 0.13, 0.1, 0.86, 0.19, blue, group));
+      for (const side of [-1, 1]) {
+        box(
+          0.018,
+          0.16,
+          0.055,
+          side * 0.202,
+          0.63,
+          -0.21,
+          lampMaterials.red,
+          group,
+        );
+        box(
+          0.019,
+          0.05,
+          0.18,
+          side * 0.203,
+          0.63,
+          -0.21,
+          lampMaterials.red,
+          group,
+        );
+      }
+    }
+    return { group, brakes, blinkers, beacons };
   }
   const effects = [];
   const effectTemplates = {};
-  for (const kind of ["passed", "crash", "honk"]) {
+  for (const kind of ["passed", "crash", "honk", "toot", "thanks"]) {
     effectTemplates[kind] = label(
-      kind === "honk" ? "*honk*" : kind === "passed" ? "+1" : "−3",
-      kind === "honk" ? 2.2 : 0.63,
-      kind === "honk" ? 0.7 : 0.28,
+      {
+        honk: "*honk*",
+        toot: "*toot*",
+        thanks: "thanks!",
+        passed: "",
+        crash: "*crash*",
+      }[kind],
+      2.2,
+      0.7,
       0,
       0,
       0,
@@ -701,18 +785,19 @@ export function createCityScene(host, buttons, onEscape) {
             : kind === "passed"
               ? "#416049"
               : "#b45f45",
-        size: kind === "honk" ? 160 : 100,
+        size: 150,
         parent: new THREE.Group(),
       },
     );
   }
-  effectTemplates.honk.material.depthTest = false;
+  for (const template of Object.values(effectTemplates))
+    template.material.depthTest = false;
   function effect(event) {
     const group = new THREE.Group();
     city.add(group);
     group.position.set(event.x, event.kind === "honk" ? 1.45 : 0.95, event.z);
     const text = effectTemplates[event.kind].clone();
-    if (event.kind === "honk") text.renderOrder = 50;
+    text.renderOrder = 50;
     group.add(text);
     effects.push({ group, text, life: 1.3, honk: event.kind === "honk" });
     if (event.kind === "crash") {
@@ -787,6 +872,8 @@ export function createCityScene(host, buttons, onEscape) {
       sz: lane.dx,
     });
   }
+  let expansion = 0,
+    currentIncidents = [];
   let yaw = -0.12,
     pitch = 0.77,
     width = 1,
@@ -800,7 +887,19 @@ export function createCityScene(host, buttons, onEscape) {
       Math.sin(pitch) * distance,
       Math.cos(0.7) * Math.cos(pitch) * distance,
     );
-    camera.lookAt(0, 0.95, 0);
+    const focus = new THREE.Vector3(
+      (BLOCK_SPACING / 2) * expansion,
+      0.95,
+      0,
+    ).applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
+    camera.position.add(focus);
+    camera.lookAt(focus);
+    const span = 22.2 + 10.3 * expansion;
+    camera.left = (-span * width) / height / 2;
+    camera.right = -camera.left;
+    camera.top = span / 2;
+    camera.bottom = -span / 2;
+    camera.updateProjectionMatrix();
     camera.updateMatrixWorld();
     city.updateMatrixWorld(true);
   }
@@ -808,13 +907,28 @@ export function createCityScene(host, buttons, onEscape) {
     const p = point.clone().applyMatrix4(city.matrixWorld).project(camera);
     return { x: ((p.x + 1) * width) / 2, y: ((1 - p.y) * height) / 2 };
   }
-  function positionButtons() {
-    signals.forEach((s, i) => {
-      const p = project(s.head.position);
-      if (buttons[i])
-        buttons[i].style.transform = `translate(${p.x - 23}px, ${p.y - 23}px)`;
-    });
+  function signalPoint(s) {
+    return new THREE.Vector3(
+      s.x,
+      1.51 + (s.junction ? additions.block.position.y : 0),
+      s.z,
+    );
   }
+  function place(button, point) {
+    if (!button) return;
+    const p = project(point);
+    button.style.transform = `translate(${p.x - button.offsetWidth / 2}px, ${p.y - button.offsetHeight / 2}px)`;
+  }
+  function positionButtons() {
+    signals.forEach((s, i) => place(buttons[i], signalPoint(s)));
+    place(controls.bridge.current, new THREE.Vector3(-5.95, 0.6, 0));
+    for (const incident of currentIncidents)
+      place(
+        controls.wrecks.get(incident.id),
+        new THREE.Vector3(incident.x, 0.65, incident.z),
+      );
+  }
+
   function render() {
     if (disposed) return;
     view();
@@ -835,19 +949,44 @@ export function createCityScene(host, buttons, onEscape) {
     render();
   }
   function update(sim, dt = 0) {
+    const extra = additions.update(sim, dt);
+    expansion = extra.growth;
+    currentIncidents = sim.incidents;
     // Transfer overflow meshes before removing cars no longer in the simulation.
     for (const event of sim.events.splice(0)) {
       if (event.kind === "overflow") spill(event);
-      else effect(event);
+      else if (event.kind !== "level") effect(event);
     }
     const live = new Set();
     for (const car of sim.cars) {
       live.add(car.id);
       if (!carMeshes.has(car.id)) carMeshes.set(car.id, vehicle(car));
-      const { group, brakes } = carMeshes.get(car.id),
+      const { group, brakes, blinkers, beacons } = carMeshes.get(car.id),
         p = carPose(car);
-      group.position.set(p.x, 0, p.z);
-      group.rotation.y = p.yaw + (car.crashed ? 0.18 : 0);
+      const cargo =
+        car.crashed && extra.cargo?.id === car.incident ? extra.cargo : null;
+      group.position.set(
+        p.x + (cargo?.dx || 0),
+        cargo?.y || 0,
+        p.z + (cargo?.dz || 0),
+      );
+      group.rotation.set(
+        cargo?.y > 0 ? 0.14 : 0,
+        p.yaw + (car.crashed ? 0.18 : 0),
+        0,
+      );
+      const blink = Math.sin(sim.time * 9) > 0;
+      blinkers.forEach((pair, i) =>
+        pair.forEach((b) => {
+          b.visible =
+            blink &&
+            (car.crashed ||
+              (p.out === null && car.turn === (i === 0 ? "right" : "left")));
+        }),
+      );
+      beacons.forEach((b, i) => {
+        b.visible = Math.floor(sim.time * 10) % 2 === i;
+      });
       brakes.forEach((m) => {
         m.visible = car.speed < 0.7 || !!car.crashed;
       });
@@ -862,7 +1001,8 @@ export function createCityScene(host, buttons, onEscape) {
       s.bulbs.forEach((pair, i) =>
         pair.forEach((b) => {
           b.material =
-            sim.signals[s.axis].color === ["red", "amber", "green"][i]
+            sim.signalsAt(s.junction)[s.axis].color ===
+            ["red", "amber", "green"][i]
               ? lampMaterials[["red", "amber", "green"][i]]
               : lampMaterials.off;
         }),
@@ -925,11 +1065,15 @@ export function createCityScene(host, buttons, onEscape) {
         effects.splice(i, 1);
       }
     }
+    boat.visible = sim.level < 3;
     boat.position.y = 0.38 + Math.sin(sim.time * 1.6) * 0.022;
   }
   function clear() {
     for (const m of carMeshes.values()) city.remove(m.group);
     carMeshes.clear();
+    additions.clear();
+    expansion = 0;
+    currentIncidents = [];
     for (const f of effects) {
       city.remove(f.group);
     }
@@ -953,12 +1097,22 @@ export function createCityScene(host, buttons, onEscape) {
     },
     diagnostics: () => ({
       falling: falling.length,
+      expansion,
+      blinkersOn: [...carMeshes.values()]
+        .flatMap((m) => m.blinkers.flat())
+        .filter((b) => b.visible).length,
+      beaconsOn: [...carMeshes.values()]
+        .flatMap((m) => m.beacons)
+        .filter((b) => b.visible).length,
+      ambulances: [...carMeshes.values()].filter((m) => m.beacons.length)
+        .length,
       effects: effects.length,
       honks: effects.filter((f) => f.honk).length,
     }),
     targets: () =>
       signals.map((s, i) => ({
-        ...project(s.head.position),
+        ...project(signalPoint(s)),
+        junction: s.junction,
         axis: s.axis,
         index: i,
       })),
