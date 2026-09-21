@@ -2,7 +2,7 @@ import { inkDistanceField } from "./marblePhysics";
 
 const PAD = 16;
 const excluded =
-  '.navbar, .mobile-menu, .kinetic-machine, .marble-controls, script, style, svg, canvas, [aria-hidden="true"], button';
+  '.navbar, .mobile-menu, .kinetic-machine, .marble-controls, .traffic-city, script, style, svg, canvas, [aria-hidden="true"], button';
 
 // Group text-node ranges into actual browser line boxes. This preserves font
 // metrics, wrapping, nested emphasis, and letter spacing without changing the DOM.

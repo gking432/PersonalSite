@@ -157,6 +157,7 @@ try {
     sim.cars[1].p = 0.57;
     sim.cars.forEach((c) => {
       c.committed = true;
+      c.turn = "straight";
       c.speed = 0;
     });
     return sim.crashes;
@@ -170,7 +171,7 @@ try {
   );
   await page.screenshot({ path: `${output}/collision.png` });
   await page.waitForFunction(() => window.__trafficCity.sim.cars.length === 0);
-  // Force the final fraction of a blocked queue timer; the unit test runs its full duration.
+  // Build full queues on the actual extended road arms, then overflow each one.
   await page
     .getByRole("button", { name: "Reset traffic", exact: true })
     .click();
@@ -181,25 +182,96 @@ try {
     })
     .focus();
   await page.keyboard.press("Enter");
+  await page
+    .getByRole("button", {
+      name: "Water Street northbound light: green",
+      exact: true,
+    })
+    .click();
+  await page.waitForFunction(
+    () => window.__trafficCity.sim.signals.water.color === "red",
+  );
   await page.evaluate(() => {
     const sim = window.__trafficCity.sim;
     sim.cars = [];
     sim.nextArrival = 10000;
-    for (let i = 0; i < 6; i++) {
-      sim.spawn(1);
-      const c = sim.cars.at(-1);
-      c.bus = false;
-      c.length = 0.72;
-      c.p = -2.16 - i * 0.92;
-      c.speed = 0;
-    }
-    sim.blocked[1] = 11.9;
+    const random = sim.random;
+    sim.random = () => 0.5;
+    for (let lane = 0; lane < 4; lane++)
+      for (let i = 0; i < 8; i++) {
+        sim.spawn(lane);
+        const c = sim.cars.at(-1);
+        c.p = -2.16 - i * 0.92;
+        c.speed = 0;
+        c.stopped = 7;
+        c.nextHonk = 7.01;
+      }
+    sim.random = random;
   });
-  await page.waitForFunction(() => window.__trafficCity.sim.jammed);
-  assert.match(
-    await page.locator(".traffic-city__caption").innerText(),
-    /Gridlock/,
+  await page.waitForFunction(
+    () => window.__trafficCity.snapshot().scene.honks > 0,
   );
+  await page.screenshot({ path: `${output}/honk-queues.png` });
+  await page.evaluate(() => {
+    const sim = window.__trafficCity.sim;
+    for (let n = 0; n < 3; n++)
+      for (let lane = 0; lane < 4; lane++) sim.spawn(lane);
+  });
+  await page.waitForFunction(
+    () => window.__trafficCity.snapshot().scene.falling > 0,
+  );
+  await page.screenshot({ path: `${output}/tipping.png` });
+  await page.waitForFunction(
+    () => window.__trafficCity.snapshot().page?.escaped >= 12,
+  );
+  assert.equal(await page.locator(".traffic-city__overflow").count(), 1);
+  const overflowStyle = await page
+    .locator(".traffic-city__overflow")
+    .evaluate((el) => getComputedStyle(el).pointerEvents);
+  assert.equal(overflowStyle, "none");
+  await page.waitForFunction(
+    () => window.__trafficCity.snapshot().page.contacts > 0,
+  );
+  await page.screenshot({ path: `${output}/page-cars.png` });
+  assert.equal(
+    await page
+      .getByRole("button", {
+        name: "Wisconsin Avenue westbound light: red",
+        exact: true,
+      })
+      .isEnabled(),
+    true,
+  );
+  // Page cars continue falling when the miniature scrolls offscreen.
+  await page.locator(".studio-approach").scrollIntoViewIfNeeded();
+  await page.waitForFunction(() => !window.__trafficCity.snapshot().visible);
+  const contacts = await page.evaluate(
+    () => window.__trafficCity.snapshot().page.contacts,
+  );
+  await page.waitForFunction(
+    (before) => window.__trafficCity.snapshot().page.contacts > before,
+    contacts,
+  );
+  await page.screenshot({ path: `${output}/page-cars-scrolled.png` });
+  await page.evaluate(() => scrollTo(0, 0));
+  await page.waitForFunction(() => window.__trafficCity.snapshot().visible);
+  await page
+    .getByRole("button", { name: "Pause traffic", exact: true })
+    .click();
+  const held = await page.evaluate(
+    () => window.__trafficCity.snapshot().page.contacts,
+  );
+  await page.waitForTimeout(300);
+  assert.equal(
+    await page.evaluate(() => window.__trafficCity.snapshot().page.contacts),
+    held,
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  assert.equal(
+    await page.locator(".traffic-city__overflow").isVisible(),
+    false,
+  );
+  await page.setViewportSize({ width: 1440, height: 1000 });
   await page
     .getByRole("button", { name: "Reset traffic", exact: true })
     .click();
@@ -208,9 +280,14 @@ try {
     false,
   );
   assert.equal(await page.locator(".traffic-city__score").count(), 0);
+  assert.equal(
+    await page.evaluate(() => window.__trafficCity.snapshot().page.cars),
+    0,
+  );
   await page.locator('.nav-links a[href="/about"]').click();
   await page.waitForURL("**/about");
   await page.waitForFunction(() => !window.__trafficCity);
+  assert.equal(await page.locator(".traffic-city__overflow").count(), 0);
   await page.locator(".navbar .logo").click();
   await page.waitForURL(base + "/");
   await page.waitForFunction(() => window.__trafficCity?.snapshot().ready);
@@ -239,7 +316,12 @@ try {
           "pause/resume",
           "narrow-screen and offscreen suspension",
           "conflicting-green crash and cleanup",
-          "gridlock and reset",
+          "eight-car queues on extended roads",
+          "waiting-car honk animations",
+          "3D overflow into page cars",
+          "page-car collisions with text",
+          "overflow keeps running after miniature scrolls away",
+          "overflow pause, mobile hiding, and reset",
           "keyboard activation",
           "route cleanup and remount",
           "mobile skips Three.js",

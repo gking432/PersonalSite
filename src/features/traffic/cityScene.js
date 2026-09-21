@@ -1,9 +1,9 @@
 import * as THREE from "three";
-import { APPROACHES, carPosition } from "./trafficSimulation";
+import { APPROACHES, carPose } from "./trafficSimulation";
 
 import { SIGNALS } from "./signals";
 
-export function createCityScene(host, buttons) {
+export function createCityScene(host, buttons, onEscape) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.7));
   renderer.shadowMap.enabled = true;
@@ -187,6 +187,25 @@ export function createCityScene(host, buttons) {
   }
   box(14.25, 0.045, 2.75, 0, 0.28, 0, palette.asphalt);
   box(2.75, 0.045, 13.65, 0, 0.28, 0, palette.asphalt);
+  // Longer road arms hold eight cars per approach without making the buildings smaller.
+  for (const q of [-1, 1]) {
+    for (const horizontal of [false, true]) {
+      const arm = (w, h, d, y, mat) =>
+        box(
+          horizontal ? d : w,
+          h,
+          horizontal ? w : d,
+          horizontal ? q * 8.35 : 0,
+          y,
+          horizontal ? 0 : q * 8.35,
+          mat,
+        );
+      arm(2.95, 0.34, 3.3, -0.05, palette.base);
+      arm(3.04, 0.07, 3.36, -0.24, palette.edge);
+      arm(2.9, 0.12, 3.3, 0.18, palette.pavement);
+      arm(2.75, 0.045, 3.3, 0.28, palette.asphalt);
+    }
+  }
   for (let q of [-1, 1]) {
     // Four raised sidewalks and scored paving joints.
     for (let r of [-1, 1]) {
@@ -213,7 +232,7 @@ export function createCityScene(host, buttons) {
         );
     }
     // Broken center lines never run through the intersection.
-    for (let p = 2.5; p < 6.6; p += 0.68) {
+    for (let p = 2.5; p < 9.8; p += 0.68) {
       for (let lane of [-0.035, 0.035]) {
         box(0.025, 0.006, 0.42, lane, 0.306, q * p, palette.yellow);
         box(0.42, 0.006, 0.025, q * p, 0.306, lane, palette.yellow);
@@ -666,29 +685,36 @@ export function createCityScene(host, buttons) {
   }
   const effects = [];
   const effectTemplates = {};
-  for (const kind of ["passed", "crash"]) {
+  for (const kind of ["passed", "crash", "honk"]) {
     effectTemplates[kind] = label(
-      kind === "passed" ? "+1" : "−3",
-      0.63,
-      0.28,
+      kind === "honk" ? "*honk*" : kind === "passed" ? "+1" : "−3",
+      kind === "honk" ? 2.2 : 0.63,
+      kind === "honk" ? 0.7 : 0.28,
       0,
       0,
       0,
       {
         background: null,
-        color: kind === "passed" ? "#416049" : "#b45f45",
-        size: 100,
+        color:
+          kind === "honk"
+            ? "#6b604d"
+            : kind === "passed"
+              ? "#416049"
+              : "#b45f45",
+        size: kind === "honk" ? 160 : 100,
         parent: new THREE.Group(),
       },
     );
   }
+  effectTemplates.honk.material.depthTest = false;
   function effect(event) {
     const group = new THREE.Group();
     city.add(group);
-    group.position.set(event.x, 0.95, event.z);
+    group.position.set(event.x, event.kind === "honk" ? 1.45 : 0.95, event.z);
     const text = effectTemplates[event.kind].clone();
+    if (event.kind === "honk") text.renderOrder = 50;
     group.add(text);
-    effects.push({ group, text, life: 1.3, crash: event.kind === "crash" });
+    effects.push({ group, text, life: 1.3, honk: event.kind === "honk" });
     if (event.kind === "crash") {
       for (let i = 0; i < 4; i++)
         mesh(
@@ -700,6 +726,66 @@ export function createCityScene(host, buttons) {
           group,
         ).scale.setScalar(0.35);
     }
+  }
+  const falling = [];
+  // Reuse one offscreen target to photograph the real 3D car at handoff.
+  const stampTarget = new THREE.WebGLRenderTarget(96, 96);
+  stampTarget.texture.colorSpace = THREE.SRGBColorSpace;
+  stampTarget.samples = 4;
+  const stampScene = new THREE.Scene();
+  stampScene.add(new THREE.HemisphereLight(0xfff8e8, 0x788576, 2.7));
+  const stampLight = new THREE.DirectionalLight(0xffedcf, 3.3);
+  stampLight.position.copy(sun.position);
+  stampScene.add(stampLight);
+  const stampCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 30);
+  function stamp(group, span) {
+    const clone = group.clone(true);
+    clone.position.copy(
+      new THREE.Vector3(0, 0.5, 0)
+        .applyQuaternion(clone.quaternion)
+        .multiplyScalar(-1),
+    );
+    const pivot = new THREE.Group();
+    pivot.rotation.y = yaw;
+    pivot.add(clone);
+    stampScene.add(pivot);
+    stampCamera.left = stampCamera.bottom = -span / 2;
+    stampCamera.right = stampCamera.top = span / 2;
+    stampCamera.position.copy(camera.position).normalize().multiplyScalar(10);
+    stampCamera.lookAt(0, 0, 0);
+    stampCamera.updateProjectionMatrix();
+    renderer.setRenderTarget(stampTarget);
+    renderer.render(stampScene, stampCamera);
+    const pixels = new Uint8Array(96 * 96 * 4);
+    renderer.readRenderTargetPixels(stampTarget, 0, 0, 96, 96, pixels);
+    renderer.setRenderTarget(null);
+    stampScene.remove(pivot);
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 96;
+    const ctx = canvas.getContext("2d");
+    const data = ctx.createImageData(96, 96);
+    for (let row = 0; row < 96; row++)
+      data.data.set(
+        pixels.subarray((95 - row) * 384, (96 - row) * 384),
+        row * 384,
+      );
+    ctx.putImageData(data, 0, 0);
+    return canvas;
+  }
+  function spill(event) {
+    const model = carMeshes.get(event.car.id) || vehicle(event.car);
+    carMeshes.delete(event.car.id);
+    // It is no longer traffic: it can tip and roll freely beyond the road arm.
+    city.add(model.group);
+    const lane = APPROACHES[event.car.lane];
+    model.group.rotation.set(0, event.yaw, 0);
+    falling.push({
+      ...event,
+      group: model.group,
+      life: 0,
+      sx: -lane.dz,
+      sz: lane.dx,
+    });
   }
   let yaw = -0.12,
     pitch = 0.77,
@@ -740,7 +826,7 @@ export function createCityScene(host, buttons) {
     height = host.clientHeight;
     if (!width || !height) return;
     renderer.setSize(width, height);
-    const span = 21.0;
+    const span = 22.2;
     camera.left = (-span * width) / height / 2;
     camera.right = -camera.left;
     camera.top = span / 2;
@@ -749,16 +835,19 @@ export function createCityScene(host, buttons) {
     render();
   }
   function update(sim, dt = 0) {
+    // Transfer overflow meshes before removing cars no longer in the simulation.
+    for (const event of sim.events.splice(0)) {
+      if (event.kind === "overflow") spill(event);
+      else effect(event);
+    }
     const live = new Set();
     for (const car of sim.cars) {
       live.add(car.id);
       if (!carMeshes.has(car.id)) carMeshes.set(car.id, vehicle(car));
       const { group, brakes } = carMeshes.get(car.id),
-        p = carPosition(car),
-        lane = APPROACHES[car.lane];
+        p = carPose(car);
       group.position.set(p.x, 0, p.z);
-      group.rotation.y =
-        Math.atan2(lane.dx, lane.dz) + (car.crashed ? 0.18 : 0);
+      group.rotation.y = p.yaw + (car.crashed ? 0.18 : 0);
       brakes.forEach((m) => {
         m.visible = car.speed < 0.7 || !!car.crashed;
       });
@@ -779,11 +868,50 @@ export function createCityScene(host, buttons) {
         }),
       ),
     );
-    for (const event of sim.events.splice(0)) effect(event);
+    for (let i = falling.length - 1; i >= 0; i--) {
+      const f = falling[i];
+      f.life += dt;
+      const t = f.life;
+      const side = Math.min(2.3, t * 3.8);
+      const drop = Math.max(0, t - 0.28);
+      f.group.position.set(
+        f.x + f.sx * side,
+        -5 * drop * drop,
+        f.z + f.sz * side,
+      );
+      f.group.rotation.z = -Math.min(2.3, t * 4.5);
+      f.group.rotation.x = t * 0.9;
+      if (t > 0.59) {
+        const center = new THREE.Vector3(0, 0.5, 0)
+          .applyQuaternion(f.group.quaternion)
+          .add(f.group.position);
+        const point = project(center);
+        const velocity = project(
+          center
+            .clone()
+            .add(new THREE.Vector3(f.sx * 0.38, -drop, f.sz * 0.38)),
+        );
+        const span = f.car.bus ? 1.8 : 1.45;
+        const pixelsPerUnit = height / (camera.top - camera.bottom);
+        onEscape?.({
+          ...point,
+          vx: (velocity.x - point.x) * 10,
+          vy: (velocity.y - point.y) * 10,
+          size: span * pixelsPerUnit,
+          radius: f.car.length * pixelsPerUnit * 0.48,
+          sprite: stamp(f.group, span),
+          spin: (f.car.id % 2 ? 1 : -1) * 3.5,
+        });
+        city.remove(f.group);
+        falling.splice(i, 1);
+      }
+    }
     for (let i = effects.length - 1; i >= 0; i--) {
       const f = effects[i];
       f.life -= dt;
-      f.group.position.y += dt * 0.45;
+      f.group.position.y += dt * (f.honk ? 0.65 : 0.45);
+      if (f.honk)
+        f.text.scale.setScalar(1 + Math.sin((1.3 - f.life) * 24) * 0.065);
       f.text.quaternion
         .copy(camera.quaternion)
         .premultiply(
@@ -806,6 +934,8 @@ export function createCityScene(host, buttons) {
       city.remove(f.group);
     }
     effects.length = 0;
+    for (const f of falling) city.remove(f.group);
+    falling.length = 0;
   }
   resize();
   return {
@@ -821,6 +951,11 @@ export function createCityScene(host, buttons) {
     get pose() {
       return { yaw, pitch };
     },
+    diagnostics: () => ({
+      falling: falling.length,
+      effects: effects.length,
+      honks: effects.filter((f) => f.honk).length,
+    }),
     targets: () =>
       signals.map((s, i) => ({
         ...project(s.head.position),
@@ -833,6 +968,7 @@ export function createCityScene(host, buttons) {
       for (const t of textures) t.dispose();
       for (const g of geometries) g.dispose();
       for (const m of materials) m.dispose();
+      stampTarget.dispose();
       renderer.dispose();
       renderer.domElement.remove();
     },

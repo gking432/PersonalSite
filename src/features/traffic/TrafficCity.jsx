@@ -11,7 +11,6 @@ export default function TrafficCity() {
     ready: false,
     started: false,
     paused: false,
-    jammed: false,
     score: 0,
     signals: { water: "green", wisconsin: "red" },
     error: "",
@@ -96,7 +95,7 @@ export default function TrafficCity() {
             className="traffic-city__signal"
             data-axis={signal.axis}
             aria-label={`${signal.label} light: ${game.signals[signal.axis]}`}
-            disabled={!game.started || game.jammed}
+            disabled={!game.started}
             tabIndex={game.started ? 0 : -1}
             onClick={() => engine.current?.toggleSignal(signal.axis)}
           />
@@ -105,31 +104,27 @@ export default function TrafficCity() {
       <div className="traffic-city__caption">
         <span role="status">
           {game.error ||
-            (game.jammed
-              ? "Gridlock."
-              : game.paused
-                ? "Paused."
-                : game.started
-                  ? "Click the lights."
-                  : "A little Milwaukee.")}
+            (game.paused
+              ? "Paused."
+              : game.started
+                ? "Click the lights."
+                : "A little Milwaukee.")}
         </span>
         {game.started && (
           <div className="traffic-city__controls">
-            {!game.jammed && (
-              <button
-                type="button"
-                onClick={() => engine.current?.togglePause()}
-                aria-label={game.paused ? "Resume traffic" : "Pause traffic"}
-              >
-                {game.paused ? "Resume" : "Pause"}
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => engine.current?.togglePause()}
+              aria-label={game.paused ? "Resume traffic" : "Pause traffic"}
+            >
+              {game.paused ? "Resume" : "Pause"}
+            </button>
             <button
               type="button"
               onClick={() => engine.current?.reset()}
               aria-label="Reset traffic"
             >
-              {game.jammed ? "Try again" : "Reset"}
+              Reset
             </button>
           </div>
         )}

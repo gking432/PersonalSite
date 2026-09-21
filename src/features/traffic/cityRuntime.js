@@ -3,7 +3,16 @@ import { createCityScene } from "./cityScene";
 
 export function createCityRuntime(host, buttons, onState) {
   const sim = new TrafficSimulation();
-  const scene = createCityScene(host, buttons);
+  let pageCars = null,
+    pageLoading = null,
+    pendingFalls = [];
+  const scene = createCityScene(host, buttons, (point) => {
+    if (pageCars) pageCars.add(point);
+    else {
+      pendingFalls.push(point);
+      if (pendingFalls.length > 16) pendingFalls.shift();
+    }
+  });
   let paused = false,
     enabled = true,
     visible = true,
@@ -16,17 +25,15 @@ export function createCityRuntime(host, buttons, onState) {
   const state = () => ({ ...sim.snapshot(), paused, ready: true });
   const running = () =>
     sim.started &&
-    !sim.jammed &&
     !paused &&
     enabled &&
-    visible &&
+    (visible || scene.diagnostics().falling > 0) &&
     !document.hidden &&
     !disposed;
   function notify() {
     const next = state();
     const key = JSON.stringify([
       next.started,
-      next.jammed,
       next.score,
       next.signals,
       paused,
@@ -53,7 +60,7 @@ export function createCityRuntime(host, buttons, onState) {
     last = now;
     accumulator = Math.min(0.06, accumulator + dt);
     while (accumulator >= 1 / 120) {
-      sim.tick(1 / 120);
+      if (visible) sim.tick(1 / 120);
       accumulator -= 1 / 120;
     }
     scene.update(sim, dt);
@@ -61,15 +68,35 @@ export function createCityRuntime(host, buttons, onState) {
     notify();
     if (running()) raf = requestAnimationFrame(tick);
   }
+  function preparePage() {
+    if (pageCars || pageLoading) return;
+    pageLoading = import("./pageCars")
+      .then(({ createPageCars }) => {
+        if (disposed) return;
+        pageCars = createPageCars(host);
+        pageCars.setEnabled(enabled && !paused && sim.started);
+        for (const point of pendingFalls) pageCars.add(point);
+        pendingFalls = [];
+      })
+      .catch(() => {
+        pendingFalls = [];
+      })
+      .finally(() => {
+        pageLoading = null;
+      });
+  }
   function start() {
-    if (!enabled || disposed || sim.jammed) return;
+    if (!enabled || disposed) return;
     sim.start();
+    preparePage();
+    pageCars?.setEnabled(enabled && !paused);
     notify();
     schedule();
   }
   function toggleSignal(axis) {
     if (!enabled || disposed) return;
     sim.toggle(axis);
+    preparePage();
     scene.update(sim);
     scene.render();
     notify();
@@ -78,6 +105,8 @@ export function createCityRuntime(host, buttons, onState) {
   function reset() {
     stop();
     sim.reset();
+    pendingFalls = [];
+    pageCars?.clear();
     paused = false;
     accumulator = 0;
     scene.clear();
@@ -87,6 +116,7 @@ export function createCityRuntime(host, buttons, onState) {
   }
   function togglePause() {
     paused = !paused;
+    pageCars?.setEnabled(enabled && !paused);
     notify();
     if (paused) stop();
     else schedule();
@@ -129,7 +159,7 @@ export function createCityRuntime(host, buttons, onState) {
   }
   const intersection = new IntersectionObserver(([entry]) => {
     visible = entry.isIntersecting;
-    if (visible) schedule();
+    if (running()) schedule();
     else stop();
   });
   intersection.observe(host);
@@ -150,6 +180,7 @@ export function createCityRuntime(host, buttons, onState) {
     key,
     setEnabled(value) {
       enabled = value;
+      pageCars?.setEnabled(value && !paused && sim.started);
       if (value) {
         scene.resize();
         schedule();
@@ -162,6 +193,8 @@ export function createCityRuntime(host, buttons, onState) {
       size.disconnect();
       document.removeEventListener("visibilitychange", visibility);
       scene.dispose();
+      pageCars?.dispose();
+      pendingFalls = [];
       if (import.meta.env.DEV && window.__trafficCity?.api === api)
         delete window.__trafficCity;
     },
@@ -170,7 +203,14 @@ export function createCityRuntime(host, buttons, onState) {
     window.__trafficCity = {
       api,
       sim,
-      snapshot: () => ({ ...state(), enabled, visible, pose: scene.pose }),
+      snapshot: () => ({
+        ...state(),
+        enabled,
+        visible,
+        pose: scene.pose,
+        scene: scene.diagnostics(),
+        page: pageCars?.snapshot() || null,
+      }),
       targets: () => {
         const r = host.getBoundingClientRect();
         return scene
