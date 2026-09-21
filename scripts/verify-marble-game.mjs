@@ -120,7 +120,7 @@ try {
     `Faster 2.6-second track trip: ${escaped.time}s`,
   );
   assert.equal(escaped.emitted, 2, "The next marble releases before any catch");
-  await page.mouse.click(escaped.x + 20, escaped.y);
+  await page.mouse.click(escaped.x + 50, escaped.y);
   const firstCatch = await page.evaluate(() => window.__marbleGame.snapshot());
   assert.equal(firstCatch.caught, 1);
   assert.equal(firstCatch.score, 1);

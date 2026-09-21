@@ -63,8 +63,9 @@ test("larger invisible click area targets the nearest marble and removes it", ()
   const world = new MarblePhysics({ maxBalls: 12 });
   const ball = world.add({ x: 100, y: 100, radius: 6 });
   assert.equal(world.hitTest(102, 98), ball);
-  assert.equal(world.hitTest(128, 100), ball);
-  assert.equal(world.hitTest(131, 100), null);
+  assert.equal(world.hitTest(158, 100), ball);
+  assert.equal(world.hitTest(160, 100), ball);
+  assert.equal(world.hitTest(161, 100), null);
   const neighbor = world.add({ x: 142, y: 100, radius: 6 });
   assert.equal(world.hitTest(126, 100), neighbor);
   assert.ok(world.remove(neighbor));

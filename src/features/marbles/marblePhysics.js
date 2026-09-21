@@ -131,7 +131,7 @@ export class MarblePhysics {
       nearest = Infinity;
     for (const b of this.balls) {
       const d = Math.hypot(b.x - x, b.y - y);
-      if (d <= b.radius + padding && d < nearest) {
+      if (d <= (b.radius + padding) * 2 && d < nearest) {
         hit = b;
         nearest = d;
       }
