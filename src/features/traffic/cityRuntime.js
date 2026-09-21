@@ -1,11 +1,19 @@
 import { TrafficSimulation } from "./trafficSimulation";
 import { createCityScene } from "./cityScene";
-
 export function createCityRuntime(host, controls, onState) {
   const sim = new TrafficSimulation();
   let pageCars = null,
     pageLoading = null,
     pendingFalls = [];
+  let paused = false,
+    enabled = true,
+    visible = true,
+    disposed = false,
+    raf = 0,
+    last = 0,
+    accumulator = 0,
+    drag = null,
+    signature = "";
   const scene = createCityScene(host, controls, (point) => {
     if (pageCars) pageCars.add(point);
     else {
@@ -13,69 +21,23 @@ export function createCityRuntime(host, controls, onState) {
       if (pendingFalls.length > 16) pendingFalls.shift();
     }
   });
-  let cleanupMode = false,
-    programMode = false,
-    selectedJunction = null,
-    roundaboutMode = false,
-    toolMessage = "";
-  let paused = false,
-    enabled = true,
-    visible = true,
-    disposed = false;
-  let raf = 0,
-    last = 0,
-    accumulator = 0,
-    drag = null,
-    signature = "";
-  const state = () => ({
-    ...sim.snapshot(),
-    paused,
-    cleanupMode,
-    programMode,
-    selectedJunction,
-    roundaboutMode,
-    toolMessage,
-    ready: true,
-  });
+  const state = () => ({ ...sim.snapshot(), paused, ready: true });
   const running = () =>
     sim.started &&
     !paused &&
-    !sim.gameOver &&
-    !sim.expansionPending &&
     enabled &&
     (visible || scene.diagnostics().falling > 0) &&
     !document.hidden &&
     !disposed;
   function notify() {
-    const next = state();
-    const key = JSON.stringify([
-      next.started,
-      next.level,
-      next.progress,
-      next.gameOver,
-      next.expansionPending,
-      next.districtReady,
-      next.emergency,
-      next.allSignals,
-      next.programs,
-      next.district,
-      next.roundabout,
-      programMode,
-      selectedJunction,
-      roundaboutMode,
-      toolMessage,
-      next.signals2,
-      next.signals3,
-      next.tow,
-      next.incidents,
-      next.rescue,
-      next.bridge.phase,
-      next.bridge.requestedOpen,
-      next.bridge.waiting,
-      cleanupMode,
-      next.signals,
-      paused,
-    ]);
+    const next = state(),
+      key = JSON.stringify([
+        next.started,
+        next.signals,
+        next.bridge.phase,
+        next.bridge.requestedOpen,
+        paused,
+      ]);
     if (key !== signature) {
       signature = key;
       onState(next);
@@ -101,7 +63,6 @@ export function createCityRuntime(host, controls, onState) {
       if (visible) sim.tick(1 / 120);
       accumulator -= 1 / 120;
     }
-    if (sim.gameOver || sim.expansionPending) pageCars?.setEnabled(false);
     scene.update(sim, dt);
     scene.render();
     notify();
@@ -113,13 +74,7 @@ export function createCityRuntime(host, controls, onState) {
       .then(({ createPageCars }) => {
         if (disposed) return;
         pageCars = createPageCars(host);
-        pageCars.setEnabled(
-          enabled &&
-            !paused &&
-            sim.started &&
-            !sim.gameOver &&
-            !sim.expansionPending,
-        );
+        pageCars.setEnabled(enabled && !paused && sim.started);
         for (const point of pendingFalls) pageCars.add(point);
         pendingFalls = [];
       })
@@ -131,80 +86,34 @@ export function createCityRuntime(host, controls, onState) {
       });
   }
   function start() {
-    if (!enabled || disposed || sim.gameOver) return;
+    if (!enabled || disposed) return;
     sim.start();
     preparePage();
-    pageCars?.setEnabled(
-      enabled && !paused && !sim.gameOver && !sim.expansionPending,
-    );
+    pageCars?.setEnabled(enabled && !paused);
     notify();
     schedule();
   }
-  function toggleSignal(axis, junction = 0) {
-    if (
-      !enabled ||
-      disposed ||
-      sim.gameOver ||
-      sim.expansionPending ||
-      cleanupMode
-    )
-      return;
-    if (programMode) {
-      selectJunction(junction);
-      return;
-    }
-    if (paused || roundaboutMode) return;
-    sim.toggle(axis, junction);
-    preparePage();
+  function toggleSignal() {
+    if (!enabled || disposed || paused) return;
+    start();
+    sim.toggle();
     scene.update(sim);
     scene.render();
     notify();
     schedule();
   }
-  function toggleCleanup(type) {
-    if (paused || !enabled || disposed || sim.gameOver || sim.expansionPending)
-      return;
-    if (
-      type === "helicopter" &&
-      (sim.level < 4 || sim.rescue.active || sim.rescue.cooldown > 0)
-    )
-      return;
-    if (type === "tow" && sim.tow.active) return;
-    if (!["tow", "helicopter"].includes(type)) return;
-    programMode = roundaboutMode = false;
-    selectedJunction = null;
-    cleanupMode = cleanupMode === type ? false : type;
-    notify();
-  }
-  function rescue(id) {
-    if (
-      !cleanupMode ||
-      paused ||
-      !enabled ||
-      sim.gameOver ||
-      sim.expansionPending
-    )
-      return;
-    const dispatched =
-      cleanupMode === "tow" ? sim.dispatchTow(id) : sim.dispatchRescue(id);
-    if (dispatched) {
-      cleanupMode = false;
-      notify();
-      schedule();
-    }
-  }
   function toggleBridge() {
-    if (!enabled || paused || sim.gameOver || sim.expansionPending) return;
+    if (!enabled || disposed || paused) return;
+    start();
     sim.toggleBridge();
+    scene.update(sim);
+    scene.render();
     notify();
     schedule();
   }
   function reset() {
     stop();
     sim.reset();
-    cleanupMode = programMode = roundaboutMode = false;
-    selectedJunction = null;
-    toolMessage = "";
     pendingFalls = [];
     pageCars?.clear();
     paused = false;
@@ -215,75 +124,14 @@ export function createCityRuntime(host, controls, onState) {
     notify();
   }
   function togglePause() {
-    if (sim.gameOver || sim.expansionPending) return;
     paused = !paused;
-    pageCars?.setEnabled(
-      enabled && !paused && !sim.gameOver && !sim.expansionPending,
-    );
+    pageCars?.setEnabled(enabled && !paused && sim.started);
     notify();
     if (paused) stop();
     else schedule();
   }
-  function toggleProgramMode() {
-    if (sim.level < 6 || sim.gameOver || sim.expansionPending || !enabled)
-      return;
-    programMode = !programMode;
-    selectedJunction = null;
-    cleanupMode = roundaboutMode = false;
-    toolMessage = "";
-    notify();
-  }
-  function toggleRoundaboutMode() {
-    if (
-      sim.level < 9 ||
-      sim.roundabout !== null ||
-      sim.gameOver ||
-      sim.expansionPending ||
-      !enabled
-    )
-      return;
-    roundaboutMode = !roundaboutMode;
-    programMode = cleanupMode = false;
-    selectedJunction = null;
-    toolMessage = "";
-    notify();
-  }
-  function selectJunction(junction) {
-    if (sim.gameOver || sim.expansionPending || !enabled) return;
-    if (roundaboutMode) {
-      if (sim.placeRoundabout(junction)) {
-        roundaboutMode = false;
-        toolMessage = "";
-        scene.update(sim);
-        scene.render();
-      } else toolMessage = "Let the crossing clear first.";
-    } else if (programMode && sim.roundabout !== junction) {
-      selectedJunction = junction;
-      toolMessage = "";
-    }
-    notify();
-  }
-  function configureProgram(junction, rule) {
-    if (sim.gameOver || sim.expansionPending || !enabled) return;
-    if (sim.configureProgram(junction, rule)) {
-      toolMessage = "Program applied.";
-    } else
-      toolMessage = "Choose another source. Linked lights cannot form a loop.";
-    notify();
-    schedule();
-  }
-  function closeProgram() {
-    selectedJunction = null;
-    toolMessage = "";
-    notify();
-  }
-  function restart() {
-    reset();
-    start();
-    host.focus({ preventScroll: true });
-  }
   function pointerDown(e) {
-    if (!e.isPrimary || e.button !== 0 || sim.expansionPending) return;
+    if (!e.isPrimary || e.button !== 0) return;
     drag = { x: e.clientX, y: e.clientY, id: e.pointerId };
     host.setPointerCapture(e.pointerId);
     start();
@@ -298,27 +146,19 @@ export function createCityRuntime(host, controls, onState) {
     drag = null;
   }
   function key(e) {
-    if (sim.expansionPending) return;
-    if (e.key === "Escape") {
-      cleanupMode = programMode = roundaboutMode = false;
-      selectedJunction = null;
-      toolMessage = "";
-      notify();
-    } else if (["Enter", " "].includes(e.key)) {
+    if (["Enter", " "].includes(e.key)) {
       e.preventDefault();
       start();
-    } else if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+    } else if (
+      ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)
+    ) {
       e.preventDefault();
       start();
-      scene.rotate(e.key === "ArrowLeft" ? -12 : 12, 0);
-    } else if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-      e.preventDefault();
-      start();
-      scene.rotate(0, e.key === "ArrowUp" ? -12 : 12);
+      scene.rotate(
+        e.key === "ArrowLeft" ? -12 : e.key === "ArrowRight" ? 12 : 0,
+        e.key === "ArrowUp" ? -12 : e.key === "ArrowDown" ? 12 : 0,
+      );
     }
-  }
-  function resize() {
-    scene.resize();
   }
   function visibility() {
     if (document.hidden) stop();
@@ -330,42 +170,15 @@ export function createCityRuntime(host, controls, onState) {
     else stop();
   });
   intersection.observe(host);
-  const size = new ResizeObserver(resize);
+  const size = new ResizeObserver(() => scene.resize());
   size.observe(host);
   document.addEventListener("visibilitychange", visibility);
   scene.update(sim);
   scene.render();
   notify();
   const api = {
-    refresh() {
-      if (!disposed) {
-        scene.update(sim);
-        scene.render();
-      }
-    },
     start,
-    acknowledgeExpansion() {
-      if (!sim.acknowledgeExpansion()) return;
-      cleanupMode = programMode = roundaboutMode = false;
-      selectedJunction = null;
-      toolMessage = "";
-      accumulator = 0;
-      pageCars?.setEnabled(enabled && !paused && sim.started);
-      scene.update(sim);
-      scene.render();
-      notify();
-      schedule();
-      host.focus({ preventScroll: true });
-    },
     toggleSignal,
-    toggleCleanup,
-    toggleProgramMode,
-    toggleRoundaboutMode,
-    selectJunction,
-    configureProgram,
-    closeProgram,
-    restart,
-    rescue,
     toggleBridge,
     reset,
     togglePause,
@@ -373,15 +186,15 @@ export function createCityRuntime(host, controls, onState) {
     pointerMove,
     pointerUp,
     key,
+    refresh() {
+      if (!disposed) {
+        scene.update(sim);
+        scene.render();
+      }
+    },
     setEnabled(value) {
       enabled = value;
-      pageCars?.setEnabled(
-        value &&
-          !paused &&
-          sim.started &&
-          !sim.gameOver &&
-          !sim.expansionPending,
-      );
+      pageCars?.setEnabled(value && !paused && sim.started);
       if (value) {
         scene.resize();
         schedule();

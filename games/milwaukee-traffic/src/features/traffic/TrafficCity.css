@@ -1,0 +1,504 @@
+.traffic-city {
+  position: relative;
+  width: 100%;
+}
+.traffic-city__stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+}
+.traffic-city__model {
+  position: absolute;
+  inset: 0;
+  cursor: inherit;
+  touch-action: pan-y;
+  outline: none;
+}
+.traffic-city__model:focus-visible {
+  outline: 1px solid #aab6a1;
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+.traffic-city__model canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.traffic-city__fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  color: var(--ink-faint);
+  font-size: 1.5rem;
+}
+.traffic-city__progress {
+  position: absolute;
+  inset: 8px 12px auto auto;
+  width: min(38%, 190px);
+  z-index: 2;
+  pointer-events: none;
+}
+.traffic-city__level {
+  display: block;
+  margin-bottom: 9px;
+  color: #8c8b83;
+  font: 400 11px var(--font-sans);
+  text-align: right;
+}
+.traffic-city__bar {
+  height: 3px;
+  border-radius: 3px;
+  background: #e8e5dd;
+  overflow: hidden;
+}
+.traffic-city__bar > span {
+  display: block;
+  height: 100%;
+  background: #6c8a73;
+  transition: width 240ms ease;
+}
+.traffic-city[data-expanded="true"] .traffic-city__signal {
+  width: 36px;
+  height: 36px;
+}
+.traffic-city__wreck {
+  border: 1px dashed #b8824b !important;
+  border-radius: 50%;
+  color: #a06f36;
+  font-size: 23px;
+  background: #fff8e988 !important;
+}
+.traffic-city__controls button:disabled {
+  opacity: 0.5;
+  cursor: default;
+  text-decoration: none;
+}
+.traffic-city__controls button[aria-pressed="true"] {
+  color: #27543b;
+  text-decoration: underline;
+}
+.traffic-city__signal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 46px;
+  height: 46px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: inherit;
+  z-index: 1;
+  touch-action: manipulation;
+}
+.traffic-city__signal:disabled {
+  pointer-events: none;
+}
+.traffic-city__signal:focus-visible {
+  outline: 1px solid #557761;
+  outline-offset: 0;
+  border-radius: 8px;
+  background: #fff8e922;
+}
+.traffic-city__caption {
+  position: relative;
+  min-height: 2.8em;
+  padding-top: 0.4rem;
+  text-align: center;
+  color: var(--ink-faint);
+  font: 400 0.7rem var(--font-sans);
+}
+.traffic-city__controls {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+.traffic-city__controls button {
+  padding: 2px 0;
+  background: none;
+  border: 0;
+  color: #8c8b83;
+  font: inherit;
+  cursor: pointer;
+}
+.traffic-city__controls button:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+@media (max-width: 700px) {
+  .traffic-city {
+    display: none;
+  }
+}
+
+.traffic-city__overflow {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1100;
+  pointer-events: none;
+}
+@media (max-width: 700px) {
+  .traffic-city__overflow {
+    display: none;
+  }
+}
+
+.traffic-city__toolbar {
+  position: absolute;
+  left: 7px;
+  top: 0;
+  z-index: 4;
+  display: flex;
+  gap: 2px;
+}
+.traffic-city__tool {
+  width: 34px;
+  height: 34px;
+  padding: 8px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: #83877e;
+  background: #faf8f2dd;
+  cursor: inherit;
+}
+.traffic-city__tool svg {
+  width: 100%;
+  height: 100%;
+}
+.traffic-city__tool:hover:not(:disabled),
+.traffic-city__tool[aria-pressed="true"] {
+  background: #e5eadd;
+  color: #315b43;
+}
+.traffic-city__tool:focus-visible {
+  outline: 1px solid #557761;
+  outline-offset: 3px;
+}
+.traffic-city__tool:disabled {
+  color: #b6b7ad;
+}
+.traffic-city__rescue-tools {
+  position: absolute;
+  right: 5px;
+  top: 34%;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  z-index: 4;
+}
+.traffic-city__rescue-tools .traffic-city__tool {
+  width: 44px;
+  height: 44px;
+  padding: 11px;
+}
+.traffic-city__helicopter {
+  position: relative;
+}
+.traffic-city__fuel {
+  position: absolute;
+  inset: -2px;
+  width: 48px;
+  height: 48px;
+  pointer-events: none;
+  transform: rotate(-90deg);
+}
+.traffic-city__fuel circle {
+  fill: none;
+  stroke: #e5e5db;
+  stroke-width: 2;
+}
+.traffic-city__fuel .traffic-city__fuel-fill {
+  stroke: #6c8a73;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 180ms linear;
+}
+.traffic-city__lock {
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font: 9px var(--font-sans);
+  color: #a3a397;
+  pointer-events: none;
+}
+.traffic-city[data-fullscreen="true"],
+.traffic-city:fullscreen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  padding: 24px;
+  box-sizing: border-box;
+  background: #faf8f3;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+}
+.traffic-city[data-fullscreen="true"] .traffic-city__stage {
+  flex: 1;
+  min-height: 0;
+  aspect-ratio: auto;
+}
+.traffic-city[data-fullscreen="true"] .traffic-city__toolbar {
+  top: 20px;
+  left: 24px;
+}
+.traffic-city[data-fullscreen="true"] .traffic-city__progress {
+  inset: 26px 24px auto auto;
+  width: 200px;
+}
+.traffic-city[data-fullscreen="true"] .traffic-city__rescue-tools {
+  right: 24px;
+}
+/* Compact HUD keeps the city itself as the main interface. */
+.traffic-city__emergency {
+  margin-top: 8px;
+  color: #b05244;
+  font: 10px var(--font-sans);
+  text-align: right;
+}
+.traffic-city__emergency > div {
+  height: 3px;
+  border-radius: 3px;
+  background: #eedbd3;
+  margin-top: 5px;
+  overflow: hidden;
+}
+.traffic-city__emergency i {
+  display: block;
+  height: 100%;
+  background: #bf5a4b;
+  transition: width 90ms linear;
+}
+.traffic-city__signal-timer {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1px 3px;
+  border-radius: 3px;
+  color: #58705b;
+  background: #faf8f3db;
+  font: 9px var(--font-sans);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.traffic-city__links {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+.traffic-city__links path {
+  fill: none;
+  stroke: #7e9880;
+  stroke-width: 1.3;
+  stroke-dasharray: 3 5;
+  opacity: 0.65;
+}
+.traffic-city__placement {
+  border: 1px dashed #6c8a73;
+  border-radius: 50%;
+  color: #42684b;
+  background: #faf8f3c9;
+  font-size: 23px;
+}
+.traffic-city[data-district="true"] .traffic-city__signal {
+  width: 19px;
+  height: 19px;
+}
+.traffic-city[data-district="true"][data-fullscreen="true"]
+  .traffic-city__signal {
+  width: 32px;
+  height: 32px;
+}
+.traffic-city__programmer {
+  position: absolute;
+  z-index: 8;
+  top: 48px;
+  left: 8px;
+  width: 215px;
+  box-sizing: border-box;
+  padding: 15px;
+  background: #faf8f3f5;
+  border: 1px solid #e2ded0;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px #29382b12;
+  color: #626b5d;
+  font: 11px var(--font-sans);
+}
+.traffic-city[data-fullscreen="true"] .traffic-city__programmer {
+  top: 72px;
+  left: 24px;
+}
+.traffic-city__panel-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.traffic-city__panel-heading strong {
+  font-weight: 500;
+  color: #3e5946;
+}
+.traffic-city__panel-heading button {
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: 20px;
+  padding: 0 4px;
+}
+.traffic-city__programmer label {
+  display: grid;
+  gap: 5px;
+  margin-top: 10px;
+}
+.traffic-city__programmer select {
+  min-width: 0;
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #d8ddcf;
+  border-radius: 4px;
+  background: #fffdf7;
+  color: #4c5c4e;
+  font: inherit;
+}
+.traffic-city__programmer .traffic-city__check {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.traffic-city__check input {
+  accent-color: #42684b;
+}
+.traffic-city__programmer p {
+  font-size: 10px;
+  line-height: 1.5;
+  color: #898e80;
+  margin: 12px 0;
+}
+.traffic-city__apply,
+.traffic-city__game-over button {
+  border: 0;
+  border-radius: 5px;
+  background: #315b43;
+  color: #fffdf7;
+  font: inherit;
+  padding: 8px 12px;
+}
+.traffic-city__programmer > span {
+  display: block;
+  margin-top: 9px;
+  font-size: 10px;
+}
+.traffic-city__district-status {
+  display: block;
+  margin-top: 7px;
+  color: #718069;
+  font-size: 10px;
+}
+.traffic-city__game-over {
+  position: absolute;
+  z-index: 9;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 265px;
+  padding: 24px;
+  box-sizing: border-box;
+  border: 1px solid #e5dccb;
+  border-radius: 10px;
+  background: #faf8f3f5;
+  box-shadow: 0 12px 45px #263e3824;
+  text-align: center;
+  color: #5e6559;
+  font: 12px var(--font-sans);
+}
+.traffic-city__game-over h3 {
+  font: 26px var(--font-display);
+  color: #425948;
+  margin: 0 0 10px;
+}
+.traffic-city__game-over p {
+  line-height: 1.6;
+}
+.traffic-city__game-over span {
+  display: block;
+  font-size: 10px;
+  color: #8a8f7f;
+  margin: 12px 0 18px;
+}
+
+.traffic-city__intro {
+  margin: auto;
+  inset: 0;
+  width: min(440px, calc(100vw - 48px));
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 28px;
+  color: #315548;
+  background: #f8f6ef;
+  border: 1px solid #d6d3c4;
+  border-radius: 14px;
+  box-shadow: 0 24px 80px #20392c26;
+  font-family: inherit;
+}
+.traffic-city__intro::backdrop {
+  background: #ece9de9e;
+  backdrop-filter: blur(4px);
+}
+.traffic-city__intro-kicker {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #777d70;
+}
+.traffic-city__intro h3 {
+  margin: 12px 0;
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.15;
+}
+.traffic-city__intro p,
+.traffic-city__intro li {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #60665c;
+}
+.traffic-city__intro ul {
+  padding-left: 17px;
+  margin: 18px 0 24px;
+}
+.traffic-city__intro li + li {
+  margin-top: 12px;
+}
+.traffic-city__intro strong {
+  color: #315548;
+  font-weight: 600;
+}
+.traffic-city__intro button {
+  width: 100%;
+  border: 0;
+  border-radius: 6px;
+  padding: 12px;
+  background: #315548;
+  color: #fffdf6;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.traffic-city__intro button:focus-visible {
+  outline: 2px solid #a68842;
+  outline-offset: 3px;
+}

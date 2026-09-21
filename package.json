@@ -8,7 +8,11 @@
     "build": "node scripts/list-pdfs.js && node scripts/fetch-substack.mjs && vite build && vite build --ssr src/entry-server.jsx --outDir dist/server --emptyOutDir false && node scripts/prerender.mjs",
     "preview": "vite preview",
     "compress-images": "node scripts/compress-images.js",
-    "compress-images:dry": "node scripts/compress-images.js --dry-run"
+    "compress-images:dry": "node scripts/compress-images.js --dry-run",
+    "game:dev": "npm --prefix games/milwaukee-traffic run dev",
+    "game:build": "npm --prefix games/milwaukee-traffic run build",
+    "game:test": "npm --prefix games/milwaukee-traffic test",
+    "test:traffic": "node --test tests/trafficHomepage.test.mjs tests/marblePhysics.test.mjs"
   },
   "dependencies": {
     "framer-motion": "^12.33.0",

@@ -1,0 +1,15 @@
+{
+  "name": "milwaukee-traffic-game",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5194 --strictPort",
+    "build": "vite build && node scripts/export-html.mjs",
+    "preview": "vite preview --host 127.0.0.1 --port 5294 --strictPort",
+    "test": "node --test tests/*.test.mjs",
+    "verify": "node scripts/verify-standalone.mjs"
+  },
+  "dependencies": {"react":"18.2.0","react-dom":"18.2.0","three":"0.180.0"},
+  "devDependencies": {"vite":"5.4.21","@vitejs/plugin-react":"4.7.0","playwright":"1.58.2"}
+}

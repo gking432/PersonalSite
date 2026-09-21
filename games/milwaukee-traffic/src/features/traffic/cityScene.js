@@ -1,7 +1,10 @@
+import { DISTRICT_GRID, roadElevation } from "./districtLayout.js";
+import { createStadiumScene } from "./stadiumScene";
 import * as THREE from "three";
 import { APPROACHES, carPose } from "./trafficSimulation";
 
 import { createCityAdditions } from "./cityAdditions";
+import { BLOCK_SPACING, JUNCTION_X, JUNCTION_Z } from "./cityChallenges";
 
 import { SIGNALS } from "./signals";
 
@@ -549,10 +552,26 @@ export function createCityScene(host, controls, onEscape) {
     unitBox,
     lampMaterials,
   });
+  const stadium = createStadiumScene({
+    city,
+    palette,
+    box,
+    mesh,
+    rod,
+    label,
+    unitBox,
+    lampMaterials,
+  });
   const signals = SIGNALS.map((config) => {
-    const s = config;
+    const s = {
+      ...config,
+      x: config.x - JUNCTION_X[config.junction],
+      postX: config.postX - JUNCTION_X[config.junction],
+      z: config.z - JUNCTION_Z[config.junction],
+      postZ: config.postZ - JUNCTION_Z[config.junction],
+    };
     const parent = new THREE.Group();
-    city.add(parent);
+    additions.blocks[s.junction].add(parent);
     cylinder(0.043, 1.4, s.postX, 1.08, s.postZ, palette.dark, parent);
     cylinder(0.095, 0.15, s.postX, 0.47, s.postZ, palette.dark, parent);
     rod(
@@ -855,31 +874,25 @@ export function createCityScene(host, controls, onEscape) {
     return canvas;
   }
   function spill(event) {
-    const boat = event.kind === "boat-fall";
-    const car = boat
-      ? {
-          id: event.boat.id,
-          lane: event.boat.direction === 1 ? 0 : 2,
-          length: 1.15,
-        }
-      : event.car;
-    const model = boat
-      ? { group: additions.takeBoat(event.boat) }
-      : carMeshes.get(car.id) || vehicle(car);
-    if (!boat) carMeshes.delete(car.id);
+    const model = carMeshes.get(event.car.id) || vehicle(event.car);
+    carMeshes.delete(event.car.id);
+    // It is no longer traffic: it can tip and roll freely beyond the road arm.
     city.add(model.group);
-    const lane = APPROACHES[car.lane];
+    const lane = APPROACHES[event.car.lane];
     model.group.rotation.set(0, event.yaw, 0);
     falling.push({
       ...event,
-      car,
-      boat,
       group: model.group,
       life: 0,
-      sx: boat ? (event.boat.direction === 1 ? -1 : 1) : -lane.dz,
-      sz: boat ? 0 : lane.dx,
+      sx: -lane.dz,
+      sz: lane.dx,
     });
   }
+  let expansion = 0,
+    westExpansion = 0,
+    districtExpansion = 0,
+    currentIncidents = [],
+    currentPrograms = [];
   let yaw = -0.12,
     pitch = 0.77,
     width = 1,
@@ -893,13 +906,38 @@ export function createCityScene(host, controls, onEscape) {
       Math.sin(pitch) * distance,
       Math.cos(0.7) * Math.cos(pitch) * distance,
     );
-    const focus = new THREE.Vector3(-0.8, 0.95, 0).applyAxisAngle(
-      new THREE.Vector3(0, 1, 0),
-      yaw,
-    );
+    const focus = new THREE.Vector3(
+      (BLOCK_SPACING / 2) * expansion +
+        (JUNCTION_X[2] / 2) * westExpansion -
+        0.8 * (1 - expansion),
+      0.95,
+      -11 * districtExpansion,
+    ).applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
     camera.position.add(focus);
     camera.lookAt(focus);
-    const span = 24 / Math.min(1.6, Math.max(1, width / height));
+    let span =
+      (24 + 8.5 * expansion + 13 * westExpansion) /
+      Math.min(1.6, Math.max(1, width / height));
+    // Standalone portrait screens need the same horizontal coverage as desktop.
+    span /= Math.min(1, width / height);
+    if (districtExpansion > 0) {
+      // Fit the actual nine-cell footprint at any rotation or viewport ratio.
+      camera.updateMatrixWorld();
+      const bounds = DISTRICT_GRID.bounds;
+      let halfWidth = 0,
+        halfHeight = 0;
+      for (const x of [bounds.minX, bounds.maxX])
+        for (const z of [bounds.minZ, bounds.maxZ])
+          for (const y of [0, 6]) {
+            const point = new THREE.Vector3(x, y, z)
+              .applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw)
+              .applyMatrix4(camera.matrixWorldInverse);
+            halfWidth = Math.max(halfWidth, Math.abs(point.x));
+            halfHeight = Math.max(halfHeight, Math.abs(point.y));
+          }
+      const fitted = Math.max(halfHeight, (halfWidth * height) / width) * 2.12;
+      span += (fitted - span) * districtExpansion;
+    }
     camera.left = (-span * width) / height / 2;
     camera.right = -camera.left;
     camera.top = span / 2;
@@ -913,7 +951,11 @@ export function createCityScene(host, controls, onEscape) {
     return { x: ((p.x + 1) * width) / 2, y: ((1 - p.y) * height) / 2 };
   }
   function signalPoint(s) {
-    return new THREE.Vector3(s.x, 1.51, s.z);
+    return new THREE.Vector3(
+      s.x,
+      1.51 + additions.blocks[s.junction].position.y,
+      s.z,
+    );
   }
   function place(button, point) {
     if (!button) return;
@@ -921,8 +963,35 @@ export function createCityScene(host, controls, onEscape) {
     button.style.transform = `translate(${p.x - button.offsetWidth / 2}px, ${p.y - button.offsetHeight / 2}px)`;
   }
   function positionButtons() {
-    place(buttons[0], signalPoint(signals[0]));
+    signals.forEach((s, i) => place(buttons[i], signalPoint(s)));
+    controls.links?.forEach((path, j) => {
+      const source = currentPrograms[j]?.source;
+      if (source === undefined) return;
+      const a = project(
+        new THREE.Vector3(JUNCTION_X[source], 1.8, JUNCTION_Z[source]),
+      );
+      const b = project(new THREE.Vector3(JUNCTION_X[j], 1.8, JUNCTION_Z[j]));
+      path.setAttribute(
+        "d",
+        `M${a.x},${a.y} Q${(a.x + b.x) / 2},${Math.min(a.y, b.y) - 22} ${b.x},${b.y}`,
+      );
+    });
+    controls.junctions?.forEach((button, j) =>
+      place(
+        button,
+        new THREE.Vector3(
+          JUNCTION_X[j],
+          0.8 + additions.blocks[j].position.y,
+          JUNCTION_Z[j],
+        ),
+      ),
+    );
     place(controls.bridge.current, new THREE.Vector3(-5.95, 0.6, 0));
+    for (const incident of currentIncidents)
+      place(
+        controls.wrecks.get(incident.id),
+        new THREE.Vector3(incident.x, 0.65, incident.z),
+      );
   }
 
   function render() {
@@ -945,11 +1014,17 @@ export function createCityScene(host, controls, onEscape) {
     render();
   }
   function update(sim, dt = 0) {
-    additions.update(sim, dt);
+    const extra = additions.update(sim, dt);
+    expansion = extra.growth;
+    westExpansion = extra.westGrowth;
+    districtExpansion = extra.districtGrowth;
+    stadium.update(sim, districtExpansion);
+    currentIncidents = sim.incidents;
+    currentPrograms = sim.programs.rules;
     // Transfer overflow meshes before removing cars no longer in the simulation.
     for (const event of sim.events.splice(0)) {
-      if (event.kind === "overflow" || event.kind === "boat-fall") spill(event);
-      else effect(event);
+      if (event.kind === "overflow") spill(event);
+      else if (event.kind !== "level") effect(event);
     }
     const live = new Set();
     for (const car of sim.cars) {
@@ -957,8 +1032,22 @@ export function createCityScene(host, controls, onEscape) {
       if (!carMeshes.has(car.id)) carMeshes.set(car.id, vehicle(car));
       const { group, brakes, blinkers, beacons } = carMeshes.get(car.id),
         p = carPose(car);
-      group.position.set(p.x, 0, p.z);
-      group.rotation.set(0, p.yaw, 0);
+      const cargo =
+        car.crashed && extra.cargo?.id === car.incident ? extra.cargo : null;
+      const road = sim.districtReady
+        ? roadElevation(p.x, p.z, p.yaw)
+        : { y: 0, pitch: 0 };
+      group.position.set(
+        p.x + (cargo?.dx || 0),
+        cargo?.y || road.y,
+        p.z + (cargo?.dz || 0),
+      );
+      group.rotation.set(
+        cargo?.y > 0 ? 0.14 : -road.pitch,
+        p.yaw + (car.crashed ? 0.18 : 0),
+        0,
+        "YXZ",
+      );
       const blink = Math.sin(sim.time * 9) > 0;
       blinkers.forEach((pair, i) =>
         pair.forEach((b) => {
@@ -976,11 +1065,27 @@ export function createCityScene(host, controls, onEscape) {
       });
       group.visible = !car.remove;
     }
+    if (sim.districtReady)
+      for (const v of sim.district.visualCars()) {
+        live.add(v.id);
+        if (!carMeshes.has(v.id)) carMeshes.set(v.id, vehicle(v.car));
+        const model = carMeshes.get(v.id);
+        model.group.position.set(v.x, v.y || 0, v.z);
+        model.group.rotation.set(-(v.pitch || 0), v.yaw, 0, "YXZ");
+        [...model.brakes, ...model.blinkers.flat(), ...model.beacons].forEach(
+          (l) => {
+            l.visible = false;
+          },
+        );
+      }
     for (const [id, m] of carMeshes)
       if (!live.has(id)) {
         city.remove(m.group);
         carMeshes.delete(id);
       }
+    signals.forEach((s) => {
+      s.group.visible = s.available && sim.roundabout !== s.junction;
+    });
     signals.forEach((s) =>
       s.bulbs.forEach((pair, i) =>
         pair.forEach((b) => {
@@ -1000,11 +1105,7 @@ export function createCityScene(host, controls, onEscape) {
       const drop = Math.max(0, t - 0.28);
       f.group.position.set(
         f.x + f.sx * side,
-        (f.boat ? 0.38 : 0) +
-          (f.reason === "crash"
-            ? Math.sin(Math.min(1, t / 0.6) * Math.PI) * 1.2
-            : 0) -
-          5 * drop * drop,
+        -5 * drop * drop,
         f.z + f.sz * side,
       );
       f.group.rotation.z = -Math.min(2.3, t * 4.5);
@@ -1019,7 +1120,7 @@ export function createCityScene(host, controls, onEscape) {
             .clone()
             .add(new THREE.Vector3(f.sx * 0.38, -drop, f.sz * 0.38)),
         );
-        const span = f.boat ? 2 : f.car.bus ? 1.8 : 1.45;
+        const span = f.car.bus ? 1.8 : 1.45;
         const pixelsPerUnit = height / (camera.top - camera.bottom);
         onEscape?.({
           ...point,
@@ -1053,13 +1154,15 @@ export function createCityScene(host, controls, onEscape) {
         effects.splice(i, 1);
       }
     }
-    boat.visible = !sim.started;
+    boat.visible = sim.level < 3;
     boat.position.y = 0.38 + Math.sin(sim.time * 1.6) * 0.022;
   }
   function clear() {
     for (const m of carMeshes.values()) city.remove(m.group);
     carMeshes.clear();
     additions.clear();
+    expansion = westExpansion = districtExpansion = 0;
+    currentIncidents = [];
     for (const f of effects) {
       city.remove(f.group);
     }
@@ -1083,8 +1186,22 @@ export function createCityScene(host, controls, onEscape) {
     },
     diagnostics: () => ({
       falling: falling.length,
-      fallingBoats: falling.filter((f) => f.boat).length,
-      fallingCars: falling.filter((f) => !f.boat).length,
+      expansion,
+      westExpansion,
+      districtExpansion,
+      fixedBridgeCars: [...carMeshes.entries()].filter(
+        ([id, m]) =>
+          typeof id === "number" &&
+          m.group.position.y > 1.3 &&
+          m.group.position.x < -4,
+      ).length,
+      underpassCars: [...carMeshes.entries()].filter(
+        ([id, m]) =>
+          typeof id === "number" &&
+          Math.abs(m.group.position.z + 26) < 1 &&
+          Math.abs(m.group.position.x - 18.2) < 0.8 &&
+          m.group.position.y === 0,
+      ).length,
       blinkersOn: [...carMeshes.values()]
         .flatMap((m) => m.blinkers.flat())
         .filter((b) => b.visible).length,
