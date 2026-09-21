@@ -1,6 +1,12 @@
+import { createRiverScene } from "./riverScene.js";
 import { neighborhoodBuilding } from "./neighborhoodBuilding.js";
 import * as THREE from "three";
-import { RAMP_CENTER, rampOffset, STADIUM_SCALE } from "./districtLayout.js";
+import {
+  RAMP_CENTER,
+  rampOffset,
+  STADIUM_SCALE,
+  FREEWAY_SUPPORTS,
+} from "./districtLayout.js";
 import { LOTS, parkingSpace } from "./stadiumDistrict.js";
 import { JUNCTION_X, JUNCTION_Z } from "./cityChallenges.js";
 export function createStadiumScene({
@@ -15,6 +21,7 @@ export function createStadiumScene({
 }) {
   const district = new THREE.Group();
   city.add(district);
+  createRiverScene({ parent: district, palette, box, mesh, rod });
   const stadium = new THREE.Group();
   stadium.position.set(-15, 0.16, -26);
   stadium.scale.set(STADIUM_SCALE, 0.6, STADIUM_SCALE);
@@ -148,7 +155,7 @@ export function createStadiumScene({
   // One normal building plot: shop at the back, three spaces at the front.
   b(3.65, 0.12, 4.7, -3.48, 0.34, -17.07, palette.curb, district);
   b(3.5, 0.025, 1.2, -3.48, 0.407, -15.4, palette.asphalt, district);
-  b(0.95, 0.035, 1.5, -3.48, 0.28, -14.2, palette.asphalt, district);
+  b(0.95, 0.035, 1.5, -2.5, 0.28, -14.2, palette.asphalt, district);
   for (const [lot, data] of Object.entries(LOTS)) {
     for (let i = 0; i < data.capacity; i++) {
       const p = parkingSpace(lot, i),
@@ -277,7 +284,7 @@ export function createStadiumScene({
     b(0.27, 0.15, 0.27, x, 1.98, z, lampMaterials.amber, district);
   }
   // The only freeway geometry is this raised ramp. Rendering and car motion
-  // share the straight path so vehicles stay on the deck through the climb.
+  // share the side-ramp path, which only rises after leaving the surface lanes.
   const vertices = [];
   for (let i = 0; i < RAMP_CENTER.length - 1; i++) {
     const a = rampOffset(i, -1.15),
@@ -312,14 +319,30 @@ export function createStadiumScene({
   deck.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
   deck.computeVertexNormals();
   mesh(deck, palette.asphalt, 0, 0, 0, district);
-  // Paired columns leave both surface lanes open underneath the viaduct.
-  for (const i of [29, 49, 69]) {
-    const p = RAMP_CENTER[i];
-    for (const z of [-1.65, 1.65])
-      b(0.22, p.y, 0.3, p.x, p.y / 2 + 0.16, z, palette.curb, district);
-    b(0.45, 0.16, 3.6, p.x, p.y + 0.18, 0, palette.base, district);
+  // The overpass has clear road space below it: no columns in either lane.
+  for (const p of FREEWAY_SUPPORTS) {
+    for (const side of [-1, 1])
+      b(
+        0.25,
+        p.y,
+        0.28,
+        p.x + side * 1.5,
+        p.y / 2 + 0.16,
+        p.z,
+        palette.curb,
+        district,
+      );
+    b(3.25, 0.16, 0.45, p.x, p.y + 0.18, p.z, palette.base, district);
   }
-  label("I–94 →", 1.5, 0.36, 5.2, 1.2, 1.1, { parent: district, size: 64 });
+  // Ground-level apron under the short slip road, beyond the ordinary curb.
+  for (let i = 0; i < 33; i += 2) {
+    const p = RAMP_CENTER[i];
+    b(1.0, 0.34, 1.0, p.x, -0.05, p.z, palette.base, district);
+  }
+  label("I–94 →", 1.5, 0.36, 16.1, 1.05, -12.25, {
+    parent: district,
+    size: 64,
+  });
   for (const x of [-17, -13])
     rod([x, 0.3, -19.6], [x, 1.5, -19.6], 0.045, palette.dark, district);
   const sign = label("FIRST PITCH", 3.6, 0.5, -15, 1.3, -19.6, {

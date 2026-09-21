@@ -224,6 +224,24 @@ try {
   await button("Enter fullscreen").click();
   await page.waitForFunction(() => !!document.fullscreenElement);
   await shot("neighborhood-layout");
+  await page.evaluate(() => {
+    const { sim: s, api } = window.__trafficCity;
+    for (const j of [4, 6]) {
+      s.spawn(3, j);
+      Object.assign(s.cars.at(-1), { p: -5.92, turn: "straight", speed: 0 });
+    }
+    s.spawn(1, 7);
+    Object.assign(s.cars.at(-1), { p: -7.2, turn: "straight", speed: 0 });
+    api.refresh();
+  });
+  assert.equal((await snap()).scene.fixedBridgeCars, 2);
+  assert.equal((await snap()).scene.underpassCars, 1);
+  await shot("fixed-bridges-and-open-underpass");
+  await page.evaluate(() => {
+    window.__trafficCity.sim.cars = [];
+    window.__trafficCity.api.refresh();
+  });
+
   assert.equal(
     await page
       .locator('.traffic-city__signal[data-junction="3"]:visible')
@@ -314,7 +332,8 @@ try {
           "level-eight sensor and ambulance priority",
           "paused accessible introduction before expansion and emergency clock frozen",
           "stadium and parking in one unit, matched shop and two-plot market",
-          "cars follow the raised ramp over a surface street",
+          "cars follow the separate ramp over a clear surface street",
+          "rendered cars ride fixed river bridges and stay at street level under the freeway",
           "fullscreen district",
           "one roundabout placement",
           "real freeway arrivals park at stadium",

@@ -1,3 +1,4 @@
+import { RIVER } from "./districtLayout.js";
 export const BLOCK_SPACING = 11;
 // Existing intersections retain their positions. The small two-plot hall ends
 // East Market's north arm; a pedestrian plaza ends Lakefront's south arm.
@@ -27,7 +28,7 @@ export const JUNCTION_APPROACHES = [
 // Short outer arms keep the rear streets inside the nine-unit footprint.
 export function roadReach(junction, approach) {
   if (junction >= 6 && approach === 0) return 6.8;
-  if (junction === 6 && approach === 3) return 7.2;
+  if (junction === 6 && approach === 3) return 9.75;
   if (junction === 5 && approach === 0) return 6;
   if (junction === 2 && approach === 1) return 8;
   return 10;
@@ -59,14 +60,18 @@ export class BridgeTraffic {
   toggle() {
     this.requestedOpen = !this.requestedOpen;
   }
-  tick(dt, cars, events) {
+  tick(dt, cars, events, expanded = false) {
     this.nextBoat -= dt;
     if (this.nextBoat <= 0) {
       if (this.boats.length < 4) {
         const direction = this.nextId % 2 ? -1 : 1;
         this.boats.push({
           id: this.nextId++,
-          p: -6.2,
+          p: expanded
+            ? direction === 1
+              ? RIVER.minZ + 0.7
+              : -RIVER.maxZ + 0.7
+            : -6.2,
           direction,
           x: -5.94 + direction * 0.35,
           waited: 0,
@@ -113,7 +118,14 @@ export class BridgeTraffic {
       }
     }
     this.boats = this.boats.filter((b) => {
-      if (b.p > 6.9) {
+      if (
+        b.p >
+        (expanded
+          ? b.direction === 1
+            ? RIVER.maxZ - 0.4
+            : -RIVER.minZ - 0.4
+          : 6.9)
+      ) {
         this.passed++;
         return false;
       }

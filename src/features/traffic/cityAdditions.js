@@ -1,3 +1,4 @@
+import { RIVER, FIXED_BRIDGES, roadElevation } from "./districtLayout.js";
 import { neighborhoodBuilding } from "./neighborhoodBuilding.js";
 import * as THREE from "three";
 import {
@@ -21,7 +22,37 @@ export function createCityAdditions({
     const block = new THREE.Group();
     city.add(block);
     block.position.set(JUNCTION_X[junction], 0, JUNCTION_Z[junction]);
-    const b = (w, h, d, x, y, z, mat) => box(w, h, d, x, y, z, mat, block);
+    const bridge = FIXED_BRIDGES.find((b) => b.z === JUNCTION_Z[junction]);
+    const b = (w, h, d, x, y, z, mat) => {
+      // Carve the river out of terrain layers; water must not be painted over land.
+      const worldX = x + JUNCTION_X[junction],
+        min = worldX - w / 2,
+        max = worldX + w / 2;
+      const shoreLeft = RIVER.x - RIVER.width / 2,
+        shoreRight = RIVER.x + RIVER.width / 2;
+      if (
+        y <= 0.18 &&
+        [palette.base, palette.edge, palette.pavement].includes(mat) &&
+        max > shoreLeft &&
+        min < shoreRight
+      ) {
+        for (const [a, c] of [
+          [min, Math.min(max, shoreLeft)],
+          [Math.max(min, shoreRight), max],
+        ])
+          if (c > a)
+            box(
+              c - a,
+              h,
+              d,
+              (a + c) / 2 - JUNCTION_X[junction],
+              y,
+              z,
+              mat,
+              block,
+            );
+      } else box(w, h, d, x, y, z, mat, block);
+    };
     b(14.4, 0.34, 13.8, 0, -0.05, 0, palette.base);
     b(14.5, 0.07, 13.9, 0, -0.24, 0, palette.edge);
     b(14.25, 0.12, 13.65, 0, 0.18, 0, palette.pavement);
@@ -33,15 +64,33 @@ export function createCityAdditions({
       const reach = roadReach(junction, approach);
       const center = (sign * (reach + 1.375)) / 2;
       const length = reach - 1.375;
-      b(
-        vertical ? 2.75 : length,
-        0.045,
-        vertical ? length : 2.75,
-        vertical ? 0 : center,
-        0.28,
-        vertical ? center : 0,
-        palette.asphalt,
-      );
+      if (!vertical && bridge) {
+        const min = JUNCTION_X[junction] + center - length / 2,
+          max = min + length;
+        for (const [a, c] of [
+          [min, Math.min(max, bridge.minX)],
+          [Math.max(min, bridge.maxX), max],
+        ])
+          if (c > a)
+            b(
+              c - a,
+              0.045,
+              2.75,
+              (a + c) / 2 - JUNCTION_X[junction],
+              0.28,
+              0,
+              palette.asphalt,
+            );
+      } else
+        b(
+          vertical ? 2.75 : length,
+          0.045,
+          vertical ? length : 2.75,
+          vertical ? 0 : center,
+          0.28,
+          vertical ? center : 0,
+          palette.asphalt,
+        );
       if (reach > 6.85) {
         const endLength = reach - 6.7,
           endCenter = (sign * (reach + 6.7)) / 2;
@@ -65,7 +114,14 @@ export function createCityAdditions({
         );
       }
       for (let p = 2.5; p < reach - 0.2; p += 0.68)
-        for (const line of [-0.035, 0.035])
+        for (const line of [-0.035, 0.035]) {
+          if (
+            !vertical &&
+            bridge &&
+            JUNCTION_X[junction] + sign * p > bridge.minX &&
+            JUNCTION_X[junction] + sign * p < bridge.maxX
+          )
+            continue;
           b(
             vertical ? 0.025 : 0.42,
             0.006,
@@ -75,6 +131,7 @@ export function createCityAdditions({
             vertical ? sign * p : line,
             palette.yellow,
           );
+        }
       for (let i = -5; i <= 5; i++)
         b(
           vertical ? 0.12 : 0.38,
@@ -360,8 +417,11 @@ export function createCityAdditions({
       const tow = sim.tow.active;
       towTruck.visible = !!tow;
       if (tow) {
-        towTruck.position.set(tow.x, 0, tow.z);
-        towTruck.rotation.y = tow.yaw;
+        const road = sim.districtReady
+          ? roadElevation(tow.x, tow.z, tow.yaw)
+          : { y: 0, pitch: 0 };
+        towTruck.position.set(tow.x, road.y, tow.z);
+        towTruck.rotation.set(-road.pitch, tow.yaw, 0, "YXZ");
         towLamps.forEach((lamp, i) => {
           lamp.visible = Math.floor(sim.time * 9) % 2 === i;
         });

@@ -17,9 +17,9 @@ export const LOTS = {
     exitLane: 1,
     returnLane: 3,
     capacity: 3,
-    branch: 3.48,
-    entry: { x: -3.48, z: -13.57 },
-    exit: { x: -3.48, z: -12.43 },
+    branch: 2.5,
+    entry: { x: -2.5, z: -13.57 },
+    exit: { x: -2.5, z: -12.43 },
     bounds: { x: -3.48, z: -17.07, w: 3.65, d: 4.7 },
   },
 };
@@ -28,7 +28,8 @@ export function parkingSpace(lot, slot) {
   const side = Math.floor(slot / 6),
     i = slot % 6;
   const across = [-4.25, -2.95, -1.65, 1.65, 2.95, 4.25][i];
-  const along = -3.75 + i * 1.5;
+  const along =
+    side === 1 ? [-5.25, -3.75, -2.25, 2.25, 3.75, 5.25][i] : -3.75 + i * 1.5;
   return side === 0
     ? { x: -15 + across, z: -19.9 }
     : side === 1
@@ -66,9 +67,9 @@ export function parkingPath(lot, slot, leaving = false) {
   if (lot === "shop") {
     const path = [
       leaving ? data.exit : data.entry,
-      { x: -3.48, z: -14.85 },
-      { x: spot.x, z: -14.85 },
-      spot,
+      { x: (leaving ? data.exit : data.entry).x, z: -14.85, y: 0.12 },
+      { x: spot.x, z: -14.85, y: 0.12 },
+      { ...spot, y: 0.12 },
     ];
     return leaving ? path.reverse() : path;
   }

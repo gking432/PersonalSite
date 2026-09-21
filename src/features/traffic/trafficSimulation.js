@@ -291,6 +291,7 @@ export class TrafficSimulation {
         dt,
         this.cars.map((c) => ({ ...c, ...carPose(c) })),
         this.events,
+        this.districtReady,
       );
     for (const signal of [
       ...Object.values(this.signals),

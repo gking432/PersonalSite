@@ -24,6 +24,13 @@ import {
   RAMP_IN,
   RAMP_OUT,
   FREEWAY,
+  RAMP_CENTER,
+  rampOffset,
+  RIVER,
+  FIXED_BRIDGES,
+  FREEWAY_SUPPORTS,
+  bridgeHeight,
+  roadElevation,
 } from "../src/features/traffic/districtLayout.js";
 const run = (s, t) => {
   for (let i = 0; i < Math.round(t * 120); i++) s.tick(1 / 120);
@@ -218,12 +225,12 @@ test("the ramp stays in the grid, rises over an existing street, and joins witho
     assert.ok(p.z >= bounds.minZ && p.z <= bounds.maxZ);
   }
   for (const route of [RAMP_IN, RAMP_OUT]) {
-    const crossing = route.filter((p) => Math.abs(p.x - 11) < 0.6);
+    const crossing = route.filter((p) => Math.abs(p.z + 26) < 1.4);
     assert.ok(crossing.length > 0);
-    assert.ok(crossing.every((p) => p.y > 3 && Math.abs(p.z) < 0.6));
+    assert.ok(crossing.every((p) => p.y > 3 && p.x > 16.5));
   }
   const s = setup(9);
-  s.spawn(0, FREEWAY.junction, false, "freeway");
+  s.spawn(3, FREEWAY.junction, false, "freeway");
   const c = s.cars[0];
   s.signalsAt(FREEWAY.junction).wisconsin.color = "green";
   let before;
@@ -567,4 +574,77 @@ test("the two closed streets do not route traffic through the hall or plaza", ()
   assert.equal(s.neighbor(5, 3), 4);
   assert.equal(s.neighbor(4, 2), 6);
   assert.equal(s.neighbor(6, 3), 7);
+});
+
+test("the freeway incline leaves the surface street clear and its piers avoid the crossing", () => {
+  for (let i = 0; i < RAMP_CENTER.length; i++) {
+    const p = RAMP_CENTER[i];
+    for (const side of [-1, 1]) {
+      const edge = rampOffset(i, side * 1.15);
+      if (p.y > 0.01 && p.y < 3)
+        assert.ok(
+          edge.z < -14.375 || edge.z > -11.625,
+          "incline blocks East Market",
+        );
+      if (Math.abs(edge.z + 26) < 1.375)
+        assert.ok(p.y > 3, "insufficient clearance above Lakefront");
+    }
+  }
+  for (const p of FREEWAY_SUPPORTS) assert.ok(Math.abs(p.z + 26) > 1.6);
+});
+test("fixed bridges clear the full river channel and traffic follows their slopes continuously", () => {
+  for (const bridge of FIXED_BRIDGES) {
+    for (const x of [
+      RIVER.x - RIVER.width / 2,
+      RIVER.x,
+      RIVER.x + RIVER.width / 2,
+    ])
+      assert.ok(bridgeHeight(x, bridge) > 1.3, "boat clearance");
+    for (const yaw of [Math.PI / 2, -Math.PI / 2]) {
+      let previous = roadElevation(bridge.minX, bridge.z, yaw);
+      for (let x = bridge.minX + 0.01; x <= bridge.maxX; x += 0.01) {
+        const p = roadElevation(x, bridge.z + 0.57, yaw);
+        assert.ok(Math.abs(p.y - previous.y) < 0.02);
+        assert.ok(Number.isFinite(p.pitch));
+        previous = p;
+      }
+    }
+    assert.equal(bridgeHeight(bridge.minX, bridge), 0);
+    assert.equal(bridgeHeight(bridge.maxX, bridge), 0);
+  }
+  const s = setup(9);
+  s.spawn(3, 5);
+  const car = s.cars[0];
+  Object.assign(car, {
+    p: 7.49,
+    committed: true,
+    turn: "straight",
+    speed: 2.4,
+  });
+  const p = carPose(car),
+    before = roadElevation(p.x, p.z, p.yaw);
+  s.tick(1 / 120);
+  assert.equal(car.junction, 4);
+  const next = carPose(car),
+    after = roadElevation(next.x, next.z, next.yaw);
+  assert.ok(Math.abs(after.y - before.y) < 0.02);
+});
+test("expanded river boats enter from both map edges and pass under fixed bridges", () => {
+  const s = setup(9);
+  s.bridge.nextBoat = 0;
+  s.tick(1 / 120);
+  assert.ok(
+    Math.abs(s.bridge.boats[0].direction * s.bridge.boats[0].p - RIVER.maxZ) <
+      1,
+  );
+  s.bridge.nextBoat = 0;
+  s.tick(1 / 120);
+  const north = s.bridge.boats.find((b) => b.direction === 1);
+  assert.ok(Math.abs(north.p - RIVER.minZ) < 1);
+  const start = north.p;
+  run(s, 24);
+  assert.ok(
+    north.p > start + 22 && north.p > -13,
+    "fixed spans must not gate boat movement",
+  );
 });

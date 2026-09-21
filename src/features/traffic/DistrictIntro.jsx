@@ -26,8 +26,9 @@ export default function DistrictIntro({ onContinue }) {
       <ul>
         <li>
           <strong>A new street layout.</strong> The public market and its plaza
-          create T-junctions at East Market and Lakefront. The straight freeway
-          ramp crosses above Broadway.
+          create T-junctions at East Market and Lakefront. Fixed bridges carry
+          the new roads over the river. A separate freeway ramp crosses above
+          Lakefront.
         </li>
         <li>
           <strong>Handle the rush.</strong> Cars arrive from the ramp, park for

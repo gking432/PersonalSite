@@ -1,4 +1,4 @@
-import { DISTRICT_GRID } from "./districtLayout.js";
+import { DISTRICT_GRID, roadElevation } from "./districtLayout.js";
 import { createStadiumScene } from "./stadiumScene";
 import * as THREE from "three";
 import { APPROACHES, carPose } from "./trafficSimulation";
@@ -1032,15 +1032,19 @@ export function createCityScene(host, controls, onEscape) {
         p = carPose(car);
       const cargo =
         car.crashed && extra.cargo?.id === car.incident ? extra.cargo : null;
+      const road = sim.districtReady
+        ? roadElevation(p.x, p.z, p.yaw)
+        : { y: 0, pitch: 0 };
       group.position.set(
         p.x + (cargo?.dx || 0),
-        cargo?.y || 0,
+        cargo?.y || road.y,
         p.z + (cargo?.dz || 0),
       );
       group.rotation.set(
-        cargo?.y > 0 ? 0.14 : 0,
+        cargo?.y > 0 ? 0.14 : -road.pitch,
         p.yaw + (car.crashed ? 0.18 : 0),
         0,
+        "YXZ",
       );
       const blink = Math.sin(sim.time * 9) > 0;
       blinkers.forEach((pair, i) =>
@@ -1183,6 +1187,19 @@ export function createCityScene(host, controls, onEscape) {
       expansion,
       westExpansion,
       districtExpansion,
+      fixedBridgeCars: [...carMeshes.entries()].filter(
+        ([id, m]) =>
+          typeof id === "number" &&
+          m.group.position.y > 1.3 &&
+          m.group.position.x < -4,
+      ).length,
+      underpassCars: [...carMeshes.entries()].filter(
+        ([id, m]) =>
+          typeof id === "number" &&
+          Math.abs(m.group.position.z + 26) < 1 &&
+          Math.abs(m.group.position.x - 18.2) < 0.8 &&
+          m.group.position.y === 0,
+      ).length,
       blinkersOn: [...carMeshes.values()]
         .flatMap((m) => m.blinkers.flat())
         .filter((b) => b.visible).length,
