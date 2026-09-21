@@ -1078,7 +1078,7 @@ export function createCityScene(host, controls, onEscape) {
         carMeshes.delete(id);
       }
     signals.forEach((s) => {
-      s.group.visible = sim.roundabout !== s.junction;
+      s.group.visible = s.available && sim.roundabout !== s.junction;
     });
     signals.forEach((s) =>
       s.bulbs.forEach((pair, i) =>

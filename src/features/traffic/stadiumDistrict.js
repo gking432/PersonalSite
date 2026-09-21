@@ -1,29 +1,92 @@
 import { FREEWAY, RAMP_IN, RAMP_OUT } from "./districtLayout.js";
 export { FREEWAY } from "./districtLayout.js";
+// Both the stadium and all 24 spaces fit inside its single 14.4 × 13.8 unit.
 export const LOTS = {
   stadium: {
-    junction: 2,
+    junction: 5,
     exitLane: 2,
     returnLane: 0,
     capacity: 24,
-    aisle: -9.1,
-    entry: { x: -14.43, z: -9.75 },
-    exit: { x: -15.57, z: -9.5 },
+    branch: 6,
+    entry: { x: -14.43, z: -19 },
+    exit: { x: -15.57, z: -19 },
+    bounds: { x: -15, z: -26, w: 14.4, d: 13.8 },
   },
   shop: {
-    junction: 3,
-    exitLane: 2,
-    returnLane: 0,
-    capacity: 6,
-    aisle: -24.9,
-    entry: { x: 11.57, z: -22.75 },
-    exit: { x: 10.43, z: -22.5 },
+    junction: 4,
+    exitLane: 1,
+    returnLane: 3,
+    capacity: 3,
+    branch: 3.48,
+    entry: { x: -3.48, z: -13.57 },
+    exit: { x: -3.48, z: -12.43 },
+    bounds: { x: -3.48, z: -17.07, w: 3.65, d: 4.7 },
   },
 };
 export function parkingSpace(lot, slot) {
-  return lot === "stadium"
-    ? { x: -20 + Math.floor(slot / 2) * 1.7, z: slot % 2 ? -10.3 : -7.9 }
-    : { x: 9 + Math.floor(slot / 2) * 1.9, z: slot % 2 ? -26.1 : -23.7 };
+  if (lot === "shop") return { x: -4.5 + slot * 1.02, z: -15.3 };
+  const side = Math.floor(slot / 6),
+    i = slot % 6;
+  const across = [-4.25, -2.95, -1.65, 1.65, 2.95, 4.25][i];
+  const along = -3.75 + i * 1.5;
+  return side === 0
+    ? { x: -15 + across, z: -19.9 }
+    : side === 1
+      ? { x: -8.7, z: -26 + along }
+      : side === 2
+        ? { x: -15 + across, z: -32.1 }
+        : { x: -21.3, z: -26 + along };
+}
+const RING_SIDE = 10.5;
+function ringPoint(distance) {
+  const s = ((distance % 42) + 42) % 42;
+  return s < 10.5
+    ? { x: -20.25 + s, z: -20.75 }
+    : s < 21
+      ? { x: -9.75, z: -20.75 - (s - 10.5) }
+      : s < 31.5
+        ? { x: -9.75 - (s - 21), z: -31.25 }
+        : { x: -20.25, z: -31.25 + (s - 31.5) };
+}
+function ringPath(from, to) {
+  if (to < from) to += 42;
+  const path = [ringPoint(from)];
+  for (
+    let s = (Math.floor(from / RING_SIDE) + 1) * RING_SIDE;
+    s < to;
+    s += RING_SIDE
+  )
+    path.push(ringPoint(s));
+  path.push(ringPoint(to));
+  return path;
+}
+export function parkingPath(lot, slot, leaving = false) {
+  const data = LOTS[lot],
+    spot = parkingSpace(lot, slot);
+  if (lot === "shop") {
+    const path = [
+      leaving ? data.exit : data.entry,
+      { x: -3.48, z: -14.85 },
+      { x: spot.x, z: -14.85 },
+      spot,
+    ];
+    return leaving ? path.reverse() : path;
+  }
+  const side = Math.floor(slot / 6),
+    x = spot.x + 15,
+    z = spot.z + 26;
+  const position =
+    side === 0
+      ? x + 5.25
+      : side === 1
+        ? 15.75 - z
+        : side === 2
+          ? 26.25 - x
+          : 36.75 + z;
+  // One-way circulation follows the perimeter; no shortcut crosses the field.
+  return leaving
+    ? [spot, ...ringPath(position, 4.68), data.exit]
+    : [data.entry, ...ringPath(5.82, position), spot];
 }
 function motion(points) {
   let length = 0;
@@ -86,13 +149,11 @@ export class StadiumDistrict {
   }
   park(lot, car) {
     if (!this.canPark(lot)) return false;
-    const data = LOTS[lot],
-      used = new Set(
-        this.parking.filter((p) => p.lot === lot).map((p) => p.slot),
-      );
+    const used = new Set(
+      this.parking.filter((p) => p.lot === lot).map((p) => p.slot),
+    );
     let slot = 0;
     while (used.has(slot)) slot++;
-    const spot = parkingSpace(lot, slot);
     this.parking.push({
       id: this.nextId++,
       lot,
@@ -100,12 +161,7 @@ export class StadiumDistrict {
       car: { ...car, ambulance: false, bus: false, length: 0.72 },
       stage: "entering",
       stay: 18 + this.random() * 18,
-      ...motion([
-        data.entry,
-        { x: data.entry.x, z: data.aisle },
-        { x: spot.x, z: data.aisle },
-        spot,
-      ]),
+      ...motion(parkingPath(lot, slot)),
     });
     this.arrivals++;
     return true;
@@ -191,17 +247,10 @@ export class StadiumDistrict {
           (p.lot === "stadium" ? this.phase === "departures" : p.stay <= 0) &&
           this.nextDeparture <= 0
         ) {
-          const data = LOTS[p.lot],
-            spot = parkingSpace(p.lot, p.slot);
           Object.assign(
             p,
             { stage: "leaving" },
-            motion([
-              spot,
-              { x: spot.x, z: data.aisle },
-              { x: data.exit.x, z: data.aisle },
-              data.exit,
-            ]),
+            motion(parkingPath(p.lot, p.slot, true)),
           );
           this.nextDeparture = 1.4;
         }
@@ -216,11 +265,17 @@ export class StadiumDistrict {
               (c) =>
                 c.junction === data.junction &&
                 c.lane === data.returnLane &&
-                c.p < -8.45,
+                Math.abs(c.p + (data.branch ?? 9.5)) < 1.15,
             );
             if (
               !blocked &&
-              sim.spawn(data.returnLane, data.junction, false, "freeway")
+              sim.spawn(
+                data.returnLane,
+                data.junction,
+                false,
+                "freeway",
+                -(data.branch ?? 9.5),
+              )
             ) {
               const car = sim.cars.at(-1);
               car.color = p.car.color;

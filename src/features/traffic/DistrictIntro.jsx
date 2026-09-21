@@ -20,10 +20,15 @@ export default function DistrictIntro({ onContinue }) {
       </span>
       <h3 id="traffic-district-title">A bigger little Milwaukee.</h3>
       <p id="traffic-district-description">
-        Nine blocks. A ballpark, a corner market, and a new freeway ramp.
-        Traffic is paused while you get your bearings.
+        Nine units. A little ballpark surrounded by parking, a corner shop, and
+        a small public market. Traffic is paused while you get your bearings.
       </p>
       <ul>
+        <li>
+          <strong>A new street layout.</strong> The public market and its plaza
+          create T-junctions at East Market and Lakefront. The straight freeway
+          ramp crosses above Broadway.
+        </li>
         <li>
           <strong>Handle the rush.</strong> Cars arrive from the ramp, park for
           the game, then leave together. The market has its own visitors. Watch
@@ -37,8 +42,8 @@ export default function DistrictIntro({ onContinue }) {
         </li>
         <li>
           <strong>Place one roundabout.</strong> Click the circular-arrow icon,
-          then a clear intersection. Cars yield automatically. You get one per
-          game.
+          then a clear four-way intersection. Cars yield automatically. You get
+          one per game.
         </li>
         <li>
           <strong>Keep emergencies moving.</strong> An ambulance can wait up to

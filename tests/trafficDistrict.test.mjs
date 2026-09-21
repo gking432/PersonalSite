@@ -8,12 +8,16 @@ import {
 } from "../src/features/traffic/trafficSimulation.js";
 import {
   JUNCTION_X,
+  JUNCTION_APPROACHES,
+  exitAvailable,
   EMERGENCY_LIMIT,
   JUNCTION_Z,
 } from "../src/features/traffic/cityChallenges.js";
 import {
   LOTS,
   StadiumDistrict,
+  parkingPath,
+  parkingSpace,
 } from "../src/features/traffic/stadiumDistrict.js";
 import {
   DISTRICT_GRID,
@@ -178,21 +182,21 @@ test("an emergency failure on the expansion milestone keeps restart available", 
   assert.equal(s.expansionPending, false);
   assert.equal(s.districtReady, false);
 });
-test("nine terrain cells contain four stadium cells, one shop and the four connected street blocks", () => {
+test("nine units keep the stadium and parking together while preserving continuous street handoffs", () => {
   const cells = DISTRICT_GRID.cells.flat();
   assert.equal(cells.length, 9);
-  assert.equal(cells.filter((c) => c === "stadium").length, 4);
-  assert.equal(cells.filter((c) => c === "shop").length, 1);
-  assert.equal(cells.filter((c) => c === "street").length, JUNCTION_X.length);
+  assert.equal(cells.filter((c) => c === "stadium-and-parking").length, 1);
+  assert.equal(cells.filter((c) => c === "shop-and-parking").length, 1);
+  assert.equal(cells.filter((c) => c === "civic-hall").length, 1);
   for (const down of [false, true]) {
     const s = setup(9),
       from = down ? 3 : 1,
       to = down ? 1 : 3;
-    s.spawn(down ? 0 : 2, from);
+    s.spawn(down ? 1 : 2, from);
     const c = s.cars[0];
     Object.assign(c, {
-      turn: "straight",
-      p: 6.49,
+      turn: down ? "left" : "straight",
+      p: down ? 6.49 - 3.1 + (2.12 * Math.PI) / 2 : 6.49,
       committed: true,
       speed: 2.4,
     });
@@ -216,12 +220,12 @@ test("the ramp stays in the grid, rises over an existing street, and joins witho
   for (const route of [RAMP_IN, RAMP_OUT]) {
     const crossing = route.filter((p) => Math.abs(p.x - 11) < 0.6);
     assert.ok(crossing.length > 0);
-    assert.ok(crossing.every((p) => p.y > 3 && p.z < -16 && p.z > -21));
+    assert.ok(crossing.every((p) => p.y > 3 && Math.abs(p.z) < 0.6));
   }
   const s = setup(9);
   s.spawn(0, FREEWAY.junction, false, "freeway");
   const c = s.cars[0];
-  s.signalsAt(3).wisconsin.color = "green";
+  s.signalsAt(FREEWAY.junction).wisconsin.color = "green";
   let before;
   for (let i = 0; i < 2000 && s.cars.includes(c); i++) {
     before = carPose(c);
@@ -236,7 +240,7 @@ test("the ramp stays in the grid, rises over an existing street, and joins witho
 test("backed-up ramp arrivals wait on the deck without evicting the surface queue", () => {
   const s = setup(9);
   s.district.nextArrival = 0;
-  s.spawn(1, 3);
+  s.spawn(1, FREEWAY.junction);
   const tail = s.cars[0];
   Object.assign(tail, { p: -3.2, crashed: true, speed: 0 });
   run(s, 20);
@@ -251,10 +255,11 @@ test("backed-up ramp arrivals wait on the deck without evicting the surface queu
 });
 test("destination routes get freeway arrivals into the stadium and shop, then return them to the freeway", () => {
   for (const [lane, junction, destination] of [
-    [1, 3, "stadium"],
+    [1, FREEWAY.junction, "stadium"],
+    [1, FREEWAY.junction, "shop"],
+    [LOTS.stadium.returnLane, LOTS.stadium.junction, "freeway"],
+    [LOTS.shop.returnLane, LOTS.shop.junction, "freeway"],
     [1, 3, "shop"],
-    [0, 2, "freeway"],
-    [0, 3, "freeway"],
   ]) {
     const s = setup(9);
     for (let j = 0; j < JUNCTION_X.length; j++)
@@ -273,7 +278,7 @@ test("parking capacity is real, shop visitors return, and stadium departures wai
   const car = { id: 1, color: 2, length: 0.72 };
   for (let i = 0; i < 24; i++) {
     assert.ok(d.park("stadium", car));
-    for (let t = 0; t < 1000; t++) d.tick(1 / 120, sim);
+    for (let t = 0; t < 2700; t++) d.tick(1 / 120, sim);
     d.time = 20;
   }
   assert.equal(d.canPark("stadium"), false);
@@ -311,7 +316,7 @@ test("stadium wave traffic is bounded, transitions through game and exit rush, a
   s.cars = [];
   s.district.nextArrival = s.district.nextShop = 10000;
   s.district.canPark = () => false;
-  s.spawn(3, 2, false, "stadium");
+  s.spawn(2, LOTS.stadium.junction, false, "stadium");
   const c = s.cars[0];
   run(s, 20);
   assert.ok(s.cars.includes(c));
@@ -321,22 +326,22 @@ test("one roundabout can be placed on an empty eligible crossing and cars follow
   for (let lane = 0; lane < 4; lane++)
     for (const turn of ["left", "straight", "right"]) {
       const s = setup(9);
-      assert.ok(s.placeRoundabout(3));
+      assert.ok(s.placeRoundabout(2));
       assert.equal(s.placeRoundabout(1), false);
-      s.spawn(lane, 3);
+      s.spawn(lane, 2);
       const c = s.cars[0];
       c.turn = turn;
       c.p = -2.17;
       let prev = carPose(c);
-      for (let i = 0; i < 800 && c.junction === 3 && s.cars.includes(c); i++) {
+      for (let i = 0; i < 800 && c.junction === 2 && s.cars.includes(c); i++) {
         s.tick(1 / 120);
         const p = carPose(c);
         assert.ok(Math.hypot(p.x - prev.x, p.z - prev.z) < 0.03);
-        const r = Math.hypot(p.x - JUNCTION_X[3], p.z - JUNCTION_Z[3]);
+        const r = Math.hypot(p.x - JUNCTION_X[2], p.z - JUNCTION_Z[2]);
         assert.ok(r > 1.1, "drove through central island");
         prev = p;
       }
-      assert.ok(c.p > 0 || c.junction !== 3 || !s.cars.includes(c));
+      assert.ok(c.p > 0 || c.junction !== 2 || !s.cars.includes(c));
       assert.equal(s.crashes, 0);
     }
   const s = setup(8);
@@ -426,4 +431,140 @@ test("closing the bridge keeps its timer until traffic moves, then clears it", (
   assert.equal(a.emergencyWait, 0);
   assert.equal(s.gameOver, null);
   assert.equal(EMERGENCY_LIMIT, 20);
+});
+
+test("T junctions reject their closed arms, force legal turns, and cannot become a roundabout", () => {
+  for (const j of [3, 7]) {
+    for (const lane of JUNCTION_APPROACHES[j])
+      for (const random of [0, 0.5, 0.99]) {
+        const s = setup(9);
+        s.random = () => random;
+        assert.equal(s.spawn(j === 3 ? 0 : 2, j), false);
+        assert.equal(s.placeRoundabout(j), false);
+        assert.ok(s.spawn(lane, j));
+        const c = s.cars[0],
+          exit =
+            (lane + (c.turn === "left" ? 3 : c.turn === "right" ? 1 : 0)) % 4;
+        assert.ok(exitAvailable(j, exit));
+        s.signalsAt(j).water.color = s.signalsAt(j).wisconsin.color = "green";
+        for (
+          let i = 0;
+          i < 900 && s.cars.includes(c) && c.junction === j;
+          i++
+        ) {
+          s.tick(1 / 120);
+          assert.ok(
+            j === 3
+              ? carPose(c).z > JUNCTION_Z[j] - 1.4
+              : carPose(c).z < JUNCTION_Z[j] + 1.4,
+            "entered the closed arm",
+          );
+        }
+      }
+  }
+});
+test("destination routing can loop around a unit when a shop approach would require a U-turn", () => {
+  const s = setup(9);
+  s.spawn(3, 4, false, "shop");
+  for (let j = 0; j < JUNCTION_X.length; j++)
+    s.signalsAt(j).water.color = s.signalsAt(j).wisconsin.color = "green";
+  run(s, 45);
+  assert.ok(s.district.arrivals > 0);
+  assert.equal(s.crashes, 0);
+});
+test("parking returns at the same driveway position and all stall paths stay inside the grid", () => {
+  for (const [name, lot] of Object.entries(LOTS)) {
+    const s = setup(9);
+    s.spawn(
+      lot.returnLane,
+      lot.junction,
+      false,
+      "freeway",
+      -(lot.branch ?? 9.5),
+    );
+    const pose = carPose(s.cars[0]);
+    assert.ok(Math.hypot(pose.x - lot.exit.x, pose.z - lot.exit.z) < 1e-8);
+    for (let slot = 0; slot < lot.capacity; slot++)
+      for (const leaving of [false, true]) {
+        const path = parkingPath(name, slot, leaving);
+        for (const p of path) {
+          assert.ok(
+            p.x >= DISTRICT_GRID.bounds.minX &&
+              p.x <= DISTRICT_GRID.bounds.maxX,
+          );
+          assert.ok(
+            p.z >= DISTRICT_GRID.bounds.minZ &&
+              p.z <= DISTRICT_GRID.bounds.maxZ,
+          );
+        }
+      }
+  }
+});
+test("tow trucks use each T junction’s open street and recover the wreck", () => {
+  for (const j of [3, 7]) {
+    const s = setup(9),
+      incident = {
+        id: 1,
+        junction: j,
+        x: JUNCTION_X[j],
+        z: JUNCTION_Z[j],
+        assigned: false,
+      };
+    s.incidents = [incident];
+    s.cars = [
+      {
+        id: 1,
+        incident: 1,
+        junction: j,
+        lane: 2,
+        p: 0,
+        turn: "straight",
+        crashed: true,
+        length: 0.72,
+      },
+    ];
+    s.signalsAt(j).water.color = "red";
+    assert.ok(s.dispatchTow(1));
+    const direction = j === 3 ? 1 : -1;
+    assert.ok((s.tow.active.z - JUNCTION_Z[j]) * direction > 0);
+    run(s, 5);
+    assert.ok(s.tow.active.waiting);
+    assert.ok(
+      Math.abs(s.tow.active.z - (JUNCTION_Z[j] + direction * 2.65)) < 0.01,
+    );
+    s.signalsAt(j).water.color = "green";
+    run(s, 12);
+    assert.equal(s.tow.active, null);
+    assert.equal(s.incidents.length, 0);
+  }
+});
+
+test("stadium stalls fit one unit and every driveway segment avoids the stadium", () => {
+  const bounds = LOTS.stadium.bounds;
+  for (let slot = 0; slot < 24; slot++) {
+    const spot = parkingSpace("stadium", slot);
+    assert.ok(Math.abs(spot.x - bounds.x) + 0.55 < bounds.w / 2);
+    assert.ok(Math.abs(spot.z - bounds.z) + 0.55 < bounds.d / 2);
+    for (const leaving of [false, true]) {
+      const path = parkingPath("stadium", slot, leaving);
+      for (let i = 1; i < path.length; i++)
+        for (let step = 0; step <= 20; step++) {
+          const t = step / 20,
+            x = path[i - 1].x + (path[i].x - path[i - 1].x) * t,
+            z = path[i - 1].z + (path[i].z - path[i - 1].z) * t;
+          assert.ok(
+            Math.hypot(x + 15, z + 26) > 4.9,
+            "driveway crossed stadium",
+          );
+        }
+    }
+  }
+});
+test("the two closed streets do not route traffic through the hall or plaza", () => {
+  const s = setup(9);
+  assert.equal(s.neighbor(3, 2), null);
+  assert.equal(s.neighbor(7, 0), null);
+  assert.equal(s.neighbor(5, 3), 4);
+  assert.equal(s.neighbor(4, 2), 6);
+  assert.equal(s.neighbor(6, 3), 7);
 });

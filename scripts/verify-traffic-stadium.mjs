@@ -1,7 +1,7 @@
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 import { mkdir } from "node:fs/promises";
-const output = "/tmp/portfolio-traffic-grid";
+const output = "/tmp/portfolio-traffic-neighborhood";
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ channel: "chrome", headless: true });
 try {
@@ -219,25 +219,39 @@ try {
   );
   assert.equal(
     await page.locator(".traffic-city__signal[data-axis]:visible").count(),
-    16,
+    30,
   );
   await button("Enter fullscreen").click();
   await page.waitForFunction(() => !!document.fullscreenElement);
-  await shot("nine-block-grid");
+  await shot("neighborhood-layout");
+  assert.equal(
+    await page
+      .locator('.traffic-city__signal[data-junction="3"]:visible')
+      .count(),
+    3,
+  );
+  assert.equal(
+    await page
+      .locator('.traffic-city__signal[data-junction="7"]:visible')
+      .count(),
+    3,
+  );
   await button("Pause traffic").click();
   await button("Place one roundabout").click();
+  assert.equal(await button("Place roundabout at East Market").count(), 0);
+  assert.equal(await button("Place roundabout at Lakefront").count(), 0);
   await page.waitForFunction(() =>
     document
-      .querySelector('[aria-label="Place roundabout at East Market"]')
+      .querySelector('[aria-label="Place roundabout at Plankinton"]')
       ?.style.transform.includes("translate"),
   );
-  await button("Place roundabout at East Market").click();
-  assert.equal((await snap()).roundabout, 3);
+  await button("Place roundabout at Plankinton").click();
+  assert.equal((await snap()).roundabout, 2);
   await button("Resume traffic").click();
   assert.equal(await button("Place one roundabout").count(), 0);
   assert.equal(
     await page.locator(".traffic-city__signal[data-axis]:visible").count(),
-    12,
+    26,
   );
   await page.evaluate(() => {
     const s = window.__trafficCity.sim;
@@ -299,7 +313,7 @@ try {
           "level-seven links and visible connections",
           "level-eight sensor and ambulance priority",
           "paused accessible introduction before expansion and emergency clock frozen",
-          "nine-cell map with four stadium cells and one shop cell",
+          "stadium and parking in one unit, matched shop and two-plot market",
           "cars follow the raised ramp over a surface street",
           "fullscreen district",
           "one roundabout placement",

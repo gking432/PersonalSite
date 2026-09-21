@@ -2,6 +2,7 @@ import DistrictIntro from "./DistrictIntro";
 import SignalProgrammer from "./SignalProgrammer";
 import {
   JUNCTION_X,
+  JUNCTION_APPROACHES,
   JUNCTION_LEVEL,
   JUNCTION_NAMES,
   EMERGENCY_LIMIT,
@@ -406,6 +407,7 @@ export default function TrafficCity() {
             data-axis={signal.axis}
             data-junction={signal.junction}
             hidden={
+              !signal.available ||
               game.level < signal.level ||
               (signal.level >= 9 && !game.districtReady) ||
               game.roundabout === signal.junction
@@ -423,7 +425,7 @@ export default function TrafficCity() {
               engine.current?.toggleSignal(signal.axis, signal.junction)
             }
           >
-            {i % 4 === 0 &&
+            {signal.primary &&
               game.programs[signal.junction]?.mode !== "manual" &&
               game.programs[signal.junction]?.remaining != null && (
                 <span className="traffic-city__signal-timer">
@@ -467,7 +469,8 @@ export default function TrafficCity() {
           !game.gameOver &&
           JUNCTION_X.map(
             (_, j) =>
-              game.level >= JUNCTION_LEVEL[j] && (
+              game.level >= JUNCTION_LEVEL[j] &&
+              JUNCTION_APPROACHES[j].length === 4 && (
                 <button
                   type="button"
                   key={j}

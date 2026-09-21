@@ -1,5 +1,6 @@
+import { neighborhoodBuilding } from "./neighborhoodBuilding.js";
 import * as THREE from "three";
-import { RAMP_CENTER, rampOffset } from "./districtLayout.js";
+import { RAMP_CENTER, rampOffset, STADIUM_SCALE } from "./districtLayout.js";
 import { LOTS, parkingSpace } from "./stadiumDistrict.js";
 import { JUNCTION_X, JUNCTION_Z } from "./cityChallenges.js";
 export function createStadiumScene({
@@ -15,20 +16,15 @@ export function createStadiumScene({
   const district = new THREE.Group();
   city.add(district);
   const stadium = new THREE.Group();
-  stadium.position.set(-8, 0, -22);
-  stadium.scale.set(1.1, 1, 1.05);
+  stadium.position.set(-15, 0.16, -26);
+  stadium.scale.set(STADIUM_SCALE, 0.6, STADIUM_SCALE);
   district.add(stadium);
   const b = (w, h, d, x, y, z, mat, parent = stadium, ry = 0) =>
     box(w, h, d, x, y, z, mat, parent, ry);
-  // A single 2×2 footprint replaces four terrain cells, within the old grid.
-  b(27.7, 0.34, 26, -8.35, -0.05, -19.9, palette.base, district);
-  b(27.7, 0.07, 26, -8.35, -0.24, -19.9, palette.edge, district);
-  b(27.5, 0.12, 25.8, -8.35, 0.18, -19.9, palette.pavement, district);
-  // The shop is one ordinary-sized cell, sharing the adjoining street block.
-  b(12.7, 0.34, 13.8, 11.85, -0.05, -26, palette.base, district);
-  b(12.7, 0.07, 13.9, 11.85, -0.24, -26, palette.edge, district);
-  b(12.5, 0.12, 13.65, 11.85, 0.18, -26, palette.pavement, district);
-  b(2.75, 0.045, 4.5, 11, 0.28, -21.2, palette.asphalt, district);
+  // One terrain unit contains both the ballpark and its perimeter parking.
+  b(14.4, 0.34, 13.8, -15, -0.05, -26, palette.base, district);
+  b(14.5, 0.07, 13.9, -15, -0.24, -26, palette.edge, district);
+  b(14.25, 0.12, 13.65, -15, 0.18, -26, palette.pavement, district);
   mesh(
     new THREE.CylinderGeometry(6.8, 6.8, 0.08, 64),
     palette.leaves,
@@ -140,73 +136,148 @@ export function createStadiumScene({
           b(0.35, 0.25, 0.15, x - 0.45 + i * 0.45, 5.7, z, lampMaterials.off),
         );
     }
+  // Asphalt surrounds the stadium instead of occupying a second unit.
+  for (const [x, z, w, d] of [
+    [-15, -20.25, 14.2, 2.1],
+    [-15, -31.75, 14.2, 2.1],
+    [-20.95, -26, 2.3, 9.4],
+    [-9.05, -26, 2.3, 9.4],
+  ])
+    b(w, 0.035, d, x, 0.28, z, palette.asphalt, district);
+  b(1.65, 0.035, 1.8, -15, 0.28, -19.6, palette.asphalt, district);
+  // One normal building plot: shop at the back, three spaces at the front.
+  b(3.65, 0.12, 4.7, -3.48, 0.34, -17.07, palette.curb, district);
+  b(3.5, 0.025, 1.2, -3.48, 0.407, -15.4, palette.asphalt, district);
+  b(0.95, 0.035, 1.5, -3.48, 0.28, -14.2, palette.asphalt, district);
   for (const [lot, data] of Object.entries(LOTS)) {
-    const center =
-      lot === "stadium"
-        ? { x: -10.65, z: -9.1, w: 23.1, d: 3.9 }
-        : { x: 11, z: -24.9, w: 8.1, d: 4.2 };
-    b(center.w, 0.3, center.d, center.x, 0, center.z, palette.base, district);
-    b(
-      center.w - 0.1,
-      0.035,
-      center.d - 0.1,
-      center.x,
-      0.28,
-      center.z,
-      palette.asphalt,
-      district,
-    );
     for (let i = 0; i < data.capacity; i++) {
-      const p = parkingSpace(lot, i);
+      const p = parkingSpace(lot, i),
+        horizontal = lot === "stadium" && Math.floor(i / 6) % 2 === 1;
       for (const side of [-1, 1])
         b(
-          0.025,
+          horizontal ? 1.05 : 0.025,
           0.008,
-          0.95,
-          p.x + side * 0.65,
-          0.307,
-          p.z,
+          horizontal ? 0.025 : 1.05,
+          p.x + (horizontal ? 0 : side * 0.44),
+          lot === "shop" ? 0.425 : 0.307,
+          p.z + (horizontal ? side * 0.52 : 0),
           palette.white,
           district,
         );
     }
-    label(
-      lot === "stadium" ? "P · BALLPARK" : "P · MARKET",
-      lot === "stadium" ? 3.2 : 2.5,
-      0.3,
-      center.x,
-      0.33,
-      center.z + center.d / 2 - 0.5,
-      { parent: district, floor: true, size: 60 },
-    );
   }
-  // One shop and its six-space lot, on the same foundation as the other cells.
-  b(6.2, 1.7, 3.1, 12, 1.2, -30.1, palette.brick, district);
-  b(6.4, 0.16, 3.3, 12, 2.1, -30.1, palette.trim, district);
-  b(5.5, 0.8, 0.035, 12, 1.05, -28.53, palette.glass, district);
-  b(5.8, 0.13, 0.9, 12, 1.65, -28.2, palette.green, district);
-  label("CORNER MARKET", 4.5, 0.43, 12, 1.88, -28.1, {
-    parent: district,
-    size: 58,
+  neighborhoodBuilding({ box, mesh, palette }, district, {
+    x: -3.48,
+    z: -17.6,
+    height: 1.8,
+    front: -1,
+    side: -1,
+    parcel: false,
+    planter: false,
   });
-  for (const [x, z] of [
-    [16.5, -30.5],
-    [16.5, -23],
-    [-20, -29],
-    [3, -29],
-  ]) {
-    b(0.14, 0.9, 0.14, x, 0.8, z, palette.dark, district);
+  label("CORNER SHOP", 1.45, 0.17, -3.48, 1.14, -16.21, {
+    parent: district,
+    size: 64,
+  });
+
+  // Two small building plots, measured against the original 3.65 × 4.7 curb.
+  // The hall closes just this street arm, creating East Market's T junction.
+  b(7.3, 0.12, 4.7, 11, 0.34, -17.07, palette.curb, district);
+  b(6.3, 1.8, 2.7, 11, 1.31, -16.72, palette.ivory, district);
+  b(6.5, 0.12, 2.88, 11, 2.26, -16.72, palette.trim, district);
+  b(6.2, 0.06, 2.6, 11, 2.34, -16.72, palette.green, district);
+  for (let col = 0; col < 10; col++)
+    for (let floor = 0; floor < 3; floor++)
+      for (const side of [-1, 1])
+        b(
+          0.3,
+          0.32,
+          0.035,
+          8.4 + col * 0.58,
+          0.77 + floor * 0.44,
+          -16.72 + side * 1.37,
+          palette.glass,
+          district,
+        );
+  b(1.3, 0.1, 0.36, 11, 0.96, -15.17, palette.green, district);
+  b(0.8, 0.7, 0.05, 11, 0.79, -15.33, palette.glass, district);
+  label("PUBLIC MARKET", 2.4, 0.2, 11, 1.7, -15.32, {
+    parent: district,
+    size: 64,
+  });
+  function tree(x, z) {
+    b(0.12, 0.65, 0.12, x, 0.67, z, palette.dark, district);
     mesh(
-      new THREE.IcosahedronGeometry(0.65, 1),
+      new THREE.IcosahedronGeometry(0.48, 1),
       palette.leaves2,
       x,
-      1.5,
+      1.19,
       z,
       district,
     );
+    b(0.95, 0.09, 0.95, x, 0.32, z, palette.leaves, district);
+  }
+  function bench(x, z) {
+    b(0.95, 0.1, 0.3, x, 0.58, z, palette.terra, district);
+    b(0.95, 0.35, 0.06, x, 0.8, z + 0.12, palette.terra, district);
+    for (const dx of [-0.35, 0.35])
+      b(0.08, 0.22, 0.22, x + dx, 0.43, z, palette.dark, district);
+  }
+  // A compact pedestrian square fills the space behind the two-plot hall.
+  b(7.3, 0.12, 4.7, 11, 0.34, -21.4, palette.curb, district);
+  for (const [x, z] of [
+    [8.1, -20],
+    [13.9, -20],
+    [8.1, -23],
+    [13.9, -23],
+    [-21.4, -32.2],
+    [-8.6, -32.2],
+    [-21.4, -19.8],
+    [-8.6, -19.8],
+  ])
+    tree(x, z);
+  for (const [x, z] of [
+    [9.6, -23],
+    [12.4, -23],
+    [8.2, -21.4],
+    [13.8, -21.4],
+  ])
+    bench(x, z);
+  mesh(
+    new THREE.CylinderGeometry(0.9, 0.95, 0.18, 32),
+    palette.curb,
+    11,
+    0.48,
+    -21.3,
+    district,
+  );
+  mesh(
+    new THREE.CylinderGeometry(0.76, 0.76, 0.06, 32),
+    palette.water,
+    11,
+    0.59,
+    -21.3,
+    district,
+  );
+  mesh(
+    new THREE.CylinderGeometry(0.2, 0.3, 0.42, 16),
+    palette.trim,
+    11,
+    0.8,
+    -21.3,
+    district,
+  );
+  for (const [x, z] of [
+    [7, -17],
+    [15, -17],
+    [7, -21.4],
+    [15, -21.4],
+  ]) {
+    rod([x, 0.3, z], [x, 1.9, z], 0.035, palette.dark, district);
+    b(0.27, 0.15, 0.27, x, 1.98, z, lampMaterials.amber, district);
   }
   // The only freeway geometry is this raised ramp. Rendering and car motion
-  // share the sampled curve so vehicles stay on the deck through the climb.
+  // share the straight path so vehicles stay on the deck through the climb.
   const vertices = [];
   for (let i = 0; i < RAMP_CENTER.length - 1; i++) {
     const a = rampOffset(i, -1.15),
@@ -241,15 +312,17 @@ export function createStadiumScene({
   deck.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
   deck.computeVertexNormals();
   mesh(deck, palette.asphalt, 0, 0, 0, district);
-  for (const i of [32, 49, 60, 69]) {
+  // Paired columns leave both surface lanes open underneath the viaduct.
+  for (const i of [29, 49, 69]) {
     const p = RAMP_CENTER[i];
-    b(0.35, p.y, 0.5, p.x, p.y / 2 + 0.16, p.z, palette.curb, district);
-    b(2.1, 0.15, 0.55, p.x, p.y + 0.18, p.z, palette.base, district);
+    for (const z of [-1.65, 1.65])
+      b(0.22, p.y, 0.3, p.x, p.y / 2 + 0.16, z, palette.curb, district);
+    b(0.45, 0.16, 3.6, p.x, p.y + 0.18, 0, palette.base, district);
   }
-  label("I–94 ↗", 1.9, 0.48, 16.5, 1.4, -12.7, { parent: district, size: 64 });
-  for (const x of [-3.7, 1.7])
-    rod([x, 0.3, -12], [x, 2.6, -12], 0.06, palette.dark, district);
-  const sign = label("FIRST PITCH", 5.5, 0.85, -1, 2.3, -12, {
+  label("I–94 →", 1.5, 0.36, 5.2, 1.2, 1.1, { parent: district, size: 64 });
+  for (const x of [-17, -13])
+    rod([x, 0.3, -19.6], [x, 1.5, -19.6], 0.045, palette.dark, district);
+  const sign = label("FIRST PITCH", 3.6, 0.5, -15, 1.3, -19.6, {
     parent: district,
     size: 68,
   });

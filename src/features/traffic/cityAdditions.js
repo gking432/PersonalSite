@@ -1,5 +1,11 @@
+import { neighborhoodBuilding } from "./neighborhoodBuilding.js";
 import * as THREE from "three";
-import { JUNCTION_X, JUNCTION_Z } from "./cityChallenges";
+import {
+  JUNCTION_X,
+  JUNCTION_Z,
+  JUNCTION_APPROACHES,
+  roadReach,
+} from "./cityChallenges";
 
 export function createCityAdditions({
   city,
@@ -19,85 +25,89 @@ export function createCityAdditions({
     b(14.4, 0.34, 13.8, 0, -0.05, 0, palette.base);
     b(14.5, 0.07, 13.9, 0, -0.24, 0, palette.edge);
     b(14.25, 0.12, 13.65, 0, 0.18, 0, palette.pavement);
-    b(
-      junction === 2 ? 18 : 20,
-      0.045,
-      2.75,
-      junction === 2 ? -1 : 0,
-      0.28,
-      0,
-      palette.asphalt,
-    );
-    b(2.75, 0.045, 20, 0, 0.28, 0, palette.asphalt);
-    for (const s of [-1, 1]) {
-      b(2.95, 0.34, 3.3, 0, -0.05, s * 8.35, palette.base);
-      b(3.04, 0.07, 3.36, 0, -0.24, s * 8.35, palette.edge);
-      if (junction !== 2 || s < 0) {
-        b(3.3, 0.34, 2.95, s * 8.35, -0.05, 0, palette.base);
-        b(3.36, 0.07, 3.04, s * 8.35, -0.24, 0, palette.edge);
-      }
-      for (let p = 2.5; p < 9.8; p += 0.68)
-        for (const line of [-0.035, 0.035]) {
-          b(0.025, 0.006, 0.42, line, 0.306, s * p, palette.yellow);
-          if (junction !== 2 || s * p < 7.8)
-            b(0.42, 0.006, 0.025, s * p, 0.306, line, palette.yellow);
-        }
-      for (let i = -5; i <= 5; i++) {
-        b(0.12, 0.008, 0.38, i * 0.205, 0.307, s * 1.66, palette.white);
-        b(0.38, 0.008, 0.12, s * 1.66, 0.307, i * 0.205, palette.white);
-      }
-      b(1.08, 0.009, 0.045, -s * 0.64, 0.308, s * 2, palette.white);
-      b(0.045, 0.009, 1.08, s * 2, 0.308, s * 0.64, palette.white);
-      for (const side of [-1, 1]) {
-        const x = side * 3.48,
-          z = s * 3.72,
-          h = side === s ? 1.8 : 2.5;
-        b(3.65, 0.12, 4.7, x, 0.34, s * 4.07, palette.curb);
+    const approaches = JUNCTION_APPROACHES[junction];
+    b(2.75, 0.045, 2.75, 0, 0.28, 0, palette.asphalt);
+    for (const approach of approaches) {
+      const vertical = approach % 2 === 0;
+      const sign = approach === 0 || approach === 3 ? -1 : 1;
+      const reach = roadReach(junction, approach);
+      const center = (sign * (reach + 1.375)) / 2;
+      const length = reach - 1.375;
+      b(
+        vertical ? 2.75 : length,
+        0.045,
+        vertical ? length : 2.75,
+        vertical ? 0 : center,
+        0.28,
+        vertical ? center : 0,
+        palette.asphalt,
+      );
+      if (reach > 6.85) {
+        const endLength = reach - 6.7,
+          endCenter = (sign * (reach + 6.7)) / 2;
         b(
-          2.32,
-          h,
-          2.7,
-          x,
-          0.41 + h / 2,
-          z,
-          side === s ? palette.brick : palette.ivory,
+          vertical ? 2.95 : endLength,
+          0.34,
+          vertical ? endLength : 2.95,
+          vertical ? 0 : endCenter,
+          -0.05,
+          vertical ? endCenter : 0,
+          palette.base,
         );
-        b(2.5, 0.12, 2.88, x, h + 0.46, z, palette.trim);
-        b(2.2, 0.06, 2.6, x, h + 0.54, z, palette.green);
-        for (let floor = 0; floor < 3; floor++)
-          for (let col = 0; col < 4; col++) {
-            const y = 0.77 + (floor * (h - 0.5)) / 3;
-            for (const face of [-1, 1]) {
-              b(
-                0.26,
-                0.32,
-                0.035,
-                x - 0.83 + col * 0.55,
-                y,
-                z + face * 1.37,
-                palette.glass,
-              );
-              b(
-                0.035,
-                0.32,
-                0.29,
-                x + face * 1.18,
-                y,
-                z - 1 + col * 0.66,
-                palette.glass,
-              );
-            }
-          }
-        b(1.6, 0.1, 0.36, x, 0.96, z - s * 1.55, palette.green);
-        b(0.6, 0.14, 0.45, x + side * 1.5, 0.48, z + s * 1.35, palette.green);
-        mesh(
-          new THREE.IcosahedronGeometry(0.34, 1),
-          palette.leaves,
-          x + side * 1.5,
-          0.94,
-          z + s * 1.35,
-          block,
+        b(
+          vertical ? 3.04 : endLength + 0.06,
+          0.07,
+          vertical ? endLength + 0.06 : 3.04,
+          vertical ? 0 : endCenter,
+          -0.24,
+          vertical ? endCenter : 0,
+          palette.edge,
         );
+      }
+      for (let p = 2.5; p < reach - 0.2; p += 0.68)
+        for (const line of [-0.035, 0.035])
+          b(
+            vertical ? 0.025 : 0.42,
+            0.006,
+            vertical ? 0.42 : 0.025,
+            vertical ? line : sign * p,
+            0.306,
+            vertical ? sign * p : line,
+            palette.yellow,
+          );
+      for (let i = -5; i <= 5; i++)
+        b(
+          vertical ? 0.12 : 0.38,
+          0.008,
+          vertical ? 0.38 : 0.12,
+          vertical ? i * 0.205 : sign * 1.66,
+          0.307,
+          vertical ? sign * 1.66 : i * 0.205,
+          palette.white,
+        );
+      b(
+        vertical ? 1.08 : 0.045,
+        0.009,
+        vertical ? 0.045 : 1.08,
+        vertical ? -sign * 0.64 : sign * 2,
+        0.308,
+        vertical ? sign * 2 : sign * 0.64,
+        palette.white,
+      );
+    }
+    for (const s of [-1, 1]) {
+      const closed = !approaches.includes(s < 0 ? 0 : 2);
+      if (closed) b(14.25, 0.14, 0.2, 0, 0.34, s * 1.5, palette.curb);
+      for (const side of [-1, 1]) {
+        if (closed || (junction === 4 && s === -1 && side === -1)) continue;
+        neighborhoodBuilding({ box, mesh, palette }, block, {
+          x: side * 3.48,
+          z: s * 3.72,
+          height: side === s ? 1.8 : 2.5,
+          front: s,
+          side,
+          ivory: side !== s,
+        });
       }
     }
     // Batch the new block independently so it can rise into place as one object.
@@ -119,7 +129,7 @@ export function createCityAdditions({
   }
   const block = makeBlock(1),
     westBlock = makeBlock(2);
-  const northBlocks = [3].map(makeBlock);
+  const northBlocks = JUNCTION_X.slice(3).map((_, i) => makeBlock(i + 3));
   const blocks = [city, block, westBlock, ...northBlocks];
   // The west riverwalk is already inhabited before its intersection unlocks.
   for (const side of [-1, 1]) {

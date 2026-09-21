@@ -3,6 +3,9 @@ import { StadiumDistrict, LOTS, FREEWAY } from "./stadiumDistrict.js";
 import { roundaboutPose } from "./roundabout.js";
 import {
   JUNCTION_X,
+  roadReach,
+  JUNCTION_APPROACHES,
+  exitAvailable,
   JUNCTION_Z,
   EMERGENCY_LIMIT,
   JUNCTION_LEVEL,
@@ -160,9 +163,18 @@ export class TrafficSimulation {
       junction
     ];
   }
-  chooseTurn() {
+  chooseTurn(junction = 0, lane = 0) {
     const v = this.random();
-    return v < 0.27 ? "left" : v > 0.73 ? "right" : "straight";
+    const preferred = v < 0.27 ? "left" : v > 0.73 ? "right" : "straight";
+    const options = ["left", "straight", "right"].filter((turn) =>
+      exitAvailable(
+        junction,
+        (lane + (turn === "left" ? 3 : turn === "right" ? 1 : 0)) % 4,
+      ),
+    );
+    return options.includes(preferred)
+      ? preferred
+      : options[Math.floor(v * options.length)];
   }
   dispatchRescue(id) {
     return (
@@ -215,9 +227,10 @@ export class TrafficSimulation {
     junction = 0,
     ambulance = false,
     destination = null,
-    entry = ENTRY,
+    entry = -roadReach(junction, lane) + 0.5,
   ) {
-    if (this.gameOver) return false;
+    if (this.gameOver || !JUNCTION_APPROACHES[junction]?.includes(lane))
+      return false;
     const bus = !ambulance && !destination && this.random() < 0.09;
     const length = bus ? 1.08 : ambulance ? 0.92 : 0.72;
     const displaced = this.cars.filter(
@@ -238,7 +251,7 @@ export class TrafficSimulation {
       this.overflowed++;
     }
     if (this.cars.length >= MAX_CARS) return false;
-    const turn = this.chooseTurn();
+    const turn = this.chooseTurn(junction, lane);
     this.cars.push({
       id: this.nextId++,
       lane,
@@ -300,6 +313,10 @@ export class TrafficSimulation {
             [2, 2],
             [2, 3],
             [3, 1],
+            [5, 3],
+            [6, 0],
+            [7, 0],
+            [7, 1],
           ]
         : this.level >= 5
           ? [
@@ -389,7 +406,7 @@ export class TrafficSimulation {
         pose.out !== null &&
         !this.district.canPark(car.destination)
       )
-        gap = EXIT - 0.4 - pose.out;
+        gap = (lot.branch ?? EXIT) - 0.4 - pose.out;
 
       if (
         (this.incidents.some(
@@ -635,6 +652,18 @@ export class TrafficSimulation {
         this.complete(car);
         return false;
       }
+      const lot = this.districtReady && LOTS[car.destination];
+      if (
+        lot &&
+        junction === lot.junction &&
+        pose.exitLane === lot.exitLane &&
+        pose.out !== null &&
+        pose.out >= (lot.branch ?? EXIT)
+      ) {
+        if (!this.district.park(car.destination, car)) return true;
+        this.complete(car);
+        return false;
+      }
       const next = this.neighbor(junction, pose.exitLane);
       const distance =
         next === null
@@ -652,20 +681,20 @@ export class TrafficSimulation {
             ? "straight"
             : car.destination
               ? this.routeTurn(next, car.lane, car.destination)
-              : this.chooseTurn();
+              : this.chooseTurn(next, car.lane);
         car.roundabout = this.roundabout === next;
         car.emergencyWait = 0;
         car.committed = car.p > STOP_LINE + 0.02;
-      } else if (pose.out !== null && pose.out > EXIT) {
-        if (this.districtReady && car.destination && LOTS[car.destination]) {
-          const lot = LOTS[car.destination];
-          if (
-            car.junction === lot.junction &&
-            pose.exitLane === lot.exitLane &&
-            !this.district.park(car.destination, car)
+      } else if (
+        pose.out !== null &&
+        pose.out >
+          Math.max(
+            roadReach(junction, (pose.exitLane + 2) % 4) - 0.25,
+            lot && junction === lot.junction && pose.exitLane === lot.exitLane
+              ? lot.branch
+              : 0,
           )
-            return true;
-        }
+      ) {
         this.complete(car);
         return false;
       }
@@ -673,6 +702,7 @@ export class TrafficSimulation {
     });
   }
   neighbor(junction, lane) {
+    if (!exitAvailable(junction, lane)) return null;
     const x = JUNCTION_X[junction],
       z = JUNCTION_Z[junction],
       dir = APPROACHES[lane];
@@ -690,37 +720,45 @@ export class TrafficSimulation {
           : p.dx === 0 && p.dz * dir.dz > 0),
     );
     candidates.sort((a, b) => Math.hypot(a.dx, a.dz) - Math.hypot(b.dx, b.dz));
-    return candidates[0]?.i ?? null;
+    const nearest = candidates[0]?.i;
+    return nearest !== undefined && JUNCTION_APPROACHES[nearest].includes(lane)
+      ? nearest
+      : null;
   }
   routeTurn(junction, lane, destination) {
     const goal = destination === "freeway" ? FREEWAY : LOTS[destination];
-    if (!goal) return this.chooseTurn();
+    if (!goal) return this.chooseTurn(junction, lane);
     const options = [
       { turn: "straight", lane },
       { turn: "left", lane: (lane + 3) % 4 },
       { turn: "right", lane: (lane + 1) % 4 },
-    ];
-    const distance = (start) => {
-      if (start === null) return 100;
-      const queue = [[start, 0]],
+    ].filter((option) => exitAvailable(junction, option.lane));
+    // Route through approach states, not just junctions: a destination on the
+    // far side of a T may require going around the block instead of a U-turn.
+    const distance = (start, incoming) => {
+      if (start === null) return Infinity;
+      const queue = [[start, incoming, 0]],
         seen = new Set();
       while (queue.length) {
-        const [j, d] = queue.shift();
-        if (j === goal.junction) return d;
-        if (seen.has(j)) continue;
-        seen.add(j);
-        for (let l = 0; l < 4; l++) {
-          const next = this.neighbor(j, l);
-          if (next !== null && !seen.has(next)) queue.push([next, d + 1]);
+        const [j, lane, d] = queue.shift(),
+          key = `${j}:${lane}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        for (const exit of [lane, (lane + 3) % 4, (lane + 1) % 4]) {
+          if (!exitAvailable(j, exit)) continue;
+          if (j === goal.junction && exit === goal.exitLane) return d;
+          const next = this.neighbor(j, exit);
+          if (next !== null && !seen.has(`${next}:${exit}`))
+            queue.push([next, exit, d + 1]);
         }
       }
-      return 100;
+      return Infinity;
     };
     options.sort((a, b) => {
       const cost = (o) =>
         junction === goal.junction && o.lane === goal.exitLane
           ? -1
-          : distance(this.neighbor(junction, o.lane));
+          : distance(this.neighbor(junction, o.lane), o.lane);
       return cost(a) - cost(b);
     });
     return options[0].turn;
@@ -733,6 +771,7 @@ export class TrafficSimulation {
       this.gameOver ||
       !this.districtReady ||
       this.roundabout !== null ||
+      JUNCTION_APPROACHES[junction]?.length !== 4 ||
       this.level < JUNCTION_LEVEL[junction] ||
       this.incidents.some((i) => i.junction === junction) ||
       this.tow.active?.junction === junction

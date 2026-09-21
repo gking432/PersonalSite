@@ -3,6 +3,7 @@ import {
   JUNCTION_Z,
   JUNCTION_NAMES,
   JUNCTION_LEVEL,
+  JUNCTION_APPROACHES,
 } from "./cityChallenges";
 
 const BASE_SIGNALS = [
@@ -45,7 +46,9 @@ const BASE_SIGNALS = [
 ];
 
 export const SIGNALS = JUNCTION_X.flatMap((x, junction) =>
-  BASE_SIGNALS.map((s) => ({
+  BASE_SIGNALS.map((s, approach) => ({
+    available: JUNCTION_APPROACHES[junction].includes(approach),
+    primary: approach === (JUNCTION_APPROACHES[junction].includes(0) ? 0 : 2),
     ...s,
     junction,
     level: JUNCTION_LEVEL[junction],

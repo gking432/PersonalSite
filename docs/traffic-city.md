@@ -16,7 +16,7 @@ Each car leaving the road network or entering a destination lot adds one pass; 2
 | 6 | Timed signal cycles |
 | 7 | Linked crossings, opposite phases, and timer offsets |
 | 8 | Queue sensors and ambulance priority |
-| 9 | Paused expansion introduction, a nine-cell grid, stadium, market, raised freeway ramp, and one placeable roundabout |
+| 9 | Paused expansion introduction, a nine-unit grid, stadium, market, raised freeway ramp, and one placeable roundabout |
 
 Select the sliders icon, then a light, to program that crossing. Apply a timed cycle, follow another crossing, or let a sensor serve the larger incoming queue. Programming includes amber and crossing clearance; direct light clicks outside programming mode restore manual control. Linked rules cannot form cycles. Programs and roundabout placement can be configured while paused.
 
@@ -24,11 +24,15 @@ Select the roundabout icon and an empty crossing to convert it. Its approaches m
 
 An ambulance stopped on a signal approach or in a bridge queue starts a 20-second deadline. The red HUD bar shows the most urgent ambulance. A light change alone does not clear its waiting time; the vehicle must move. More than 20 seconds ends the round and freezes traffic and overflow physics. Bridge queues on both banks count, including vehicles that have already cleared an intersection. Closing the bridge does not reset the timer until the ambulance actually moves. Crashed ambulances and ordinary roundabout yielding are excluded. Pause, offscreen suspension, and background tabs freeze the traffic clocks.
 
-The level-nine expansion preserves the original three blocks along the front. Four rear-left cells form a 2×2 stadium footprint; the remaining right-hand cells hold East Market's street block and a single shop with parking. Everything stays inside a 3×3 grid. The freeway ramp branches from East Market, climbs over its north/south street, and exits the back edge. Its deck and vehicles use the same sampled 3D route; inbound traffic queues on the ramp until the street has room.
+A **block** means one small building plot (a 3.65 × 4.7 curb parcel). A **unit** means one larger terrain tile. The level-nine expansion preserves the original three units along the front and fits the whole neighborhood inside a 3×3 grid of units.
+
+The stadium keeps its miniature scale and shares the rear-west unit with all 24 parking spaces. Cars circulate around its perimeter without crossing the field. The public market occupies two building plots, with a small pedestrian plaza behind it; East Market and Lakefront have real T-junctions with no traffic or light controls on their closed arms. The corner shop uses the same building model as the existing corners and shares one plot with three parking spaces. Ordinary buildings fill the surrounding units.
+
+The freeway is a straight ramp from Water Street, rising above the existing Broadway street and leaving the map. Its deck and vehicles use the same sampled 3D route; inbound traffic queues on the ramp until the street has room. Destination routing follows legal turns through connected intersections, including routes that must loop around a unit to avoid a U-turn.
 
 Before any expansion geometry, traffic, or tools activate, a modal explains the event traffic, signal programs, one roundabout, and emergency deadline. Traffic, emergency clocks, and page overflow physics freeze until the visitor continues. The dialog traps keyboard focus, appears once per round, and returns after a reset. Shrinking below the desktop breakpoint dismisses the dialog while preserving the pending introduction for desktop.
 
-The stadium repeats arrivals (50 seconds), game time (35 seconds), and departures (45 seconds). The 24-space stadium lot fills with actual arrivals and empties during the exit rush. The market has six spaces and shorter individual visits. Lot departures merge back into normal lanes and route toward the freeway. Full lots hold incoming traffic; backed-up lanes hold departing cars in the lot.
+The stadium repeats arrivals (50 seconds), game time (35 seconds), and departures (45 seconds). The 24-space stadium lot fills with actual arrivals and empties during the exit rush. The corner shop has three spaces and shorter individual visits. Lot departures merge back into normal lanes and route toward the freeway. Full lots hold incoming traffic; backed-up lanes hold departing cars in the lot.
 
 ## Implementation and verification
 
@@ -40,7 +44,7 @@ The stadium repeats arrivals (50 seconds), game time (35 seconds), and departure
 - `cityScene.js`, `cityAdditions.js`, `stadiumScene.js`: bounded vehicle meshes, batched architecture, projected controls, and scene disposal.
 - `TrafficCity.jsx`, `SignalProgrammer.jsx`, `DistrictIntro.jsx`: accessible HUD, programming editor, expansion introduction, fullscreen, and restart.
 
-Local verification on **2026-09-20**: 55 simulation/physics tests passed, including bridge waits on both banks, the paused expansion, ramp merging and elevation, continuous route handoffs, and sustained mixed roundabout traffic with buses. Both Playwright flows passed: `scripts/verify-traffic-city.mjs` covers the existing game; `scripts/verify-traffic-stadium.mjs` covers deadlines, programming, the district, and roundabout placement while paused. These are local verification results, not a claim of production deployment or live-model evaluation.
+Local verification on **2026-09-20**: 61 simulation/physics tests passed, including bridge waits on both banks, the paused expansion, ramp merging and elevation, continuous route handoffs, legal T-junction turns and tow recovery, stadium parking contained in one unit, field-free parking paths, and sustained mixed roundabout traffic with buses. The production build and both Playwright flows passed: `scripts/verify-traffic-city.mjs` covers the existing game; `scripts/verify-traffic-stadium.mjs` covers deadlines, programming, the district, and roundabout placement while paused. These are local verification results, not a claim of production deployment or live-model evaluation.
 
 ```sh
 node --test tests/traffic*.test.mjs tests/marblePhysics.test.mjs
