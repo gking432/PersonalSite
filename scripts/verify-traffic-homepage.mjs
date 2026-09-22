@@ -169,7 +169,7 @@ try {
   await page.evaluate(() => {
     const s = window.__trafficCity.sim;
     s.bridge.spawn(s.events);
-    s.bridge.boats.at(-1).p = 6.88;
+    s.bridge.boats.at(-1).p = 40;
   });
   await page.waitForFunction(
     () => window.__trafficCity.snapshot().bridge.passed > 0,

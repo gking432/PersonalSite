@@ -4,6 +4,8 @@ import { createTrumpetPlayer } from "./trumpet";
 export function createCityRuntime(host, controls, onState) {
   const sim = new TrafficSimulation();
   const trumpet = createTrumpetPlayer();
+  const pointers = new Map();
+  let pinch = null;
   let pageCars = null,
     pageLoading = null,
     pendingFalls = [];
@@ -23,7 +25,11 @@ export function createCityRuntime(host, controls, onState) {
       if (pendingFalls.length > 16) pendingFalls.shift();
     }
   });
-  const state = () => ({ ...sim.snapshot(), ready: true });
+  const state = () => ({
+    ...sim.snapshot(),
+    zoom: scene.pose.zoom,
+    ready: true,
+  });
   const running = () =>
     sim.started &&
     enabled &&
@@ -38,6 +44,7 @@ export function createCityRuntime(host, controls, onState) {
         next.bridge.phase,
         next.bridge.requestedOpen,
         next.discoveries,
+        next.zoom,
       ]);
     if (key !== signature) {
       signature = key;
@@ -120,6 +127,7 @@ export function createCityRuntime(host, controls, onState) {
     pageCars?.clear();
     accumulator = 0;
     scene.clear();
+    scene.setZoom(1);
     scene.update(sim);
     scene.render();
     notify();
@@ -134,7 +142,8 @@ export function createCityRuntime(host, controls, onState) {
     notify();
   }
   function pointerDown(e) {
-    if (!e.isPrimary || e.button !== 0) return;
+    if ((e.pointerType !== "touch" && !e.isPrimary) || e.button !== 0) return;
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
     suppressClick = false;
     drag = {
       x: e.clientX,
@@ -144,9 +153,30 @@ export function createCityRuntime(host, controls, onState) {
       id: e.pointerId,
     };
     e.currentTarget.setPointerCapture(e.pointerId);
+    if (pointers.size === 2) {
+      const [a, b] = [...pointers.values()];
+      pinch = {
+        distance: Math.hypot(a.x - b.x, a.y - b.y),
+        zoom: scene.pose.zoom,
+      };
+      drag = null;
+      suppressClick = true;
+    }
     start();
   }
   function pointerMove(e) {
+    if (pointers.has(e.pointerId))
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pinch && pointers.size >= 2) {
+      const [a, b] = [...pointers.values()];
+      scene.setZoom(
+        (pinch.zoom * Math.hypot(a.x - b.x, a.y - b.y)) /
+          Math.max(1, pinch.distance),
+      );
+      suppressClick = true;
+      notify();
+      return;
+    }
     if (!drag || drag.id !== e.pointerId) return;
     if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) > 5)
       suppressClick = true;
@@ -154,7 +184,14 @@ export function createCityRuntime(host, controls, onState) {
     drag.x = e.clientX;
     drag.y = e.clientY;
   }
-  function pointerUp() {
+  function pointerUp(e) {
+    if (e) pointers.delete(e.pointerId);
+    else pointers.clear();
+    if (pointers.size) {
+      drag = null;
+      return;
+    }
+    pinch = null;
     drag = null;
     // A native click follows pointerup in the same task. Clear after that click,
     // including cancellation/lost capture, so later keyboard clicks still work.
@@ -162,8 +199,25 @@ export function createCityRuntime(host, controls, onState) {
       suppressClick = false;
     }, 0);
   }
+  function zoomBy(factor) {
+    if (!enabled || disposed) return;
+    scene.setZoom(scene.pose.zoom * factor);
+    notify();
+  }
+  function wheel(e) {
+    if (!enabled || disposed || (!sim.started && !e.ctrlKey)) return;
+    const before = scene.pose.zoom;
+    zoomBy(Math.exp(-e.deltaY * (e.deltaMode === 1 ? 0.025 : 0.002)));
+    // Ordinary page scrolling continues at the zoom limits. Trackpad pinch
+    // stays within the miniature and never changes the browser's page scale.
+    if (e.ctrlKey || scene.pose.zoom !== before) e.preventDefault();
+  }
+  host.parentElement.addEventListener("wheel", wheel, { passive: false });
   function key(e) {
-    if (["Enter", " "].includes(e.key)) {
+    if (["+", "=", "-", "_"].includes(e.key)) {
+      e.preventDefault();
+      zoomBy(e.key === "-" || e.key === "_" ? 1 / 1.15 : 1.15);
+    } else if (["Enter", " "].includes(e.key)) {
       e.preventDefault();
       start();
     } else if (
@@ -201,6 +255,7 @@ export function createCityRuntime(host, controls, onState) {
     toggleSignal,
     toggleBridge,
     discover,
+    zoomBy,
     reset,
     pointerDown,
     pointerMove,
@@ -231,6 +286,8 @@ export function createCityRuntime(host, controls, onState) {
       intersection.disconnect();
       size.disconnect();
       document.removeEventListener("visibilitychange", visibility);
+      host.parentElement.removeEventListener("wheel", wheel);
+      pointers.clear();
       scene.dispose();
       pageCars?.dispose();
       pendingFalls = [];

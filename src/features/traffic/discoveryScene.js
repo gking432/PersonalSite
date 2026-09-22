@@ -1,4 +1,6 @@
 import * as THREE from "three";
+import { createPeople } from "./cityPeople";
+import { helicopterFlight } from "./helicopterFlight";
 
 // Small, reusable performances. Their clocks live in the simulation so hiding
 // the miniature pauses every actor, and Reset returns the whole square to rest.
@@ -14,6 +16,7 @@ export function createDiscoveryScene({
   tree,
   building,
   windows,
+  texture,
 }) {
   const group = (x = 0, y = 0, z = 0, parent = city) => {
     const g = new THREE.Group();
@@ -37,41 +40,15 @@ export function createDiscoveryScene({
     actor.position.z = a[1] + (b[1] - a[1]) * f;
     actor.rotation.y = Math.atan2(b[0] - a[0], b[1] - a[1]);
   };
-  const person = (x, z, shirt = blue, y = 0.42) => {
-    const g = group(x, y, z);
-    cylinder(0.105, 0.28, 0, 0.39, 0, shirt, g, 0.085);
-    sphere(0.105, 0, 0.64, 0, skin, g);
-    const legs = [-1, 1].map((q) => {
-      const pivot = group(q * 0.058, 0.27, 0, g);
-      box(0.075, 0.25, 0.085, 0, -0.125, 0, p.dark, pivot);
-      return pivot;
-    });
-    const arms = [-1, 1].map((q) => {
-      const pivot = group(q * 0.125, 0.5, 0, g);
-      rod([0, 0, 0], [q * 0.018, -0.22, 0.025], 0.033, shirt, pivot);
-      sphere(0.04, q * 0.018, -0.22, 0.025, skin, pivot);
-      return pivot;
-    });
-    return {
-      g,
-      legs,
-      arms,
-      animate(t, moving) {
-        legs.forEach(
-          (leg, i) =>
-            (leg.rotation.x = moving
-              ? Math.sin(t * 10 + i * Math.PI) * 0.55
-              : 0),
-        );
-        arms.forEach(
-          (arm, i) =>
-            (arm.rotation.x = moving
-              ? -Math.sin(t * 10 + i * Math.PI) * 0.4
-              : 0),
-        );
-      },
-    };
-  };
+  const person = createPeople({
+    city,
+    palette: p,
+    box,
+    mesh,
+    cylinder,
+    rod,
+    material,
+  });
   const bench = (x, z, yaw = 0) => {
     const g = group(x, 0.41, z);
     g.rotation.y = yaw;
@@ -89,7 +66,6 @@ export function createDiscoveryScene({
   box(2.75, 0.045, 13.65, 14.4, 0.28, 0, p.asphalt);
   for (const [x, z, horizontal] of [
     [22.95, 0, true],
-    [14.4, -8.35, false],
     [14.4, 8.35, false],
   ]) {
     box(
@@ -243,6 +219,21 @@ export function createDiscoveryScene({
   const rotor = group(0, 0.9, 0, heli);
   box(1.9, 0.025, 0.075, 0, 0, 0, p.dark, rotor);
   box(0.075, 0.025, 1.9, 0, 0, 0, p.dark, rotor);
+  const rotorBlur = mesh(
+    new THREE.CircleGeometry(0.95, 32),
+    material("#597466", {
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    }),
+    0,
+    0.906,
+    0,
+    heli,
+  );
+  rotorBlur.rotation.x = -Math.PI / 2;
+  rotorBlur.castShadow = false;
   const tailRotor = group(0.08, 0.64, -1.08, heli);
   box(0.025, 0.42, 0.04, 0, 0, 0, p.dark, tailRotor);
   box(0.025, 0.04, 0.42, 0, 0, 0, p.dark, tailRotor);
@@ -261,20 +252,20 @@ export function createDiscoveryScene({
   const birds = Array.from({ length: 5 }, (_, i) =>
     bird(-4.1 + i * 0.37, 2.19, 3.5 + (i % 2) * 0.4),
   );
-  const fisher = person(-4.72, 6.1, p.green);
-  fisher.g.rotation.y = -Math.PI / 2;
+  const fisher = person(-7.12, -3.6, p.green);
+  fisher.g.rotation.y = Math.PI / 2;
   cylinder(0.155, 0.045, 0, 0.75, 0, p.cream, fisher.g);
   cylinder(0.11, 0.09, 0, 0.8, 0, p.cream, fisher.g);
-  const fishingRod = group(-4.76, 1.02, 6.1);
-  rod([0, 0, 0], [-0.95, 0.65, 0], 0.018, p.roof, fishingRod);
+  const fishingRod = group(-7.08, 1.02, -3.6);
+  rod([0, 0, 0], [0.95, 0.65, 0], 0.018, p.roof, fishingRod);
   const line = rod(
-    [-0.95, 0.65, 0],
-    [-0.95, -0.71, 0],
+    [0.95, 0.65, 0],
+    [0.95, -0.71, 0],
     0.007,
     p.ivory,
     fishingRod,
   );
-  const catchGroup = group(-5.71, 0.3, 6.1);
+  const catchGroup = group(-6.13, 0.3, -3.6);
   const fish = group(0, 0, 0, catchGroup);
   sphere(0.105, 0, 0, 0, brass, fish).scale.set(0.55, 1.8, 1);
   const fin = mesh(
@@ -339,13 +330,35 @@ export function createDiscoveryScene({
   );
   bell.rotation.x = -Math.PI / 2;
   sphere(0.05, 0.03, 0.52, 0.22, skin, musician.g);
-  const notes = Array.from({ length: 3 }, (_, i) =>
-    label(i % 2 ? "♪" : "♫", 0.37, 0.46, 0, 0, 0, {
-      color: "#ad8346",
-      background: null,
-      size: 130,
-    }),
-  );
+  const notes = Array.from({ length: 3 }, (_, i) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 128;
+    const ctx = canvas.getContext("2d");
+    ctx.font = "bold 98px Georgia";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.strokeStyle = "#fff9e9";
+    ctx.lineWidth = 5;
+    ctx.strokeText(i % 2 ? "♪" : "♫", 64, 68);
+    ctx.fillStyle = "#865d2d";
+    ctx.fillText(i % 2 ? "♪" : "♫", 64, 68);
+    const note = mesh(
+      new THREE.PlaneGeometry(0.65, 0.65),
+      material("#ffffff", {
+        map: texture(canvas),
+        transparent: true,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        emissive: "#ffffff",
+        emissiveIntensity: 0.6,
+      }),
+      0,
+      0,
+      0,
+    );
+    note.castShadow = false;
+    return note;
+  });
   const dancer = person(-2.8, 5.7, red);
 
   const truck = group(3.8, 0, -1.16);
@@ -377,21 +390,12 @@ export function createDiscoveryScene({
     const active = sim.discoveries.active,
       time = sim.time;
     const flight = active.helicopter;
-    heli.position.set(3.5, 3.38, -3.7);
-    heli.rotation.set(0, 0, 0);
-    if (flight !== undefined) {
-      const lift = Math.min(1, flight / 2, (16 - flight) / 2);
-      const angle = Math.max(0, Math.min(1, (flight - 2) / 12)) * Math.PI * 4;
-      heli.position.set(
-        3.5 + Math.sin(angle) * 4.2,
-        3.38 + Math.sin((lift * Math.PI) / 2) * 3.4,
-        -3.7 + (1 - Math.cos(angle)) * 3.2,
-      );
-      heli.rotation.y = angle + (Math.PI / 2) * Math.sin((lift * Math.PI) / 2);
-      heli.rotation.z = Math.sin(lift * Math.PI) * -0.12;
-    }
-    rotor.rotation.y = flight === undefined ? 0.22 : flight * 36;
-    tailRotor.rotation.x = flight === undefined ? 0.3 : flight * 48;
+    const flying = helicopterFlight(flight);
+    heli.position.set(flying.x, flying.y, flying.z);
+    heli.rotation.set(flying.pitch, flying.yaw, flying.bank, "YXZ");
+    rotor.rotation.y = 0.22 + flying.rotor;
+    tailRotor.rotation.x = 0.3 + flying.rotor * 1.4;
+    rotorBlur.material.opacity = flying.power * 0.12;
     birds.forEach((b, i) => {
       const t = active.pigeons;
       b.g.position.copy(b.home);
@@ -426,8 +430,8 @@ export function createDiscoveryScene({
     fish.visible = (sim.discoveries.counts.fisherman || 0) % 3 !== 0;
     boot.visible = !fish.visible;
     // Keep the line attached to the rod tip and the rising catch.
-    const top = new THREE.Vector3(-0.95, 0.65, 0),
-      bottom = new THREE.Vector3(-0.95, catchGroup.position.y - 1.02, 0);
+    const top = new THREE.Vector3(0.95, 0.65, 0),
+      bottom = new THREE.Vector3(0.95, catchGroup.position.y - 1.02, 0);
     line.position.copy(top).add(bottom).multiplyScalar(0.5);
     line.scale.y = top.distanceTo(bottom) / 1.36;
     walkers.forEach((a, i) => {
@@ -555,10 +559,16 @@ export function createDiscoveryScene({
     diagnostics = {
       helicopter: flight !== undefined,
       helicopterHeight: heli.position.y,
+      helicopterPhase: flying.phase,
+      notes: notes.filter((note) => note.visible).length,
       fountainBoost: boost,
       windowsLit: sim.discoveries.windows,
       active: Object.keys(active),
     };
   }
-  return { update, diagnostics: () => diagnostics };
+  return {
+    update,
+    faceCamera: (q) => notes.forEach((note) => note.quaternion.copy(q)),
+    diagnostics: () => diagnostics,
+  };
 }

@@ -3,6 +3,9 @@ import { APPROACHES, carPose } from "./trafficSimulation";
 
 import { createCityAdditions } from "./cityAdditions";
 import { createDiscoveryScene } from "./discoveryScene";
+import { createHeistScene } from "./heistScene";
+import { createWaterfrontScene } from "./waterfrontScene";
+import { riverBridgeHeight } from "./waterfront";
 import { DISCOVERIES } from "./littleMilwaukee";
 
 import { SIGNALS } from "./signals";
@@ -53,6 +56,12 @@ export function createCityScene(host, controls, onEscape) {
     });
     materials.add(m);
     return m;
+  };
+  const texture = (canvas) => {
+    const t = new THREE.CanvasTexture(canvas);
+    t.colorSpace = THREE.SRGBColorSpace;
+    textures.add(t);
+    return t;
   };
   const palette = {
     base: material("#d7c8ab"),
@@ -177,7 +186,6 @@ export function createCityScene(host, controls, onEscape) {
   box(14.4, 0.34, 13.8, 0, -0.05, 0, palette.base);
   box(14.5, 0.07, 13.9, 0, -0.24, 0, palette.edge);
   box(14.25, 0.12, 13.65, 0, 0.18, 0, palette.pavement);
-  box(1.62, 0.04, 13.5, -5.92, 0.255, 0, palette.water);
   for (const z of [-4.4, -2.8, 2.7, 4.5]) {
     for (let j = 0; j < 3; j++)
       box(
@@ -198,6 +206,7 @@ export function createCityScene(host, controls, onEscape) {
   for (const q of [-1, 1]) {
     for (const horizontal of [false, true]) {
       if (horizontal && q === 1) continue;
+      if (!horizontal && q === -1) continue;
       const arm = (w, h, d, y, mat) =>
         box(
           horizontal ? d : w,
@@ -563,6 +572,29 @@ export function createCityScene(host, controls, onEscape) {
     tree,
     building,
     windows: discoveryWindows,
+    texture,
+  });
+  const waterfront = createWaterfrontScene({
+    city,
+    palette,
+    box,
+    mesh,
+    cylinder,
+    rod,
+    material,
+    texture,
+    building,
+    tree,
+  });
+  const heist = createHeistScene({
+    city,
+    palette,
+    box,
+    mesh,
+    cylinder,
+    rod,
+    label,
+    material,
   });
   const boat = additions.createBoat();
   city.add(boat);
@@ -903,6 +935,7 @@ export function createCityScene(host, controls, onEscape) {
   }
   let yaw = -0.12,
     pitch = 0.77,
+    zoom = 1,
     width = 1,
     height = 1,
     disposed = false;
@@ -914,13 +947,13 @@ export function createCityScene(host, controls, onEscape) {
       Math.sin(pitch) * distance,
       Math.cos(0.7) * Math.cos(pitch) * distance,
     );
-    const focus = new THREE.Vector3(6.7, 0.95, 0).applyAxisAngle(
+    const focus = new THREE.Vector3(8, 0.95, -1.7).applyAxisAngle(
       new THREE.Vector3(0, 1, 0),
       yaw,
     );
     camera.position.add(focus);
     camera.lookAt(focus);
-    const span = 36 / Math.min(1.6, Math.max(1, width / height));
+    const span = 43 / zoom / Math.min(1.6, Math.max(1, width / height));
     camera.left = (-span * width) / height / 2;
     camera.right = -camera.left;
     camera.top = span / 2;
@@ -987,6 +1020,8 @@ export function createCityScene(host, controls, onEscape) {
         polygon = clipped;
       }
       button.style.transform = `translate(${left}px, ${top}px)`;
+      const offscreen = x < 0 || x > width || y < 0 || y > height;
+      button.style.visibility = offscreen ? "hidden" : "visible";
       button.style.clipPath = `polygon(${polygon.map(([px, py]) => `${(px - left).toFixed(2)}px ${(py - top).toFixed(2)}px`).join(",")})`;
     }
   }
@@ -994,6 +1029,9 @@ export function createCityScene(host, controls, onEscape) {
   function render() {
     if (disposed) return;
     view();
+    discoveries.faceCamera(
+      camera.quaternion.clone().premultiply(city.quaternion.clone().invert()),
+    );
     positionButtons();
     renderer.render(scene, camera);
   }
@@ -1002,6 +1040,7 @@ export function createCityScene(host, controls, onEscape) {
     height = host.clientHeight;
     if (!width || !height) return;
     renderer.setSize(width, height);
+    waterfront.resize(renderer.domElement.width, renderer.domElement.height);
     const span = 22.2;
     camera.left = (-span * width) / height / 2;
     camera.right = -camera.left;
@@ -1013,6 +1052,8 @@ export function createCityScene(host, controls, onEscape) {
   function update(sim, dt = 0) {
     additions.update(sim, dt);
     discoveries.update(sim);
+    waterfront.update(sim);
+    heist.update(sim);
     // Transfer overflow meshes before removing cars no longer in the simulation.
     for (const event of sim.events.splice(0)) {
       if (event.kind === "overflow" || event.kind === "boat-fall") spill(event);
@@ -1024,8 +1065,14 @@ export function createCityScene(host, controls, onEscape) {
       if (!carMeshes.has(car.id)) carMeshes.set(car.id, vehicle(car));
       const { group, brakes, blinkers, beacons } = carMeshes.get(car.id),
         p = carPose(car);
-      group.position.set(p.x, 0, p.z);
-      group.rotation.set(0, p.yaw, 0);
+      const elevation = riverBridgeHeight(p.x, p.z);
+      const ahead = carPose({ ...car, p: car.p + 0.02 });
+      const grade = Math.atan2(
+        riverBridgeHeight(ahead.x, ahead.z) - elevation,
+        0.02,
+      );
+      group.position.set(p.x, elevation, p.z);
+      group.rotation.set(-grade, p.yaw, 0, "YXZ");
       const blink = Math.sin(sim.time * 9) > 0;
       blinkers.forEach((pair, i) =>
         pair.forEach((b) => {
@@ -1147,11 +1194,17 @@ export function createCityScene(host, controls, onEscape) {
       pitch = Math.max(0.48, Math.min(1.16, pitch + dy * 0.004));
       render();
     },
+    setZoom(value) {
+      zoom = Math.max(1, Math.min(1.65, value));
+      render();
+    },
     get pose() {
-      return { yaw, pitch };
+      return { yaw, pitch, zoom };
     },
     diagnostics: () => ({
       discoveries: discoveries.diagnostics(),
+      waterfront: waterfront.diagnostics(),
+      heist: heist.diagnostics(),
       falling: falling.length,
       fallingBoats: falling.filter((f) => f.boat).length,
       fallingCars: falling.filter((f) => !f.boat).length,

@@ -63,9 +63,9 @@ export default function TrafficCity() {
   const gestures = {
     onPointerDown: (e) => engine.current?.pointerDown(e),
     onPointerMove: (e) => engine.current?.pointerMove(e),
-    onPointerUp: () => engine.current?.pointerUp(),
-    onPointerCancel: () => engine.current?.pointerUp(),
-    onLostPointerCapture: () => engine.current?.pointerUp(),
+    onPointerUp: (e) => engine.current?.pointerUp(e),
+    onPointerCancel: (e) => engine.current?.pointerUp(e),
+    onLostPointerCapture: (e) => engine.current?.pointerUp(e),
   };
   return (
     <div className="traffic-city">
@@ -141,8 +141,26 @@ export default function TrafficCity() {
       </div>
       <div className="traffic-city__caption">
         little milwaukee. interact with the map
-        {game.started && (
-          <div className="traffic-city__controls">
+        <div className="traffic-city__controls">
+          <button
+            type="button"
+            aria-label="Zoom out"
+            title="Zoom out"
+            disabled={!game.ready || (game.zoom || 1) <= 1}
+            onClick={() => engine.current?.zoomBy(1 / 1.15)}
+          >
+            −
+          </button>
+          <button
+            type="button"
+            aria-label="Zoom in"
+            title="Zoom in · pinch or use + / −"
+            disabled={!game.ready || game.zoom >= 1.65}
+            onClick={() => engine.current?.zoomBy(1.15)}
+          >
+            +
+          </button>
+          {game.started && (
             <button
               type="button"
               aria-label="Reset traffic"
@@ -150,8 +168,8 @@ export default function TrafficCity() {
             >
               Reset
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

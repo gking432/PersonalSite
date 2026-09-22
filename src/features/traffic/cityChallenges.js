@@ -1,4 +1,5 @@
-// A short river with real queues. Overflow and bridge collisions eject boats.
+import { riverBoatPose, boatEntry, boatExit } from "./waterfront.js";
+// A curved river with real queues. Overflow and bridge collisions eject boats.
 export class BridgeTraffic {
   constructor(random = Math.random) {
     this.random = random;
@@ -29,22 +30,20 @@ export class BridgeTraffic {
       kind: "boat-fall",
       reason,
       boat: { ...boat },
-      x: boat.x,
-      z: boat.direction * boat.p,
-      yaw: boat.direction === 1 ? 0 : Math.PI,
+      ...riverBoatPose(boat),
     });
     if (reason === "crash")
-      events.push({ kind: "crash", x: boat.x, z: boat.direction * boat.p });
+      events.push({ kind: "crash", ...riverBoatPose(boat) });
   }
   spawn(events) {
     const direction = this.nextId % 2 ? -1 : 1;
     for (const tail of this.boats)
-      if (tail.direction === direction && tail.p < -4.6)
+      if (tail.direction === direction && tail.p < boatEntry(direction) + 1.6)
         this.drop(tail, "overflow", events);
     this.boats = this.boats.filter((b) => !b.remove);
     this.boats.push({
       id: this.nextId++,
-      p: -6.2,
+      p: boatEntry(direction),
       direction,
       x: -5.94 + direction * 0.35,
       waited: 0,
@@ -93,13 +92,13 @@ export class BridgeTraffic {
       if (this.lift >= 0.98 && boat.p > -2.3) boat.committed = true;
       boat.waited = step < dt * 0.01 ? boat.waited + dt : 0;
       if (boat.waited > boat.nextToot) {
-        events.push({ kind: "toot", x: boat.x, z: boat.direction * boat.p });
+        events.push({ kind: "toot", ...riverBoatPose(boat) });
         boat.nextToot = boat.waited + 9;
       }
     }
     this.boats = this.boats.filter((b) => {
       if (b.remove) return false;
-      if (b.p > 6.9) {
+      if (b.p > boatExit(b.direction)) {
         this.passed++;
         return false;
       }

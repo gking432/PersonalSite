@@ -11,7 +11,7 @@
   position: absolute;
   inset: 0;
   cursor: inherit;
-  touch-action: pan-y;
+  touch-action: none;
   outline: none;
 }
 .traffic-city__model:focus-visible {
@@ -44,7 +44,7 @@
   background: transparent;
   cursor: inherit;
   z-index: 1;
-  touch-action: manipulation;
+  touch-action: none;
 }
 .traffic-city__signal:disabled {
   pointer-events: none;
@@ -80,6 +80,16 @@
 .traffic-city__controls button:hover {
   color: var(--ink);
   text-decoration: underline;
+}
+.traffic-city__controls button:disabled {
+  opacity: 0.35;
+  cursor: default;
+  text-decoration: none;
+}
+.traffic-city__controls button[aria-label^="Zoom"] {
+  font-size: 1rem;
+  padding: 0 5px;
+  line-height: 1;
 }
 @media (max-width: 700px) {
   .traffic-city {

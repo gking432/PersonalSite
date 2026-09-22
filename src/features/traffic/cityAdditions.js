@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { createBoatModel } from "./boatModel";
+import { riverBoatPose } from "./waterfront";
 export function createCityAdditions({
   city,
   palette,
@@ -104,12 +105,13 @@ export function createCityAdditions({
           boatMeshes.set(boat.id, model);
         }
         const group = boatMeshes.get(boat.id);
+        const pose = riverBoatPose(boat);
         group.position.set(
-          boat.x,
+          pose.x,
           0.38 + Math.sin(sim.time * 1.8 + boat.id) * 0.025,
-          boat.p * boat.direction,
+          pose.z,
         );
-        group.rotation.y = boat.direction === 1 ? 0 : Math.PI;
+        group.rotation.y = pose.yaw;
       }
       for (const [id, group] of boatMeshes)
         if (!live.has(id)) {

@@ -124,7 +124,7 @@ test("discoveries run once per click, return to rest, connect helicopter to bird
   assert.ok("pigeons" in d.active);
   for (const item of DISCOVERIES) d.trigger(item.id);
   assert.equal(d.windows, true);
-  d.tick(20);
+  d.tick(30);
   assert.deepEqual(d.snapshot().busy, []);
   assert.equal(d.trigger("musician"), true);
   d.tick(2.99);
@@ -141,6 +141,7 @@ test("discoveries run once per click, return to rest, connect helicopter to bird
     busy: [],
     windows: false,
     counts: {},
+    heist: { plays: 0, running: false, phase: "idle" },
   });
 });
 test("the homepage spaces car arrivals without slowing cars along their paths", () => {
@@ -210,8 +211,17 @@ test("arrival timing and approaches vary, with both quiet gaps and occasional gr
     6,
   );
 });
-test("every discovery except the retained fountain belongs to the original city footprint", () => {
-  for (const item of DISCOVERIES.filter((item) => item.id !== "fountain")) {
+test("the original discoveries remain in the original city footprint", () => {
+  for (const item of DISCOVERIES.filter(
+    (item) =>
+      ![
+        "fountain",
+        "lakeWalk",
+        "museumWalk",
+        "apartmentWalk",
+        "cityWalk",
+      ].includes(item.id),
+  )) {
     assert.ok(Math.abs(item.point[0]) < 7.2, item.id);
     assert.ok(Math.abs(item.point[2]) < 6.9, item.id);
   }
@@ -298,10 +308,13 @@ test("crashes eject both cars immediately and leave no persistent wreck or clean
 });
 test("boat queues overflow from either river edge while the bridge is closed", () => {
   const s = setup();
-  s.bridge.nextBoat = 0;
-  run(s, 450);
+  s.bridge.nextBoat = Infinity;
+  for (let i = 0; i < 60; i++) {
+    s.bridge.spawn(s.events);
+    run(s, 2.5);
+  }
   assert.ok(s.bridge.overflowed > 0);
-  assert.ok(s.bridge.boats.length <= 6);
+  assert.ok(s.bridge.boats.length <= 30);
   const falls = s.events.filter((e) => e.kind === "boat-fall");
   assert.ok(falls.some((e) => e.boat.direction === 1));
   assert.ok(falls.some((e) => e.boat.direction === -1));
@@ -317,7 +330,7 @@ test("bridge clears road traffic before opening, and boats then pass through", (
   assert.equal(s.bridge.phase, "clearing");
   assert.equal(s.bridge.lift, 0);
   s.cars = [];
-  run(s, 14);
+  run(s, 55);
   assert.ok(s.bridge.passed > 0);
   assert.equal(s.bridge.phase, "open");
 });
@@ -336,7 +349,7 @@ test("closing onto a crossing boat ejects it, and river traffic remains playable
   );
   s.toggleBridge();
   s.bridge.spawn(s.events);
-  run(s, 18);
+  run(s, 55);
   assert.ok(s.bridge.passed > 0);
 });
 test("all twelve turning routes stay continuous on the single intersection", () => {
@@ -362,4 +375,139 @@ test("reset clears car and boat falls and returns to idle", () => {
   assert.equal(s.events.length, 0);
   assert.equal(s.bridge.overflowed, 0);
   assert.equal(s.crashes, 0);
+});
+
+test("river boats follow the continuous bend in separate opposing lanes", async () => {
+  const {
+    riverPoint,
+    riverBoatPose,
+    RIVER_ARC_END,
+    RIVER_BEND,
+    boatEntry,
+    boatExit,
+  } = await import("../src/features/traffic/waterfront.js");
+  for (const joint of [-RIVER_ARC_END, -RIVER_BEND]) {
+    const a = riverPoint(joint - 0.0001),
+      b = riverPoint(joint + 0.0001);
+    assert.ok(Math.hypot(a.x - b.x, a.z - b.z) < 0.0003);
+    assert.ok(Math.hypot(a.dx - b.dx, a.dz - b.dz) < 0.0001);
+  }
+  for (const direction of [-1, 1]) {
+    let before = riverBoatPose({ direction, p: boatEntry(direction) });
+    for (
+      let p = boatEntry(direction) + 0.01;
+      p <= boatExit(direction);
+      p += 0.01
+    ) {
+      const next = riverBoatPose({ direction, p });
+      assert.ok(Math.hypot(next.x - before.x, next.z - before.z) < 0.012);
+      const other = riverBoatPose({ direction: -direction, p: -p });
+      assert.ok(
+        Math.abs(Math.hypot(next.x - other.x, next.z - other.z) - 0.7) <
+          0.000001,
+      );
+      before = next;
+    }
+  }
+});
+test("lake occupies the long edge opposite apartments and fades completely at its outer boundaries", async () => {
+  const { lakeOpacity, WATERFRONT_WALKS } = await import(
+    "../src/features/traffic/waterfront.js"
+  );
+  for (const x of [-5, 0, 10, 20]) {
+    assert.ok(lakeOpacity(x, 11.8) > 0.8);
+    assert.equal(lakeOpacity(x, 9.7), 0);
+    assert.equal(lakeOpacity(x, 22), 0);
+    assert.ok(lakeOpacity(x, 19) < lakeOpacity(x, 15));
+  }
+  for (const z of [11, 15, 20]) {
+    assert.equal(lakeOpacity(-15, z), 0);
+    assert.equal(lakeOpacity(32, z), 0);
+  }
+  assert.ok(WATERFRONT_WALKS.find((w) => w.id === "lakeWalk").point[2] > 10);
+  assert.ok(
+    WATERFRONT_WALKS.find((w) => w.id === "apartmentWalk").point[2] < -8,
+  );
+});
+test("fixed river bridges clear boat masts and their road ramps meet street level", async () => {
+  const { riverBridgeHeight } = await import(
+    "../src/features/traffic/waterfront.js"
+  );
+  for (const x of [0, 14.4]) {
+    assert.equal(riverBridgeHeight(x, -10), 0);
+    assert.equal(riverBridgeHeight(x, -6.6), 0);
+    for (const z of [-8.55, -7.85])
+      assert.ok(0.175 + riverBridgeHeight(x, z) > 1.16);
+  }
+});
+test("helicopter lifts vertically, follows its nose during circuits, then lands back on its pad", async () => {
+  const { helicopterFlight: flight, FLIGHT_DURATION } = await import(
+    "../src/features/traffic/helicopterFlight.js"
+  );
+  const idle = flight();
+  for (const t of [1.3, 2, 3.7]) {
+    const p = flight(t);
+    assert.equal(p.x, idle.x);
+    assert.equal(p.z, idle.z);
+    assert.ok(p.y > idle.y);
+  }
+  for (let t = 5; t < 17; t += 0.15) {
+    const p = flight(t),
+      next = flight(t + 0.0001),
+      dx = next.x - p.x,
+      dz = next.z - p.z;
+    assert.ok(
+      (dx * Math.sin(p.yaw) + dz * Math.cos(p.yaw)) / Math.hypot(dx, dz) >
+        0.999,
+    );
+    assert.ok(Math.abs(p.bank) < 0.15);
+  }
+  const landed = flight(FLIGHT_DURATION);
+  for (const key of ["x", "y", "z", "yaw", "pitch", "bank", "power"])
+    assert.equal(landed[key], idle[key]);
+});
+test("secret heist requires the ordered clues, expires partial attempts and ignores repeats while running", async () => {
+  const { SecretHeist, HEIST_SEQUENCE } = await import(
+    "../src/features/traffic/secretHeist.js"
+  );
+  const h = new SecretHeist();
+  for (const id of ["payphone", "bankClock", "manhole"]) h.click(id);
+  assert.equal(h.time, null);
+  h.click("bankClock");
+  h.tick(21);
+  h.click("payphone");
+  h.click("manhole");
+  assert.equal(h.time, null);
+  HEIST_SEQUENCE.forEach((id) => h.click(id));
+  assert.equal(h.time, 0);
+  assert.equal(h.plays, 1);
+  h.tick(5);
+  HEIST_SEQUENCE.forEach((id) => h.click(id));
+  assert.equal(h.time, 5);
+  assert.equal(h.plays, 1);
+  h.tick(13);
+  assert.equal(h.snapshot().phase, "investigation");
+  h.tick(14.9);
+  assert.equal(h.snapshot().phase, "investigation");
+  h.tick(0.2);
+  assert.equal(h.snapshot().phase, "departure");
+  h.tick(9);
+  assert.equal(h.snapshot().phase, "idle");
+  HEIST_SEQUENCE.forEach((id) => h.click(id));
+  assert.equal(h.plays, 2);
+});
+test("heist and separate walkers leave manual lights unchanged and reset with the miniature", () => {
+  const s = setup(),
+    before = structuredClone(s.signals);
+  for (const id of ["bankClock", "payphone", "manhole", "lakeWalk"])
+    s.discoveries.trigger(id);
+  run(s, 12);
+  assert.equal(s.discoveries.heist.snapshot().phase, "escape");
+  assert.ok("lakeWalk" in s.discoveries.active);
+  assert.equal(s.discoveries.active.apartmentWalk, undefined);
+  assert.deepEqual(s.signals, before);
+  s.reset();
+  assert.equal(s.discoveries.heist.time, null);
+  assert.equal(s.discoveries.heist.plays, 0);
+  assert.deepEqual(s.discoveries.active, {});
 });

@@ -34,7 +34,7 @@ try {
   };
   assert.equal((await snap()).started, false);
   assert.deepEqual((await snap()).audio, { plays: 0, voices: 0 });
-  assert.equal(await page.locator("[data-discovery]").count(), 10);
+  assert.equal(await page.locator("[data-discovery]").count(), 17);
   assert.equal(await page.locator('[data-control="light"]').count(), 4);
   await page.screenshot({ path: `${output}/idle.png` });
   for (const target of await targets()) {
@@ -87,7 +87,7 @@ try {
   await page.screenshot({ path: `${output}/discoveries.png` });
   await page.evaluate(() => {
     const { sim, api } = window.__trafficCity;
-    for (let i = 0; i < 120 * 18; i++) sim.tick(1 / 120);
+    for (let i = 0; i < 120 * 30; i++) sim.tick(1 / 120);
     api.refresh();
   });
   assert.deepEqual((await snap()).discoveries.busy, []);
@@ -141,6 +141,7 @@ try {
     busy: [],
     windows: false,
     counts: {},
+    heist: { plays: 0, running: false, phase: "idle" },
   });
   assert.equal((await snap()).started, false);
   await musician.press("Enter");
@@ -167,7 +168,7 @@ try {
     JSON.stringify(
       {
         status: "PASS",
-        discoveries: 10,
+        discoveries: 17,
         checks: [
           "rendered hit targets",
           "one-shot animations",
