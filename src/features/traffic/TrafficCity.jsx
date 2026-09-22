@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import "./TrafficCity.css";
 import { SIGNALS } from "./signals";
 import { DISCOVERIES } from "./littleMilwaukee";
-export default function TrafficCity() {
+export default function TrafficCity({ standalone = false }) {
   const host = useRef(null),
     engine = useRef(null),
     buttons = useRef([]),
@@ -16,12 +16,16 @@ export default function TrafficCity() {
     bridge: { requestedOpen: false },
   });
   useEffect(() => {
+    if (standalone) {
+      setWide(true);
+      return;
+    }
     const query = matchMedia("(min-width: 701px)"),
       change = () => setWide(query.matches);
     change();
     query.addEventListener("change", change);
     return () => query.removeEventListener("change", change);
-  }, []);
+  }, [standalone]);
   useEffect(() => {
     let cancelled = false;
     if (!wide) {
@@ -68,7 +72,9 @@ export default function TrafficCity() {
     onLostPointerCapture: (e) => engine.current?.pointerUp(e),
   };
   return (
-    <div className="traffic-city">
+    <div
+      className={`traffic-city${standalone ? " traffic-city--standalone" : ""}`}
+    >
       <div className="traffic-city__stage">
         <div
           className="traffic-city__surface"
@@ -146,7 +152,11 @@ export default function TrafficCity() {
         </div>
       </div>
       <div className="traffic-city__caption">
-        <span>little milwaukee. interact with the map</span>
+        <span>
+          {standalone
+            ? "Interact with the map"
+            : "little milwaukee. interact with the map"}
+        </span>
         {game.world && (
           <a
             className="traffic-city__weather"

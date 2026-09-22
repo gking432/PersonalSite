@@ -1,0 +1,122 @@
+:root {
+  color-scheme: light;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: Georgia, serif;
+  --ink: #203e34;
+  --ink-faint: #52635b;
+  background: #f8f6ef;
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+body {
+  overscroll-behavior: none;
+}
+.little-milwaukee-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  height: 100dvh;
+  padding-top: env(safe-area-inset-top);
+}
+.little-milwaukee-heading {
+  flex: 0 0 auto;
+  padding: 20px 20px 0;
+  text-align: center;
+}
+.little-milwaukee-heading h1 {
+  margin: 0;
+  font: 500 24px/1.15 var(--font-display);
+}
+.little-milwaukee-heading p {
+  margin: 9px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #69766e;
+}
+.traffic-city--standalone {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.traffic-city--standalone .traffic-city__stage {
+  flex: 1;
+  min-height: 0;
+  aspect-ratio: auto;
+}
+.traffic-city--standalone .traffic-city__caption {
+  flex: 0 0 auto;
+  padding: 4px 16px max(12px, env(safe-area-inset-bottom));
+  font-size: 14px;
+  color: #52635b;
+}
+.traffic-city--standalone .traffic-city__weather {
+  font-size: 12px;
+  color: #617269;
+}
+.traffic-city--standalone .traffic-city__controls {
+  gap: 10px;
+  margin-top: 8px;
+}
+.traffic-city--standalone .traffic-city__controls button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #cdd7cd;
+  border-radius: 14px;
+  background: #ffffffb8;
+  color: #294b3d;
+  font-size: 14px;
+  text-decoration: none;
+}
+.traffic-city--standalone .traffic-city__controls button[aria-label^="Zoom"] {
+  font-size: 23px;
+}
+.traffic-city--standalone .traffic-city__controls button:focus-visible {
+  outline: 2px solid #356b52;
+  outline-offset: 3px;
+}
+body:has(.little-milwaukee-page) .traffic-city__overflow {
+  display: block;
+}
+@media (orientation: landscape) and (max-height: 550px) {
+  .little-milwaukee-heading {
+    position: absolute;
+    z-index: 2;
+    top: env(safe-area-inset-top);
+    left: max(12px, env(safe-area-inset-left));
+    padding: 12px 0;
+    text-align: left;
+    pointer-events: none;
+  }
+  .little-milwaukee-heading h1 {
+    font-size: 20px;
+  }
+  .little-milwaukee-heading p {
+    display: none;
+  }
+  .traffic-city--standalone .traffic-city__caption {
+    position: absolute;
+    right: max(8px, env(safe-area-inset-right));
+    bottom: 0;
+    width: auto;
+    padding: 8px;
+  }
+  .traffic-city--standalone .traffic-city__caption > span {
+    display: none;
+  }
+  .traffic-city--standalone .traffic-city__weather {
+    max-width: 220px;
+  }
+}

@@ -16,7 +16,24 @@ export function createPageLayout(host, onChange) {
   let layout = { width: 1, height: 1, anchorX: 0, anchorY: 0, scale: 1 };
 
   function measure() {
-    if (disposed || !hero || !anchor.offsetWidth) return;
+    if (disposed || !anchor.offsetWidth) return;
+    if (!hero) {
+      const width = anchor.clientWidth,
+        height = anchor.clientHeight;
+      const next = `${width}:${height}`;
+      if (next === signature) return;
+      signature = next;
+      layout = {
+        width,
+        height,
+        anchorX: width / 2,
+        anchorY: height / 2,
+        scale: Math.min(width / 43, height / 31),
+      };
+      // The standalone city owns its viewport; no portfolio text masks.
+      onChange();
+      return;
+    }
     const a = anchor.getBoundingClientRect(),
       h = hero.getBoundingClientRect();
     const bottom = nextPanel
