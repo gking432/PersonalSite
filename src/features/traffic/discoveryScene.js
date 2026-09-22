@@ -262,10 +262,17 @@ export function createDiscoveryScene({
     bird(-4.1 + i * 0.37, 2.19, 3.5 + (i % 2) * 0.4),
   );
   const fisher = person(FISHERMAN[0], FISHERMAN[1], p.green);
+  const fishingScale = 0.65;
+  fisher.g.scale.setScalar(fishingScale);
   fisher.g.rotation.y = Math.PI / 2;
   cylinder(0.155, 0.045, 0, 0.75, 0, p.cream, fisher.g);
   cylinder(0.11, 0.09, 0, 0.8, 0, p.cream, fisher.g);
-  const fishingRod = group(-7.02, 1.03, FISHERMAN[1]);
+  const fishingRod = group(
+    FISHERMAN[0] + 0.1 * fishingScale,
+    0.42 + 0.61 * fishingScale,
+    FISHERMAN[1],
+  );
+  fishingRod.scale.setScalar(fishingScale);
   const pole = group(0, 0, 0, fishingRod);
   rod([0, 0, 0], [1.12, 0, 0], 0.02, p.roof, pole);
   cylinder(0.07, 0.05, 0.15, 0, 0, p.trim, pole);
@@ -278,6 +285,8 @@ export function createDiscoveryScene({
   );
   const catchGroup = group(-6.13, 0.3, FISHERMAN[1]);
   const bobber = sphere(0.055, -5.94, 0.3, FISHERMAN[1], red);
+  catchGroup.scale.setScalar(fishingScale);
+  bobber.scale.setScalar(fishingScale);
   const fish = group(0, 0, 0, catchGroup);
   sphere(0.105, 0, 0, 0, brass, fish).scale.set(0.55, 1.8, 1);
   const fin = mesh(
@@ -420,17 +429,23 @@ export function createDiscoveryScene({
       0,
     );
     const bottom = new THREE.Vector3(cast.bobX, cast.bobY, 0);
+    // Shorter gear still reaches the water instead of lifting the bobber above it.
+    bottom.y += (0.31 - fishingRod.position.y) / fishingScale + 0.72;
     line.position.copy(top).add(bottom).multiplyScalar(0.5);
     line.scale.y = top.distanceTo(bottom) / 1.36;
     line.quaternion.setFromUnitVectors(
       new THREE.Vector3(0, 1, 0),
       bottom.clone().sub(top).normalize(),
     );
-    catchGroup.position.copy(fishingRod.position).add(bottom);
+    catchGroup.position
+      .copy(fishingRod.position)
+      .addScaledVector(bottom, fishingScale);
     catchGroup.visible = cast.fish;
     catchGroup.rotation.y = fishing === undefined ? 0 : fishing * 7;
     fish.visible = true;
-    bobber.position.copy(fishingRod.position).add(bottom);
+    bobber.position
+      .copy(fishingRod.position)
+      .addScaledVector(bottom, fishingScale);
     bobber.visible = !cast.fish;
     fisher.arms[0].rotation.x = -0.9;
     fisher.arms[1].rotation.x =
@@ -576,6 +591,10 @@ export function createDiscoveryScene({
     walkers,
     update,
     target: (id) => {
+      if (id === "fisherman")
+        return fisher.g.position
+          .clone()
+          .add(new THREE.Vector3(0, 0.6 * fishingScale, 0));
       const w = walkers.find((w) => w.id === id);
       return w
         ? w.actor.g.position.clone().add(new THREE.Vector3(0, 0.6, 0))

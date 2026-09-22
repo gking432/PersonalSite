@@ -1,5 +1,9 @@
 import * as THREE from "three";
-import { BALCONY_RESIDENT } from "./balconyDefinition.js";
+import {
+  BALCONY_RESIDENT,
+  BALCONY_ORIGIN,
+  BALCONY_SCALE,
+} from "./balconyDefinition.js";
 export function createBalconyResident({
   city,
   palette: p,
@@ -10,7 +14,8 @@ export function createBalconyResident({
   material,
 }) {
   const balcony = new THREE.Group();
-  balcony.position.set(6.5, 2.35, -12.55);
+  balcony.position.set(...BALCONY_ORIGIN);
+  balcony.scale.setScalar(BALCONY_SCALE);
   balcony.rotation.y = Math.PI;
   city.add(balcony);
   box(1.8, 0.09, 1.15, 0, 0, 0.42, p.trim, balcony);
