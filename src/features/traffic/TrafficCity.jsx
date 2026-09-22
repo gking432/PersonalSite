@@ -106,7 +106,7 @@ export default function TrafficCity() {
         />
       </div>
       <div className="traffic-city__caption">
-        {game.started ? "Click a light. Raise the bridge." : "Click to start."}
+        little milwaukee. interact with the map
         {game.started && (
           <div className="traffic-city__controls">
             <button
