@@ -7,6 +7,36 @@ import { FLIGHT_DURATION } from "./helicopterFlight.js";
 import { WATERFRONT_WALKS } from "./waterfront.js";
 export const DISCOVERIES = [
   {
+    id: "clockTower",
+    label: "Spin the Allen-Bradley clock hands",
+    point: [17.65, 4.7, -3.7],
+    duration: 4,
+  },
+  {
+    id: "fonz",
+    label: "Get a thumbs-up from the Bronze Fonz",
+    point: [-4.65, 1.08, -3.15],
+    duration: 3,
+  },
+  {
+    id: "gertie",
+    label: "Send Gertie and her ducklings swimming",
+    point: [-4.72, 0.8, 1.75],
+    duration: 12,
+  },
+  {
+    id: "hop",
+    label: "Call The Hop streetcar",
+    point: [8.3, 1.35, -1.47],
+    duration: 2,
+  },
+  ...[0, 1, 2].map((i) => ({
+    id: `sailboat${i}`,
+    label: `Send sailboat ${i + 1} on a little tack`,
+    point: [-2 + i * 8.5, 0.8, 13 + (i % 2) * 2.7],
+    duration: 8,
+  })),
+  {
     id: "helicopter",
     label: "Fly the rooftop helicopter",
     point: [3.5, 3.75, -3.7],

@@ -12,7 +12,7 @@
     "game:dev": "npm --prefix games/milwaukee-traffic run dev",
     "game:build": "npm --prefix games/milwaukee-traffic run build",
     "game:test": "npm --prefix games/milwaukee-traffic test",
-    "test:traffic": "node --test tests/trafficHomepage.test.mjs tests/pedestrianEscape.test.mjs tests/marblePhysics.test.mjs"
+    "test:traffic": "node --test tests/trafficHomepage.test.mjs tests/pedestrianEscape.test.mjs tests/milwaukeeLandmarks.test.mjs tests/marblePhysics.test.mjs"
   },
   "dependencies": {
     "framer-motion": "^12.33.0",

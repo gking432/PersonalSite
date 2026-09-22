@@ -62,10 +62,7 @@ export function createDiscoveryScene({
   };
 
   // One additional city unit: a connected avenue and a self-managing roundabout.
-  box(14.4, 0.34, 13.8, 14.4, -0.05, 0, p.base);
-  box(14.4, 0.07, 13.9, 14.4, -0.24, 0, p.edge);
-  box(14.4, 0.12, 13.65, 14.4, 0.18, 0, p.pavement);
-  box(14.4, 0.045, 2.75, 14.4, 0.28, 0, p.asphalt);
+  // Both city units now share one continuous ground slab and avenue.
   box(
     2.75,
     0.045,
@@ -147,14 +144,15 @@ export function createDiscoveryScene({
       body: p.cream,
       ornate: true,
     },
-    { x: 8.35, z: -4.8, w: 1.45, d: 3.75, h: 1.8, floors: 3, body: p.brick },
+    { x: 8.65, z: -4.8, w: 0.85, d: 3.75, h: 1.8, floors: 3, body: p.brick },
     { x: 10.6, z: -5.92, w: 2.4, d: 1.35, h: 1.65, floors: 3, body: p.ivory },
     {
       x: 17.65,
       z: -3.7,
-      w: 2.6,
-      d: 2.7,
-      h: 2.3,
+      w: 1.9,
+      d: 1.9,
+      h: 5.1,
+      landmark: "clock",
       floors: 4,
       body: p.brick,
       ornate: true,
@@ -171,7 +169,7 @@ export function createDiscoveryScene({
       body: p.ivory,
       ornate: true,
     },
-    { x: 8.35, z: 4.75, w: 1.45, d: 3.75, h: 1.55, floors: 3, body: p.glass },
+    { x: 8.65, z: 4.75, w: 0.85, d: 3.75, h: 1.55, floors: 3, body: p.glass },
     { x: 10.6, z: 5.92, w: 2.45, d: 1.35, h: 1.6, floors: 3, body: p.brick },
   ])
     building(config);
@@ -303,7 +301,7 @@ export function createDiscoveryScene({
   fin.rotation.z = Math.PI;
   const walkers = CITY_WALKERS.map((item, i) => ({
     ...item,
-    actor: person(item.point[0], item.point[2], i ? p.green : red),
+    actor: person(item.point[0], item.point[2], i ? p.green : red, 0.42, i),
   }));
   const customer = person(3.5, -2.38, red);
   cylinder(0.055, 0.095, 0.15, 0.35, 0.13, p.ivory, customer.g);

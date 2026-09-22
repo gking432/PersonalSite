@@ -1,4 +1,10 @@
 import { createPedestrianScene } from "./pedestrianScene";
+import { createHopTracks, createHopVehicle } from "./hopScene";
+import {
+  createPublicMarket,
+  createClockTower,
+  createThirdWard,
+} from "./milwaukeeLandmarks";
 import { createMilwaukeeTower } from "./milwaukeeTower";
 import { WATER_BARRIERS } from "./pedestrianEscape";
 import { createBalconyResident } from "./balconyResident";
@@ -232,9 +238,9 @@ export function createCityScene(host, controls, onEscape) {
   }
 
   // A cut-out city block, with the river and a little Wisconsin Avenue bridge.
-  box(14.4, 0.34, 13.8, 0, -0.05, 0, palette.base);
-  box(14.5, 0.07, 13.9, 0, -0.24, 0, palette.edge);
-  box(14.25, 0.12, 13.65, 0, 0.18, 0, palette.pavement);
+  box(28.8, 0.34, 13.8, 7.2, -0.05, 0, palette.base);
+  box(28.8, 0.07, 13.9, 7.2, -0.24, 0, palette.edge);
+  box(28.8, 0.12, 13.65, 7.2, 0.18, 0, palette.pavement);
   for (const z of [-4.4, -2.8, 2.7, 4.5]) {
     for (let j = 0; j < 3; j++)
       box(
@@ -249,7 +255,7 @@ export function createCityScene(host, controls, onEscape) {
   }
   // Leave the river span open for the two moving bridge leaves.
   box(0.275, 0.045, 2.75, -6.9875, 0.28, 0, palette.asphalt);
-  box(12.175, 0.045, 2.75, 1.0375, 0.28, 0, palette.asphalt);
+  box(26.65, 0.045, 2.75, 8.275, 0.28, 0, palette.asphalt);
   box(
     2.75,
     0.045,
@@ -345,6 +351,7 @@ export function createCityScene(host, controls, onEscape) {
   waterName.rotation.z = Math.PI / 2;
 
   const buildingBounds = [];
+  const clockTowers = [];
   function building({
     x,
     z,
@@ -365,7 +372,24 @@ export function createCityScene(host, controls, onEscape) {
       ),
     );
     if (landmark) {
-      createMilwaukeeTower({ x, z, w, d, h, box, rod, label, palette });
+      const options = {
+        city,
+        x,
+        z,
+        w,
+        d,
+        h,
+        box,
+        mesh,
+        rod,
+        label,
+        material,
+        palette,
+      };
+      if (landmark === "market") createPublicMarket(options);
+      else if (landmark === "clock")
+        clockTowers.push(createClockTower(options));
+      else createMilwaukeeTower(options);
       return;
     }
     box(w, h, d, x, bottom + h / 2, z, body);
@@ -509,25 +533,8 @@ export function createCityScene(host, controls, onEscape) {
   });
   for (let i = 0; i < 6; i++)
     box(0.34, 0.12, 0.48, 2.52 + i * 0.39, 1.02, -2.23, palette.green);
-  // Low riverside glass pavilion preserves a view into the intersection.
-  building({
-    x: -3.37,
-    z: 3.65,
-    w: 2.22,
-    d: 2.8,
-    h: 1.65,
-    floors: 3,
-    body: palette.glass,
-    glass: palette.dark,
-  });
-  for (let i = 0; i < 8; i++)
-    box(0.035, 1.59, 2.87, -4.37 + i * 0.287, 1.27, 3.65, palette.trim);
-  box(2.4, 0.13, 2.94, -3.37, 2.13, 3.65, palette.trim);
-  label("RIVERWALK", 1.7, 0.19, -3.37, 0.88, 2.224, {
-    background: "#49685c",
-    size: 42,
-    ry: Math.PI,
-  });
+  // Public Market occupies the original pigeon-roof building's footprint.
+  building({ x: -3.37, z: 3.65, w: 2.22, d: 2.8, h: 1.65, landmark: "market" });
 
   const leafGeometry = new THREE.IcosahedronGeometry(0.34, 1);
   geometries.add(leafGeometry);
@@ -629,6 +636,7 @@ export function createCityScene(host, controls, onEscape) {
     rod,
     unitBox,
     lampMaterials,
+    material,
   });
   const discoveries = createDiscoveryScene({
     city,
@@ -687,6 +695,18 @@ export function createCityScene(host, controls, onEscape) {
     rod,
     material,
   });
+  const thirdWard = createThirdWard({
+    city,
+    box,
+    mesh,
+    cylinder,
+    rod,
+    label,
+    material,
+    tree,
+    palette,
+  });
+  createHopTracks({ mesh, material });
   const boat = additions.createBoat();
   city.add(boat);
   boat.position.set(-5.94, 0.38, 3.7);
@@ -770,6 +790,16 @@ export function createCityScene(host, controls, onEscape) {
   geometries.add(tireGeometry);
   const carMeshes = new Map();
   function vehicle(car) {
+    if (car.hop)
+      return createHopVehicle({
+        city,
+        box,
+        mesh,
+        rod,
+        label,
+        material,
+        palette,
+      });
     const group = new THREE.Group();
     city.add(group);
     const l = car.length,
@@ -1121,6 +1151,7 @@ export function createCityScene(host, controls, onEscape) {
     (item.id === "balconyResident" ? balcony.target() : null) ||
     discoveries.target(item.id) ||
     waterfront.target(item.id) ||
+    thirdWard.target(item.id) ||
     new THREE.Vector3(...item.point);
   function occluded(point) {
     const cameraLocal = city.worldToLocal(camera.position.clone());
@@ -1270,6 +1301,8 @@ export function createCityScene(host, controls, onEscape) {
           id: c.id,
           ...carPose(c),
           speed: c.speed,
+          hop: !!c.hop,
+          doors: c.hopDoors || 0,
           service: !!c.service,
         })),
       boats: sim.bridge.boats
@@ -1281,6 +1314,8 @@ export function createCityScene(host, controls, onEscape) {
     additions.update(sim, dt);
     discoveries.update(sim);
     waterfront.update(sim);
+    thirdWard.update(sim);
+    clockTowers.forEach((tower) => tower.update(sim));
     heist.update(sim);
     // Transfer overflow meshes before removing cars no longer in the simulation.
     for (const event of sim.events.splice(0)) {
@@ -1291,6 +1326,7 @@ export function createCityScene(host, controls, onEscape) {
     for (const car of sim.cars) {
       live.add(car.id);
       if (!carMeshes.has(car.id)) carMeshes.set(car.id, vehicle(car));
+      carMeshes.get(car.id).animate?.(car, sim);
       const { group, brakes, blinkers, beacons } = carMeshes.get(car.id),
         p = carPose(car);
       const elevation = riverBridgeHeight(p.x, p.z);
@@ -1458,6 +1494,9 @@ export function createCityScene(host, controls, onEscape) {
       ).length,
       discoveries: discoveries.diagnostics(),
       waterfront: waterfront.diagnostics(),
+      thirdWard: thirdWard.diagnostics(),
+      boats: additions.diagnostics(),
+      streetcars: [...carMeshes.values()].filter((c) => c.hop).length,
       heist: heist.diagnostics(),
       falling: falling.length,
       fallingBoats: falling.filter((f) => f.boat).length,

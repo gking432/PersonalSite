@@ -97,6 +97,7 @@ export function createCityRuntime(host, controls, onState) {
   function start() {
     if (!enabled || disposed) return;
     sim.start();
+    sim.hop.enabled = true;
     preparePage();
     pageCars?.setEnabled(enabled);
     notify();
@@ -141,6 +142,7 @@ export function createCityRuntime(host, controls, onState) {
     if (!sim.discoveries.trigger(id)) return;
     if (id === "musician") trumpet.play();
     if (id === "payphone") phone.play();
+    if (id === "hop" && !sim.hop.car()) sim.hop.next = 0;
     scene.update(sim);
     scene.render();
     notify();

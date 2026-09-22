@@ -217,6 +217,11 @@ test("the original discoveries remain in the original city footprint", () => {
     (item) =>
       ![
         "fountain",
+        "clockTower",
+        "hop",
+        "sailboat0",
+        "sailboat1",
+        "sailboat2",
         "lakeWalk",
         "museumWalk",
         "apartmentWalk",
@@ -757,8 +762,9 @@ test("police stop at lights, travel continuously, park for fifteen seconds and w
         old = before.get(c.id);
       if (old)
         assert.ok(
-          Math.hypot(p.x - old.x, p.z - old.z) < 0.03,
-          "response car teleported",
+          Math.hypot(p.x - old.x, p.z - old.z) <
+            (c.police ? Math.hypot(4.5, 0.85) / 120 + 0.002 : 0.03),
+          "response car exceeded its travel and lateral merge speed",
         );
       before.set(c.id, p);
     }
@@ -897,4 +903,79 @@ test("medics take a clear route around buildings and stationary path endpoints s
     ),
     { x: 0, z: 0, yaw: 0 },
   );
+});
+
+test("police overtake slower cars on a clear straight and merge before the next junction", () => {
+  const s = setup();
+  s.signals.wisconsin.color = "green";
+  s.spawn(3);
+  const front = s.cars[0];
+  Object.assign(front, {
+    p: 5.5,
+    turn: "straight",
+    speed: 2.4,
+    committed: true,
+  });
+  s.spawn(3, 0, {
+    kind: "police",
+    route: [
+      { junction: 0, lane: 3, turn: "straight" },
+      { junction: 1, lane: 3, turn: "straight" },
+    ],
+    index: 0,
+    phase: "leaving",
+    curb: 0,
+    stop: { out: 4 },
+  });
+  const cop = s.cars[1];
+  Object.assign(cop, { p: 4, speed: 2.4, committed: true });
+  let fastest = 0,
+    overtook = false,
+    merged = false;
+  for (let i = 0; i < 4 * 120; i++) {
+    s.tick(1 / 120);
+    const a = carPose(front),
+      b = carPose(cop);
+    fastest = Math.max(fastest, cop.speed);
+    if (a.x < b.x && cop.passing > 0.4) overtook = true;
+    if (overtook && b.x > a.x + 0.72 && cop.passing < 0.01) merged = true;
+    if (Math.abs(a.yaw - b.yaw) < 0.001) {
+      assert.ok(
+        Math.abs(a.x - b.x) >= 0.72 || Math.abs(a.z - b.z) >= 0.38,
+        "passing car bodies must never overlap",
+      );
+    }
+    if (cop.junction === 1 && cop.p > -2.65) assert.ok(cop.passing < 0.01);
+  }
+  assert.equal(fastest, 4.5);
+  assert.ok(overtook && merged);
+  assert.equal(s.crashes, 0);
+});
+
+test("police abandoning a pass do not trap the car beside them or cut through its body", () => {
+  const s = setup();
+  s.signals.water.color = "green";
+  s.spawn(0);
+  const front = s.cars[0];
+  Object.assign(front, { p: -7, turn: "straight", speed: 1 });
+  s.spawn(0, 0, {
+    kind: "police",
+    route: [{ junction: 0, lane: 0, turn: "straight" }],
+    index: 0,
+    phase: "leaving",
+    curb: 0,
+    stop: { out: 4 },
+  });
+  const cop = s.cars[1];
+  for (let i = 0; i < 5 * 120; i++) {
+    s.tick(1 / 120);
+    const a = carPose(front),
+      b = carPose(cop);
+    assert.ok(
+      Math.abs(a.z - b.z) >= 0.72 || Math.abs(a.x - b.x) >= 0.38,
+      "a merge must wait for space between cars",
+    );
+  }
+  assert.ok(cop.p > 3);
+  assert.equal(s.crashes, 0);
 });

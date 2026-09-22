@@ -113,18 +113,36 @@ export function createPedestrianScene({
   );
   const medic = group();
   const skin = material("#d8aa81");
-  cylinder(0.11, 0.3, 0, 0.4, 0, p.green, medic, 0.095);
+  const uniform = material("#344a64"),
+    reflective = material("#d7dfac"),
+    medicalBlue = material("#739ebc");
+  cylinder(0.11, 0.3, 0, 0.4, 0, uniform, medic, 0.095);
+  cylinder(0.113, 0.035, 0, 0.355, 0, reflective, medic);
+  cylinder(0.11, 0.025, 0, 0.465, 0, reflective, medic);
   mesh(new THREE.SphereGeometry(0.1, 10, 8), skin, 0, 0.65, 0, medic);
-  box(0.18, 0.06, 0.016, 0, 0.44, 0.105, p.trim, medic);
+  box(0.13, 0.095, 0.016, 0, 0.42, 0.113, p.trim, medic);
+  for (let i = 0; i < 3; i++) {
+    const star = new THREE.Group();
+    star.position.set(0, 0.42, 0.127);
+    star.rotation.z = (i * Math.PI) / 3;
+    medic.add(star);
+    box(0.025, 0.075, 0.012, 0, 0, 0, medicalBlue, star);
+  }
+  cylinder(0.115, 0.045, 0, 0.745, 0, uniform, medic);
+  box(0.13, 0.03, 0.08, 0, 0.742, 0.1, uniform, medic);
+  box(0.17, 0.17, 0.12, -0.22, 0.29, 0, p.brick, medic);
+  box(0.1, 0.028, 0.015, -0.22, 0.29, 0.07, p.trim, medic);
+  box(0.028, 0.1, 0.015, -0.22, 0.29, 0.071, p.trim, medic);
   const legs = [-1, 1].map((sign) => {
     const g = new THREE.Group();
     g.position.set(sign * 0.06, 0.27, 0);
     medic.add(g);
-    box(0.075, 0.25, 0.085, 0, -0.125, 0, p.dark, g);
+    box(0.075, 0.25, 0.085, 0, -0.125, 0, uniform, g);
+    box(0.08, 0.03, 0.09, 0, -0.15, 0, reflective, g);
     return g;
   });
   for (const x of [-0.13, 0.13])
-    rod([x, 0.48, 0], [x, 0.29, 0.16], 0.033, p.green, medic);
+    rod([x, 0.48, 0], [x, 0.29, 0.16], 0.033, uniform, medic);
   const stretcher = new THREE.Group();
   medic.add(stretcher);
   box(0.44, 0.04, 0.83, 0, 0.35, 0.55, p.trim, stretcher);
@@ -262,6 +280,7 @@ export function createPedestrianScene({
       }
       diagnostics.push({
         id,
+        outfit: actor.outfit,
         phase: state?.phase || (def.seated ? "seated" : "walking"),
         level: state?.level || 0,
         hits: state?.hits || 0,
@@ -359,6 +378,7 @@ export function createPedestrianScene({
       }
     },
     diagnostics: () => ({
+      paramedicUniform: "navy EMS with reflective stripes and medical badge",
       people: diagnostics.map((item) => {
         const def = people.find((p) => p.id === item.id);
         return {

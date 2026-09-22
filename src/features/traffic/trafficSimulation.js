@@ -1,3 +1,9 @@
+import {
+  updatePolicePassing,
+  sameTrafficTrack,
+  policeStep,
+} from "./policeDriving.js";
+import { HopTraffic } from "./hopTraffic.js";
 import { LAKE_ROAD_START, lakeCarPose, lakeRouteLength } from "./lakeRoad.js";
 import { BridgeTraffic } from "./cityChallenges.js";
 import { roundaboutPose } from "./roundabout.js";
@@ -22,8 +28,12 @@ export const MAX_CARS = 120;
 export function carPose(car) {
   const atCurb = (pose) => ({
     ...pose,
-    x: pose.x - Math.cos(pose.yaw) * (car.service?.curb || 0),
-    z: pose.z + Math.sin(pose.yaw) * (car.service?.curb || 0),
+    x:
+      pose.x -
+      Math.cos(pose.yaw) * ((car.service?.curb || 0) + (car.passing || 0)),
+    z:
+      pose.z +
+      Math.sin(pose.yaw) * ((car.service?.curb || 0) + (car.passing || 0)),
   });
   if (car.lakeFrom !== undefined)
     return atCurb(lakeCarPose(car.p, car.lakeFrom));
@@ -116,6 +126,7 @@ export class TrafficSimulation {
     this.bridge = new BridgeTraffic(this.random);
     this.discoveries = new Discoveries();
     this.services = new ServiceTraffic(this, carPose);
+    this.hop = new HopTraffic(this, carPose);
     this.roundaboutPassed = 0;
   }
   get interval() {
@@ -163,10 +174,11 @@ export class TrafficSimulation {
       ...carPose(car),
     });
   }
-  spawn(lane, junction = 0, service = null) {
+  spawn(lane, junction = 0, service = null, { hop = false } = {}) {
     if (!APPROACHES[lane] || ![0, 1].includes(junction)) return false;
-    const bus = service ? service.kind === "news" : this.random() < 0.09,
-      length = bus || service?.kind === "ambulance" ? 1.08 : 0.72;
+    const bus =
+        hop || (service ? service.kind === "news" : this.random() < 0.09),
+      length = hop ? 1.65 : bus || service?.kind === "ambulance" ? 1.08 : 0.72;
     for (const tail of this.cars)
       if (
         tail.lakeFrom === undefined &&
@@ -175,7 +187,7 @@ export class TrafficSimulation {
         tail.p < -TURN_START &&
         Math.abs(tail.p - ENTRY) < (tail.length + length) / 2 + 0.2
       ) {
-        if (service || tail.service) return false;
+        if (service || tail.service || hop || tail.hop) return false;
         this.drop(tail, "overflow");
       }
     this.cars = this.cars.filter((c) => !c.remove);
@@ -190,9 +202,10 @@ export class TrafficSimulation {
       stopped: 0,
       length,
       bus,
+      hop,
       color: Math.floor(this.random() * 6),
       turn:
-        service?.route[0].turn ||
+        (hop ? "straight" : service?.route[0].turn) ||
         (turnRoll < 0.27 ? "left" : turnRoll > 0.73 ? "right" : "straight"),
       service,
       ambulance: service?.kind === "ambulance",
@@ -208,6 +221,7 @@ export class TrafficSimulation {
     this.discoveries.tick(dt);
     this.services.tick(dt);
     if (!this.started) return;
+    this.hop.tick(dt);
     this.time += dt;
     this.honkCooldown -= dt;
     this.bridge.tick(
@@ -251,6 +265,7 @@ export class TrafficSimulation {
         this.nextArrival += 0.18 + this.random() * 0.48;
       } else this.nextArrival += 2.5 + this.random() * 3;
     }
+    updatePolicePassing(this.cars, dt, carPose, overlaps);
     const poses = new Map(this.cars.map((c) => [c.id, carPose(c)]));
     const ringCars = this.cars.filter(
       (car) => car.junction === 1 && car.lakeFrom === undefined && !car.remove,
@@ -335,13 +350,14 @@ export class TrafficSimulation {
           car.junction === other.junction &&
           car.lane === other.lane &&
           (car.turn === other.turn || other.p < -TURN_START + other.length / 2);
-        if (shared && other.p > car.p)
+        if (shared && sameTrafficTrack(car, other) && other.p > car.p)
           gap = Math.min(gap, other.p - car.p - clearance);
         if (
           car.junction === other.junction &&
           pose.out !== null &&
           op.out !== null &&
           pose.exitLane === op.exitLane &&
+          sameTrafficTrack(car, other) &&
           op.out > pose.out
         )
           gap = Math.min(gap, op.out - pose.out - clearance);
@@ -404,17 +420,31 @@ export class TrafficSimulation {
         parkingDistance = end - car.p;
         gap = Math.min(gap, parkingDistance);
       }
-      gap = Math.max(0, gap);
-      const target = Math.min(2.4, Math.sqrt(2 * 5.5 * gap)),
-        change = (target > car.speed ? 3.1 : 7) * dt;
+      gap = Math.max(
+        0,
+        Math.min(gap, this.hop.limit(car), car.mergeBlocked ? 0 : Infinity),
+      );
+      const target = Math.min(
+          car.police ? 4.5 : 2.4,
+          Math.sqrt(2 * (car.police ? 8 : 5.5) * gap),
+        ),
+        change =
+          (target > car.speed ? (car.police ? 5 : 3.1) : car.police ? 10 : 7) *
+          dt;
       car.speed +=
         Math.sign(target - car.speed) *
         Math.min(change, Math.abs(target - car.speed));
-      car.p += Math.min(car.speed * dt, gap);
-      if (
-        parkingDistance - Math.min(car.speed * dt, gap) <= 0.001 &&
-        this.canPark(car)
-      ) {
+      const step = policeStep(
+        car,
+        Math.min(car.speed * dt, gap),
+        this.cars,
+        carPose,
+        overlaps,
+        dt,
+      );
+      car.p += step;
+      if (car.police && step < car.speed * dt * 0.9) car.speed = step / dt;
+      if (parkingDistance - step <= 0.001 && this.canPark(car)) {
         car.service.phase = "parking";
         car.service.time = 0;
         car.speed = 0;
@@ -527,6 +557,7 @@ export class TrafficSimulation {
     );
   }
   nextTurn(car) {
+    if (car.hop) return "left";
     if (car.service) {
       car.service.index++;
       return car.service.route[car.service.index]?.turn || "straight";
@@ -537,6 +568,7 @@ export class TrafficSimulation {
     return {
       started: this.started,
       roundaboutPassed: this.roundaboutPassed,
+      hop: this.hop.snapshot(),
       discoveries: this.discoveries.snapshot(),
       time: this.time,
       cars: this.cars.length,

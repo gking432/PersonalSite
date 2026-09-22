@@ -1,3 +1,4 @@
+import { sailboatPose } from "./sailboatMotion";
 import { lakeRoadPoint, lakeRoadLength, LAKE_ROAD_Z } from "./lakeRoad";
 import * as THREE from "three";
 import { createPeople } from "./cityPeople";
@@ -24,10 +25,10 @@ export function createWaterfrontScene({
   building,
   tree,
 }) {
-  const group = (x, y, z) => {
+  const group = (x, y, z, parent = city) => {
     const g = new THREE.Group();
     g.position.set(x, y, z);
-    city.add(g);
+    parent.add(g);
     return g;
   };
   function ribbon(
@@ -369,14 +370,17 @@ export function createWaterfrontScene({
       material(p[key].color, { transparent: true }),
     ]),
   );
+  sailMaterials.blue = material("#4e82a0", { transparent: true });
   const sailboats = Array.from({ length: 3 }, (_, i) => {
     const g = group(-2 + i * 8.5, 0.32, 13 + (i % 2) * 2.7),
-      mat = i === 1 ? sailMaterials.brick : sailMaterials.green;
+      mat = [sailMaterials.green, sailMaterials.brick, sailMaterials.blue][i];
     const hull = mesh(new THREE.SphereGeometry(0.5, 12, 8), mat, 0, 0, 0, g);
     hull.scale.set(0.48, 0.23, 1.65);
     box(0.31, 0.025, 1.07, 0, 0.06, 0, sailMaterials.ivory, g);
     rod([0, 0.07, 0], [0, 1.85, 0], 0.022, sailMaterials.roof, g);
     rod([0, 0.27, 0], [0, 0.27, -0.69], 0.018, sailMaterials.roof, g);
+    const sails = new THREE.Group();
+    g.add(sails);
     for (const forward of [false, true]) {
       const geometry = new THREE.BufferGeometry();
       geometry.setAttribute(
@@ -398,10 +402,30 @@ export function createWaterfrontScene({
         0,
         0,
         0,
-        g,
+        sails,
       );
     }
-    return { g, x: -2 + i * 8.5, z: 13 + (i % 2) * 2.7 };
+    const wake = mesh(
+      new THREE.RingGeometry(0.35, 0.38, 24),
+      material("#f2f3de", {
+        transparent: true,
+        opacity: 0.45,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+      }),
+      0,
+      0.01,
+      -0.5,
+      g,
+    );
+    wake.rotation.x = -Math.PI / 2;
+    wake.scale.y = 2;
+    wake.visible = false;
+    wake.castShadow = false;
+    const skipper = group(0, 0.12, -0.37, g);
+    cylinder(0.055, 0.15, 0, 0.1, 0, p.brick, skipper);
+    mesh(new THREE.SphereGeometry(0.055, 8, 6), p.ivory, 0, 0.22, 0, skipper);
+    return { g, sails, wake, x: -2 + i * 8.5, z: 13 + (i % 2) * 2.7 };
   });
   const person = createPeople({
     city,
@@ -414,22 +438,36 @@ export function createWaterfrontScene({
   });
   const people = WATERFRONT_WALKS.map((walk, i) => ({
     ...walk,
-    actor: person(walk.point[0], walk.point[2], i % 2 ? p.brick : p.green),
+    actor: person(
+      walk.point[0],
+      walk.point[2],
+      i % 2 ? p.brick : p.green,
+      0.42,
+      i + 2,
+    ),
   }));
   let diagnostics = {};
   function update(sim) {
-    sailboats.forEach(({ g, x, z }, i) => {
-      const t = sim.ambientTime * 0.055 + i * 2;
+    sailboats.forEach(({ g, sails, wake }, i) => {
+      const pose = sailboatPose(
+        i,
+        sim.ambientTime,
+        sim.discoveries.active[`sailboat${i}`],
+      );
       g.position.set(
-        x + Math.sin(t) * 0.85,
-        0.32 + Math.sin(sim.time * 1.5 + i) * 0.018,
-        z + Math.cos(t) * 0.65,
+        pose.x,
+        0.32 + Math.sin(sim.ambientTime * 1.5 + i) * 0.018,
+        pose.z,
       );
       g.rotation.set(
-        Math.sin(sim.time * 0.8 + i) * 0.025,
-        Math.atan2(0.85 * Math.cos(t), -0.65 * Math.sin(t)),
-        Math.sin(sim.time + i) * 0.045,
+        Math.sin(sim.ambientTime * 0.8 + i) * 0.025,
+        pose.yaw,
+        pose.heel,
       );
+      sails.rotation.y = pose.sail;
+      wake.visible = pose.wake > 0.05;
+      wake.material.opacity = pose.wake * 0.4;
+      wake.scale.set(1 + pose.wake * 0.5, 2 + pose.wake, 1);
     });
     diagnostics = {
       museum: true,
@@ -437,6 +475,12 @@ export function createWaterfrontScene({
       lakeEdge: "south",
       lakeRoad: { connected: true, z: LAKE_ROAD_Z, treeRows: 2 },
       sailboats: sailboats.length,
+      sailing: sailboats.map((boat, i) => ({
+        id: `sailboat${i}`,
+        position: boat.g.position.toArray(),
+        heel: boat.g.rotation.z,
+        active: sim.discoveries.active[`sailboat${i}`] !== undefined,
+      })),
       walkers: people.map(({ id, actor, seated }) => ({
         id,
         x: actor.g.position.x,
@@ -453,6 +497,10 @@ export function createWaterfrontScene({
     walkers: people,
     update,
     target: (id) => {
+      if (/^sailboat[0-2]$/.test(id))
+        return sailboats[Number(id.at(-1))].g.position
+          .clone()
+          .add(new THREE.Vector3(0, 0.65, 0));
       const w = people.find((w) => w.id === id);
       return w
         ? w.actor.g.position.clone().add(new THREE.Vector3(0, 0.6, 0))

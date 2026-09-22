@@ -2,7 +2,13 @@ import * as THREE from "three";
 import { ConvexGeometry } from "three/addons/geometries/ConvexGeometry.js";
 
 // Closed, tapered hulls look finished from below as well as on the river.
-export function createBoatModel({ palette, box, mesh, rod }) {
+export function createBoatModel({
+  palette,
+  box,
+  mesh,
+  rod,
+  paint = palette.green,
+}) {
   const group = new THREE.Group();
   group.name = "riverboat";
   const outline = [
@@ -29,7 +35,7 @@ export function createBoatModel({ palette, box, mesh, rod }) {
       [-0.12, 0.82, 0.9],
       [-0.24, 0.12, 0.72],
     ],
-    palette.green,
+    paint,
     "painted-v-hull",
   );
   shell(
@@ -49,7 +55,7 @@ export function createBoatModel({ palette, box, mesh, rod }) {
     "deck",
   );
   box(0.045, 0.045, 0.74, 0, -0.245, -0.03, palette.dark, group);
-  box(0.025, 0.12, 0.12, 0, -0.13, -0.6, palette.green, group);
+  box(0.025, 0.12, 0.12, 0, -0.13, -0.6, paint, group);
   const propeller = mesh(
     new THREE.CylinderGeometry(0.06, 0.06, 0.025, 8),
     palette.yellow,
@@ -76,7 +82,7 @@ export function createBoatModel({ palette, box, mesh, rod }) {
     );
     rod([side * 0.18, 0.2, 0.43], [0, 0.2, 0.6], 0.012, palette.white, group);
   }
-  box(0.45, 0.06, 0.54, 0, 0.4, -0.07, palette.green, group);
+  box(0.45, 0.06, 0.54, 0, 0.4, -0.07, paint, group);
   rod([0, 0.42, -0.27], [0, 0.78, -0.27], 0.013, palette.dark, group);
   box(0.19, 0.11, 0.022, 0.095, 0.71, -0.27, palette.brick, group);
   return group;

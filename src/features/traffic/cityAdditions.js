@@ -8,6 +8,7 @@ export function createCityAdditions({
   mesh,
   cylinder,
   rod,
+  material,
 }) {
   // Buildings complete the riverwalk on the opposite bank.
   for (const side of [-1, 1]) {
@@ -81,12 +82,18 @@ export function createCityAdditions({
     gates.push(gate);
   }
   const boatMeshes = new Map();
-  const boatTemplate = createBoatModel({ palette, box, mesh, rod });
+  const paints = [palette.green, material("#467c9a"), material("#bd5e4b")];
+  const boatTemplates = paints.map((paint) =>
+    createBoatModel({ palette, box, mesh, rod, paint }),
+  );
+  const boatTemplate = boatTemplates[0];
+  const templateFor = (boat) =>
+    boatTemplates[boat.id % 5 === 2 ? 1 : boat.id % 5 === 4 ? 2 : 0];
 
   return {
     createBoat: () => boatTemplate.clone(true),
     takeBoat(boat) {
-      const model = boatMeshes.get(boat.id) || boatTemplate.clone(true);
+      const model = boatMeshes.get(boat.id) || templateFor(boat).clone(true);
       boatMeshes.delete(boat.id);
       city.add(model);
       return model;
@@ -100,7 +107,7 @@ export function createCityAdditions({
       for (const boat of sim.bridge.boats) {
         live.add(boat.id);
         if (!boatMeshes.has(boat.id)) {
-          const model = boatTemplate.clone(true);
+          const model = templateFor(boat).clone(true);
           city.add(model);
           boatMeshes.set(boat.id, model);
         }
@@ -119,6 +126,13 @@ export function createCityAdditions({
           boatMeshes.delete(id);
         }
     },
+    diagnostics: () =>
+      [...boatMeshes].map(([id, group]) => ({
+        id,
+        paint: group
+          .getObjectByName("painted-v-hull")
+          .material.color.getHexString(),
+      })),
     clear() {
       for (const group of boatMeshes.values()) city.remove(group);
       boatMeshes.clear();

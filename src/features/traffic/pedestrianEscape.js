@@ -106,8 +106,12 @@ function plan(s, id, world) {
   if ((s.replans || 0) >= 2) {
     const cars = world.cars.filter(
       (c) =>
-        c.speed < 0.12 && !c.service && distance([s.x, s.z], [c.x, c.z]) < 4,
+        c.speed < 0.12 &&
+        !c.service &&
+        (!c.hop || c.doors > 0.6) &&
+        distance([s.x, s.z], [c.x, c.z]) < (c.hop ? 6 : 4),
     );
+    cars.sort((a, b) => Number(!!b.hop) - Number(!!a.hop));
     for (const car of cars) {
       const door = [
         car.x - Math.cos(car.yaw) * 0.48,
@@ -179,6 +183,7 @@ function arrival(s, world) {
   );
   if (
     carrier &&
+    (!carrier.hop || carrier.doors > 0.6) &&
     distance([s.x, s.z], [carrier.x, carrier.z]) <
       (goal.kind === "car" ? 0.9 : 2)
   ) {
