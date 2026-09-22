@@ -96,6 +96,7 @@ test("roundabout yields without lights, overlapping vehicles or starving an appr
     const inRing = s.cars.filter(
       (car) =>
         car.junction === 1 &&
+        car.lakeFrom === undefined &&
         car.committed &&
         (carPose(car).out === null || carPose(car).out < 2.68),
     );
@@ -208,7 +209,7 @@ test("arrival timing and approaches vary, with both quiet gaps and occasional gr
   assert.ok(new Set(gaps.map((gap) => gap.toFixed(2))).size > 10);
   assert.equal(
     new Set(arrivals.map(({ lane, junction }) => `${junction}:${lane}`)).size,
-    6,
+    4,
   );
 });
 test("the original discoveries remain in the original city footprint", () => {
@@ -303,7 +304,7 @@ test("crashes eject both cars immediately and leave no persistent wreck or clean
   );
   assert.equal(s.incidents, undefined);
   s.spawn(0);
-  run(s, 10);
+  run(s, 35);
   assert.ok(s.passed > 0);
 });
 test("boat queues overflow from either river edge while the bridge is closed", () => {
@@ -510,4 +511,67 @@ test("heist and separate walkers leave manual lights unchanged and reset with th
   assert.equal(s.discoveries.heist.time, null);
   assert.equal(s.discoveries.heist.plays, 0);
   assert.deepEqual(s.discoveries.active, {});
+});
+
+test("cars follow the lake road in both directions and join the other southern approach continuously", () => {
+  for (const from of [0, 1]) {
+    const s = setup();
+    s.spawn(0, from);
+    const car = s.cars[0];
+    car.turn = "straight";
+    let before = carPose(car),
+      onLake = false,
+      transferred = false;
+    for (let i = 0; i < 120 * 40 && s.cars.includes(car); i++) {
+      s.tick(1 / 120);
+      const p = carPose(car);
+      assert.ok(Math.hypot(p.x - before.x, p.z - before.z) < 0.021);
+      if (car.lakeFrom !== undefined) {
+        onLake = true;
+        assert.ok(p.z >= 6.19 && p.z < 9);
+      }
+      if (onLake && car.lakeFrom === undefined) {
+        transferred = true;
+        assert.equal(car.junction, 1 - from);
+        assert.equal(car.lane, 2);
+        break;
+      }
+      before = p;
+    }
+    assert.ok(onLake);
+    assert.ok(transferred);
+    run(s, 30);
+    assert.equal(s.cars.length, 0);
+    assert.equal(s.passed, 1);
+  }
+});
+test("lakefront traffic queues around the bend behind a red light and drains when released", () => {
+  const s = setup();
+  s.signals.water.color = "red";
+  for (let i = 0; i < 16; i++) {
+    s.spawn(0, 1);
+    s.cars.at(-1).turn = "straight";
+    run(s, 2);
+  }
+  run(s, 20);
+  assert.ok(s.cars.some((c) => c.lakeFrom === 1 && c.stopped > 1));
+  assert.ok(
+    s.cars.some(
+      (c) => c.junction === 0 && c.lane === 2 && c.lakeFrom === undefined,
+    ),
+  );
+  for (let i = 0; i < s.cars.length; i++)
+    for (let j = i + 1; j < s.cars.length; j++) {
+      const a = carPose(s.cars[i]),
+        b = carPose(s.cars[j]);
+      assert.ok(
+        Math.hypot(a.x - b.x, a.z - b.z) > 0.65,
+        `cars ${s.cars[i].id} and ${s.cars[j].id} overlap`,
+      );
+    }
+  s.toggle("water");
+  run(s, 100);
+  assert.equal(s.cars.length, 0);
+  assert.equal(s.passed, 16);
+  assert.equal(s.crashes, 0);
 });

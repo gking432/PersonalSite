@@ -1,3 +1,4 @@
+import { LAKE_ROAD_START } from "./lakeRoad";
 import * as THREE from "three";
 import { createPeople } from "./cityPeople";
 import { helicopterFlight } from "./helicopterFlight";
@@ -63,11 +64,16 @@ export function createDiscoveryScene({
   box(14.4, 0.07, 13.9, 14.4, -0.24, 0, p.edge);
   box(14.4, 0.12, 13.65, 14.4, 0.18, 0, p.pavement);
   box(14.4, 0.045, 2.75, 14.4, 0.28, 0, p.asphalt);
-  box(2.75, 0.045, 13.65, 14.4, 0.28, 0, p.asphalt);
-  for (const [x, z, horizontal] of [
-    [22.95, 0, true],
-    [14.4, 8.35, false],
-  ]) {
+  box(
+    2.75,
+    0.045,
+    6.825 + LAKE_ROAD_START,
+    14.4,
+    0.28,
+    (LAKE_ROAD_START - 6.825) / 2,
+    p.asphalt,
+  );
+  for (const [x, z, horizontal] of [[22.95, 0, true]]) {
     box(
       horizontal ? 3.3 : 2.95,
       0.34,
@@ -98,7 +104,8 @@ export function createDiscoveryScene({
   }
   for (const q of [-1, 1]) {
     for (let d = 2.7; d < 9.8; d += 0.68) {
-      box(0.025, 0.006, 0.42, 14.4, 0.306, q * d, p.yellow);
+      if (q < 0 || d < LAKE_ROAD_START - 0.2)
+        box(0.025, 0.006, 0.42, 14.4, 0.306, q * d, p.yellow);
       if (q > 0 || d < 4.6)
         box(0.42, 0.006, 0.025, 14.4 + q * d, 0.306, 0, p.yellow);
     }

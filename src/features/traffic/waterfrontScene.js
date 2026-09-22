@@ -1,3 +1,4 @@
+import { lakeRoadPoint, lakeRoadLength, LAKE_ROAD_Z } from "./lakeRoad";
 import * as THREE from "three";
 import { createPeople } from "./cityPeople";
 import {
@@ -170,20 +171,59 @@ export function createWaterfrontScene({
       box(0.012, 0.004, 0.63, px, 0.414, 10.35, p.base);
     }
   }
+  // Replace the central green strip with a continuous two-lane shore road.
+  // Sample one centerline for paving, curbs and markings so the bends meet.
+  function roadStrip(inner, outer, y, mat) {
+    const positions = [],
+      indices = [],
+      steps = 160;
+    for (let i = 0; i <= steps; i++) {
+      const a = lakeRoadPoint((lakeRoadLength() * i) / steps);
+      for (const offset of [inner, outer])
+        positions.push(a.x - a.dz * offset, y, a.z + a.dx * offset);
+      if (i < steps) {
+        const n = i * 2;
+        indices.push(n, n + 1, n + 2, n + 1, n + 3, n + 2);
+      }
+    }
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(positions, 3),
+    );
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+    mesh(geometry, mat, 0, 0, 0);
+  }
+  roadStrip(-1.375, 1.375, 0.303, p.asphalt);
+  roadStrip(-1.62, -1.375, 0.34, p.curb);
+  roadStrip(1.375, 1.62, 0.34, p.curb);
+  for (let d = 0.32; d < lakeRoadLength(); d += 0.68) {
+    const a = lakeRoadPoint(d),
+      b = lakeRoadPoint(Math.min(d + 0.4, lakeRoadLength()));
+    rod([a.x, 0.312, a.z], [b.x, 0.312, b.z], 0.014, p.yellow);
+  }
+  // Two rows of planted trees frame the street; the existing promenade stays
+  // unbroken along the water, with benches facing the lake.
+  for (const x of [2.6, 4.7, 6.8, 8.9, 11])
+    for (const z of [6.65, 9.92]) {
+      box(0.52, 0.045, 0.4, x, 0.27, z, p.leaves2);
+      tree(x, z);
+    }
   for (const [x, width] of [
     [-3.1, 3],
-    [6.8, 8.8],
     [18.5, 5],
   ])
     box(width, 0.025, 2.35, x, 0.255, 8.4, p.leaves2);
-  for (const x of [-3.3, 2.2, 7.3, 11.5, 20.8]) {
-    const b = group(x, 0.31, 9.72);
+  for (const x of [-3.3, 3.65, 7.85, 12.25, 20.8]) {
+    const b = group(x, 0.31, 9.78);
     box(0.9, 0.08, 0.32, 0, 0.27, 0, p.roof, b);
     box(0.9, 0.28, 0.04, 0, 0.44, -0.14, p.roof, b);
     for (const q of [-1, 1])
       box(0.06, 0.27, 0.25, q * 0.32, 0.135, 0, p.dark, b);
   }
-  for (const x of [-4.2, 3.1, 6.7, 10.6, 15.8]) tree(x, 8.4);
+  tree(-4.2, 8.4);
+  tree(16.6, 9.9);
   const canvas = document.createElement("canvas");
   canvas.width = canvas.height = 256;
   const ctx = canvas.getContext("2d"),
@@ -349,6 +389,7 @@ export function createWaterfrontScene({
       museum: true,
       museumPosition: museum.position.toArray(),
       lakeEdge: "south",
+      lakeRoad: { connected: true, z: LAKE_ROAD_Z, treeRows: 2 },
       sailboats: sailboats.length,
       walkers: people.map(({ id, actor }) => ({
         id,

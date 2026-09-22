@@ -1,3 +1,4 @@
+import { LAKE_ROAD_START } from "./lakeRoad";
 import * as THREE from "three";
 import { APPROACHES, carPose } from "./trafficSimulation";
 
@@ -201,12 +202,20 @@ export function createCityScene(host, controls, onEscape) {
   // Leave the river span open for the two moving bridge leaves.
   box(0.275, 0.045, 2.75, -6.9875, 0.28, 0, palette.asphalt);
   box(12.175, 0.045, 2.75, 1.0375, 0.28, 0, palette.asphalt);
-  box(2.75, 0.045, 13.65, 0, 0.28, 0, palette.asphalt);
+  box(
+    2.75,
+    0.045,
+    6.825 + LAKE_ROAD_START,
+    0,
+    0.28,
+    (LAKE_ROAD_START - 6.825) / 2,
+    palette.asphalt,
+  );
   // Longer road arms hold eight cars per approach without making the buildings smaller.
   for (const q of [-1, 1]) {
     for (const horizontal of [false, true]) {
       if (horizontal && q === 1) continue;
-      if (!horizontal && q === -1) continue;
+      if (!horizontal) continue;
       const arm = (w, h, d, y, mat) =>
         box(
           horizontal ? d : w,
@@ -251,7 +260,8 @@ export function createCityScene(host, controls, onEscape) {
     // Broken center lines never run through the intersection.
     for (let p = 2.5; p < 9.8; p += 0.68) {
       for (let lane of [-0.035, 0.035]) {
-        box(0.025, 0.006, 0.42, lane, 0.306, q * p, palette.yellow);
+        if (q < 0 || p < LAKE_ROAD_START - 0.2)
+          box(0.025, 0.006, 0.42, lane, 0.306, q * p, palette.yellow);
         if (q * p < -6.85 || q * p > -5.05)
           box(0.42, 0.006, 0.025, q * p, 0.306, lane, palette.yellow);
       }

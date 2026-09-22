@@ -48,6 +48,11 @@ try {
   assert.equal(idle.scene.waterfront.lakeEdge, "south");
   assert.ok(idle.scene.waterfront.museumPosition[2] > 7);
   assert.equal(idle.scene.waterfront.sailboats, 3);
+  assert.deepEqual(idle.scene.waterfront.lakeRoad, {
+    connected: true,
+    z: 8.3,
+    treeRows: 2,
+  });
   await page.getByRole("button", { name: "Zoom in", exact: true }).click();
   assert.equal((await snap()).started, false);
   assert.ok((await snap()).zoom > 1);
@@ -148,6 +153,22 @@ try {
   await page.evaluate(() => window.__trafficCity.api.reset());
   assert.equal((await snap()).zoom, 1);
   assert.equal((await snap()).discoveries.heist.running, false);
+  await page.evaluate(() => {
+    const { sim, api } = window.__trafficCity;
+    sim.spawn(0, 0);
+    sim.spawn(0, 1);
+    sim.cars.forEach((car, i) =>
+      Object.assign(car, {
+        lakeFrom: i,
+        p: i ? 5 : 10,
+        committed: true,
+        turn: "straight",
+      }),
+    );
+    api.refresh();
+  });
+  await page.screenshot({ path: `${output}/lake-road.png` });
+  await page.evaluate(() => window.__trafficCity.api.reset());
   assert.deepEqual(errors, []);
   console.log(
     JSON.stringify(
@@ -155,6 +176,7 @@ try {
         status: "PASS",
         checks: [
           "long-edge lake",
+          "connected two-way lake road and tree rows",
           "museum and sailboats",
           "zoom buttons and keyboard",
           "trackpad zoom limits",
