@@ -142,7 +142,11 @@ export function createCityRuntime(host, controls, onState) {
     notify();
   }
   function pointerDown(e) {
-    if ((e.pointerType !== "touch" && !e.isPrimary) || e.button !== 0) return;
+    if (
+      (e.pointerType !== "touch" && !e.isPrimary) ||
+      ![0, 2].includes(e.button)
+    )
+      return;
     pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
     suppressClick = false;
     drag = {
@@ -151,7 +155,7 @@ export function createCityRuntime(host, controls, onState) {
       startX: e.clientX,
       startY: e.clientY,
       id: e.pointerId,
-      pan: scene.pose.zoom > 1.05 && !e.shiftKey,
+      pan: e.button === 2 || e.shiftKey,
     };
     e.currentTarget.setPointerCapture(e.pointerId);
     if (pointers.size === 2) {
@@ -234,8 +238,7 @@ export function createCityRuntime(host, controls, onState) {
     ) {
       e.preventDefault();
       start();
-      const move =
-        scene.pose.zoom > 1.05 && !e.shiftKey ? scene.pan : scene.rotate;
+      const move = e.shiftKey ? scene.pan : scene.rotate;
       move(
         e.key === "ArrowLeft" ? -12 : e.key === "ArrowRight" ? 12 : 0,
         e.key === "ArrowUp" ? -12 : e.key === "ArrowDown" ? 12 : 0,
@@ -320,6 +323,7 @@ export function createCityRuntime(host, controls, onState) {
         audio: trumpet.snapshot(),
         page: pageCars?.snapshot() || null,
       }),
+      inspectLandmarks: () => scene.inspectLandmarks(),
       targets: () => {
         const r = host.getBoundingClientRect();
         return scene

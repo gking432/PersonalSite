@@ -95,13 +95,13 @@ try {
   const stage = await page.locator(".traffic-city__stage").boundingBox();
   const before = await snap();
   await page.mouse.move(stage.x + stage.width / 2, stage.y + stage.height / 2);
-  await page.mouse.down();
+  await page.mouse.down({ button: "right" });
   await page.mouse.move(
     stage.x + stage.width / 2 + 90,
     stage.y + stage.height / 2 + 30,
     { steps: 8 },
   );
-  await page.mouse.up();
+  await page.mouse.up({ button: "right" });
   const after = await snap();
   assert.equal(after.pose.yaw, before.pose.yaw);
   assert.notEqual(after.pose.panX, before.pose.panX);
@@ -110,9 +110,8 @@ try {
   const mask = await page
     .locator(".traffic-city__model canvas")
     .evaluate((canvas) => getComputedStyle(canvas).maskImage);
-  assert.ok(mask.includes("linear-gradient"));
+  assert.ok(mask.includes("data:image/png"));
   await page.screenshot({ path: `${output}/zoom-and-pan.png` });
-  await page.keyboard.down("Shift");
   await page.mouse.move(stage.x + stage.width / 2, stage.y + stage.height / 2);
   await page.mouse.down();
   await page.mouse.move(
@@ -121,7 +120,6 @@ try {
     { steps: 4 },
   );
   await page.mouse.up();
-  await page.keyboard.up("Shift");
   assert.notEqual((await snap()).pose.yaw, after.pose.yaw);
   await page.evaluate(() => {
     window.__trafficCity.api.reset();
@@ -131,11 +129,11 @@ try {
   const dx = stage.x + stage.width * 0.5 - fisher.x,
     dy = stage.y + stage.height * 0.5 - fisher.y;
   await page.mouse.move(stage.x + 40, stage.y + stage.height * 0.5);
-  await page.mouse.down();
+  await page.mouse.down({ button: "right" });
   await page.mouse.move(stage.x + 40 + dx, stage.y + stage.height * 0.5 + dy, {
     steps: 12,
   });
-  await page.mouse.up();
+  await page.mouse.up({ button: "right" });
   await click("fisherman");
   for (const [t, phase] of [
     [0.6, "casting"],
@@ -205,8 +203,8 @@ try {
           "stumble and recovery",
           "sitters stand and return",
           "3.2x zoom",
-          "drag pan and Shift-drag rotation",
-          "soft canvas perimeter",
+          "right-drag pan and normal drag rotation",
+          "content-shaped text halos",
           "visible casting, reeling and fish",
           "driver boards and speeds away before police",
           "two manhole escapes",

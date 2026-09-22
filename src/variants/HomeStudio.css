@@ -30,6 +30,7 @@
 
 /* ─── HERO ─── */
 .studio-hero {
+  position: relative;
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
   align-items: center;
@@ -39,6 +40,10 @@
   padding: clamp(3rem, 9vh, 8rem) var(--gutter) clamp(3rem, 7vh, 6rem);
   min-height: calc(100vh - 70px);
 }
+
+.studio-approach { position: relative; z-index: 2; }
+.studio-hero__copy, .studio-proof { position: relative; z-index: 2; pointer-events: none; }
+.studio-hero__copy :is(.studio-status, h1, p, a), .studio-proof__item > span { pointer-events: auto; }
 
 .studio-status {
   display: inline-flex;

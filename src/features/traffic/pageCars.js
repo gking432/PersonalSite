@@ -42,7 +42,7 @@ export function createPageCars(host) {
         () => disposed || token !== generation,
       );
       if (disposed || token !== generation) return;
-      surfaces = next;
+      surfaces = next.filter((surface) => !surface.el.closest(".studio-hero"));
       physics.wake();
       ready = true;
       schedule();
@@ -70,7 +70,33 @@ export function createPageCars(host) {
       raf = requestAnimationFrame(tick);
     }
   }
+  function heroText() {
+    return [
+      ...document.querySelectorAll(
+        ".studio-hero__copy :is(.studio-status, h1, p, a), .traffic-city__caption",
+      ),
+    ]
+      .map((el) => el.getBoundingClientRect())
+      .filter((r) => r.width && r.height);
+  }
+  function overlapsText(car, rects) {
+    const y = car.y - scrollY,
+      radius = (car.size * Math.SQRT2) / 2 + 12;
+    return rects.some(
+      (r) =>
+        car.x + radius > r.left &&
+        car.x - radius < r.right &&
+        y + radius > r.top &&
+        y - radius < r.bottom,
+    );
+  }
   function draw() {
+    // Retire a sprite before it touches hero copy, even during scrolling or
+    // resizing; removing it also prevents it reappearing below the text later.
+    const protectedRects = heroText();
+    physics.balls = physics.balls.filter(
+      (car) => !overlapsText(car, protectedRects),
+    );
     ctx.clearRect(0, 0, width, height);
     if (document.querySelector(".navbar-menu-open, dialog[open]")) return;
     for (const car of physics.balls) {
@@ -193,6 +219,7 @@ export function createPageCars(host) {
       cars: physics.balls.length,
       contacts: physics.stats.inkContacts,
       surfaces: surfaces.length,
+      heroSurfaces: surfaces.filter((s) => s.el.closest(".studio-hero")).length,
     }),
     dispose() {
       disposed = true;

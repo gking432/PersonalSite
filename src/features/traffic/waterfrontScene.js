@@ -330,21 +330,6 @@ export function createWaterfrontScene({
   lake.rotation.x = -Math.PI / 2;
   lake.receiveShadow = false;
   lake.castShadow = false;
-  // Feather the lake at the canvas boundary too, including while zoomed in.
-  const viewport = { value: new THREE.Vector2(1, 1) };
-  lake.material.onBeforeCompile = (shader) => {
-    shader.uniforms.lakeViewport = viewport;
-    shader.fragmentShader =
-      "uniform vec2 lakeViewport;\n" +
-      shader.fragmentShader.replace(
-        "#include <opaque_fragment>",
-        `#include <opaque_fragment>
-      vec2 margin = min(gl_FragCoord.xy, lakeViewport - gl_FragCoord.xy);
-      gl_FragColor.a *= smoothstep(0.0, 0.07 * min(lakeViewport.x, lakeViewport.y), min(margin.x, margin.y));`,
-      );
-  };
-  lake.material.customProgramCacheKey = () => "lake-edge-fade";
-
   // A small Calatrava-inspired pavilion: glazed keel and open white wing ribs.
   const museum = group(18.5, 0.41, 8.3);
   museum.rotation.y = -Math.PI / 2;
@@ -484,7 +469,6 @@ export function createWaterfrontScene({
         ? w.actor.g.position.clone().add(new THREE.Vector3(0, 0.6, 0))
         : null;
     },
-    resize: (w, h) => viewport.value.set(w, h),
     diagnostics: () => diagnostics,
   };
 }

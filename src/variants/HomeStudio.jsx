@@ -130,7 +130,7 @@ function HomeStudio() {
         </div>
 
         <motion.div className="studio-hero__city"
-          initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           transition={{ duration: 1.1, ease, delay: 0.3 }}>
           <TrafficCity />
         </motion.div>

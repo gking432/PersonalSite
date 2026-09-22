@@ -71,77 +71,82 @@ export default function TrafficCity() {
     <div className="traffic-city">
       <div className="traffic-city__stage">
         <div
-          ref={host}
-          className="traffic-city__model"
-          role="button"
-          tabIndex={0}
-          aria-label="Explore Little Milwaukee"
-          title="Zoom in, then drag to move · Shift-drag to rotate"
-          {...gestures}
-          onKeyDown={(e) => engine.current?.key(e)}
-          onClick={() => engine.current?.start()}
+          className="traffic-city__surface"
+          onContextMenu={(e) => e.preventDefault()}
         >
-          {!game.ready && (
-            <span className="traffic-city__fallback">
-              {game.error || "A little Milwaukee."}
-            </span>
-          )}
-        </div>
-        {SIGNALS.map((signal, index) => (
-          <button
-            key={signal.label}
-            ref={(node) => {
-              buttons.current[index] = node;
-            }}
-            type="button"
-            className="traffic-city__signal"
-            data-control="light"
-            data-signal={index}
-            data-axis={signal.axis}
-            aria-label={`${signal.label} light: ${game.signals[signal.axis]}`}
-            disabled={!game.ready}
+          <div
+            ref={host}
+            className="traffic-city__model"
+            role="button"
+            tabIndex={0}
+            aria-label="Explore Little Milwaukee"
+            title="Drag to swivel · Right-drag or Shift-drag to move · Pinch to zoom"
             {...gestures}
-            onClick={() => engine.current?.toggleSignal(signal.axis)}
-          />
-        ))}
-        <button
-          ref={bridge}
-          type="button"
-          className="traffic-city__signal traffic-city__bridge"
-          data-control="bridge"
-          aria-label={
-            game.bridge.requestedOpen ? "Close the bridge" : "Open the bridge"
-          }
-          aria-pressed={game.bridge.requestedOpen}
-          disabled={!game.ready}
-          {...gestures}
-          onClick={() => engine.current?.toggleBridge()}
-        />
-        {DISCOVERIES.map((item, index) => (
+            onKeyDown={(e) => engine.current?.key(e)}
+            onClick={() => engine.current?.start()}
+          >
+            {!game.ready && (
+              <span className="traffic-city__fallback">
+                {game.error || "A little Milwaukee."}
+              </span>
+            )}
+          </div>
+          {SIGNALS.map((signal, index) => (
+            <button
+              key={signal.label}
+              ref={(node) => {
+                buttons.current[index] = node;
+              }}
+              type="button"
+              className="traffic-city__signal"
+              data-control="light"
+              data-signal={index}
+              data-axis={signal.axis}
+              aria-label={`${signal.label} light: ${game.signals[signal.axis]}`}
+              disabled={!game.ready}
+              {...gestures}
+              onClick={() => engine.current?.toggleSignal(signal.axis)}
+            />
+          ))}
           <button
-            key={item.id}
-            ref={(node) => {
-              discoveryButtons.current[index] = node;
-            }}
+            ref={bridge}
             type="button"
-            className="traffic-city__signal traffic-city__discovery"
-            data-discovery={item.id}
-            aria-label={item.label}
-            title={item.label}
-            aria-busy={game.discoveries?.busy.includes(item.id) || false}
-            aria-pressed={
-              item.id === "windows"
-                ? game.discoveries?.windows || false
-                : undefined
+            className="traffic-city__signal traffic-city__bridge"
+            data-control="bridge"
+            aria-label={
+              game.bridge.requestedOpen ? "Close the bridge" : "Open the bridge"
             }
+            aria-pressed={game.bridge.requestedOpen}
             disabled={!game.ready}
             {...gestures}
-            onClick={() => engine.current?.discover(item.id)}
+            onClick={() => engine.current?.toggleBridge()}
           />
-        ))}
+          {DISCOVERIES.map((item, index) => (
+            <button
+              key={item.id}
+              ref={(node) => {
+                discoveryButtons.current[index] = node;
+              }}
+              type="button"
+              className="traffic-city__signal traffic-city__discovery"
+              data-discovery={item.id}
+              aria-label={item.label}
+              title={item.label}
+              aria-busy={game.discoveries?.busy.includes(item.id) || false}
+              aria-pressed={
+                item.id === "windows"
+                  ? game.discoveries?.windows || false
+                  : undefined
+              }
+              disabled={!game.ready}
+              {...gestures}
+              onClick={() => engine.current?.discover(item.id)}
+            />
+          ))}
+        </div>
       </div>
       <div className="traffic-city__caption">
-        little milwaukee. interact with the map
+        <span>little milwaukee. interact with the map</span>
         <div className="traffic-city__controls">
           <button
             type="button"

@@ -50,18 +50,43 @@ export function createHeistScene({
   box(0.016, 0.12, 0.012, 0, 0.045, 0, p.dark, hands);
   box(0.095, 0.014, 0.012, 0.035, 0, 0, p.dark, hands);
   const phone = group(HEIST_PLACES.phone[0], 0.41, HEIST_PLACES.phone[1]);
-  box(0.2, 0.68, 0.2, 0, 0.34, 0, p.green, phone);
-  box(0.22, 0.32, 0.23, 0, 0.76, 0, p.trim, phone);
-  box(0.09, 0.2, 0.018, 0, 0.77, 0.125, p.dark, phone);
-  box(0.04, 0.04, 0.02, 0.065, 0.74, 0.127, p.glass, phone);
-  const handset = group(0, 0.77, 0.142, phone);
-  rod([-0.065, -0.075, 0], [-0.065, 0.075, 0], 0.02, p.black, handset);
-  const hole = group(HEIST_PLACES.manhole[0], 0.412, HEIST_PLACES.manhole[1]);
-  cylinder(0.23, 0.014, 0, 0, 0, p.dark, hole);
-  const lid = group(-0.23, 0.02, 0, hole);
-  cylinder(0.235, 0.018, 0.23, 0, 0, p.roof, lid);
-  for (let i = -2; i <= 2; i++)
-    box(0.31, 0.008, 0.01, 0.23, 0.014, i * 0.065, p.trim, lid);
+  // A recognizable street payphone: canopy, side panels, receiver, and keypad.
+  box(0.42, 0.08, 0.42, 0, 0.04, 0, p.dark, phone);
+  box(0.16, 0.68, 0.16, 0, 0.38, 0, p.trim, phone);
+  box(0.44, 0.61, 0.29, 0, 0.93, 0, p.green, phone);
+  box(0.32, 0.43, 0.025, 0, 0.92, 0.16, p.trim, phone);
+  for (const sign of [-1, 1])
+    box(0.04, 0.61, 0.43, sign * 0.24, 0.93, 0.06, p.green, phone);
+  box(0.56, 0.07, 0.53, 0, 1.26, 0.06, p.green, phone);
+  label("PHONE", 0.4, 0.13, 0, 1.15, 0.29, {
+    parent: phone,
+    background: "#315548",
+    size: 120,
+  });
+  for (let row = 0; row < 3; row++)
+    for (let col = 0; col < 3; col++)
+      box(
+        0.028,
+        0.025,
+        0.016,
+        0.018 + col * 0.048,
+        0.96 - row * 0.047,
+        0.185,
+        p.dark,
+        phone,
+      );
+  const handset = group(-0.095, 0.94, 0.205, phone);
+  rod([0, -0.1, 0], [0, 0.1, 0], 0.027, p.black, handset);
+  for (const sign of [-1, 1])
+    box(0.065, 0.065, 0.05, 0.018, sign * 0.1, 0, p.black, handset);
+  const hole = group(HEIST_PLACES.manhole[0], 0.416, HEIST_PLACES.manhole[1]);
+  cylinder(0.35, 0.02, 0, 0, 0, p.dark, hole);
+  const lid = group(-0.31, 0.025, 0, hole);
+  cylinder(0.31, 0.025, 0.31, 0, 0, p.roof, lid);
+  for (let i = -2; i <= 2; i++) {
+    box(0.44, 0.008, 0.018, 0.31, 0.02, i * 0.085, p.dark, lid);
+    box(0.018, 0.008, 0.44, 0.31 + i * 0.085, 0.02, 0, p.dark, lid);
+  }
   const bankGlow = box(
     0.41,
     0.54,
@@ -283,9 +308,9 @@ export function createHeistScene({
           ]
         : [
             [-3.38, -2.39],
-            [-3.8, -2.05],
-            [-4.77, -1.7],
-            [-4.77, 0.1],
+            [-3.38, -2.07],
+            [-1.85, -2.07],
+            [-1.85, 0.1],
             HEIST_PLACES.manhole,
           ],
     ),
@@ -405,5 +430,9 @@ export function createHeistScene({
       policePositions: cops.map((car) => car.g.position.toArray()),
     };
   }
-  return { update, diagnostics: () => diagnostics };
+  return {
+    update,
+    landmarks: { payphone: phone, manhole: hole },
+    diagnostics: () => diagnostics,
+  };
 }

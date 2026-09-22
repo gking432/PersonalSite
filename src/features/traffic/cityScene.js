@@ -1,4 +1,5 @@
 import { featherMapMaterial } from "./mapFade";
+import { createPageLayout } from "./pageLayout";
 import { LAKE_ROAD_START } from "./lakeRoad";
 import * as THREE from "three";
 import { APPROACHES, carPose } from "./trafficSimulation";
@@ -57,7 +58,6 @@ export function createCityScene(host, controls, onEscape) {
       roughness: 0.77,
       ...more,
     });
-    featherMapMaterial(m, mapYaw);
     materials.add(m);
     return m;
   };
@@ -89,10 +89,25 @@ export function createCityScene(host, controls, onEscape) {
     leaves: material("#6a8660", { flatShading: true }),
     leaves2: material("#8b9d6b", { flatShading: true }),
   };
+  // Only terrain edges feather. Architecture and props use opaque materials,
+  // preserving correct depth ordering even in the instanced building batches.
+  const terrainMaterials = new Map();
+  function terrainMaterial(mat) {
+    if (mat.transparent) return mat;
+    if (!terrainMaterials.has(mat)) {
+      const faded = mat.clone();
+      featherMapMaterial(faded, mapYaw);
+      terrainMaterials.set(mat, faded);
+      materials.add(faded);
+    }
+    return terrainMaterials.get(mat);
+  }
   const unitBox = new THREE.BoxGeometry(1, 1, 1);
   geometries.add(unitBox);
   const batches = new Map();
   function box(w, h, d, x, y, z, mat, parent = city, ry = 0) {
+    if (parent === city && y + h / 2 <= 0.41 && Math.max(w, d) > 2)
+      mat = terrainMaterial(mat);
     const matrix = new THREE.Matrix4().compose(
       new THREE.Vector3(x, y, z),
       new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), ry),
@@ -112,6 +127,15 @@ export function createCityScene(host, controls, onEscape) {
   }
   function mesh(geometry, mat, x, y, z, parent = city) {
     geometries.add(geometry);
+    if (parent === city && !mat.transparent) {
+      geometry.computeBoundingBox();
+      const bounds = geometry.boundingBox;
+      if (
+        y + bounds.max.y <= 0.41 &&
+        Math.max(bounds.max.x - bounds.min.x, bounds.max.z - bounds.min.z) > 2
+      )
+        mat = terrainMaterial(mat);
+    }
     const m = new THREE.Mesh(geometry, mat);
     m.position.set(x, y, z);
     m.castShadow = m.receiveShadow = true;
@@ -679,17 +703,6 @@ export function createCityScene(host, controls, onEscape) {
     instances.castShadow = instances.receiveShadow = true;
     city.add(instances);
   }
-  const shadow = mesh(
-    new THREE.PlaneGeometry(80, 80),
-    new THREE.ShadowMaterial({ opacity: 0.15 }),
-    0,
-    -0.29,
-    0,
-    scene,
-  );
-  materials.add(shadow.material);
-  shadow.rotation.x = -Math.PI / 2;
-  shadow.castShadow = false;
 
   const colors = [
     "#c9994b",
@@ -933,6 +946,12 @@ export function createCityScene(host, controls, onEscape) {
       ? { group: additions.takeBoat(event.boat) }
       : carMeshes.get(car.id) || vehicle(car);
     if (!boat) carMeshes.delete(car.id);
+    // Never spawn a page sprite from an intersection hidden by copy or the
+    // viewport. The player must actually see the launch in the miniature.
+    if (!visibleOnPage(project(new THREE.Vector3(event.x, 0.6, event.z)))) {
+      city.remove(model.group);
+      return;
+    }
     city.add(model.group);
     const lane = APPROACHES[car.lane];
     model.group.rotation.set(0, event.yaw, 0);
@@ -942,6 +961,7 @@ export function createCityScene(host, controls, onEscape) {
       boat,
       group: model.group,
       life: 0,
+      seenFor: 0,
       sx: boat ? (event.boat.direction === 1 ? -1 : 1) : -lane.dz,
       sz: boat ? 0 : lane.dx,
     });
@@ -954,6 +974,7 @@ export function createCityScene(host, controls, onEscape) {
     width = 1,
     height = 1,
     disposed = false;
+  const pageLayout = createPageLayout(host, () => resize());
   function view() {
     city.rotation.y = yaw;
     mapYaw.value = yaw;
@@ -979,11 +1000,12 @@ export function createCityScene(host, controls, onEscape) {
     );
     camera.position.add(focus);
     camera.lookAt(focus);
-    const span = 43 / zoom / Math.min(1.6, Math.max(1, width / height));
-    camera.left = (-span * width) / height / 2;
-    camera.right = -camera.left;
-    camera.top = span / 2;
-    camera.bottom = -span / 2;
+    const layout = pageLayout.view;
+    const unitsPerPixel = 1 / (Math.max(1, layout.scale) * zoom);
+    camera.left = -layout.anchorX * unitsPerPixel;
+    camera.right = (width - layout.anchorX) * unitsPerPixel;
+    camera.top = layout.anchorY * unitsPerPixel;
+    camera.bottom = -(height - layout.anchorY) * unitsPerPixel;
     camera.updateProjectionMatrix();
     camera.updateMatrixWorld();
     city.updateMatrixWorld(true);
@@ -991,6 +1013,23 @@ export function createCityScene(host, controls, onEscape) {
   function project(point) {
     const p = point.clone().applyMatrix4(city.matrixWorld).project(camera);
     return { x: ((p.x + 1) * width) / 2, y: ((1 - p.y) * height) / 2 };
+  }
+  function visibleOnPage(point) {
+    const bounds = host.getBoundingClientRect();
+    const x = bounds.left + point.x,
+      y = bounds.top + point.y;
+    return (
+      point.x > 0 &&
+      point.x < width &&
+      point.y > 0 &&
+      point.y < height &&
+      x > 0 &&
+      x < document.documentElement.clientWidth &&
+      y > 0 &&
+      y < innerHeight &&
+      !pageLayout.protects(point.x, point.y, 44) &&
+      !!document.elementFromPoint(x, y)?.closest(".traffic-city__surface")
+    );
   }
   function signalPoint(s) {
     return new THREE.Vector3(s.x, 1.51, s.z);
@@ -1054,10 +1093,7 @@ export function createCityScene(host, controls, onEscape) {
       }
       button.style.transform = `translate(${left}px, ${top}px)`;
       const offscreen =
-        x < width * 0.025 ||
-        x > width * 0.975 ||
-        y < height * 0.025 ||
-        y > height * 0.975;
+        x < 0 || x > width || y < 0 || y > height || pageLayout.protects(x, y);
       button.style.visibility = offscreen ? "hidden" : "visible";
       button.style.clipPath = `polygon(${polygon.map(([px, py]) => `${(px - left).toFixed(2)}px ${(py - top).toFixed(2)}px`).join(",")})`;
     }
@@ -1073,17 +1109,15 @@ export function createCityScene(host, controls, onEscape) {
     renderer.render(scene, camera);
   }
   function resize() {
-    width = host.clientWidth;
-    height = host.clientHeight;
-    if (!width || !height) return;
-    renderer.setSize(width, height);
-    waterfront.resize(renderer.domElement.width, renderer.domElement.height);
-    const span = 22.2;
-    camera.left = (-span * width) / height / 2;
-    camera.right = -camera.left;
-    camera.top = span / 2;
-    camera.bottom = -span / 2;
-    camera.updateProjectionMatrix();
+    const nextWidth = host.clientWidth,
+      nextHeight = host.clientHeight;
+    if (!nextWidth || !nextHeight) return;
+    if (width !== nextWidth || height !== nextHeight) {
+      width = nextWidth;
+      height = nextHeight;
+      renderer.setSize(width, height);
+    }
+
     render();
   }
   function update(sim, dt = 0) {
@@ -1162,11 +1196,18 @@ export function createCityScene(host, controls, onEscape) {
         ? -Math.min(0.48, t * 1.4)
         : -Math.min(2.3, t * 4.5);
       f.group.rotation.x = t * (f.boat ? 0.22 : 0.9);
-      if (t > 0.59) {
+      {
         const center = new THREE.Vector3(0, 0.5, 0)
           .applyQuaternion(f.group.quaternion)
           .add(f.group.position);
         const point = project(center);
+        if (!visibleOnPage(point)) {
+          city.remove(f.group);
+          falling.splice(i, 1);
+          continue;
+        }
+        f.seenFor += dt;
+        if (t <= 0.59 || f.seenFor < 0.12) continue;
         const velocity = project(
           center
             .clone()
@@ -1252,6 +1293,10 @@ export function createCityScene(host, controls, onEscape) {
       return { yaw, pitch, zoom, panX, panY };
     },
     diagnostics: () => ({
+      layout: pageLayout.diagnostics(),
+      opaqueMaterials: [...materials].filter(
+        (m) => m.isMeshStandardMaterial && !m.transparent,
+      ).length,
       discoveries: discoveries.diagnostics(),
       waterfront: waterfront.diagnostics(),
       heist: heist.diagnostics(),
@@ -1269,6 +1314,26 @@ export function createCityScene(host, controls, onEscape) {
       effects: effects.length,
       honks: effects.filter((f) => f.honk).length,
     }),
+    inspectLandmarks() {
+      view();
+      const ray = new THREE.Raycaster();
+      return Object.entries(heist.landmarks).map(([id, object]) => {
+        const center = new THREE.Box3()
+          .setFromObject(object)
+          .getCenter(new THREE.Vector3());
+        const projected = center.project(camera);
+        ray.setFromCamera(new THREE.Vector2(projected.x, projected.y), camera);
+        const hit = ray.intersectObject(city, true).find(({ object: mesh }) => {
+          for (let node = mesh; node; node = node.parent)
+            if (!node.visible) return false;
+          return true;
+        });
+        let visible = false;
+        for (let node = hit?.object; node; node = node.parent)
+          if (node === object) visible = true;
+        return { id, unobstructed: visible };
+      });
+    },
     targets: () =>
       signals.map((s, i) => ({
         ...project(signalPoint(s)),
@@ -1283,6 +1348,7 @@ export function createCityScene(host, controls, onEscape) {
       })),
     dispose() {
       disposed = true;
+      pageLayout.dispose();
       clear();
       for (const t of textures) t.dispose();
       for (const g of geometries) g.dispose();
