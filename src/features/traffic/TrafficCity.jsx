@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import "./TrafficCity.css";
 import { SIGNALS } from "./signals";
+import { DISCOVERIES } from "./littleMilwaukee";
 export default function TrafficCity() {
   const host = useRef(null),
     engine = useRef(null),
     buttons = useRef([]),
+    discoveryButtons = useRef([]),
     bridge = useRef(null);
   const [wide, setWide] = useState(false);
   const [game, setGame] = useState({
@@ -35,7 +37,11 @@ export default function TrafficCity() {
         if (!cancelled)
           engine.current = createCityRuntime(
             host.current,
-            { signals: buttons.current, bridge },
+            {
+              signals: buttons.current,
+              bridge,
+              discoveries: discoveryButtons.current,
+            },
             setGame,
           );
       })
@@ -54,6 +60,13 @@ export default function TrafficCity() {
     },
     [],
   );
+  const gestures = {
+    onPointerDown: (e) => engine.current?.pointerDown(e),
+    onPointerMove: (e) => engine.current?.pointerMove(e),
+    onPointerUp: () => engine.current?.pointerUp(),
+    onPointerCancel: () => engine.current?.pointerUp(),
+    onLostPointerCapture: () => engine.current?.pointerUp(),
+  };
   return (
     <div className="traffic-city">
       <div className="traffic-city__stage">
@@ -62,11 +75,8 @@ export default function TrafficCity() {
           className="traffic-city__model"
           role="button"
           tabIndex={0}
-          aria-label="Explore the Milwaukee intersection"
-          onPointerDown={(e) => engine.current?.pointerDown(e)}
-          onPointerMove={(e) => engine.current?.pointerMove(e)}
-          onPointerUp={() => engine.current?.pointerUp()}
-          onPointerCancel={() => engine.current?.pointerUp()}
+          aria-label="Explore Little Milwaukee"
+          {...gestures}
           onKeyDown={(e) => engine.current?.key(e)}
           onClick={() => engine.current?.start()}
         >
@@ -89,6 +99,7 @@ export default function TrafficCity() {
             data-axis={signal.axis}
             aria-label={`${signal.label} light: ${game.signals[signal.axis]}`}
             disabled={!game.ready}
+            {...gestures}
             onClick={() => engine.current?.toggleSignal(signal.axis)}
           />
         ))}
@@ -102,8 +113,31 @@ export default function TrafficCity() {
           }
           aria-pressed={game.bridge.requestedOpen}
           disabled={!game.ready}
+          {...gestures}
           onClick={() => engine.current?.toggleBridge()}
         />
+        {DISCOVERIES.map((item, index) => (
+          <button
+            key={item.id}
+            ref={(node) => {
+              discoveryButtons.current[index] = node;
+            }}
+            type="button"
+            className="traffic-city__signal traffic-city__discovery"
+            data-discovery={item.id}
+            aria-label={item.label}
+            title={item.label}
+            aria-busy={game.discoveries?.busy.includes(item.id) || false}
+            aria-pressed={
+              item.id === "windows"
+                ? game.discoveries?.windows || false
+                : undefined
+            }
+            disabled={!game.ready}
+            {...gestures}
+            onClick={() => engine.current?.discover(item.id)}
+          />
+        ))}
       </div>
       <div className="traffic-city__caption">
         little milwaukee. interact with the map

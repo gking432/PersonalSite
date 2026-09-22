@@ -2,6 +2,8 @@ import * as THREE from "three";
 import { APPROACHES, carPose } from "./trafficSimulation";
 
 import { createCityAdditions } from "./cityAdditions";
+import { createDiscoveryScene } from "./discoveryScene";
+import { DISCOVERIES } from "./littleMilwaukee";
 
 import { SIGNALS } from "./signals";
 
@@ -26,10 +28,10 @@ export function createCityScene(host, controls, onEscape) {
   sun.castShadow = true;
   sun.shadow.mapSize.set(1536, 1536);
   Object.assign(sun.shadow.camera, {
-    left: -11,
-    right: 11,
-    top: 11,
-    bottom: -11,
+    left: -26,
+    right: 26,
+    top: 20,
+    bottom: -20,
     near: 0.5,
     far: 40,
   });
@@ -195,6 +197,7 @@ export function createCityScene(host, controls, onEscape) {
   // Longer road arms hold eight cars per approach without making the buildings smaller.
   for (const q of [-1, 1]) {
     for (const horizontal of [false, true]) {
+      if (horizontal && q === 1) continue;
       const arm = (w, h, d, y, mat) =>
         box(
           horizontal ? d : w,
@@ -360,6 +363,10 @@ export function createCityScene(host, controls, onEscape) {
     box(0.32, 0.06, 0.34, x + 0.35, bottom + h + 0.32, z + 0.25, palette.dark);
   }
   // Iron Block-inspired Italianate corner: cornices, paired columns and warm ironwork.
+  const discoveryWindows = material("#42676a", {
+    emissive: "#ffc565",
+    emissiveIntensity: 0,
+  });
   building({
     x: 3.55,
     z: 3.58,
@@ -368,6 +375,7 @@ export function createCityScene(host, controls, onEscape) {
     h: 2.15,
     floors: 4,
     body: palette.ivory,
+    glass: discoveryWindows,
     ornate: true,
   });
   for (let i = 0; i < 6; i++) {
@@ -542,6 +550,19 @@ export function createCityScene(host, controls, onEscape) {
     rod,
     unitBox,
     lampMaterials,
+  });
+  const discoveries = createDiscoveryScene({
+    city,
+    palette,
+    box,
+    mesh,
+    cylinder,
+    rod,
+    label,
+    material,
+    tree,
+    building,
+    windows: discoveryWindows,
   });
   const boat = additions.createBoat();
   city.add(boat);
@@ -893,13 +914,13 @@ export function createCityScene(host, controls, onEscape) {
       Math.sin(pitch) * distance,
       Math.cos(0.7) * Math.cos(pitch) * distance,
     );
-    const focus = new THREE.Vector3(-0.8, 0.95, 0).applyAxisAngle(
+    const focus = new THREE.Vector3(6.7, 0.95, 0).applyAxisAngle(
       new THREE.Vector3(0, 1, 0),
       yaw,
     );
     camera.position.add(focus);
     camera.lookAt(focus);
-    const span = 24 / Math.min(1.6, Math.max(1, width / height));
+    const span = 36 / Math.min(1.6, Math.max(1, width / height));
     camera.left = (-span * width) / height / 2;
     camera.right = -camera.left;
     camera.top = span / 2;
@@ -925,6 +946,10 @@ export function createCityScene(host, controls, onEscape) {
         button: controls.bridge.current,
         ...project(new THREE.Vector3(-5.95, 0.6, 0)),
       },
+      ...DISCOVERIES.map((item, index) => ({
+        button: controls.discoveries[index],
+        ...project(new THREE.Vector3(...item.point)),
+      })),
     ].filter((target) => target.button);
     for (const target of targets) {
       const { button, x, y } = target;
@@ -987,6 +1012,7 @@ export function createCityScene(host, controls, onEscape) {
   }
   function update(sim, dt = 0) {
     additions.update(sim, dt);
+    discoveries.update(sim);
     // Transfer overflow meshes before removing cars no longer in the simulation.
     for (const event of sim.events.splice(0)) {
       if (event.kind === "overflow" || event.kind === "boat-fall") spill(event);
@@ -1125,6 +1151,7 @@ export function createCityScene(host, controls, onEscape) {
       return { yaw, pitch };
     },
     diagnostics: () => ({
+      discoveries: discoveries.diagnostics(),
       falling: falling.length,
       fallingBoats: falling.filter((f) => f.boat).length,
       fallingCars: falling.filter((f) => !f.boat).length,
@@ -1145,6 +1172,11 @@ export function createCityScene(host, controls, onEscape) {
         junction: s.junction,
         axis: s.axis,
         index: i,
+      })),
+    discoveryTargets: () =>
+      DISCOVERIES.map((item) => ({
+        id: item.id,
+        ...project(new THREE.Vector3(...item.point)),
       })),
     dispose() {
       disposed = true;

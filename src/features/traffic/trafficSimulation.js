@@ -1,4 +1,7 @@
 import { BridgeTraffic } from "./cityChallenges.js";
+import { roundaboutPose } from "./roundabout.js";
+import { Discoveries } from "./littleMilwaukee.js";
+export const BLOCK_SPACING = 14.4;
 export const APPROACHES = [
   { id: "north", axis: "water", dx: 0, dz: 1 },
   { id: "east", axis: "wisconsin", dx: -1, dz: 0 },
@@ -39,8 +42,14 @@ export function carPose(car) {
       z = sign * LANE_OFFSET;
     } else out = null;
   } else if (car.p < TURN_START) out = null;
+  if (car.junction === 1) {
+    const ring = roundaboutPose(car.p, car.turn);
+    ({ x, z, dx, dz, out } = ring);
+    exitLane =
+      (car.lane + (car.turn === "left" ? 3 : car.turn === "right" ? 1 : 0)) % 4;
+  }
   return {
-    x: lane.dz * x + lane.dx * z,
+    x: lane.dz * x + lane.dx * z + (car.junction || 0) * BLOCK_SPACING,
     z: -lane.dx * x + lane.dz * z,
     yaw: Math.atan2(lane.dz * dx + lane.dx * dz, -lane.dx * dx + lane.dz * dz),
     exitLane,
@@ -89,11 +98,14 @@ export class TrafficSimulation {
     this.nextId = 1;
     this.nextArrival = 0;
     this.arrivalIndex = 0;
+    this.pendingArrival = null;
     this.signals = {
       water: { color: "green", left: 0 },
       wisconsin: { color: "red", left: 0 },
     };
     this.bridge = new BridgeTraffic(this.random);
+    this.discoveries = new Discoveries();
+    this.roundaboutPassed = 0;
   }
   get interval() {
     return 3.5;
@@ -130,12 +142,13 @@ export class TrafficSimulation {
       ...carPose(car),
     });
   }
-  spawn(lane) {
-    if (!APPROACHES[lane]) return false;
+  spawn(lane, junction = 0) {
+    if (!APPROACHES[lane] || ![0, 1].includes(junction)) return false;
     const bus = this.random() < 0.09,
       length = bus ? 1.08 : 0.72;
     for (const tail of this.cars)
       if (
+        tail.junction === junction &&
         tail.lane === lane &&
         tail.p < -TURN_START &&
         Math.abs(tail.p - ENTRY) < (tail.length + length) / 2 + 0.2
@@ -147,7 +160,7 @@ export class TrafficSimulation {
     this.cars.push({
       id: this.nextId++,
       lane,
-      junction: 0,
+      junction,
       p: ENTRY,
       speed: 2.4,
       stopped: 0,
@@ -163,6 +176,7 @@ export class TrafficSimulation {
   tick(dt) {
     if (!this.started) return;
     this.time += dt;
+    this.discoveries.tick(dt);
     this.honkCooldown -= dt;
     this.bridge.tick(
       dt,
@@ -176,15 +190,73 @@ export class TrafficSimulation {
       }
     this.nextArrival -= dt;
     if (this.nextArrival <= 0) {
-      this.spawn(this.arrivalIndex++ % 4);
-      this.nextArrival += this.interval;
+      const entries = [
+        [0, 0],
+        [1, 1],
+        [0, 2],
+        [1, 0],
+        [0, 3],
+        [1, 2],
+      ];
+      // Random approaches and occasional small bunches create real conflicts
+      // when both roads are green. Collisions still depend on physical paths.
+      const grouped = this.pendingArrival !== null;
+      const index =
+        this.arrivalIndex++ === 0
+          ? 0
+          : Math.min(
+              entries.length - 1,
+              Math.floor(this.random() * entries.length),
+            );
+      const [junction, lane] = this.pendingArrival || entries[index];
+      this.pendingArrival = null;
+      this.spawn(lane, junction);
+      if (
+        !grouped &&
+        this.arrivalIndex > 1 &&
+        junction === 0 &&
+        this.random() < 0.35
+      ) {
+        this.pendingArrival = [
+          0,
+          lane === 3 ? (this.random() < 0.5 ? 0 : 2) : 3,
+        ];
+        this.nextArrival += 0.18 + this.random() * 0.48;
+      } else this.nextArrival += 2.5 + this.random() * 3;
     }
     const poses = new Map(this.cars.map((c) => [c.id, carPose(c)]));
+    const ringCars = this.cars.filter(
+      (car) => car.junction === 1 && !car.remove,
+    );
+    const ringBusy = ringCars.some(
+      (car) =>
+        car.committed &&
+        (poses.get(car.id).out === null || poses.get(car.id).out < 2.7),
+    );
+    const nextRingCar = ringBusy
+      ? null
+      : ringCars
+          .filter(
+            (car) =>
+              !car.committed &&
+              !ringCars.some(
+                (front) =>
+                  !front.committed &&
+                  front.lane === car.lane &&
+                  front.p > car.p,
+              ),
+          )
+          .sort((a, b) => b.stopped - a.stopped || b.p - a.p || a.id - b.id)[0];
     for (const car of this.cars) {
       if (car.remove) continue;
       const pose = poses.get(car.id),
-        green = this.signals[APPROACHES[car.lane].axis].color === "green";
-      let gap = Infinity;
+        green =
+          car.junction === 1 ||
+          this.signals[APPROACHES[car.lane].axis].color === "green";
+      let gap =
+        car.junction === 1 && !car.committed && car !== nextRingCar
+          ? -2.65 - (car.length - 0.72) / 2 - car.p
+          : Infinity;
       if (this.bridge.gated && Math.abs(pose.z) < 1) {
         if (pose.x + car.length / 2 < -7.05 && Math.sin(pose.yaw) > 0.99)
           gap = Math.min(gap, -7.15 - car.length / 2 - pose.x);
@@ -196,11 +268,13 @@ export class TrafficSimulation {
         const op = poses.get(other.id),
           clearance = (other.length + car.length) / 2 + 0.2;
         const shared =
+          car.junction === other.junction &&
           car.lane === other.lane &&
           (car.turn === other.turn || other.p < -TURN_START + other.length / 2);
         if (shared && other.p > car.p)
           gap = Math.min(gap, other.p - car.p - clearance);
         if (
+          car.junction === other.junction &&
           pose.out !== null &&
           op.out !== null &&
           pose.exitLane === op.exitLane &&
@@ -216,6 +290,8 @@ export class TrafficSimulation {
             gap = Math.min(gap, ahead - clearance);
         }
         if (
+          car.junction === 0 &&
+          other.junction === 0 &&
           car.p <= -TURN_START &&
           other.turn === "left" &&
           other.lane === (car.lane + 2) % 4 &&
@@ -224,6 +300,8 @@ export class TrafficSimulation {
         )
           gap = Math.min(gap, STOP_LINE - (car.length - 0.72) / 2 - car.p);
         if (
+          car.junction === 0 &&
+          other.junction === 0 &&
           car.turn === "left" &&
           car.p <= -TURN_START &&
           other.lane === (car.lane + 2) % 4 &&
@@ -236,6 +314,7 @@ export class TrafficSimulation {
             other.id < car.id) &&
           !this.cars.some(
             (front) =>
+              front.junction === other.junction &&
               front.lane === other.lane &&
               front.p > other.p &&
               front.p <= -TURN_START,
@@ -252,7 +331,8 @@ export class TrafficSimulation {
         Math.sign(target - car.speed) *
         Math.min(change, Math.abs(target - car.speed));
       car.p += Math.min(car.speed * dt, gap);
-      if (green && car.p > STOP_LINE + 0.02) car.committed = true;
+      if (green && car.p > (car.junction === 1 ? -2.65 : STOP_LINE) + 0.02)
+        car.committed = true;
       car.stopped = car.speed < 0.1 ? car.stopped + dt : 0;
       if (!car.stopped) car.nextHonk = 4.5 + (car.id % 6) * 0.43;
       if (car.stopped > car.nextHonk && this.honkCooldown <= 0) {
@@ -265,11 +345,20 @@ export class TrafficSimulation {
     for (let i = 0; i < this.cars.length; i++) {
       const a = this.cars[i],
         pa = carPose(a);
-      if (a.remove || Math.max(Math.abs(pa.x), Math.abs(pa.z)) > 2.4) continue;
+      if (
+        a.junction === 1 ||
+        a.remove ||
+        Math.max(Math.abs(pa.x), Math.abs(pa.z)) > 2.4
+      )
+        continue;
       for (let j = i + 1; j < this.cars.length; j++) {
         const b = this.cars[j],
           pb = carPose(b);
-        if (b.remove || Math.max(Math.abs(pb.x), Math.abs(pb.z)) > 2.4)
+        if (
+          b.junction === 1 ||
+          b.remove ||
+          Math.max(Math.abs(pb.x), Math.abs(pb.z)) > 2.4
+        )
           continue;
         if (overlaps(a, pa, b, pb)) {
           this.crashes++;
@@ -286,7 +375,30 @@ export class TrafficSimulation {
     }
     this.cars = this.cars.filter((c) => {
       if (c.remove) return false;
-      if (carPose(c).out > EXIT) {
+      const pose = carPose(c);
+      const connected =
+        c.junction === 0 && pose.exitLane === 3
+          ? 1
+          : c.junction === 1 && pose.exitLane === 1
+            ? 0
+            : null;
+      if (
+        pose.out !== null &&
+        connected !== null &&
+        pose.out >= BLOCK_SPACING / 2
+      ) {
+        if (c.junction === 1) this.roundaboutPassed++;
+        Object.assign(c, {
+          junction: connected,
+          lane: pose.exitLane,
+          p: pose.out - BLOCK_SPACING,
+          turn: ["left", "straight", "right"][
+            Math.floor(this.random() * 3) % 3
+          ],
+          committed: false,
+        });
+      } else if (pose.out > EXIT) {
+        if (c.junction === 1) this.roundaboutPassed++;
         this.passed++;
         return false;
       }
@@ -296,6 +408,8 @@ export class TrafficSimulation {
   snapshot() {
     return {
       started: this.started,
+      roundaboutPassed: this.roundaboutPassed,
+      discoveries: this.discoveries.snapshot(),
       time: this.time,
       cars: this.cars.length,
       passed: this.passed,

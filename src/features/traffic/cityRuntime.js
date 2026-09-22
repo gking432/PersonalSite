@@ -1,7 +1,9 @@
 import { TrafficSimulation } from "./trafficSimulation";
 import { createCityScene } from "./cityScene";
+import { createTrumpetPlayer } from "./trumpet";
 export function createCityRuntime(host, controls, onState) {
   const sim = new TrafficSimulation();
+  const trumpet = createTrumpetPlayer();
   let pageCars = null,
     pageLoading = null,
     pendingFalls = [];
@@ -12,6 +14,7 @@ export function createCityRuntime(host, controls, onState) {
     last = 0,
     accumulator = 0,
     drag = null,
+    suppressClick = false,
     signature = "";
   const scene = createCityScene(host, controls, (point) => {
     if (pageCars) pageCars.add(point);
@@ -34,6 +37,7 @@ export function createCityRuntime(host, controls, onState) {
         next.signals,
         next.bridge.phase,
         next.bridge.requestedOpen,
+        next.discoveries,
       ]);
     if (key !== signature) {
       signature = key;
@@ -91,7 +95,7 @@ export function createCityRuntime(host, controls, onState) {
     schedule();
   }
   function toggleSignal(axis) {
-    if (!enabled || disposed) return;
+    if (!enabled || disposed || suppressClick) return;
     start();
     sim.toggle(axis);
     scene.update(sim);
@@ -100,7 +104,7 @@ export function createCityRuntime(host, controls, onState) {
     schedule();
   }
   function toggleBridge() {
-    if (!enabled || disposed) return;
+    if (!enabled || disposed || suppressClick) return;
     start();
     sim.toggleBridge();
     scene.update(sim);
@@ -110,6 +114,7 @@ export function createCityRuntime(host, controls, onState) {
   }
   function reset() {
     stop();
+    trumpet.stop();
     sim.reset();
     pendingFalls = [];
     pageCars?.clear();
@@ -119,20 +124,43 @@ export function createCityRuntime(host, controls, onState) {
     scene.render();
     notify();
   }
+  function discover(id) {
+    if (!enabled || disposed || suppressClick) return;
+    start();
+    if (!sim.discoveries.trigger(id)) return;
+    if (id === "musician") trumpet.play();
+    scene.update(sim);
+    scene.render();
+    notify();
+  }
   function pointerDown(e) {
     if (!e.isPrimary || e.button !== 0) return;
-    drag = { x: e.clientX, y: e.clientY, id: e.pointerId };
-    host.setPointerCapture(e.pointerId);
+    suppressClick = false;
+    drag = {
+      x: e.clientX,
+      y: e.clientY,
+      startX: e.clientX,
+      startY: e.clientY,
+      id: e.pointerId,
+    };
+    e.currentTarget.setPointerCapture(e.pointerId);
     start();
   }
   function pointerMove(e) {
     if (!drag || drag.id !== e.pointerId) return;
+    if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) > 5)
+      suppressClick = true;
     scene.rotate(e.clientX - drag.x, e.clientY - drag.y);
     drag.x = e.clientX;
     drag.y = e.clientY;
   }
   function pointerUp() {
     drag = null;
+    // A native click follows pointerup in the same task. Clear after that click,
+    // including cancellation/lost capture, so later keyboard clicks still work.
+    setTimeout(() => {
+      suppressClick = false;
+    }, 0);
   }
   function key(e) {
     if (["Enter", " "].includes(e.key)) {
@@ -150,11 +178,14 @@ export function createCityRuntime(host, controls, onState) {
     }
   }
   function visibility() {
-    if (document.hidden) stop();
-    else schedule();
+    if (document.hidden) {
+      stop();
+      trumpet.stop();
+    } else schedule();
   }
   const intersection = new IntersectionObserver(([entry]) => {
     visible = entry.isIntersecting;
+    if (!visible) trumpet.stop();
     if (running()) schedule();
     else stop();
   });
@@ -169,6 +200,7 @@ export function createCityRuntime(host, controls, onState) {
     start,
     toggleSignal,
     toggleBridge,
+    discover,
     reset,
     pointerDown,
     pointerMove,
@@ -178,6 +210,7 @@ export function createCityRuntime(host, controls, onState) {
       if (!disposed) {
         scene.update(sim);
         scene.render();
+        notify();
       }
     },
     setEnabled(value) {
@@ -186,11 +219,15 @@ export function createCityRuntime(host, controls, onState) {
       if (value) {
         scene.resize();
         schedule();
-      } else stop();
+      } else {
+        stop();
+        trumpet.stop();
+      }
     },
     dispose() {
       disposed = true;
       stop();
+      trumpet.dispose();
       intersection.disconnect();
       size.disconnect();
       document.removeEventListener("visibilitychange", visibility);
@@ -211,12 +248,19 @@ export function createCityRuntime(host, controls, onState) {
         visible,
         pose: scene.pose,
         scene: scene.diagnostics(),
+        audio: trumpet.snapshot(),
         page: pageCars?.snapshot() || null,
       }),
       targets: () => {
         const r = host.getBoundingClientRect();
         return scene
           .targets()
+          .map((p) => ({ ...p, x: r.left + p.x, y: r.top + p.y }));
+      },
+      discoveryTargets: () => {
+        const r = host.getBoundingClientRect();
+        return scene
+          .discoveryTargets()
           .map((p) => ({ ...p, x: r.left + p.x, y: r.top + p.y }));
       },
     };

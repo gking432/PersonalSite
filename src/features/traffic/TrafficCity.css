@@ -105,3 +105,10 @@
   width: 64px;
   height: 48px;
 }
+.traffic-city__discovery {
+  width: 44px;
+  height: 44px;
+}
+.traffic-city__discovery:hover {
+  background: radial-gradient(circle, #f4e5b42e, transparent 65%);
+}

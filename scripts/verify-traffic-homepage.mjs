@@ -26,7 +26,7 @@ try {
     await page.getByRole("button", { name: /pause|fullscreen/i }).count(),
     0,
   );
-  await button("Explore the Milwaukee intersection").press("Enter");
+  await button("Explore Little Milwaukee").press("Enter");
   await page.waitForFunction(() => window.__trafficCity.snapshot().cars > 0);
   await page.waitForFunction(() => window.__trafficCity.snapshot().page?.ready);
   await page.locator('[data-control="light"]').first().click();
@@ -40,7 +40,7 @@ try {
   for (const width of [1440, 900]) {
     await page.setViewportSize({ width, height: 1000 });
     for (let step = 0; step < 4; step++)
-      await button("Explore the Milwaukee intersection").press("ArrowRight");
+      await button("Explore Little Milwaukee").press("ArrowRight");
     for (let index = 0; index < 4; index++) {
       const target = await page.evaluate(
         (i) => window.__trafficCity.targets()[i],
@@ -157,7 +157,7 @@ try {
   );
   assert.equal((await snap()).level, undefined);
   assert.equal(await page.getByRole("progressbar").count(), 0);
-  await page.screenshot({ path: `${output}/single-intersection.png` });
+  await page.screenshot({ path: `${output}/little-milwaukee.png` });
   await button("Reset traffic").click();
   assert.equal((await snap()).started, false);
   assert.equal((await snap()).page.escaped, 0);
