@@ -13,7 +13,7 @@ export function pathPose(path, progress) {
   while (i < lengths.length - 1 && d > lengths[i]) d -= lengths[i++];
   const a = path[i],
     b = path[i + 1],
-    f = d / lengths[i];
+    f = lengths[i] > 0 ? d / lengths[i] : 0;
   return {
     x: a[0] + (b[0] - a[0]) * f,
     z: a[1] + (b[1] - a[1]) * f,

@@ -1,3 +1,4 @@
+import { revealDiscovery } from "./traffic-discovery-helpers.mjs";
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 import { mkdir } from "node:fs/promises";
@@ -22,7 +23,7 @@ try {
     page.evaluate(() => window.__trafficCity.discoveryTargets());
   const click = async (id) => {
     await page.evaluate(() => window.__trafficCity.api.setEnabled(true));
-    const p = (await targets()).find((p) => p.id === id);
+    const p = await revealDiscovery(page, id);
     assert.equal(
       await page.evaluate(
         (p) => document.elementFromPoint(p.x, p.y)?.dataset.discovery,
@@ -55,11 +56,17 @@ try {
   );
   await click("lakeWalk");
   await freeze({ active: { lakeWalk: 1 } });
-  assert.ok(
-    (await snap()).scene.waterfront.walkers.find((w) => w.id === "lakeWalk")
-      .fall > 1,
+  assert.equal(
+    (await snap()).scene.pedestrians.people.find((p) => p.id === "lakeWalk")
+      .level,
+    1,
   );
-  await page.screenshot({ path: `${output}/pedestrian-stumble.png` });
+  assert.equal(
+    (await snap()).scene.waterfront.walkers.find((w) => w.id === "lakeWalk")
+      .fall,
+    0,
+  );
+  await page.screenshot({ path: `${output}/pedestrian-shrug.png` });
   await page.evaluate(() => {
     const { sim, api } = window.__trafficCity;
     sim.discoveries.tick(3.3);
@@ -200,7 +207,7 @@ try {
         checks: [
           "ambient pedestrians before traffic",
           "moving click targets",
-          "stumble and recovery",
+          "shrug and return to walking",
           "sitters stand and return",
           "3.2x zoom",
           "right-drag pan and normal drag rotation",

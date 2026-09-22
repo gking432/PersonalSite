@@ -1,3 +1,5 @@
+import { PedestrianReactions } from "./pedestrianReactions.js";
+import { BALCONY_RESIDENT } from "./balconyDefinition.js";
 import { CITY_WALKERS } from "./pedestrianMotion.js";
 import { FISHERMAN, FISHING_DURATION } from "./fishingMotion.js";
 import { SecretHeist, HEIST_PLACES } from "./secretHeist.js";
@@ -60,6 +62,7 @@ export const DISCOVERIES = [
     duration: 6,
   },
   ...WATERFRONT_WALKS,
+  BALCONY_RESIDENT,
   {
     id: "bankClock",
     label: "Tap the bank clock",
@@ -75,7 +78,7 @@ export const DISCOVERIES = [
   {
     id: "manhole",
     label: "Tap the manhole cover",
-    point: [HEIST_PLACES.manhole[0], 0.45, HEIST_PLACES.manhole[1]],
+    point: [HEIST_PLACES.manhole[0], 0.35, HEIST_PLACES.manhole[1]],
     duration: 1,
   },
 ];
@@ -86,6 +89,7 @@ export class Discoveries {
   }
   reset() {
     this.active = {};
+    this.pedestrians = new PedestrianReactions();
     this.walkClocks = {};
     this.counts = {};
     this.windows = false;
@@ -93,7 +97,11 @@ export class Discoveries {
   }
   trigger(id) {
     const discovery = DISCOVERIES.find((item) => item.id === id);
-    if (!discovery || id in this.active) return false;
+    if (!discovery) return false;
+    if (discovery.loopDuration) {
+      if (!this.pedestrians.click(discovery, this.walkClocks[id] || 0))
+        return false;
+    } else if (id in this.active) return false;
     this.heist.click(id);
     this.counts[id] = (this.counts[id] || 0) + 1;
     if (id === "windows") this.windows = !this.windows;
@@ -104,9 +112,16 @@ export class Discoveries {
   }
   tick(dt) {
     this.heist.tick(dt);
+    this.pedestrians.tick(dt);
     for (const item of DISCOVERIES) {
-      if (item.loopDuration && !(item.id in this.active))
-        this.walkClocks[item.id] = (this.walkClocks[item.id] || 0) + dt;
+      if (item.loopDuration) {
+        const state = this.pedestrians.states[item.id];
+        if (!state || state.phase === "walking") {
+          this.walkClocks[item.id] = (this.walkClocks[item.id] || 0) + dt;
+          delete this.active[item.id];
+        } else this.active[item.id] = state.time;
+        continue;
+      }
       if (!(item.id in this.active)) continue;
       this.active[item.id] += dt;
       if (this.active[item.id] >= item.duration) delete this.active[item.id];

@@ -50,6 +50,7 @@ export function createHeistScene({
   box(0.016, 0.12, 0.012, 0, 0.045, 0, p.dark, hands);
   box(0.095, 0.014, 0.012, 0.035, 0, 0, p.dark, hands);
   const phone = group(HEIST_PLACES.phone[0], 0.41, HEIST_PLACES.phone[1]);
+  phone.rotation.y = Math.PI;
   // A recognizable street payphone: canopy, side panels, receiver, and keypad.
   box(0.42, 0.08, 0.42, 0, 0.04, 0, p.dark, phone);
   box(0.16, 0.68, 0.16, 0, 0.38, 0, p.trim, phone);
@@ -79,7 +80,7 @@ export function createHeistScene({
   rod([0, -0.1, 0], [0, 0.1, 0], 0.027, p.black, handset);
   for (const sign of [-1, 1])
     box(0.065, 0.065, 0.05, 0.018, sign * 0.1, 0, p.black, handset);
-  const hole = group(HEIST_PLACES.manhole[0], 0.416, HEIST_PLACES.manhole[1]);
+  const hole = group(HEIST_PLACES.manhole[0], 0.311, HEIST_PLACES.manhole[1]);
   cylinder(0.35, 0.02, 0, 0, 0, p.dark, hole);
   const lid = group(-0.31, 0.025, 0, hole);
   cylinder(0.31, 0.025, 0.31, 0, 0, p.roof, lid);
@@ -310,7 +311,8 @@ export function createHeistScene({
             [-3.38, -2.39],
             [-3.38, -2.07],
             [-1.85, -2.07],
-            [-1.85, 0.1],
+            [-1.85, -1.7],
+            [0, -1.7],
             HEIST_PLACES.manhole,
           ],
     ),

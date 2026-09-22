@@ -223,6 +223,7 @@ test("the original discoveries remain in the original city footprint", () => {
         "cityWalk",
         "lakeBench",
         "parkBench",
+        "balconyResident",
       ].includes(item.id),
   )) {
     assert.ok(Math.abs(item.point[0]) < 7.2, item.id);
@@ -322,7 +323,7 @@ test("boat queues overflow from either river edge while the bridge is closed", (
   assert.ok(falls.some((e) => e.boat.direction === 1));
   assert.ok(falls.some((e) => e.boat.direction === -1));
 });
-test("bridge clears road traffic before opening, and boats then pass through", () => {
+test("opening a loaded bridge ejects its cars immediately and boats then pass through", () => {
   const s = setup();
   s.spawn(1);
   Object.assign(s.cars[0], { p: 5.9, turn: "straight", committed: true });
@@ -330,8 +331,8 @@ test("bridge clears road traffic before opening, and boats then pass through", (
   s.bridge.boats[0].p = -2.3;
   s.toggleBridge();
   s.tick(1 / 120);
-  assert.equal(s.bridge.phase, "clearing");
-  assert.equal(s.bridge.lift, 0);
+  assert.equal(s.bridge.phase, "opening");
+  assert.ok(s.bridge.lift > 0);
   s.cars = [];
   run(s, 55);
   assert.ok(s.bridge.passed > 0);
@@ -578,7 +579,7 @@ test("lakefront traffic queues around the bend behind a red light and drains whe
   assert.equal(s.crashes, 0);
 });
 
-test("walkers stroll before traffic starts, pause during a stumble, and recover without starting cars", () => {
+test("walkers stroll before traffic starts, pause to shrug, and resume without starting cars", () => {
   const s = new TrafficSimulation(() => 0.5);
   run(s, 2);
   assert.equal(s.started, false);
@@ -640,6 +641,127 @@ test("river bridge ramps have gentle slopes and the heist escape finishes before
   );
   assert.ok(t.getawayGone < t.police);
   assert.equal(t.departure - t.investigation, 15);
-  assert.ok(p.phone[0] > 0);
-  assert.ok(Math.hypot(p.manhole[0] + 3.38, p.manhole[1] + 2.35) > 4);
+  assert.ok(p.phone[0] < -4.5 && p.phone[1] < -5);
+  assert.deepEqual(p.manhole, [0, 0]);
+});
+
+test("pedestrians escalate through two shrugs, anger and escape before taking any damage", () => {
+  const d = new Discoveries();
+  const states = d.pedestrians.states;
+  for (let level = 1; level <= 4; level++) {
+    assert.ok(d.trigger("lakeWalk"));
+    assert.equal(states.lakeWalk.level, level);
+    assert.equal(states.lakeWalk.hits, 0);
+    assert.equal(states.lakeWalk.phase, "reacting");
+    if (level < 4) {
+      d.tick(2.7);
+      assert.equal(states.lakeWalk.phase, "walking");
+    }
+  }
+  d.tick(1.7);
+  assert.equal(states.lakeWalk.phase, "running");
+  const position = states.lakeWalk.x;
+  d.tick(0.5);
+  assert.notEqual(states.lakeWalk.x, position);
+  d.trigger("lakeWalk");
+  assert.equal(states.lakeWalk.phase, "stumbled");
+  assert.equal(states.lakeWalk.hits, 1);
+  const stopped = states.lakeWalk.distance;
+  d.tick(0.5);
+  assert.equal(states.lakeWalk.distance, stopped);
+  d.tick(0.7);
+  assert.equal(states.lakeWalk.phase, "running");
+});
+test("four escape clicks stop a pedestrian and an ambulance completes the pickup; reset clears every actor", () => {
+  const d = new Discoveries();
+  for (let i = 0; i < 4; i++) d.trigger("cityWalk");
+  d.tick(1.7);
+  for (let i = 0; i < 4; i++) d.trigger("cityWalk");
+  assert.equal(d.pedestrians.states.cityWalk.phase, "down");
+  assert.equal(d.pedestrians.states.cityWalk.hits, 4);
+  assert.equal(d.trigger("cityWalk"), false);
+  d.tick(0.01);
+  const job = d.pedestrians.rescue;
+  assert.equal(job.id, "cityWalk");
+  d.tick(job.pickup);
+  assert.equal(d.pedestrians.states.cityWalk.phase, "carried");
+  d.tick(job.depart + 5);
+  assert.equal(d.pedestrians.pickups, 1);
+  assert.equal(d.pedestrians.rescue, null);
+  d.reset();
+  assert.deepEqual(d.pedestrians.states, {});
+  assert.equal(d.pedestrians.pickups, 0);
+});
+test("an unimpeded pedestrian can escape; multiple ambulance calls queue without losing patients", () => {
+  const d = new Discoveries();
+  for (let i = 0; i < 4; i++) d.trigger("apartmentWalk");
+  for (let i = 0; i < 45 * 120; i++) d.tick(1 / 120);
+  assert.equal(d.pedestrians.states.apartmentWalk, undefined);
+  for (const id of ["pedestrians", "museumWalk"]) {
+    for (let i = 0; i < 4; i++) d.trigger(id);
+    d.tick(1.7);
+    for (let i = 0; i < 4; i++) d.trigger(id);
+  }
+  for (let i = 0; i < 70 * 120; i++) d.tick(1 / 120);
+  assert.equal(d.pedestrians.pickups, 2);
+});
+test("opening the bridge ejects cars on both leaves without ejecting cars waiting at its ends", () => {
+  const s = setup();
+  for (let i = 0; i < 4; i++) {
+    s.spawn(i % 2 ? 1 : 3);
+    s.cars.at(-1).turn = "straight";
+  }
+  for (const [i, c] of s.cars.entries())
+    c.p = (i % 2 ? -1 : 1) * [-6.45, -5.55, -8.2, -3.5][i];
+  const onDeck = s.cars
+    .filter((c) => {
+      const p = carPose(c);
+      return (
+        Math.abs(p.z) < 1.2 &&
+        p.x + c.length / 2 > -7.05 &&
+        p.x - c.length / 2 < -4.9
+      );
+    })
+    .map((c) => c.id);
+  s.toggleBridge();
+  assert.equal(onDeck.length, 2);
+  assert.deepEqual(
+    s.events.filter((e) => e.reason === "bridge").map((e) => e.car.id),
+    onDeck,
+  );
+  assert.equal(s.cars.filter((c) => c.remove).length, 2);
+  s.tick(0.1);
+  assert.equal(s.bridge.phase, "opening");
+  assert.ok(s.bridge.lift > 0);
+});
+
+test("medics take a clear route around buildings and stationary path endpoints stay finite", async () => {
+  const { walkRoute } = await import(
+    "../src/features/traffic/pedestrianNavigation.js"
+  );
+  const { pathPose } = await import(
+    "../src/features/traffic/pedestrianMotion.js"
+  );
+  const route = walkRoute([-3, 0], [3, 0], [[-1, -1, 1, 1]]);
+  assert.deepEqual(route[0], [-3, 0]);
+  assert.deepEqual(route.at(-1), [3, 0]);
+  assert.ok(route.length > 2);
+  for (let i = 0; i <= 100; i++) {
+    const point = pathPose(route, i / 100);
+    assert.ok(Math.abs(point.x) >= 1.14 || Math.abs(point.z) >= 1.14);
+  }
+  assert.deepEqual(walkRoute([0, 2], [3, 2], [[-1, -1, 1, 1]]), [
+    [0, 2],
+    [3, 2],
+  ]);
+  assert.deepEqual(
+    pathPose(
+      [
+        [0, 0],
+        [0, 0],
+      ],
+      0.5,
+    ),
+    { x: 0, z: 0, yaw: 0 },
+  );
 });

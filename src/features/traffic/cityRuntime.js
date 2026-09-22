@@ -1,9 +1,11 @@
+import { createPhoneRing } from "./phoneRing";
 import { TrafficSimulation } from "./trafficSimulation";
 import { createCityScene } from "./cityScene";
 import { createTrumpetPlayer } from "./trumpet";
 export function createCityRuntime(host, controls, onState) {
   const sim = new TrafficSimulation();
   const trumpet = createTrumpetPlayer();
+  const phone = createPhoneRing();
   const pointers = new Map();
   let pinch = null;
   let pageCars = null,
@@ -121,6 +123,7 @@ export function createCityRuntime(host, controls, onState) {
   function reset() {
     stop();
     trumpet.stop();
+    phone.stop();
     sim.reset();
     pendingFalls = [];
     pageCars?.clear();
@@ -137,6 +140,7 @@ export function createCityRuntime(host, controls, onState) {
     start();
     if (!sim.discoveries.trigger(id)) return;
     if (id === "musician") trumpet.play();
+    if (id === "payphone") phone.play();
     scene.update(sim);
     scene.render();
     notify();
@@ -249,11 +253,15 @@ export function createCityRuntime(host, controls, onState) {
     if (document.hidden) {
       stop();
       trumpet.stop();
+      phone.stop();
     } else schedule();
   }
   const intersection = new IntersectionObserver(([entry]) => {
     visible = entry.isIntersecting;
-    if (!visible) trumpet.stop();
+    if (!visible) {
+      trumpet.stop();
+      phone.stop();
+    }
     if (running()) schedule();
     else stop();
   });
@@ -292,12 +300,14 @@ export function createCityRuntime(host, controls, onState) {
       } else {
         stop();
         trumpet.stop();
+        phone.stop();
       }
     },
     dispose() {
       disposed = true;
       stop();
       trumpet.dispose();
+      phone.dispose();
       intersection.disconnect();
       size.disconnect();
       document.removeEventListener("visibilitychange", visibility);
@@ -321,6 +331,7 @@ export function createCityRuntime(host, controls, onState) {
         pose: scene.pose,
         scene: scene.diagnostics(),
         audio: trumpet.snapshot(),
+        phoneAudio: phone.snapshot(),
         page: pageCars?.snapshot() || null,
       }),
       inspectLandmarks: () => scene.inspectLandmarks(),

@@ -133,6 +133,16 @@ export class TrafficSimulation {
   toggleBridge() {
     this.start();
     this.bridge.toggle();
+    if (this.bridge.requestedOpen)
+      for (const car of this.cars) {
+        const pose = carPose(car);
+        if (
+          Math.abs(pose.z) < 1.2 &&
+          pose.x + car.length / 2 > -7.05 &&
+          pose.x - car.length / 2 < -4.9
+        )
+          this.drop(car, "bridge");
+      }
   }
   drop(car, reason) {
     if (car.remove) return;

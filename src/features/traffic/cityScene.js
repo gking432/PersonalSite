@@ -1,3 +1,5 @@
+import { createPedestrianScene } from "./pedestrianScene";
+import { createBalconyResident } from "./balconyResident";
 import { featherMapMaterial } from "./mapFade";
 import { createPageLayout } from "./pageLayout";
 import { LAKE_ROAD_START } from "./lakeRoad";
@@ -177,11 +179,12 @@ export function createCityScene(host, controls, onEscape) {
       floor = false,
       size = 48,
       parent = city,
+      square = false,
     } = {},
   ) {
     const c = document.createElement("canvas");
-    c.width = 768;
-    c.height = 192;
+    c.width = square ? 256 : 768;
+    c.height = square ? 256 : 192;
     const ctx = c.getContext("2d");
     if (background) {
       ctx.fillStyle = background;
@@ -191,7 +194,7 @@ export function createCityScene(host, controls, onEscape) {
     ctx.font = `600 ${size}px Arial, sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(text, 384, 100);
+    ctx.fillText(text, c.width / 2, c.height / 2 + 4);
     const texture = new THREE.CanvasTexture(c);
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = 4;
@@ -323,6 +326,7 @@ export function createCityScene(host, controls, onEscape) {
   });
   waterName.rotation.z = Math.PI / 2;
 
+  const buildingBounds = [];
   function building({
     x,
     z,
@@ -335,6 +339,12 @@ export function createCityScene(host, controls, onEscape) {
     ornate = false,
   }) {
     const bottom = 0.41;
+    buildingBounds.push(
+      new THREE.Box3(
+        new THREE.Vector3(x - w / 2, 0.41, z - d / 2),
+        new THREE.Vector3(x + w / 2, 0.41 + h, z + d / 2),
+      ),
+    );
     box(w, h, d, x, bottom + h / 2, z, body);
     box(w + 0.13, 0.14, d + 0.13, x, bottom + 0.07, z, palette.trim);
     box(w + 0.2, 0.12, d + 0.2, x, bottom + h + 0.025, z, palette.trim);
@@ -631,6 +641,26 @@ export function createCityScene(host, controls, onEscape) {
     cylinder,
     rod,
     label,
+    material,
+  });
+  const pedestrianScene = createPedestrianScene({
+    city,
+    walkers: [...discoveries.walkers, ...waterfront.walkers],
+    palette,
+    box,
+    mesh,
+    cylinder,
+    rod,
+    label,
+    material,
+  });
+  const balcony = createBalconyResident({
+    city,
+    palette,
+    box,
+    mesh,
+    cylinder,
+    rod,
     material,
   });
   const boat = additions.createBoat();
@@ -1035,9 +1065,25 @@ export function createCityScene(host, controls, onEscape) {
     return new THREE.Vector3(s.x, 1.51, s.z);
   }
   const discoveryPoint = (item) =>
+    pedestrianScene.target(item.id) ||
+    (item.id === "balconyResident" ? balcony.target() : null) ||
     discoveries.target(item.id) ||
     waterfront.target(item.id) ||
     new THREE.Vector3(...item.point);
+  function occluded(point) {
+    const cameraLocal = city.worldToLocal(camera.position.clone());
+    const ray = new THREE.Ray(
+      cameraLocal,
+      point.clone().sub(cameraLocal).normalize(),
+    );
+    const distance = cameraLocal.distanceTo(point),
+      hit = new THREE.Vector3();
+    return buildingBounds.some(
+      (bounds) =>
+        ray.intersectBox(bounds, hit) &&
+        cameraLocal.distanceTo(hit) < distance - 0.12,
+    );
+  }
   function positionButtons() {
     const targets = [
       ...signals.map((signal, index) => ({
@@ -1050,6 +1096,12 @@ export function createCityScene(host, controls, onEscape) {
       },
       ...DISCOVERIES.map((item, index) => ({
         button: controls.discoveries[index],
+        hidden:
+          pedestrianScene.hidden(item.id) ||
+          ((item.loopDuration ||
+            item.id === "balconyResident" ||
+            item.id === "payphone") &&
+            occluded(discoveryPoint(item))),
         ...project(discoveryPoint(item)),
       })),
     ].filter((target) => target.button);
@@ -1093,7 +1145,12 @@ export function createCityScene(host, controls, onEscape) {
       }
       button.style.transform = `translate(${left}px, ${top}px)`;
       const offscreen =
-        x < 0 || x > width || y < 0 || y > height || pageLayout.protects(x, y);
+        target.hidden ||
+        x < 0 ||
+        x > width ||
+        y < 0 ||
+        y > height ||
+        pageLayout.protects(x, y);
       button.style.visibility = offscreen ? "hidden" : "visible";
       button.style.clipPath = `polygon(${polygon.map(([px, py]) => `${(px - left).toFixed(2)}px ${(py - top).toFixed(2)}px`).join(",")})`;
     }
@@ -1104,6 +1161,11 @@ export function createCityScene(host, controls, onEscape) {
     view();
     discoveries.faceCamera(
       camera.quaternion.clone().premultiply(city.quaternion.clone().invert()),
+    );
+    pedestrianScene.faceCamera(
+      camera.quaternion.clone().premultiply(city.quaternion.clone().invert()),
+      0.7 - yaw,
+      occluded,
     );
     positionButtons();
     renderer.render(scene, camera);
@@ -1121,6 +1183,15 @@ export function createCityScene(host, controls, onEscape) {
     render();
   }
   function update(sim, dt = 0) {
+    if (!sim.discoveries.pedestrians.obstacles.length)
+      sim.discoveries.pedestrians.obstacles = buildingBounds.map((b) => [
+        b.min.x,
+        b.min.z,
+        b.max.x,
+        b.max.z,
+      ]);
+    pedestrianScene.update(sim);
+    balcony.update(sim);
     additions.update(sim, dt);
     discoveries.update(sim);
     waterfront.update(sim);
@@ -1186,7 +1257,7 @@ export function createCityScene(host, controls, onEscape) {
       f.group.position.set(
         f.x + f.sx * side,
         (f.boat ? 0.38 : 0) +
-          (f.reason === "crash"
+          (["crash", "bridge"].includes(f.reason)
             ? Math.sin(Math.min(1, t / 0.6) * Math.PI) * 1.2
             : 0) -
           5 * drop * drop,
@@ -1293,6 +1364,8 @@ export function createCityScene(host, controls, onEscape) {
       return { yaw, pitch, zoom, panX, panY };
     },
     diagnostics: () => ({
+      balcony: balcony.diagnostics(),
+      pedestrians: pedestrianScene.diagnostics(),
       layout: pageLayout.diagnostics(),
       opaqueMaterials: [...materials].filter(
         (m) => m.isMeshStandardMaterial && !m.transparent,

@@ -56,18 +56,9 @@ export class BridgeTraffic {
       this.spawn(events);
       this.nextBoat = 35 + this.random() * 15;
     }
-    const roadOccupied = cars.some(
-      (c) =>
-        Math.abs(c.z) < 1.2 &&
-        c.x + c.length / 2 > -7.05 &&
-        c.x - c.length / 2 < -4.9,
-    );
     if (this.requestedOpen) {
-      if (roadOccupied && this.lift === 0) this.phase = "clearing";
-      else {
-        this.lift = Math.min(1, this.lift + dt / 2.3);
-        this.phase = this.lift === 1 ? "open" : "opening";
-      }
+      this.lift = Math.min(1, this.lift + dt / 2.3);
+      this.phase = this.lift === 1 ? "open" : "opening";
     } else {
       this.lift = Math.max(0, this.lift - dt / 2.3);
       this.phase = this.lift === 0 ? "closed" : "closing";

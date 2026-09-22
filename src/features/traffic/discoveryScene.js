@@ -1,4 +1,4 @@
-import { CITY_WALKERS, movePedestrian } from "./pedestrianMotion";
+import { CITY_WALKERS } from "./pedestrianMotion";
 import { FISHERMAN, fishingPose } from "./fishingMotion";
 import { LAKE_ROAD_START } from "./lakeRoad";
 import * as THREE from "three";
@@ -435,14 +435,6 @@ export function createDiscoveryScene({
     fisher.arms[0].rotation.x = -0.9;
     fisher.arms[1].rotation.x =
       fishing === undefined ? -0.8 : -0.8 + Math.sin(fishing * 15) * 0.3;
-    walkers.forEach(({ actor, ...definition }) =>
-      movePedestrian(
-        actor,
-        definition,
-        sim.discoveries.walkClocks[definition.id] || 0,
-        active[definition.id],
-      ),
-    );
     const coffee = active.coffee;
     customer.g.visible = coffee !== undefined;
     walk(
@@ -581,6 +573,7 @@ export function createDiscoveryScene({
     };
   }
   return {
+    walkers,
     update,
     target: (id) => {
       const w = walkers.find((w) => w.id === id);

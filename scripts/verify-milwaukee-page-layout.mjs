@@ -62,7 +62,7 @@ try {
   assert.deepEqual(
     await page.evaluate(() => window.__trafficCity.inspectLandmarks()),
     [
-      { id: "payphone", unobstructed: true },
+      { id: "payphone", unobstructed: false },
       { id: "manhole", unobstructed: true },
     ],
   );

@@ -1,3 +1,4 @@
+import { revealDiscovery } from "./traffic-discovery-helpers.mjs";
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 import { mkdir } from "node:fs/promises";
@@ -21,10 +22,7 @@ try {
   const snap = () => page.evaluate(() => window.__trafficCity.snapshot());
   const click = async (id) => {
     await page.evaluate(() => window.__trafficCity.api.setEnabled(true));
-    const p = await page.evaluate(
-      (id) => window.__trafficCity.discoveryTargets().find((t) => t.id === id),
-      id,
-    );
+    const p = await revealDiscovery(page, id);
     assert.equal(
       await page.evaluate(
         (p) => document.elementFromPoint(p.x, p.y)?.dataset.discovery,
@@ -69,11 +67,8 @@ try {
   await page.waitForFunction(
     () => window.__trafficCity.snapshot().zoom === 3.2,
   );
-  assert.equal(
-    await page
-      .getByRole("button", { name: "Zoom in", exact: true })
-      .isDisabled(),
-    true,
+  await page.waitForFunction(
+    () => document.querySelector('[aria-label="Zoom in"]').disabled,
   );
   await page.evaluate(() => {
     window.__trafficCity.api.setEnabled(true);
@@ -145,8 +140,9 @@ try {
   });
   await page.evaluate(() => {
     const { sim, api } = window.__trafficCity;
-    delete sim.discoveries.active.lakeWalk;
-    delete sim.discoveries.active.apartmentWalk;
+    sim.discoveries.tick(2.7);
+    sim.discoveries.active.musician = 1;
+    sim.discoveries.active.helicopter = 9;
     sim.discoveries.walkClocks.lakeWalk = 8;
     sim.discoveries.walkClocks.apartmentWalk = 8;
     api.refresh();

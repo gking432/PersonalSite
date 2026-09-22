@@ -1,4 +1,4 @@
-export const HEIST_PLACES = { phone: [2.1, -1.92], manhole: [-1.85, 3.75] };
+export const HEIST_PLACES = { phone: [-4.8, -5.55], manhole: [0, 0] };
 export const HEIST_TIMING = {
   getaway: 12.3,
   getawayGone: 14.2,

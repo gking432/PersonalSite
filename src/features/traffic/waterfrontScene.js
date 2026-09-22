@@ -1,4 +1,3 @@
-import { movePedestrian } from "./pedestrianMotion";
 import { lakeRoadPoint, lakeRoadLength, LAKE_ROAD_Z } from "./lakeRoad";
 import * as THREE from "three";
 import { createPeople } from "./cityPeople";
@@ -419,17 +418,6 @@ export function createWaterfrontScene({
   }));
   let diagnostics = {};
   function update(sim) {
-    people.forEach(({ actor, ...definition }) => {
-      const clock = definition.seated
-        ? sim.discoveries.active[definition.id] || 0
-        : sim.discoveries.walkClocks[definition.id] || 0;
-      movePedestrian(
-        actor,
-        definition,
-        clock,
-        sim.discoveries.active[definition.id],
-      );
-    });
     sailboats.forEach(({ g, x, z }, i) => {
       const t = sim.ambientTime * 0.055 + i * 2;
       g.position.set(
@@ -462,6 +450,7 @@ export function createWaterfrontScene({
     };
   }
   return {
+    walkers: people,
     update,
     target: (id) => {
       const w = people.find((w) => w.id === id);

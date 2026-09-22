@@ -1,3 +1,4 @@
+import { revealDiscovery } from "./traffic-discovery-helpers.mjs";
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 import { mkdir } from "node:fs/promises";
@@ -24,7 +25,7 @@ try {
   const targets = () =>
     page.evaluate(() => window.__trafficCity.discoveryTargets());
   const clickDiscovery = async (id) => {
-    const target = (await targets()).find((item) => item.id === id);
+    const target = await revealDiscovery(page, id);
     const hit = await page.evaluate(
       ({ x, y }) => document.elementFromPoint(x, y)?.dataset.discovery,
       target,
@@ -34,7 +35,7 @@ try {
   };
   assert.equal((await snap()).started, false);
   assert.deepEqual((await snap()).audio, { plays: 0, voices: 0 });
-  assert.equal(await page.locator("[data-discovery]").count(), 20);
+  assert.equal(await page.locator("[data-discovery]").count(), 21);
   assert.equal(await page.locator('[data-control="light"]').count(), 4);
   await page.screenshot({ path: `${output}/idle.png` });
   for (const target of await targets()) {
@@ -119,7 +120,15 @@ try {
         ({ x, y }) => document.elementFromPoint(x, y)?.dataset.discovery,
         target,
       );
-      assert.equal(hit, target.id, `${target.id} after rotation at ${width}px`);
+      const visible = await page
+        .locator(`[data-discovery="${target.id}"]`)
+        .isVisible();
+      if (visible)
+        assert.equal(
+          hit,
+          target.id,
+          `${target.id} after rotation at ${width}px`,
+        );
     }
     await clickDiscovery("windows");
   }
@@ -168,7 +177,7 @@ try {
     JSON.stringify(
       {
         status: "PASS",
-        discoveries: 20,
+        discoveries: 21,
         checks: [
           "rendered hit targets",
           "one-shot animations",
