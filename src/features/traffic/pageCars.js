@@ -73,7 +73,7 @@ export function createPageCars(host) {
   function heroText() {
     return [
       ...document.querySelectorAll(
-        ".studio-hero__copy :is(.studio-status, h1, p, a), .traffic-city__caption",
+        ".studio-hero__copy :is(.studio-status, h1, p, a)",
       ),
     ]
       .map((el) => el.getBoundingClientRect())
@@ -91,8 +91,9 @@ export function createPageCars(host) {
     );
   }
   function draw() {
-    // Retire a sprite before it touches hero copy, even during scrolling or
-    // resizing; removing it also prevents it reappearing below the text later.
+    // Protect the introduction, not the miniature's full-width caption box:
+    // cars must be able to leave the city and reach the words below it.
+    // Retiring a sprite here also protects copy during scrolling and resizing.
     const protectedRects = heroText();
     physics.balls = physics.balls.filter(
       (car) => !overlapsText(car, protectedRects),
@@ -220,6 +221,14 @@ export function createPageCars(host) {
       contacts: physics.stats.inkContacts,
       surfaces: surfaces.length,
       heroSurfaces: surfaces.filter((s) => s.el.closest(".studio-hero")).length,
+      bodies: physics.balls.map(({ id, x, y, radius, hitText, sleep }) => ({
+        id,
+        x,
+        y,
+        radius,
+        hitText,
+        settled: sleep > 0.8,
+      })),
     }),
     dispose() {
       disposed = true;

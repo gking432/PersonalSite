@@ -47,6 +47,12 @@ The Public Market rooftop sign reads **PUBLIC MARKET** in larger red lettering, 
 
 Local validation on September 22, 2026: 66 model tests, simulated noon/night/rain/snow browser checks, cache/failure/cancellation tests, and a live KMKE observation fetch. The preview received a current Cloudy report with temperature and wind. These checks validate the local preview and implementation, not a production deployment.
 
+## Falling cars and page lettering (September 22, 2026)
+
+The miniature's caption no longer removes cars crossing its full-width layout box. A visible launch approaching a text fade or the canvas edge transfers to page physics, where cars bounce on the rendered letter shapes, settle, and can pile up. Decorative rules and empty space remain open. The introductory headline, copy and links still retire incoming sprites, and crashes hidden behind those areas do not launch page cars.
+
+Local checks use `node scripts/verify-page-car-letters.mjs` to follow an actual crossing crash through its 3D launch and onto page lettering, verify controlled drops through a rule and beside words, and check that a resting car stays aligned while scrolling. The existing page-layout checks cover hidden-crash suppression and hero-copy protection. Screenshots are saved outside the repository under `/tmp/milwaukee-car-letters`.
+
 ## Implementation
 
 - `src/features/traffic/trafficSimulation.js`: fixed map, manual road signals, autonomous roundabout admission, queues, transfers and immediate crash ejection.

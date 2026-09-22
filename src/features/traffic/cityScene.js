@@ -1412,13 +1412,17 @@ export function createCityScene(host, controls, onEscape) {
           .applyQuaternion(f.group.quaternion)
           .add(f.group.position);
         const point = project(center);
-        if (!visibleOnPage(point)) {
+        const visible = visibleOnPage(point);
+        if (visible) f.seenFor += dt;
+        if (!visible && f.seenFor < 0.12) {
           city.remove(f.group);
           falling.splice(i, 1);
           continue;
         }
-        f.seenFor += dt;
-        if (t <= 0.59 || f.seenFor < 0.12) continue;
+        // Once the launch has been seen, approaching a text halo or the canvas
+        // edge hands the car to page physics instead of deleting it. The page
+        // layer catches it on letter ink and still protects the hero copy.
+        if ((t <= 0.59 && visible) || f.seenFor < 0.12) continue;
         const velocity = project(
           center
             .clone()
