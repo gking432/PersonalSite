@@ -489,12 +489,19 @@ test("secret heist requires the ordered clues, expires partial attempts and igno
   assert.equal(h.time, 5);
   assert.equal(h.plays, 1);
   h.tick(14);
+  assert.equal(h.snapshot().phase, "response");
+  h.tick(60);
+  assert.equal(h.time, 19);
+  h.responseReady = true;
   assert.equal(h.snapshot().phase, "investigation");
   h.tick(14.9);
   assert.equal(h.snapshot().phase, "investigation");
   h.tick(0.2);
   assert.equal(h.snapshot().phase, "departure");
   h.tick(9);
+  assert.equal(h.snapshot().phase, "departure");
+  h.responseComplete = true;
+  h.tick(0.01);
   assert.equal(h.snapshot().phase, "idle");
   HEIST_SEQUENCE.forEach((id) => h.click(id));
   assert.equal(h.plays, 2);
@@ -672,38 +679,164 @@ test("pedestrians escalate through two shrugs, anger and escape before taking an
   d.tick(0.7);
   assert.equal(states.lakeWalk.phase, "running");
 });
-test("four escape clicks stop a pedestrian and an ambulance completes the pickup; reset clears every actor", () => {
-  const d = new Discoveries();
-  for (let i = 0; i < 4; i++) d.trigger("cityWalk");
+const until = (sim, predicate, timeout = 180) => {
+  for (let i = 0; i < timeout * 120 && !predicate(); i++) sim.tick(1 / 120);
+  assert.ok(predicate(), "traffic did not reach the expected destination");
+};
+function knockDown(sim, id) {
+  const d = sim.discoveries;
+  for (let i = 0; i < 4; i++) d.trigger(id);
   d.tick(1.7);
-  for (let i = 0; i < 4; i++) d.trigger("cityWalk");
+  for (let i = 0; i < 4; i++) d.trigger(id);
+  sim.tick(1 / 120);
+}
+test("ambulances queue behind ordinary cars at red lights and only collect patients after parking", () => {
+  const s = setup(),
+    d = s.discoveries;
+  s.signals.water.color = "red";
+  s.spawn(0);
+  const front = s.cars[0];
+  Object.assign(front, { p: -3, speed: 0, turn: "straight" });
+  knockDown(s, "cityWalk");
+  run(s, 20);
+  const ambulance = s.cars.find((c) => c.ambulance);
+  assert.ok(ambulance);
+  assert.ok(
+    front.p - ambulance.p >= (front.length + ambulance.length) / 2 + 0.19,
+  );
+  assert.equal(ambulance.speed, 0);
+  assert.equal(d.pedestrians.rescue.time, 0);
   assert.equal(d.pedestrians.states.cityWalk.phase, "down");
-  assert.equal(d.pedestrians.states.cityWalk.hits, 4);
-  assert.equal(d.trigger("cityWalk"), false);
-  d.tick(0.01);
-  const job = d.pedestrians.rescue;
-  assert.equal(job.id, "cityWalk");
-  d.tick(job.pickup);
-  assert.equal(d.pedestrians.states.cityWalk.phase, "carried");
-  d.tick(job.depart + 5);
-  assert.equal(d.pedestrians.pickups, 1);
+  s.signals.water.color = "green";
+  until(s, () => d.pedestrians.rescue.arrived);
+  assert.equal(ambulance.service.phase, "parked");
+  assert.equal(ambulance.service.curb, 0.58);
+  until(s, () => d.pedestrians.states.cityWalk.phase === "carried");
+  until(s, () => d.pedestrians.pickups === 1);
   assert.equal(d.pedestrians.rescue, null);
-  d.reset();
-  assert.deepEqual(d.pedestrians.states, {});
-  assert.equal(d.pedestrians.pickups, 0);
+  assert.equal(
+    s.cars.some((c) => c.ambulance),
+    false,
+  );
+  s.reset();
+  assert.deepEqual(s.discoveries.pedestrians.states, {});
+  assert.equal(s.services.snapshot().ambulance, null);
 });
-test("an unimpeded pedestrian can escape; multiple ambulance calls queue without losing patients", () => {
-  const d = new Discoveries();
+test("an unimpeded pedestrian escapes and multiple traffic-controlled ambulance calls finish in order", () => {
+  const s = setup(),
+    d = s.discoveries;
   for (let i = 0; i < 4; i++) d.trigger("apartmentWalk");
-  for (let i = 0; i < 45 * 120; i++) d.tick(1 / 120);
+  run(s, 45);
   assert.equal(d.pedestrians.states.apartmentWalk, undefined);
-  for (const id of ["pedestrians", "museumWalk"]) {
-    for (let i = 0; i < 4; i++) d.trigger(id);
-    d.tick(1.7);
-    for (let i = 0; i < 4; i++) d.trigger(id);
+  knockDown(s, "pedestrians");
+  knockDown(s, "museumWalk");
+  until(s, () => d.pedestrians.pickups === 2);
+  assert.equal(s.crashes, 0);
+});
+test("police stop at lights, travel continuously, park for fifteen seconds and wait at the bridge on departure", () => {
+  const s = setup();
+  s.signals.water.color = s.signals.wisconsin.color = "red";
+  for (const id of ["bankClock", "payphone", "manhole"])
+    s.discoveries.trigger(id);
+  run(s, 55);
+  const h = s.discoveries.heist;
+  assert.equal(h.time, 19);
+  assert.equal(h.snapshot().phase, "response");
+  const north = s.cars.find((c) => c.police && c.service.route.length === 1);
+  assert.equal(north.speed, 0);
+  assert.ok(north.p <= STOP_LINE + 0.001);
+  const before = new Map();
+  let elapsed = 0;
+  while (!h.responseReady && elapsed < 120) {
+    const stage = elapsed % 24;
+    s.signals.water.color = stage < 10 ? "green" : "red";
+    s.signals.wisconsin.color = stage >= 12 && stage < 22 ? "green" : "red";
+    s.tick(1 / 120);
+    for (const c of s.cars.filter((c) => c.service)) {
+      const p = carPose(c),
+        old = before.get(c.id);
+      if (old)
+        assert.ok(
+          Math.hypot(p.x - old.x, p.z - old.z) < 0.03,
+          "response car teleported",
+        );
+      before.set(c.id, p);
+    }
+    elapsed += 1 / 120;
   }
-  for (let i = 0; i < 70 * 120; i++) d.tick(1 / 120);
-  assert.equal(d.pedestrians.pickups, 2);
+  assert.ok(h.responseReady);
+  assert.equal(s.services.response.filter((u) => u.arrived).length, 4);
+  assert.equal(s.crashes, 0);
+  s.toggleBridge();
+  run(s, 14.9);
+  assert.ok(
+    s.services.response.every(
+      (u) => s.services.vehicle(u)?.service.phase === "parked",
+    ),
+  );
+  run(s, 8);
+  const held = s.services.vehicle(s.services.response[0]);
+  assert.ok(held);
+  assert.equal(held.speed, 0);
+  assert.ok(carPose(held).x - held.length / 2 >= -4.91);
+  s.toggleBridge();
+  s.signals.water.color = "green";
+  s.signals.wisconsin.color = "red";
+  until(s, () => h.time === null);
+  assert.ok(s.services.response.every((u) => u.done));
+  assert.equal(s.crashes, 0);
+});
+test("response vehicles share normal collision footprints and do not displace traffic when dispatched", () => {
+  const s = setup();
+  s.spawn(0);
+  const service = {
+    kind: "police",
+    route: [{ junction: 0, lane: 1, turn: "straight" }],
+    index: 0,
+    phase: "driving",
+    curb: 0,
+    stop: { out: 4 },
+  };
+  assert.equal(s.spawn(0, 0, service), false);
+  assert.equal(s.overflowed, 0);
+  s.spawn(1, 0, service);
+  s.signals.water.color = s.signals.wisconsin.color = "green";
+  s.cars.forEach((c, i) =>
+    Object.assign(c, {
+      p: i ? 0.57 : -0.57,
+      turn: "straight",
+      committed: true,
+      speed: 0,
+    }),
+  );
+  s.tick(1 / 120);
+  assert.equal(s.crashes, 1);
+  assert.ok(s.events.some((e) => e.reason === "crash" && e.car.police));
+});
+test("responders wait for an occupied curb instead of parking through another vehicle", () => {
+  const s = setup();
+  const service = () => ({
+    kind: "police",
+    route: [{ junction: 0, lane: 0, turn: "straight" }],
+    index: 0,
+    phase: "driving",
+    curb: 0,
+    stop: { p: -4 },
+  });
+  s.spawn(0, 0, service());
+  const parked = s.cars[0];
+  parked.p = -4;
+  parked.service.phase = "parked";
+  parked.service.curb = 0.58;
+  s.spawn(0, 0, service());
+  const arriving = s.cars[1];
+  run(s, 8);
+  assert.equal(arriving.service.phase, "driving");
+  assert.equal(arriving.speed, 0);
+  assert.equal(arriving.service.curb, 0);
+  s.cars = s.cars.filter((c) => c !== parked);
+  run(s, 0.1);
+  assert.equal(arriving.service.phase, "parking");
 });
 test("opening the bridge ejects cars on both leaves without ejecting cars waiting at its ends", () => {
   const s = setup();

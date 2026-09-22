@@ -14,6 +14,8 @@ export class SecretHeist {
     this.step = 0;
     this.remaining = 0;
     this.plays = 0;
+    this.responseReady = false;
+    this.responseComplete = false;
   }
   click(id) {
     if (this.time !== null) return;
@@ -28,12 +30,16 @@ export class SecretHeist {
       this.time = 0;
       this.step = 0;
       this.plays++;
+      this.responseReady = this.responseComplete = false;
     }
   }
   tick(dt) {
     if (this.time !== null) {
       this.time += dt;
-      if (this.time >= HEIST_DURATION) this.time = null;
+      if (!this.responseReady && this.time >= HEIST_TIMING.investigation)
+        this.time = HEIST_TIMING.investigation;
+      if (this.time >= HEIST_DURATION)
+        this.time = this.responseComplete ? null : HEIST_DURATION;
     } else if (this.step) {
       this.remaining -= dt;
       if (this.remaining <= 0) this.step = 0;
@@ -53,7 +59,7 @@ export class SecretHeist {
               ? "bank"
               : t < HEIST_TIMING.police
                 ? "escape"
-                : t < HEIST_TIMING.investigation
+                : !this.responseReady || t < HEIST_TIMING.investigation
                   ? "response"
                   : t < HEIST_TIMING.departure
                     ? "investigation"

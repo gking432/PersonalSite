@@ -1,6 +1,4 @@
 import { HEIST_PLACES, HEIST_TIMING } from "./secretHeist";
-import { lakeCarPose, lakeRouteLength } from "./lakeRoad";
-import { carPose } from "./trafficSimulation";
 import * as THREE from "three";
 import { createPeople } from "./cityPeople";
 import { riverBridgeHeight } from "./waterfront";
@@ -27,10 +25,6 @@ export function createHeistScene({
     black = material("#2c3435"),
     redLamp = material("#fd6555", {
       emissive: "#f84035",
-      emissiveIntensity: 1.2,
-    }),
-    blueLamp = material("#679ce4", {
-      emissive: "#357bf3",
       emissiveIntensity: 1.2,
     });
   // A bank, a payphone, and a street cover are ordinary city details until the
@@ -115,69 +109,21 @@ export function createHeistScene({
     sphere(0.105, 0.18, 0.29, 0.08, p.cream, a.g).scale.y = 1.2;
     return a;
   });
-  function vehicle(kind) {
-    const g = group(),
-      van = kind === "news",
-      body = kind === "getaway" ? p.green : p.ivory;
-    box(0.54, 0.2, van ? 1.2 : 1.05, 0, 0.49, 0, body, g);
-    box(
-      0.47,
-      van ? 0.42 : 0.27,
-      van ? 0.79 : 0.53,
-      0,
-      van ? 0.75 : 0.68,
-      -0.07,
-      body,
-      g,
-    );
-    box(0.42, 0.17, 0.02, 0, 0.73, van ? 0.34 : 0.21, p.glass, g);
+  function vehicle() {
+    const g = group();
+    box(0.54, 0.2, 1.05, 0, 0.49, 0, p.green, g);
+    box(0.47, 0.27, 0.53, 0, 0.68, -0.07, p.green, g);
+    box(0.42, 0.17, 0.02, 0, 0.73, 0.21, p.glass, g);
     for (const q of [-1, 1]) {
-      box(0.022, 0.16, van ? 0.55 : 0.36, q * 0.24, 0.73, -0.04, p.glass, g);
-      if (kind === "police")
-        box(0.018, 0.12, 0.65, q * 0.279, 0.53, 0, blue, g);
+      box(0.022, 0.16, 0.36, q * 0.24, 0.73, -0.04, p.glass, g);
       for (const z of [-0.36, 0.36]) {
         const tire = cylinder(0.13, 0.08, q * 0.27, 0.38, z, p.dark, g);
         tire.rotation.z = Math.PI / 2;
       }
     }
-    const lamps = [];
-    if (kind === "police")
-      for (const q of [-1, 1])
-        lamps.push(
-          box(
-            0.16,
-            0.065,
-            0.095,
-            q * 0.09,
-            0.85,
-            -0.05,
-            q < 0 ? redLamp : blueLamp,
-            g,
-          ),
-        );
-    if (van) {
-      rod([0, 0.99, -0.25], [0, 1.25, -0.25], 0.025, p.dark, g);
-      const dish = mesh(
-        new THREE.SphereGeometry(0.17, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2),
-        p.trim,
-        0,
-        1.24,
-        -0.25,
-        g,
-      );
-      dish.rotation.z = 0.6;
-      label("NEWS", 0.42, 0.17, 0, 0.85, 0.36, {
-        parent: g,
-        background: null,
-        color: "#345548",
-        size: 65,
-      });
-    }
-    return { g, lamps };
+    return { g };
   }
-  const getaway = vehicle("getaway"),
-    cops = Array.from({ length: 3 }, () => vehicle("police")),
-    news = vehicle("news");
+  const getaway = vehicle();
   const police = Array.from({ length: 3 }, () => person(0, 0, blue)),
     reporter = person(-1.9, -5.3, p.cream);
   police.forEach((a) => {
@@ -205,74 +151,6 @@ export function createHeistScene({
     [0.57, -7],
     [0.57, -12.7],
   ]);
-  const spots = [
-    [-4.7, -1.15],
-    [-3.25, -1.15],
-    [-1.15, -3.9],
-  ];
-  const east = [];
-  for (let distance = -10; distance < 14; distance += 0.25) {
-    const p = carPose({ junction: 1, lane: 1, turn: "straight", p: distance });
-    east.push([p.x, p.z]);
-    if (p.out > 7) break;
-  }
-  const south = [];
-  for (let distance = 0; distance <= lakeRouteLength(1); distance += 0.25) {
-    const p = lakeCarPose(distance, 1);
-    south.push([p.x, p.z]);
-  }
-  const policeIn = [
-    route([
-      [-0.57, -12.7],
-      [-0.57, -6],
-      [-0.57, -2.2],
-      [-1.3, -1.15],
-      spots[0],
-    ]),
-    route([...east, [2, -0.57], [0, -0.57], [-1.4, -0.8], spots[1]]),
-    route([
-      ...south,
-      [0.57, 4],
-      [0.57, 0],
-      [0.3, -1.5],
-      [-1.15, -2.2],
-      spots[2],
-    ]),
-  ];
-  const policeOut = [
-    route([
-      spots[0],
-      [-3, -1.15],
-      [-1.65, -1.15],
-      [-0.57, -2.4],
-      [-0.57, -12.7],
-    ]),
-    route([
-      spots[1],
-      [-1.8, -1.15],
-      [0, 0.57],
-      [5, 0.57],
-      [12, 0.57],
-      [12.8, 1.8],
-      [14.4, 2.1],
-      [16.1, 1.5],
-      [17, 0.57],
-      [24.7, 0.57],
-    ]),
-    route([spots[2], [-1.1, -2.4], [0.57, -2.2], [0.57, -6], [0.57, -12.7]]),
-  ];
-  const newsIn = route([
-      [-1.15, -12.7],
-      [-1.15, -8],
-      [-1.15, -5.5],
-    ]),
-    newsOut = route([
-      [-1.15, -5.5],
-      [-1.15, -8],
-      [-1.15, -12.7],
-    ]);
-  const arrivalTimes = [15, 14.7, 14.6],
-    arrivalDurations = [2.1, 3.3, 3.9];
   function drive(car, path, progress) {
     const f = THREE.MathUtils.clamp(progress, 0, 1),
       pos = path.getPointAt(f),
@@ -377,50 +255,33 @@ export function createHeistScene({
         }
       } else stroll(a, robberIn[i], enter / 2.1, t * 1.3);
     });
-    cops.forEach((car, i) => {
-      const arrive = arrivalTimes[i],
-        leave = HEIST_TIMING.departure + i * 0.55;
-      car.g.visible = running && t >= arrive && t < leave + 3.4;
-      if (car.g.visible)
-        drive(
-          car,
-          t < leave ? policeIn[i] : policeOut[i],
-          t < leave
-            ? 1 - (1 - Math.min(1, (t - arrive) / arrivalDurations[i])) ** 1.6
-            : (t - leave) / 3.4,
+    const response = sim.services.snapshot().response;
+    const copCars = response.filter((unit) => unit.kind === "police");
+    police.forEach((officer, i) => {
+      const unit = copCars[i],
+        pose = unit?.position;
+      officer.g.visible = running && unit?.phase === "parked";
+      if (pose) {
+        officer.g.position.set(
+          pose.x - Math.cos(pose.yaw) * 0.55,
+          0.42,
+          pose.z + Math.sin(pose.yaw) * 0.55,
         );
-      car.lamps.forEach((lamp, index) => {
-        lamp.visible = Math.floor((t ?? 0) * 12 + i) % 2 === index;
-      });
-      const officer = police[i];
-      officer.g.visible =
-        running &&
-        t >= HEIST_TIMING.investigation &&
-        t < HEIST_TIMING.departure;
-      officer.g.position.set(
-        i < 2 ? spots[i][0] : -1.9,
-        0.42,
-        i < 2 ? -1.88 : spots[i][1],
-      );
-      officer.g.rotation.y = Math.PI;
+        officer.g.rotation.y = pose.yaw;
+      }
       officer.animate(t ?? 0, false);
     });
-    news.g.visible = running && t >= 15.5 && t < 40;
-    if (news.g.visible)
-      drive(
-        news,
-        t < 35 ? newsIn : newsOut,
-        t < 35 ? Math.min(1, (t - 15.5) / 3.4) : (t - 35) / 5,
-      );
-    reporter.g.visible =
-      running && t >= HEIST_TIMING.investigation && t < HEIST_TIMING.departure;
+    const news = response.find((unit) => unit.kind === "news");
+    reporter.g.visible = running && news?.phase === "parked";
+    if (news?.position)
+      reporter.g.position.set(news.position.x - 0.55, 0.42, news.position.z);
     reporter.g.rotation.y = -Math.PI / 2;
     diagnostics = {
       ...sim.discoveries.heist.snapshot(),
       time: t,
       maskedFigures: robbers.filter((a) => a.g.visible).length,
-      policeCars: cops.filter((car) => car.g.visible).length,
-      newsVan: news.g.visible,
+      policeCars: copCars.filter((unit) => unit.position).length,
+      newsVan: !!news?.position,
       manholeOpen: lid.rotation.z > 0.4,
       getawayVisible: getaway.g.visible,
       getawayMoving:
@@ -429,7 +290,15 @@ export function createHeistScene({
       escapedByCar: running && t >= HEIST_TIMING.getawayGone ? 1 : 0,
       escapedThroughManhole: running && t >= 14.2 ? 2 : 0,
       policeApproaches: ["north", "east", "lakefront"],
-      policePositions: cops.map((car) => car.g.position.toArray()),
+      policePositions: copCars.map((unit) =>
+        unit.position
+          ? [
+              unit.position.x,
+              riverBridgeHeight(unit.position.x, unit.position.z),
+              unit.position.z,
+            ]
+          : null,
+      ),
     };
   }
   return {

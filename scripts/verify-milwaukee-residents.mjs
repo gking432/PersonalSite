@@ -1,7 +1,10 @@
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 import { mkdir } from "node:fs/promises";
-import { revealDiscovery } from "./traffic-discovery-helpers.mjs";
+import {
+  revealDiscovery,
+  advanceResponseTraffic,
+} from "./traffic-discovery-helpers.mjs";
 const output = "/tmp/milwaukee-residents";
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ channel: "chrome", headless: true });
@@ -60,7 +63,7 @@ try {
     if (hit < 4) await advance(1.05);
   }
   assert.equal((await person("cityWalk")).phase, "down");
-  await advance(4.5);
+  await advanceResponseTraffic(page, "ambulance-arrived");
   assert.equal((await snap()).scene.pedestrians.rescue.phase, "approaching");
   await page.screenshot({ path: `${output}/ambulance.png` });
   const job = await page.evaluate(
@@ -69,7 +72,7 @@ try {
   await advance(job.pickup - job.time + 0.3);
   assert.equal((await person("cityWalk")).phase, "carried");
   await page.screenshot({ path: `${output}/pickup.png` });
-  await advance(job.depart + 5);
+  await advanceResponseTraffic(page, "ambulance-done");
   assert.equal((await snap()).scene.pedestrians.pickups, 1);
   await page.evaluate(() => {
     window.__trafficCity.api.reset();

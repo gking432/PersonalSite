@@ -749,7 +749,10 @@ export function createCityScene(host, controls, onEscape) {
     const group = new THREE.Group();
     city.add(group);
     const l = car.length,
-      paint = car.ambulance ? palette.white : colors[car.color];
+      paint =
+        car.ambulance || car.police || car.news
+          ? palette.white
+          : colors[car.color];
     box(
       0.39,
       car.bus || car.ambulance ? 0.31 : 0.18,
@@ -833,12 +836,30 @@ export function createCityScene(host, controls, onEscape) {
       ),
     );
     const beacons = [];
-    if (car.ambulance) {
+    if (car.ambulance || car.police) {
       const blue = lampMaterials.blue;
+      const roof = car.police ? 0.8 : 0.86;
       beacons.push(
-        box(0.15, 0.08, 0.13, -0.1, 0.86, 0.19, lampMaterials.red, group),
+        box(0.15, 0.08, 0.13, -0.1, roof, 0.1, lampMaterials.red, group),
       );
-      beacons.push(box(0.15, 0.08, 0.13, 0.1, 0.86, 0.19, blue, group));
+      beacons.push(box(0.15, 0.08, 0.13, 0.1, roof, 0.1, blue, group));
+    }
+    if (car.police)
+      for (const side of [-1, 1])
+        box(0.018, 0.09, l * 0.7, side * 0.202, 0.51, 0, palette.dark, group);
+    if (car.news) {
+      cylinder(0.025, 0.15, 0, 0.91, -0.2, palette.dark, group);
+      const dish = mesh(
+        new THREE.SphereGeometry(0.12, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2),
+        palette.trim,
+        0,
+        0.99,
+        -0.2,
+        group,
+      );
+      dish.rotation.z = 0.6;
+    }
+    if (car.ambulance) {
       for (const side of [-1, 1]) {
         box(
           0.018,
@@ -862,7 +883,14 @@ export function createCityScene(host, controls, onEscape) {
         );
       }
     }
-    return { group, brakes, blinkers, beacons };
+    return {
+      group,
+      brakes,
+      blinkers,
+      beacons,
+      ambulance: car.ambulance,
+      police: car.police,
+    };
   }
   const effects = [];
   const effectTemplates = {};
@@ -1382,8 +1410,8 @@ export function createCityScene(host, controls, onEscape) {
       beaconsOn: [...carMeshes.values()]
         .flatMap((m) => m.beacons)
         .filter((b) => b.visible).length,
-      ambulances: [...carMeshes.values()].filter((m) => m.beacons.length)
-        .length,
+      ambulances: [...carMeshes.values()].filter((m) => m.ambulance).length,
+      policeCars: [...carMeshes.values()].filter((m) => m.police).length,
       effects: effects.length,
       honks: effects.filter((f) => f.honk).length,
     }),

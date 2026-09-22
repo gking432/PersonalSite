@@ -1,4 +1,3 @@
-import { walkRoute } from "./pedestrianNavigation.js";
 import { pathPose } from "./pedestrianMotion.js";
 
 const distance = (a, b) => Math.hypot(b[0] - a[0], b[1] - a[1]);
@@ -88,44 +87,6 @@ export function escapePath(definition, clock) {
   path.push(...exit.tail);
   return path.filter((point, i) => !i || distance(point, path[i - 1]) > 0.001);
 }
-export function rescueRoute(patient) {
-  const [x, z] = [patient.x, patient.z];
-  if (z > 7) {
-    const stopX = Math.max(1.9, Math.min(20.8, x));
-    // Enter from the east, skirt the fountain, and use the lakefront street.
-    const path = [
-      [25.7, 0.58],
-      [17, 0.58],
-      [16, 1.35],
-      [14.98, 2.2],
-      [14.98, 6.1],
-      [13.8, 7.7],
-      [stopX, 8.3],
-    ];
-    if (stopX > 14.4) path.splice(2, 4, [21.2, 0.58], [21.2, 6.1]);
-    return path;
-  }
-  const road = x > 7 ? 14.4 : 0;
-  const stopZ = Math.max(-12.8, Math.min(6.1, z));
-  const path = [
-    [road + 0.62, -15],
-    [road + 0.62, -4],
-  ];
-  if (stopZ < -4)
-    return [
-      [road + 0.62, -15],
-      [road + 0.62, stopZ],
-    ];
-  if (road && stopZ > -2)
-    path.push(
-      [road + 0.62, -1.8],
-      [road + 1.65, -0.5],
-      [road + 1.4, 1],
-      [road + 0.62, 2.2],
-    );
-  path.push([road + 0.62, stopZ]);
-  return path;
-}
 export class PedestrianReactions {
   constructor() {
     this.states = {};
@@ -192,30 +153,26 @@ export class PedestrianReactions {
         ([, s]) => s.phase === "down",
       );
       if (patient) {
-        const [id, s] = patient,
-          path = rescueRoute(s),
-          stop = path.at(-1);
-        const medicPath = walkRoute(stop, [s.x, s.z], this.obstacles);
-        const walk = Math.max(1.2, pathLength(medicPath) / 2.2);
+        const [id, s] = patient;
         this.rescue = {
           id,
           time: 0,
-          path,
-          stop,
           patient: [s.x, s.z],
-          medicPath,
-          walk,
-          pickup: 4.5 + walk + 0.8,
-          depart: 4.5 + walk * 2 + 1.6,
+          arrived: false,
+          readyToLeave: false,
+          departed: false,
+          pickup: Infinity,
+          depart: Infinity,
         };
       }
     }
     if (this.rescue) {
       const job = this.rescue,
         s = this.states[job.id];
-      job.time += dt;
+      if (job.arrived) job.time += dt;
       if (job.time >= job.pickup) s.phase = "carried";
-      if (job.time >= job.depart + 4.5) {
+      if (job.time >= job.depart) job.readyToLeave = true;
+      if (job.departed) {
         s.phase = "away";
         s.time = 0;
         this.pickups++;

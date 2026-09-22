@@ -77,29 +77,6 @@ export function createPedestrianScene({
     badge.visible = health.visible = false;
     return { ...def, badge, question, angry, health, fill };
   });
-  const ambulance = group();
-  box(0.64, 0.24, 1.55, 0, 0.49, 0, p.ivory, ambulance);
-  box(0.61, 0.55, 0.98, 0, 0.8, -0.22, p.white, ambulance);
-  box(0.55, 0.36, 0.48, 0, 0.65, 0.51, p.ivory, ambulance);
-  box(0.47, 0.22, 0.024, 0, 0.78, 0.75, p.glass, ambulance);
-  for (const x of [-0.325, 0.325]) {
-    box(0.015, 0.12, 1.42, x, 0.53, 0, p.brick, ambulance);
-    box(0.017, 0.28, 0.075, x, 0.88, -0.2, p.brick, ambulance);
-    box(0.017, 0.075, 0.28, x, 0.88, -0.2, p.brick, ambulance);
-    for (const z of [-0.52, 0.52]) {
-      const tire = cylinder(0.13, 0.075, x, 0.38, z, p.dark, ambulance);
-      tire.rotation.z = Math.PI / 2;
-    }
-  }
-  const red = material("#fa6657", {
-      emissive: "#ff4433",
-      emissiveIntensity: 2,
-    }),
-    blue = material("#74aaf5", { emissive: "#3377ff", emissiveIntensity: 2 });
-  const lamps = [
-    box(0.2, 0.08, 0.15, -0.13, 1.13, 0.18, red, ambulance),
-    box(0.2, 0.08, 0.15, 0.13, 1.13, 0.18, blue, ambulance),
-  ];
   const medic = group();
   const skin = material("#d8aa81");
   cylinder(0.11, 0.3, 0, 0.4, 0, p.green, medic, 0.095);
@@ -121,7 +98,7 @@ export function createPedestrianScene({
   mesh(new THREE.SphereGeometry(0.105, 10, 8), skin, 0, 0.48, 0.87, stretcher);
   for (const x of [-0.22, 0.22])
     rod([x, 0.31, 0.07], [x, 0.31, 1], 0.016, p.dark, stretcher);
-  ambulance.visible = medic.visible = false;
+  medic.visible = false;
   let lastState = null,
     diagnostics = [];
   function update(sim) {
@@ -217,18 +194,9 @@ export function createPedestrianScene({
       });
     }
     const job = lastState.rescue;
-    ambulance.visible = !!job;
     medic.visible = false;
     if (job) {
-      const t = job.time,
-        departing = t >= job.depart;
-      const pose = pathPose(
-        job.path,
-        departing ? 1 - (t - job.depart) / 4.5 : Math.min(1, t / 4.5),
-      );
-      ambulance.position.set(pose.x, riverBridgeHeight(pose.x, pose.z), pose.z);
-      ambulance.rotation.y = pose.yaw + (departing ? Math.PI : 0);
-      lamps.forEach((l, i) => (l.visible = Math.floor(t * 12) % 2 === i));
+      const t = job.time;
       medic.visible = t >= 4.5 && t < job.depart;
       if (medic.visible) {
         const carry = t >= job.pickup;
@@ -236,7 +204,7 @@ export function createPedestrianScene({
           ? 1 - ease((t - job.pickup) / job.walk)
           : ease((t - 4.5) / job.walk);
         const m = pathPose(job.medicPath, f);
-        medic.position.set(m.x, 0.42, m.z);
+        medic.position.set(m.x, 0.42 + riverBridgeHeight(m.x, m.z), m.z);
         medic.rotation.y = m.yaw + (carry ? Math.PI : 0);
         legs.forEach(
           (l, i) => (l.rotation.x = Math.sin(t * 12 + i * Math.PI) * 0.4),
@@ -304,14 +272,13 @@ export function createPedestrianScene({
         ? {
             id: lastState.rescue.id,
             time: lastState.rescue.time,
-            phase:
-              lastState.rescue.time < 4.5
-                ? "arriving"
-                : lastState.rescue.time < lastState.rescue.pickup
-                  ? "approaching"
-                  : lastState.rescue.time < lastState.rescue.depart
-                    ? "carrying"
-                    : "departing",
+            phase: !lastState.rescue.arrived
+              ? "arriving"
+              : lastState.rescue.time < lastState.rescue.pickup
+                ? "approaching"
+                : lastState.rescue.time < lastState.rescue.depart
+                  ? "carrying"
+                  : "departing",
           }
         : null,
       pickups: lastState?.pickups || 0,

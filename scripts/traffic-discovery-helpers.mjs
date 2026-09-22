@@ -24,3 +24,35 @@ export async function revealDiscovery(page, id) {
   }
   assert.fail(`Could not reveal ${id} by swivelling the city`);
 }
+
+// Drive the real simulation through response journeys, with safe light phases.
+// Cinematic timestamps alone must never teleport a response vehicle to its stop.
+export async function advanceResponseTraffic(page, goal) {
+  const reached = await page.evaluate((goal) => {
+    const { sim, api } = window.__trafficCity;
+    api.setEnabled(false);
+    sim.start();
+    sim.nextArrival = sim.bridge.nextBoat = Infinity;
+    const signals = structuredClone(sim.signals);
+    const pickups = sim.discoveries.pedestrians.pickups;
+    const done = () => {
+      if (goal === "dispatched")
+        return sim.cars.filter((c) => c.police).length === 3;
+      if (goal === "arrived") return sim.discoveries.heist.responseReady;
+      if (goal === "left") return sim.discoveries.heist.time === null;
+      if (goal === "ambulance-arrived")
+        return sim.discoveries.pedestrians.rescue?.arrived;
+      return sim.discoveries.pedestrians.pickups > pickups;
+    };
+    for (let i = 0; i < 180 * 120 && !done(); i++) {
+      const phase = (i / 120) % 24;
+      sim.signals.water.color = phase < 10 ? "green" : "red";
+      sim.signals.wisconsin.color = phase >= 12 && phase < 22 ? "green" : "red";
+      sim.tick(1 / 120);
+    }
+    sim.signals = signals;
+    api.refresh();
+    return !!done();
+  }, goal);
+  assert.ok(reached, `Response traffic did not finish: ${goal}`);
+}

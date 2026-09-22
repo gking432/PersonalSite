@@ -1,4 +1,7 @@
-import { revealDiscovery } from "./traffic-discovery-helpers.mjs";
+import {
+  revealDiscovery,
+  advanceResponseTraffic,
+} from "./traffic-discovery-helpers.mjs";
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 import { mkdir } from "node:fs/promises";
@@ -115,7 +118,7 @@ try {
   assert.equal((await snap()).scene.heist.maskedFigures, 3);
   await freeze({ heist: 12.7 });
   assert.ok((await snap()).scene.heist.manholeOpen);
-  await freeze({ heist: 20 });
+  await advanceResponseTraffic(page, "arrived");
   assert.equal((await snap()).scene.heist.policeCars, 3);
   assert.equal((await snap()).scene.heist.newsVan, true);
   assert.equal((await snap()).scene.heist.phase, "investigation");
@@ -125,11 +128,7 @@ try {
   assert.equal((await snap()).scene.heist.phase, "investigation");
   await freeze({ heist: 34.1 });
   assert.equal((await snap()).scene.heist.phase, "departure");
-  await page.evaluate(() => {
-    const { sim, api } = window.__trafficCity;
-    sim.discoveries.tick(9);
-    api.refresh();
-  });
+  await advanceResponseTraffic(page, "left");
   assert.equal((await snap()).scene.heist.running, false);
   assert.equal((await snap()).scene.heist.policeCars, 0);
   assert.equal((await snap()).scene.heist.newsVan, false);

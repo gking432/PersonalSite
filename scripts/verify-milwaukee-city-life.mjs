@@ -1,4 +1,7 @@
-import { revealDiscovery } from "./traffic-discovery-helpers.mjs";
+import {
+  revealDiscovery,
+  advanceResponseTraffic,
+} from "./traffic-discovery-helpers.mjs";
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 import { mkdir } from "node:fs/promises";
@@ -170,6 +173,7 @@ try {
   assert.equal((await snap()).scene.heist.getawayVisible, false);
   assert.equal((await snap()).scene.heist.escapedThroughManhole, 2);
   await freeze({ heist: 15.2 });
+  await advanceResponseTraffic(page, "dispatched");
   const response = (await snap()).scene.heist;
   assert.equal(response.policeCars, 3);
   assert.deepEqual(response.policeApproaches, ["north", "east", "lakefront"]);
@@ -182,7 +186,7 @@ try {
         ) > 3,
       );
   await page.screenshot({ path: `${output}/police-rush.png` });
-  await freeze({ heist: 20 });
+  await advanceResponseTraffic(page, "arrived");
   assert.equal((await snap()).scene.heist.phase, "investigation");
   assert.equal((await snap()).scene.heist.newsVan, true);
   await freeze({ heist: 33.9 });
