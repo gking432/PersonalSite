@@ -148,3 +148,31 @@
 .traffic-city__weather:hover {
   text-decoration: underline;
 }
+
+/* The sky and geometry share the text-shaped mask; controls stay above both. */
+.traffic-city__model canvas:not(.traffic-city__sky) {
+  position: relative;
+}
+.traffic-city__sky {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.traffic-city__building-switch {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  pointer-events: none;
+}
+.traffic-city__building-switch:focus-visible {
+  outline: 2px solid #edb756;
+  outline-offset: 3px;
+  border-radius: 50%;
+  background: #ffc85b22;
+  z-index: 2;
+}

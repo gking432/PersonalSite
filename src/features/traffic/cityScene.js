@@ -1,3 +1,5 @@
+import { createCityLighting } from "./cityLighting";
+import { createCitySky } from "./citySky";
 import { createWorldAtmosphere } from "./worldAtmosphere";
 import { createPedestrianScene } from "./pedestrianScene";
 import { createHopTracks, createHopVehicle } from "./hopScene";
@@ -34,6 +36,8 @@ export function createCityScene(host, controls, onEscape) {
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.17;
   host.appendChild(renderer.domElement);
+  const homepage = !!host.closest(".studio-hero");
+  const backdrop = homepage ? createCitySky(host) : null;
   const scene = new THREE.Scene();
   const city = new THREE.Group();
   scene.add(city);
@@ -120,9 +124,27 @@ export function createCityScene(host, controls, onEscape) {
   const unitBox = new THREE.BoxGeometry(1, 1, 1);
   geometries.add(unitBox);
   const batches = new Map();
+  const lighting = createCityLighting({
+    city,
+    host,
+    enabled: homepage,
+    onToggle: (id) => controls.toggleBuilding?.(id),
+  });
+  function buildingMaterial(mat) {
+    return lighting.activeId &&
+      (mat.userData.worldWindow ||
+        mat.userData.buildingWindowSource ||
+        mat === palette.glass ||
+        mat === discoveryWindows)
+      ? lighting.windowMaterial(mat)
+      : mat;
+  }
+  // Active ownership is attached to each instance, not the shared draw batch.
+
   function box(w, h, d, x, y, z, mat, parent = city, ry = 0) {
     if (parent === city && y + h / 2 <= 0.41 && Math.max(w, d) > 2)
       mat = terrainMaterial(mat);
+    mat = buildingMaterial(mat);
     const matrix = new THREE.Matrix4().compose(
       new THREE.Vector3(x, y, z),
       new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), ry),
@@ -130,10 +152,11 @@ export function createCityScene(host, controls, onEscape) {
     );
     if (parent === city) {
       if (!batches.has(mat)) batches.set(mat, []);
-      batches.get(mat).push(matrix);
+      batches.get(mat).push({ matrix, buildingId: lighting.activeId });
       return;
     }
     const mesh = new THREE.Mesh(unitBox, mat);
+    mesh.userData.buildingId = lighting.activeId;
     mesh.matrix.copy(matrix);
     mesh.matrixAutoUpdate = false;
     mesh.castShadow = mesh.receiveShadow = true;
@@ -151,7 +174,8 @@ export function createCityScene(host, controls, onEscape) {
       )
         mat = terrainMaterial(mat);
     }
-    const m = new THREE.Mesh(geometry, mat);
+    const m = new THREE.Mesh(geometry, buildingMaterial(mat));
+    m.userData.buildingId = lighting.activeId;
     m.position.set(x, y, z);
     m.castShadow = m.receiveShadow = true;
     parent.add(m);
@@ -357,7 +381,30 @@ export function createCityScene(host, controls, onEscape) {
 
   const buildingBounds = [];
   const clockTowers = [];
-  function building({
+  function building(options) {
+    const names =
+      options.x === 3.55
+        ? ["iron-block", "Iron Block"]
+        : options.x === -3.38
+          ? ["bank", "Bank"]
+          : options.x === 3.48
+            ? ["water-street", "Water Street café"]
+            : options.landmark === "market"
+              ? ["market", "Public Market"]
+              : options.landmark === "clock"
+                ? ["clock-tower", "Allen-Bradley Clock Tower"]
+                : options.landmark
+                  ? ["baird", "Baird / U.S. Bank tower"]
+                  : [];
+    const record = lighting.begin({ ...options, id: names[0], name: names[1] });
+    try {
+      drawBuilding(options);
+    } finally {
+      lighting.end();
+    }
+    return record?.id;
+  }
+  function drawBuilding({
     x,
     z,
     w,
@@ -486,6 +533,7 @@ export function createCityScene(host, controls, onEscape) {
     glass: discoveryWindows,
     ornate: true,
   });
+  lighting.resume("iron-block");
   for (let i = 0; i < 6; i++) {
     cylinder(0.035, 0.48, 2.49 + i * 0.4, 0.78, 2.245, palette.trim);
     cylinder(0.035, 0.48, 2.3, 0.78, 2.47 + i * 0.43, palette.trim);
@@ -505,8 +553,10 @@ export function createCityScene(host, controls, onEscape) {
   for (let i = 0; i < 5; i++)
     box(0.36, 0.1, 0.48, 2.69 + i * 0.43, 0.94, 2.13, palette.green);
 
+  lighting.end();
   // A compressed, stepped cream tower recalls 100 East without hiding the game.
   building({ x: -3.38, z: -3.72, w: 2.35, d: 2.65, h: 3.1, floors: 6 });
+  lighting.resume("bank");
   box(1.92, 0.64, 2.18, -3.38, 3.91, -3.72, palette.ivory);
   for (let i = 0; i < 4; i++)
     box(0.21, 0.38, 0.035, -4.07 + i * 0.46, 3.92, -2.61, palette.glass);
@@ -519,6 +569,7 @@ export function createCityScene(host, controls, onEscape) {
   );
   crown.rotation.y = Math.PI / 4;
   cylinder(0.035, 0.42, -3.38, 5.16, -3.72, palette.dark);
+  lighting.end();
   // Red masonry, a copper roof and a little corner café on the east block.
   building({
     x: 3.48,
@@ -530,6 +581,7 @@ export function createCityScene(host, controls, onEscape) {
     body: palette.brick,
     ornate: true,
   });
+  lighting.resume("water-street");
   box(2.1, 0.13, 2.33, 3.48, 3.32, -3.7, palette.green);
   label("WATER STREET", 1.7, 0.22, 3.48, 1.13, -2.375, {
     color: "#eee2c2",
@@ -538,6 +590,7 @@ export function createCityScene(host, controls, onEscape) {
   });
   for (let i = 0; i < 6; i++)
     box(0.34, 0.12, 0.48, 2.52 + i * 0.39, 1.02, -2.23, palette.green);
+  lighting.end();
   // Public Market occupies the original pigeon-roof building's footprint.
   building({ x: -3.37, z: 3.65, w: 2.22, d: 2.8, h: 1.65, landmark: "market" });
 
@@ -569,8 +622,16 @@ export function createCityScene(host, controls, onEscape) {
   ])
     tree(...p);
   function lamp(x, z) {
+    lighting.street(x, z);
     cylinder(0.035, 1.35, x, 1.03, z, palette.dark);
-    cylinder(0.11, 0.15, x, 1.77, z, palette.dark);
+    cylinder(
+      0.11,
+      homepage ? 0.05 : 0.15,
+      x,
+      homepage ? 1.67 : 1.77,
+      z,
+      palette.dark,
+    );
     const glow = material("#fff0bb", {
       emissive: "#e7bf6e",
       emissiveIntensity: 0.5,
@@ -584,6 +645,25 @@ export function createCityScene(host, controls, onEscape) {
     [1.85, -4.0],
     [4.6, 1.84],
     [-3.25, -1.83],
+    ...(homepage
+      ? [
+          [8, -1.83],
+          [12.3, 1.84],
+          [16, -1.83],
+          [20, 1.84],
+          [-7.15, -5.7],
+          [-7.15, 4.8],
+          [2, -9.65],
+          [7.5, -9.65],
+          [12, -9.65],
+          [18, -9.65],
+          [22, -9.65],
+          [3, 7.45],
+          [9, 7.45],
+          [14, 7.45],
+          [21, 7.45],
+        ]
+      : []),
   ])
     lamp(...p);
   for (const [x, z] of [
@@ -634,6 +714,7 @@ export function createCityScene(host, controls, onEscape) {
     off: material("#263c32"),
   };
   const additions = createCityAdditions({
+    lighting,
     city,
     palette,
     box,
@@ -659,6 +740,7 @@ export function createCityScene(host, controls, onEscape) {
     texture,
   });
   const waterfront = createWaterfrontScene({
+    lighting,
     city,
     palette,
     box,
@@ -779,12 +861,14 @@ export function createCityScene(host, controls, onEscape) {
   // Batch the architecture: hundreds of small details, only a few static draws.
   for (const [mat, matrices] of batches) {
     const instances = new THREE.InstancedMesh(unitBox, mat, matrices.length);
-    matrices.forEach((m, i) => instances.setMatrixAt(i, m));
+    matrices.forEach((entry, i) => instances.setMatrixAt(i, entry.matrix));
+    instances.userData.buildingIds = matrices.map((entry) => entry.buildingId);
     instances.castShadow = instances.receiveShadow = true;
     city.add(instances);
   }
 
   const atmosphere = createWorldAtmosphere({
+    homepage,
     city,
     sun,
     sky,
@@ -1277,6 +1361,13 @@ export function createCityScene(host, controls, onEscape) {
       occluded,
     );
     positionButtons();
+    lighting.position(
+      project,
+      (x, y) => pageLayout.protects(x, y),
+      width,
+      height,
+    );
+    backdrop?.draw(project, width, height);
     renderer.render(scene, camera);
   }
   function resize() {
@@ -1293,7 +1384,12 @@ export function createCityScene(host, controls, onEscape) {
   }
   let currentSim = null;
   function update(sim, dt = 0, world) {
-    if (world) atmosphere.update(world, dt);
+    if (world) {
+      atmosphere.update(world, dt);
+      lighting.update(world);
+      backdrop?.update(world);
+      if (homepage) sim.discoveries.windows = lighting.on("iron-block");
+    }
     currentSim = sim;
     if (!sim.discoveries.pedestrians.obstacles.length)
       sim.discoveries.pedestrians.obstacles = buildingBounds.map((b) => [
@@ -1466,6 +1562,7 @@ export function createCityScene(host, controls, onEscape) {
     boat.position.y = 0.38 + Math.sin(sim.time * 1.6) * 0.022;
   }
   function clear() {
+    lighting.reset();
     for (const m of carMeshes.values()) city.remove(m.group);
     carMeshes.clear();
     additions.clear();
@@ -1482,6 +1579,42 @@ export function createCityScene(host, controls, onEscape) {
     render,
     update,
     clear,
+    setBuildingLight(id, value) {
+      const changed = lighting.set(id, value);
+      if (changed && currentSim)
+        currentSim.discoveries.windows = lighting.on("iron-block");
+      return changed;
+    },
+    buildingAt(clientX, clientY) {
+      if (!homepage) return null;
+      view();
+      const rect = host.getBoundingClientRect(),
+        x = clientX - rect.left,
+        y = clientY - rect.top;
+      if (pageLayout.protects(x, y)) return null;
+      const ray = new THREE.Raycaster();
+      ray.setFromCamera(
+        new THREE.Vector2((x / width) * 2 - 1, 1 - (y / height) * 2),
+        camera,
+      );
+      const hit = ray.intersectObject(city, true).find(({ object }) => {
+        if (
+          !object.isMesh ||
+          object.userData.lightPool ||
+          object.material.transparent
+        )
+          return false;
+        for (let node = object; node; node = node.parent)
+          if (!node.visible) return false;
+        return true;
+      });
+      return (
+        hit?.object.userData.buildingId ||
+        hit?.object.userData.buildingIds?.[hit.instanceId] ||
+        null
+      );
+    },
+    buildingTargets: () => lighting.targets(project),
     rotate(dx, dy) {
       yaw += dx * 0.008;
       pitch = Math.max(0.48, Math.min(1.16, pitch + dy * 0.004));
@@ -1509,6 +1642,8 @@ export function createCityScene(host, controls, onEscape) {
     },
     diagnostics: () => ({
       atmosphere: atmosphere.diagnostics(),
+      lighting: lighting.diagnostics(),
+      sky: backdrop?.diagnostics(),
       balcony: balcony.diagnostics(),
       pedestrians: pedestrianScene.diagnostics(),
       layout: pageLayout.diagnostics(),
@@ -1571,6 +1706,8 @@ export function createCityScene(host, controls, onEscape) {
       disposed = true;
       pageLayout.dispose();
       atmosphere.dispose();
+      backdrop?.dispose();
+      lighting.dispose();
       clear();
       for (const t of textures) t.dispose();
       for (const g of geometries) g.dispose();

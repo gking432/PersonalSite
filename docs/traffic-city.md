@@ -88,3 +88,31 @@ node scripts/prerender.mjs
 36 model/physics tests cover all twelve routes at each intersection, continuous transfers, queued roundabout traffic and fairness, discovery timing/reset and original-footprint locations, randomized arrival timing and natural both-green crashes, independent manual lights, car/boat crashes and overflow, bridge passage and webpage collisions, plus continuous river routes, bridge clearance, long-edge water fade, helicopter heading and landing, independent walkers and the timed secret sequence. Lakefront checks cover continuous transfers in both directions and a full queue backing around the bend before draining on green. The existing 15-check browser flow verifies traffic controls and spill handoffs, including rendered lamp heads after rotation and resize, reset, and mobile import exclusion. The discovery browser flow activates all twenty objects at their projected positions, verifies return to rest, repeat-click protection, drag suppression, keyboard access, resize/rotation, and Web Audio start/end/cleanup. The waterfront browser flow additionally verifies button/keyboard/trackpad zoom, real two-touch pinch input without accidental clicks, all heist milestones and departure, unchanged manual signals, walking positions, musical-note visibility and absence of browser errors. The city-life flow verifies idle walking, moving hit targets, stumble recovery, bench return, 3.2× zoom and drag panning, Shift-drag rotation, all fishing phases, driver boarding and early getaway, two sewer escapes, distinct police approaches, and the 15-second investigation. Model tests also verify pedestrian clock isolation, fishing order and bridge slope limits. Screenshots are written outside the repository under `/tmp/little-milwaukee`, `/tmp/traffic-homepage` `/tmp/milwaukee-waterfront`, and `/tmp/milwaukee-city-life`.
 
 These are local browser, simulation and production-build checks, not deployment or app-store claims. The standalone game was not modified or revalidated by this homepage update.
+
+## Homepage lighting and sky — September 22, 2026
+
+The portfolio homepage now uses Milwaukee's existing solar clock for 19 street
+lamps, individually lit interiors and entrance sconces on all 22 buildings, and
+five bounded, unshadowed lights on landmark façades. Small feathered light pools
+provide most of the exterior illumination without a separate GPU light per lamp.
+Window materials belong to each building; clicking actual building geometry
+switches only that building. Keyboard switches expose the same state. Manual
+choices persist through changes in daylight until Reset restores automatic
+lighting. The Iron Block window discovery and pedestrian refuge share this state.
+
+A canvas behind the 3D renderer draws daylight, sunrise/sunset colors and a cloudy
+or starry night wash. Its transparent outer edge follows the projected city as it
+rotates, pans and zooms. It uses the exact homepage text mask used by the renderer,
+so the cream halos protect the headline and surrounding copy. Stars dim with cloud
+cover; the sky animates before traffic starts. These additions are enabled only
+inside the portfolio hero, with no change to the separately hosted mobile Site.
+
+Local verification on September 22, 2026: `verify-milwaukee-lighting.mjs` checks all
+22 independent switches, a real apartment-roof click, keyboard activation,
+drag suppression, existing window/helicopter discoveries, manual overrides across
+clock changes, reset, four solar phases, text masking and transparent canvas
+edges. `verify-milwaukee-weather.mjs` covers weather, offline behavior and avoiding
+Three.js/weather loading on the mobile homepage. `verify-milwaukee-page-layout.mjs`
+covers text halos, rotation/panning, website links and car handoff to page physics.
+Screenshots are local verification artifacts in `/tmp/milwaukee-lighting`; they
+are not evidence of a production deployment.

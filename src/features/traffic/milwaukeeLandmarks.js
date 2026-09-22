@@ -146,6 +146,7 @@ export function createClockTower({
     emissive: "#fbe7ac",
     emissiveIntensity: 0.36,
   });
+  glow.userData.buildingWindowSource = true;
   const faces = [];
   for (let i = 0; i < 4; i++) {
     const face = new THREE.Group();

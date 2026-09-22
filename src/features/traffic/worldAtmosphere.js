@@ -2,6 +2,7 @@ import * as THREE from "three";
 const mix = THREE.MathUtils.lerp;
 const fract = (n) => n - Math.floor(n);
 export function createWorldAtmosphere({
+  homepage = false,
   city,
   sun,
   sky,
@@ -127,8 +128,8 @@ export function createWorldAtmosphere({
       );
       sky.color.copy(nightSky).lerp(daySky, level);
       sky.groundColor.copy(nightGround).lerp(dayGround, level);
-      sky.intensity = 1.05 + level * 1.65;
-      fill.intensity = 0.7 + level * 0.6;
+      sky.intensity = homepage ? 0.62 + level * 2.08 : 1.05 + level * 1.65;
+      fill.intensity = homepage ? 0.35 + level * 0.95 : 0.7 + level * 0.6;
       sun.color
         .copy(moon)
         .lerp(daylight, level)

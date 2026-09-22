@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { createBoatModel } from "./boatModel";
 import { riverBoatPose } from "./waterfront";
 export function createCityAdditions({
+  lighting,
   city,
   palette,
   box,
@@ -17,6 +18,14 @@ export function createCityAdditions({
     box(3.25, 0.12, 5.15, -8.5, 0.18, side * 4.1, palette.pavement);
     box(2, 0.13, 3.15, -8.75, 0.34, side * 3.9, palette.curb);
     const height = side > 0 ? 1.7 : 2.3;
+    lighting?.begin({
+      x: -8.75,
+      z: side * 3.9,
+      w: 1.65,
+      d: 2.5,
+      h: height,
+      name: side > 0 ? "Riverwalk brick house" : "Riverwalk corner house",
+    });
     box(
       1.65,
       height,
@@ -39,6 +48,7 @@ export function createCityAdditions({
           side * 3.9 - 0.87 + col * 0.58,
           palette.windows,
         );
+    lighting?.end();
     rod([-7.1, 0.4, side * 1.9], [-7.1, 0.4, side * 6.5], 0.025, palette.dark);
     for (let z = 2; z < 6.5; z += 0.5)
       rod([-7.1, 0.3, side * z], [-7.1, 0.62, side * z], 0.015, palette.dark);

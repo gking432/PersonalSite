@@ -145,12 +145,29 @@ export function createCityRuntime(host, controls, onState) {
     if (!enabled || disposed || suppressClick) return;
     start();
     if (!sim.discoveries.trigger(id)) return;
+    if (id === "windows")
+      scene.setBuildingLight("iron-block", sim.discoveries.windows);
     if (id === "musician") trumpet.play();
     if (id === "payphone") phone.play();
     if (id === "hop" && !sim.hop.car()) sim.hop.next = 0;
     scene.update(sim, 0, weather.read());
     scene.render();
     notify();
+  }
+  function toggleBuilding(id) {
+    if (!enabled || disposed || suppressClick) return;
+    if (!scene.setBuildingLight(id)) return;
+    start();
+    scene.update(sim, 0, weather.read());
+    scene.render();
+    notify();
+  }
+  controls.toggleBuilding = toggleBuilding;
+  function clickScene(e) {
+    if (!enabled || disposed || suppressClick) return;
+    const id = e.detail ? scene.buildingAt(e.clientX, e.clientY) : null;
+    if (id) toggleBuilding(id);
+    else start();
   }
   function pointerDown(e) {
     if (
@@ -286,6 +303,8 @@ export function createCityRuntime(host, controls, onState) {
   schedule();
   const api = {
     start,
+    clickScene,
+    toggleBuilding,
     toggleSignal,
     toggleBridge,
     discover,
@@ -347,6 +366,12 @@ export function createCityRuntime(host, controls, onState) {
         phoneAudio: phone.snapshot(),
         page: pageCars?.snapshot() || null,
       }),
+      buildingTargets: () => {
+        const r = host.getBoundingClientRect();
+        return scene
+          .buildingTargets()
+          .map((p) => ({ ...p, x: r.left + p.x, y: r.top + p.y }));
+      },
       inspectLandmarks: () => scene.inspectLandmarks(),
       targets: () => {
         const r = host.getBoundingClientRect();

@@ -14,6 +14,7 @@ import {
 } from "./waterfront";
 
 export function createWaterfrontScene({
+  lighting,
   city,
   palette: p,
   box,
@@ -195,7 +196,7 @@ export function createWaterfrontScene({
     [21.5, -11.4, 2.5],
   ];
   apartments.forEach(([x, z, h], i) => {
-    building({
+    const buildingId = building({
       x,
       z,
       w: 2.6,
@@ -204,6 +205,7 @@ export function createWaterfrontScene({
       floors: 4,
       body: i % 2 ? p.terra : p.ivory,
     });
+    lighting?.resume(buildingId);
     for (let floor = 0; floor < 3; floor++)
       for (const dx of [-0.68, 0.68]) {
         const y = 0.95 + (floor * (h - 0.4)) / 3,
@@ -218,6 +220,7 @@ export function createWaterfrontScene({
             p.dark,
           );
       }
+    lighting?.end();
   });
   for (const x of [-1.9, 4.6, 8.3, 12.2, 19.5, 23.35]) tree(x, -10.25);
 
@@ -331,6 +334,15 @@ export function createWaterfrontScene({
   lake.receiveShadow = false;
   lake.castShadow = false;
   // A small Calatrava-inspired pavilion: glazed keel and open white wing ribs.
+  lighting?.begin({
+    id: "museum",
+    name: "Milwaukee Art Museum",
+    x: 18.5,
+    z: 8.3,
+    w: 1.75,
+    d: 3.1,
+    h: 2.5,
+  });
   const museum = group(18.5, 0.41, 8.3);
   museum.rotation.y = -Math.PI / 2;
   box(3.1, 0.14, 1.75, 0, 0.02, 0, p.trim, museum);
@@ -363,6 +375,8 @@ export function createWaterfrontScene({
   rod([-0.95, 2.5, 0], [1.65, 1.08, 0], 0.016, p.trim, museum);
   for (let i = 0; i < 8; i++)
     box(0.035, 0.5, 1.21, -1.15 + i * 0.32, 0.31, 0, p.white, museum);
+
+  lighting?.end();
 
   const sailMaterials = Object.fromEntries(
     ["brick", "green", "ivory", "roof"].map((key) => [

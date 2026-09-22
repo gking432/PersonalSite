@@ -86,10 +86,10 @@ export default function TrafficCity({ standalone = false }) {
             role="button"
             tabIndex={0}
             aria-label="Explore Little Milwaukee"
-            title="Drag to swivel · Right-drag or Shift-drag to move · Pinch to zoom"
+            title="Click buildings to switch lights · Drag to swivel · Right-drag or Shift-drag to move · Pinch to zoom"
             {...gestures}
             onKeyDown={(e) => engine.current?.key(e)}
-            onClick={() => engine.current?.start()}
+            onClick={(event) => engine.current?.clickScene(event)}
           >
             {!game.ready && (
               <span className="traffic-city__fallback">
