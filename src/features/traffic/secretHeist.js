@@ -1,3 +1,11 @@
+export const HEIST_PLACES = { phone: [2.1, -1.92], manhole: [-4.77, 1.93] };
+export const HEIST_TIMING = {
+  getaway: 12.3,
+  getawayGone: 14.2,
+  police: 14.6,
+  investigation: 19,
+  departure: 34,
+};
 export const HEIST_SEQUENCE = ["bankClock", "payphone", "manhole"];
 export const HEIST_DURATION = 42;
 export class SecretHeist {
@@ -43,11 +51,11 @@ export class SecretHeist {
             ? "arrival"
             : t < 10
               ? "bank"
-              : t < 13
+              : t < HEIST_TIMING.police
                 ? "escape"
-                : t < 18
+                : t < HEIST_TIMING.investigation
                   ? "response"
-                  : t < 33
+                  : t < HEIST_TIMING.departure
                     ? "investigation"
                     : "departure",
     };

@@ -90,6 +90,7 @@ export class TrafficSimulation {
   reset() {
     this.started = false;
     this.time = 0;
+    this.ambientTime = 0;
     this.passed = 0;
     this.crashes = 0;
     this.overflowed = 0;
@@ -177,9 +178,10 @@ export class TrafficSimulation {
     return true;
   }
   tick(dt) {
+    this.ambientTime += dt;
+    this.discoveries.tick(dt);
     if (!this.started) return;
     this.time += dt;
-    this.discoveries.tick(dt);
     this.honkCooldown -= dt;
     this.bridge.tick(
       dt,

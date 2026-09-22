@@ -1,3 +1,5 @@
+import { CITY_WALKERS, movePedestrian } from "./pedestrianMotion";
+import { FISHERMAN, fishingPose } from "./fishingMotion";
 import { LAKE_ROAD_START } from "./lakeRoad";
 import * as THREE from "three";
 import { createPeople } from "./cityPeople";
@@ -259,12 +261,14 @@ export function createDiscoveryScene({
   const birds = Array.from({ length: 5 }, (_, i) =>
     bird(-4.1 + i * 0.37, 2.19, 3.5 + (i % 2) * 0.4),
   );
-  const fisher = person(-7.12, -3.6, p.green);
+  const fisher = person(FISHERMAN[0], FISHERMAN[1], p.green);
   fisher.g.rotation.y = Math.PI / 2;
   cylinder(0.155, 0.045, 0, 0.75, 0, p.cream, fisher.g);
   cylinder(0.11, 0.09, 0, 0.8, 0, p.cream, fisher.g);
-  const fishingRod = group(-7.08, 1.02, -3.6);
-  rod([0, 0, 0], [0.95, 0.65, 0], 0.018, p.roof, fishingRod);
+  const fishingRod = group(-7.02, 1.03, FISHERMAN[1]);
+  const pole = group(0, 0, 0, fishingRod);
+  rod([0, 0, 0], [1.12, 0, 0], 0.02, p.roof, pole);
+  cylinder(0.07, 0.05, 0.15, 0, 0, p.trim, pole);
   const line = rod(
     [0.95, 0.65, 0],
     [0.95, -0.71, 0],
@@ -272,7 +276,8 @@ export function createDiscoveryScene({
     p.ivory,
     fishingRod,
   );
-  const catchGroup = group(-6.13, 0.3, -3.6);
+  const catchGroup = group(-6.13, 0.3, FISHERMAN[1]);
+  const bobber = sphere(0.055, -5.94, 0.3, FISHERMAN[1], red);
   const fish = group(0, 0, 0, catchGroup);
   sphere(0.105, 0, 0, 0, brass, fish).scale.set(0.55, 1.8, 1);
   const fin = mesh(
@@ -284,29 +289,10 @@ export function createDiscoveryScene({
     fish,
   );
   fin.rotation.z = Math.PI;
-  const boot = group(0, 0, 0, catchGroup);
-  box(0.13, 0.2, 0.12, 0, 0, 0, p.dark, boot);
-  box(0.13, 0.08, 0.22, 0, -0.12, 0.05, p.dark, boot);
-
-  const walkers = [person(-1.95, 3.05, red), person(-1.97, 3.48, p.green)];
-  const walkerPaths = [
-    [
-      [-1.95, 3.05],
-      [-1.95, 5.3],
-      [-4.7, 5.3],
-      [-4.7, 1.95],
-      [-1.95, 1.95],
-      [-1.95, 3.05],
-    ],
-    [
-      [-1.97, 3.48],
-      [-1.97, 1.95],
-      [-4.7, 1.95],
-      [-4.7, 5.3],
-      [-1.97, 5.3],
-      [-1.97, 3.48],
-    ],
-  ];
+  const walkers = CITY_WALKERS.map((item, i) => ({
+    ...item,
+    actor: person(item.point[0], item.point[2], i ? p.green : red),
+  }));
   const customer = person(3.5, -2.38, red);
   cylinder(0.055, 0.095, 0.15, 0.35, 0.13, p.ivory, customer.g);
   const steam = Array.from({ length: 3 }, (_, i) =>
@@ -425,27 +411,38 @@ export function createDiscoveryScene({
         );
       }
     });
-    const fishing = active.fisherman;
-    const catchHeight =
-      fishing === undefined
-        ? 0
-        : Math.sin((Math.min(1, fishing / 2) * Math.PI) / 2) *
-          Math.min(1, (7 - fishing) / 1.5);
-    catchGroup.visible = fishing !== undefined && fishing > 0.7;
-    catchGroup.position.y = 0.31 + catchHeight * 1.3;
-    catchGroup.rotation.y = fishing === undefined ? 0 : fishing * 7;
-    fish.visible = (sim.discoveries.counts.fisherman || 0) % 3 !== 0;
-    boot.visible = !fish.visible;
-    // Keep the line attached to the rod tip and the rising catch.
-    const top = new THREE.Vector3(0.95, 0.65, 0),
-      bottom = new THREE.Vector3(0.95, catchGroup.position.y - 1.02, 0);
+    const fishing = active.fisherman,
+      cast = fishingPose(fishing);
+    pole.rotation.z = cast.angle;
+    const top = new THREE.Vector3(
+      Math.cos(cast.angle) * 1.12,
+      Math.sin(cast.angle) * 1.12,
+      0,
+    );
+    const bottom = new THREE.Vector3(cast.bobX, cast.bobY, 0);
     line.position.copy(top).add(bottom).multiplyScalar(0.5);
     line.scale.y = top.distanceTo(bottom) / 1.36;
-    walkers.forEach((a, i) => {
-      const t = active.pedestrians;
-      walk(a.g, walkerPaths[i], t === undefined ? 0 : t / 17);
-      a.animate(t || 0, t !== undefined);
-    });
+    line.quaternion.setFromUnitVectors(
+      new THREE.Vector3(0, 1, 0),
+      bottom.clone().sub(top).normalize(),
+    );
+    catchGroup.position.copy(fishingRod.position).add(bottom);
+    catchGroup.visible = cast.fish;
+    catchGroup.rotation.y = fishing === undefined ? 0 : fishing * 7;
+    fish.visible = true;
+    bobber.position.copy(fishingRod.position).add(bottom);
+    bobber.visible = !cast.fish;
+    fisher.arms[0].rotation.x = -0.9;
+    fisher.arms[1].rotation.x =
+      fishing === undefined ? -0.8 : -0.8 + Math.sin(fishing * 15) * 0.3;
+    walkers.forEach(({ actor, ...definition }) =>
+      movePedestrian(
+        actor,
+        definition,
+        sim.discoveries.walkClocks[definition.id] || 0,
+        active[definition.id],
+      ),
+    );
     const coffee = active.coffee;
     customer.g.visible = coffee !== undefined;
     walk(
@@ -564,6 +561,16 @@ export function createDiscoveryScene({
       );
     });
     diagnostics = {
+      fishing: {
+        ...cast,
+        position: fisher.g.position.toArray(),
+        fishVisible: catchGroup.visible,
+      },
+      walkers: walkers.map(({ id, actor }) => ({
+        id,
+        position: actor.g.position.toArray(),
+        fall: actor.g.rotation.x,
+      })),
       helicopter: flight !== undefined,
       helicopterHeight: heli.position.y,
       helicopterPhase: flying.phase,
@@ -575,6 +582,12 @@ export function createDiscoveryScene({
   }
   return {
     update,
+    target: (id) => {
+      const w = walkers.find((w) => w.id === id);
+      return w
+        ? w.actor.g.position.clone().add(new THREE.Vector3(0, 0.6, 0))
+        : null;
+    },
     faceCamera: (q) => notes.forEach((note) => note.quaternion.copy(q)),
     diagnostics: () => diagnostics,
   };

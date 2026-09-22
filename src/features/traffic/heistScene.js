@@ -1,3 +1,6 @@
+import { HEIST_PLACES, HEIST_TIMING } from "./secretHeist";
+import { lakeCarPose, lakeRouteLength } from "./lakeRoad";
+import { carPose } from "./trafficSimulation";
 import * as THREE from "three";
 import { createPeople } from "./cityPeople";
 import { riverBridgeHeight } from "./waterfront";
@@ -46,14 +49,14 @@ export function createHeistScene({
   const hands = group(0, 0, 0.042, clock);
   box(0.016, 0.12, 0.012, 0, 0.045, 0, p.dark, hands);
   box(0.095, 0.014, 0.012, 0.035, 0, 0, p.dark, hands);
-  const phone = group(-1.87, 0.41, -4.5);
+  const phone = group(HEIST_PLACES.phone[0], 0.41, HEIST_PLACES.phone[1]);
   box(0.2, 0.68, 0.2, 0, 0.34, 0, p.green, phone);
   box(0.22, 0.32, 0.23, 0, 0.76, 0, p.trim, phone);
   box(0.09, 0.2, 0.018, 0, 0.77, 0.125, p.dark, phone);
   box(0.04, 0.04, 0.02, 0.065, 0.74, 0.127, p.glass, phone);
   const handset = group(0, 0.77, 0.142, phone);
   rod([-0.065, -0.075, 0], [-0.065, 0.075, 0], 0.02, p.black, handset);
-  const hole = group(-1.61, 0.412, -2.45);
+  const hole = group(HEIST_PLACES.manhole[0], 0.412, HEIST_PLACES.manhole[1]);
   cylinder(0.23, 0.014, 0, 0, 0, p.dark, hole);
   const lid = group(-0.23, 0.02, 0, hole);
   cylinder(0.235, 0.018, 0.23, 0, 0, p.roof, lid);
@@ -150,7 +153,7 @@ export function createHeistScene({
     cops = Array.from({ length: 3 }, () => vehicle("police")),
     news = vehicle("news");
   const police = Array.from({ length: 3 }, () => person(0, 0, blue)),
-    reporter = person(-1.85, -4.1, p.cream);
+    reporter = person(-1.9, -5.3, p.cream);
   police.forEach((a) => {
     cylinder(0.12, 0.06, 0, 0.75, 0, blue, a.g);
     box(0.11, 0.025, 0.11, 0, 0.73, 0.085, blue, a.g);
@@ -163,45 +166,87 @@ export function createHeistScene({
       "centripetal",
     );
   }
-  const arrival = (x) =>
-    route([
-      [-1.15, -10],
-      [-1.15, -3.1],
-      [-1.22, -1.65],
-      [-1.8, -1.18],
-      [x, -1.18],
-    ]);
-  const depart = (x) =>
-    route([
-      [x, -1.18],
-      [x + 0.55, -1.12],
-      [-1.65, -1.12],
-      [-1.15, -1.65],
-      [-1.15, -10],
-    ]);
   const getawayIn = route([
-      [-1.15, -10],
-      [-1.15, -6],
-      [-1.15, -3.3],
+    [-1.15, -12.7],
+    [-1.15, -6],
+    [-1.15, -3.3],
+  ]);
+  const getawayOut = route([
+    [-1.15, -3.3],
+    [-1.08, -2.5],
+    [-0.2, -2.45],
+    [0.57, -3.3],
+    [0.57, -7],
+    [0.57, -12.7],
+  ]);
+  const spots = [
+    [-4.7, -1.15],
+    [-3.25, -1.15],
+    [-1.15, -3.9],
+  ];
+  const east = [];
+  for (let distance = -10; distance < 14; distance += 0.25) {
+    const p = carPose({ junction: 1, lane: 1, turn: "straight", p: distance });
+    east.push([p.x, p.z]);
+    if (p.out > 7) break;
+  }
+  const south = [];
+  for (let distance = 0; distance <= lakeRouteLength(1); distance += 0.25) {
+    const p = lakeCarPose(distance, 1);
+    south.push([p.x, p.z]);
+  }
+  const policeIn = [
+    route([
+      [-0.57, -12.7],
+      [-0.57, -6],
+      [-0.57, -2.2],
+      [-1.3, -1.15],
+      spots[0],
     ]),
-    getawayOut = route([
-      [-1.15, -3.3],
-      [-1.15, -6],
-      [-1.15, -10],
-    ]);
-  const spots = [-4.7, -3.25, -1.9],
-    policeIn = spots.map(arrival),
-    policeOut = spots.map(depart);
+    route([...east, [2, -0.57], [0, -0.57], [-1.4, -0.8], spots[1]]),
+    route([
+      ...south,
+      [0.57, 4],
+      [0.57, 0],
+      [0.3, -1.5],
+      [-1.15, -2.2],
+      spots[2],
+    ]),
+  ];
+  const policeOut = [
+    route([
+      spots[0],
+      [-3, -1.15],
+      [-1.65, -1.15],
+      [-0.57, -2.4],
+      [-0.57, -12.7],
+    ]),
+    route([
+      spots[1],
+      [-1.8, -1.15],
+      [0, 0.57],
+      [5, 0.57],
+      [12, 0.57],
+      [12.8, 1.8],
+      [14.4, 2.1],
+      [16.1, 1.5],
+      [17, 0.57],
+      [24.7, 0.57],
+    ]),
+    route([spots[2], [-1.1, -2.4], [0.57, -2.2], [0.57, -6], [0.57, -12.7]]),
+  ];
   const newsIn = route([
-      [-1.15, -10],
-      [-1.15, -6],
-      [-1.15, -4.7],
+      [-1.15, -12.7],
+      [-1.15, -8],
+      [-1.15, -5.5],
     ]),
     newsOut = route([
-      [-1.15, -4.7],
-      [-1.15, -7],
-      [-1.15, -10],
+      [-1.15, -5.5],
+      [-1.15, -8],
+      [-1.15, -12.7],
     ]);
+  const arrivalTimes = [15, 14.7, 14.6],
+    arrivalDurations = [2.1, 3.3, 3.9];
   function drive(car, path, progress) {
     const f = THREE.MathUtils.clamp(progress, 0, 1),
       pos = path.getPointAt(f),
@@ -227,13 +272,23 @@ export function createHeistScene({
       [-3.38, -2.39],
     ]),
   );
-  const robberOut = robbers.map(() =>
-    route([
-      [-3.38, -2.39],
-      [-2.65, -2.07],
-      [-1.94, -2.07],
-      [-1.61, -2.45],
-    ]),
+  const robberOut = robbers.map((_, i) =>
+    route(
+      i === 0
+        ? [
+            [-3.38, -2.39],
+            [-3.38, -2.07],
+            [-1.94, -2.07],
+            [-1.6, -3.3],
+          ]
+        : [
+            [-3.38, -2.39],
+            [-3.8, -2.05],
+            [-4.77, -1.7],
+            [-4.77, 0.1],
+            HEIST_PLACES.manhole,
+          ],
+    ),
   );
   function stroll(actor, path, progress, time) {
     const pos = path.getPointAt(THREE.MathUtils.clamp(progress, 0, 1)),
@@ -252,62 +307,86 @@ export function createHeistScene({
     handset.rotation.z =
       active.payphone === undefined ? 0 : Math.sin(active.payphone * 28) * 0.16;
     lid.rotation.z =
-      running && t >= 11 && t < 14
-        ? Math.PI * 0.74 * Math.min(1, t - 11, 14 - t)
+      running && t >= 12.5 && t < 15
+        ? Math.PI * 0.74 * Math.min(1, (t - 12.5) * 4, (15 - t) * 4)
         : active.manhole === undefined
           ? 0
           : Math.sin(active.manhole * Math.PI) * 0.12;
     bankGlow.visible = running && t >= 7 && t < 10 && Math.sin(t * 16) > 0;
-    getaway.g.visible = running && t < 42;
-    if (running)
+    getaway.g.visible = running && t < HEIST_TIMING.getawayGone;
+    if (getaway.g.visible)
       drive(
         getaway,
-        t < 38 ? getawayIn : getawayOut,
-        t < 38 ? Math.min(1, t / 4) : (t - 38) / 4,
+        t < HEIST_TIMING.getaway ? getawayIn : getawayOut,
+        t < HEIST_TIMING.getaway
+          ? Math.min(1, t / 4)
+          : ((t - HEIST_TIMING.getaway) /
+              (HEIST_TIMING.getawayGone - HEIST_TIMING.getaway)) **
+              1.5,
       );
     robbers.forEach((a, i) => {
       const enter = (t ?? 0) - 4 - i * 0.38,
-        exit = (t ?? 0) - 10 - i * 0.42;
+        exit = (t ?? 0) - 9.8 - i * 0.22;
+      const duration = i === 0 ? 2.5 : 3.9;
       a.g.visible =
-        running && ((enter >= 0 && enter < 2.1) || (exit >= 0 && exit < 2.35));
+        running &&
+        ((enter >= 0 && enter < 2.1) || (exit >= 0 && exit < duration));
       a.g.scale.setScalar(1);
+      a.g.rotation.x = a.g.rotation.z = 0;
       if (!a.g.visible) return;
       if (exit >= 0) {
-        stroll(a, robberOut[i], Math.min(1, exit / 1.9), t);
-        if (exit > 1.9) {
-          const drop = (exit - 1.9) / 0.45;
-          a.g.position.y -= drop * 0.6;
+        const travel = i === 0 ? 2 : 3.35;
+        stroll(a, robberOut[i], Math.min(1, exit / travel), t * 1.4);
+        if (i === 0 && exit > 2) {
+          const jump = (exit - 2) / 0.5;
+          a.g.position.x += jump * 0.45;
+          a.g.position.y += Math.sin(jump * Math.PI) * 0.5;
+          a.g.scale.setScalar(1 - jump * 0.65);
+        }
+        if (i > 0 && exit > travel) {
+          const drop = (exit - travel) / 0.55;
+          a.g.position.y -= drop * 0.7;
           a.g.scale.y = 1 - drop;
         }
-      } else stroll(a, robberIn[i], enter / 2.1, t);
+      } else stroll(a, robberIn[i], enter / 2.1, t * 1.3);
     });
     cops.forEach((car, i) => {
-      const arrive = 13 + i * 0.55,
-        leave = 33 + i * 0.55;
+      const arrive = arrivalTimes[i],
+        leave = HEIST_TIMING.departure + i * 0.55;
       car.g.visible = running && t >= arrive && t < leave + 3.4;
       if (car.g.visible)
         drive(
           car,
           t < leave ? policeIn[i] : policeOut[i],
-          t < leave ? Math.min(1, (t - arrive) / 3.2) : (t - leave) / 3.4,
+          t < leave
+            ? 1 - (1 - Math.min(1, (t - arrive) / arrivalDurations[i])) ** 1.6
+            : (t - leave) / 3.4,
         );
       car.lamps.forEach((lamp, index) => {
         lamp.visible = Math.floor((t ?? 0) * 12 + i) % 2 === index;
       });
       const officer = police[i];
-      officer.g.visible = running && t >= 18 && t < 33;
-      officer.g.position.set(spots[i], 0.42, -1.88);
+      officer.g.visible =
+        running &&
+        t >= HEIST_TIMING.investigation &&
+        t < HEIST_TIMING.departure;
+      officer.g.position.set(
+        i < 2 ? spots[i][0] : -1.9,
+        0.42,
+        i < 2 ? -1.88 : spots[i][1],
+      );
       officer.g.rotation.y = Math.PI;
       officer.animate(t ?? 0, false);
     });
-    news.g.visible = running && t >= 14.4 && t < 38;
+    news.g.visible = running && t >= 15.5 && t < 40;
     if (news.g.visible)
       drive(
         news,
-        t < 34 ? newsIn : newsOut,
-        t < 34 ? Math.min(1, (t - 14.4) / 3.4) : (t - 34) / 4,
+        t < 35 ? newsIn : newsOut,
+        t < 35 ? Math.min(1, (t - 15.5) / 3.4) : (t - 35) / 5,
       );
-    reporter.g.visible = running && t >= 18 && t < 33;
+    reporter.g.visible =
+      running && t >= HEIST_TIMING.investigation && t < HEIST_TIMING.departure;
     reporter.g.rotation.y = -Math.PI / 2;
     diagnostics = {
       ...sim.discoveries.heist.snapshot(),
@@ -316,6 +395,14 @@ export function createHeistScene({
       policeCars: cops.filter((car) => car.g.visible).length,
       newsVan: news.g.visible,
       manholeOpen: lid.rotation.z > 0.4,
+      getawayVisible: getaway.g.visible,
+      getawayMoving:
+        running && t >= HEIST_TIMING.getaway && t < HEIST_TIMING.getawayGone,
+      driverBoarding: running && t >= 11.8 && t < 12.3,
+      escapedByCar: running && t >= HEIST_TIMING.getawayGone ? 1 : 0,
+      escapedThroughManhole: running && t >= 14.2 ? 2 : 0,
+      policeApproaches: ["north", "east", "lakefront"],
+      policePositions: cops.map((car) => car.g.position.toArray()),
     };
   }
   return { update, diagnostics: () => diagnostics };

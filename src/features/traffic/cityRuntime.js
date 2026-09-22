@@ -31,7 +31,6 @@ export function createCityRuntime(host, controls, onState) {
     ready: true,
   });
   const running = () =>
-    sim.started &&
     enabled &&
     (visible || scene.diagnostics().falling > 0) &&
     !document.hidden &&
@@ -127,10 +126,11 @@ export function createCityRuntime(host, controls, onState) {
     pageCars?.clear();
     accumulator = 0;
     scene.clear();
-    scene.setZoom(1);
+    scene.resetView();
     scene.update(sim);
     scene.render();
     notify();
+    schedule();
   }
   function discover(id) {
     if (!enabled || disposed || suppressClick) return;
@@ -151,6 +151,7 @@ export function createCityRuntime(host, controls, onState) {
       startX: e.clientX,
       startY: e.clientY,
       id: e.pointerId,
+      pan: scene.pose.zoom > 1.05 && !e.shiftKey,
     };
     e.currentTarget.setPointerCapture(e.pointerId);
     if (pointers.size === 2) {
@@ -158,6 +159,8 @@ export function createCityRuntime(host, controls, onState) {
       pinch = {
         distance: Math.hypot(a.x - b.x, a.y - b.y),
         zoom: scene.pose.zoom,
+        x: (a.x + b.x) / 2,
+        y: (a.y + b.y) / 2,
       };
       drag = null;
       suppressClick = true;
@@ -173,6 +176,11 @@ export function createCityRuntime(host, controls, onState) {
         (pinch.zoom * Math.hypot(a.x - b.x, a.y - b.y)) /
           Math.max(1, pinch.distance),
       );
+      const x = (a.x + b.x) / 2,
+        y = (a.y + b.y) / 2;
+      scene.pan(x - pinch.x, y - pinch.y);
+      pinch.x = x;
+      pinch.y = y;
       suppressClick = true;
       notify();
       return;
@@ -180,7 +188,8 @@ export function createCityRuntime(host, controls, onState) {
     if (!drag || drag.id !== e.pointerId) return;
     if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) > 5)
       suppressClick = true;
-    scene.rotate(e.clientX - drag.x, e.clientY - drag.y);
+    if (drag.pan) scene.pan(e.clientX - drag.x, e.clientY - drag.y);
+    else scene.rotate(e.clientX - drag.x, e.clientY - drag.y);
     drag.x = e.clientX;
     drag.y = e.clientY;
   }
@@ -225,7 +234,9 @@ export function createCityRuntime(host, controls, onState) {
     ) {
       e.preventDefault();
       start();
-      scene.rotate(
+      const move =
+        scene.pose.zoom > 1.05 && !e.shiftKey ? scene.pan : scene.rotate;
+      move(
         e.key === "ArrowLeft" ? -12 : e.key === "ArrowRight" ? 12 : 0,
         e.key === "ArrowUp" ? -12 : e.key === "ArrowDown" ? 12 : 0,
       );
@@ -250,6 +261,7 @@ export function createCityRuntime(host, controls, onState) {
   scene.update(sim);
   scene.render();
   notify();
+  schedule();
   const api = {
     start,
     toggleSignal,

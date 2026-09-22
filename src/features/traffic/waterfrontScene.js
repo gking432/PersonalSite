@@ -1,9 +1,12 @@
+import { movePedestrian } from "./pedestrianMotion";
 import { lakeRoadPoint, lakeRoadLength, LAKE_ROAD_Z } from "./lakeRoad";
 import * as THREE from "three";
 import { createPeople } from "./cityPeople";
 import {
   riverPoint,
   riverBridgeHeight,
+  RIVER_BRIDGE_START,
+  RIVER_BRIDGE_END,
   lakeOpacity,
   RIVER_NORTH_END,
   RIVER_SOUTH_END,
@@ -72,44 +75,116 @@ export function createWaterfrontScene({
       rod([a.x, 0.72, a.z], [b.x, 0.72, b.z], 0.02, p.dark);
     }
   }
-  // Fixed elevated crossings carry the original roads above the new river.
+  // Continuous surfaces replace the horizontal stair-step bridge pieces.
   for (const x of [0, 14.4]) {
-    for (let i = 0; i < 28; i++) {
-      const z = -10 + ((i + 0.5) * 3.4) / 28,
-        h = riverBridgeHeight(x, z);
-      box(2.92, 0.12, 3.4 / 28 + 0.008, x, 0.235 + h, z, p.base);
-      box(2.75, 0.035, 3.4 / 28 + 0.008, x, 0.302 + h, z, p.asphalt);
-      for (const side of [-1, 1]) {
-        box(
-          0.055,
-          0.06,
-          3.4 / 28 + 0.008,
-          x + side * 1.42,
-          0.73 + h,
-          z,
-          p.trim,
+    const segments = 120,
+      span = RIVER_BRIDGE_END - RIVER_BRIDGE_START;
+    function bridgeStrip(left, right, y, mat) {
+      const positions = [],
+        indices = [];
+      for (let i = 0; i <= segments; i++) {
+        const z = RIVER_BRIDGE_START + (span * i) / segments,
+          h = riverBridgeHeight(x, z);
+        positions.push(x + left, y + h, z, x + right, y + h, z);
+        if (i < segments) {
+          const n = i * 2;
+          indices.push(n, n + 2, n + 1, n + 1, n + 2, n + 3);
+        }
+      }
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(positions, 3),
+      );
+      geometry.setIndex(indices);
+      geometry.computeVertexNormals();
+      mesh(geometry, mat, 0, 0, 0);
+    }
+    bridgeStrip(-1.46, 1.46, 0.275, p.base);
+    bridgeStrip(-1.375, 1.375, 0.303, p.asphalt);
+    // Continuous rail meshes keep the gentle curves inexpensive to render.
+    for (const side of [-1, 1])
+      for (const [y, radius, mat] of [
+        [0.71, 0.025, p.trim],
+        [0.25, 0.055, p.base],
+      ]) {
+        const points = Array.from({ length: segments + 1 }, (_, i) => {
+          const z = RIVER_BRIDGE_START + (span * i) / segments;
+          return new THREE.Vector3(
+            x + side * 1.43,
+            y + riverBridgeHeight(x, z),
+            z,
+          );
+        });
+        mesh(
+          new THREE.TubeGeometry(
+            new THREE.CatmullRomCurve3(points),
+            segments,
+            radius,
+            6,
+            false,
+          ),
+          mat,
+          0,
+          0,
+          0,
         );
-        if (i % 3 === 0)
+      }
+    const marks = [],
+      markIndices = [];
+    for (let i = 0; i < segments; i++) {
+      const z = RIVER_BRIDGE_START + (span * i) / segments,
+        next = z + span / segments,
+        h = riverBridgeHeight(x, z),
+        hn = riverBridgeHeight(x, next);
+      if (i % 8 === 0)
+        for (const side of [-1, 1])
           rod(
-            [x + side * 1.42, 0.3 + h, z],
-            [x + side * 1.42, 0.73 + h, z],
+            [x + side * 1.43, 0.28 + h, z],
+            [x + side * 1.43, 0.71 + h, z],
             0.018,
             p.dark,
           );
+      if (i % 10 < 6) {
+        const n = marks.length / 3;
+        marks.push(
+          x - 0.014,
+          0.314 + h,
+          z,
+          x + 0.014,
+          0.314 + h,
+          z,
+          x - 0.014,
+          0.314 + hn,
+          next,
+          x + 0.014,
+          0.314 + hn,
+          next,
+        );
+        markIndices.push(n, n + 2, n + 1, n + 1, n + 2, n + 3);
       }
-      if (i % 5 < 3) box(0.026, 0.007, 0.1, x, 0.325 + h, z, p.yellow);
     }
+    const markingGeometry = new THREE.BufferGeometry();
+    markingGeometry.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(marks, 3),
+    );
+    markingGeometry.setIndex(markIndices);
+    markingGeometry.computeVertexNormals();
+    mesh(markingGeometry, p.yellow, 0, 0, 0);
     for (const z of [-9.3, -7.1])
-      for (const side of [-1, 1])
+      for (const side of [-1, 1]) {
+        const h = riverBridgeHeight(x, z);
         box(
           0.18,
-          0.15 + riverBridgeHeight(x, z),
+          0.15 + h,
           0.25,
           x + side * 1.2,
-          0.15 + (0.15 + riverBridgeHeight(x, z)) / 2,
+          0.15 + (0.15 + h) / 2,
           z,
           p.cream,
         );
+      }
   }
   const apartments = [
     [-7.75, -8.5, 2.6],
@@ -304,14 +379,20 @@ export function createWaterfrontScene({
   for (let i = 0; i < 8; i++)
     box(0.035, 0.5, 1.21, -1.15 + i * 0.32, 0.31, 0, p.white, museum);
 
+  const sailMaterials = Object.fromEntries(
+    ["brick", "green", "ivory", "roof"].map((key) => [
+      key,
+      material(p[key].color, { transparent: true }),
+    ]),
+  );
   const sailboats = Array.from({ length: 3 }, (_, i) => {
     const g = group(-2 + i * 8.5, 0.32, 13 + (i % 2) * 2.7),
-      mat = i === 1 ? p.brick : p.green;
+      mat = i === 1 ? sailMaterials.brick : sailMaterials.green;
     const hull = mesh(new THREE.SphereGeometry(0.5, 12, 8), mat, 0, 0, 0, g);
     hull.scale.set(0.48, 0.23, 1.65);
-    box(0.31, 0.025, 1.07, 0, 0.06, 0, p.ivory, g);
-    rod([0, 0.07, 0], [0, 1.85, 0], 0.022, p.roof, g);
-    rod([0, 0.27, 0], [0, 0.27, -0.69], 0.018, p.roof, g);
+    box(0.31, 0.025, 1.07, 0, 0.06, 0, sailMaterials.ivory, g);
+    rod([0, 0.07, 0], [0, 1.85, 0], 0.022, sailMaterials.roof, g);
+    rod([0, 0.27, 0], [0, 0.27, -0.69], 0.018, sailMaterials.roof, g);
     for (const forward of [false, true]) {
       const geometry = new THREE.BufferGeometry();
       geometry.setAttribute(
@@ -326,7 +407,10 @@ export function createWaterfrontScene({
       geometry.computeVertexNormals();
       mesh(
         geometry,
-        material(forward ? "#ebdcc0" : "#fff6e7", { side: THREE.DoubleSide }),
+        material(forward ? "#ebdcc0" : "#fff6e7", {
+          side: THREE.DoubleSide,
+          transparent: true,
+        }),
         0,
         0,
         0,
@@ -350,30 +434,19 @@ export function createWaterfrontScene({
   }));
   let diagnostics = {};
   function update(sim) {
-    people.forEach(({ id, duration, path, actor }) => {
-      const t = sim.discoveries.active[id],
-        progress = (t ?? 0) / duration;
-      // Arc-length sampling keeps a stroll's speed consistent around corners.
-      const lengths = path
-        .slice(1)
-        .map((b, i) => Math.hypot(b[0] - path[i][0], b[1] - path[i][1]));
-      let d = progress * lengths.reduce((a, b) => a + b, 0),
-        index = 0;
-      while (index < lengths.length - 1 && d > lengths[index])
-        d -= lengths[index++];
-      const a = path[index],
-        b = path[index + 1],
-        f = d / lengths[index];
-      actor.g.position.set(
-        a[0] + (b[0] - a[0]) * f,
-        0.42,
-        a[1] + (b[1] - a[1]) * f,
+    people.forEach(({ actor, ...definition }) => {
+      const clock = definition.seated
+        ? sim.discoveries.active[definition.id] || 0
+        : sim.discoveries.walkClocks[definition.id] || 0;
+      movePedestrian(
+        actor,
+        definition,
+        clock,
+        sim.discoveries.active[definition.id],
       );
-      actor.g.rotation.y = Math.atan2(b[0] - a[0], b[1] - a[1]);
-      actor.animate(t ?? 0, t !== undefined);
     });
     sailboats.forEach(({ g, x, z }, i) => {
-      const t = sim.time * 0.055 + i * 2;
+      const t = sim.ambientTime * 0.055 + i * 2;
       g.position.set(
         x + Math.sin(t) * 0.85,
         0.32 + Math.sin(sim.time * 1.5 + i) * 0.018,
@@ -391,16 +464,26 @@ export function createWaterfrontScene({
       lakeEdge: "south",
       lakeRoad: { connected: true, z: LAKE_ROAD_Z, treeRows: 2 },
       sailboats: sailboats.length,
-      walkers: people.map(({ id, actor }) => ({
+      walkers: people.map(({ id, actor, seated }) => ({
         id,
         x: actor.g.position.x,
         z: actor.g.position.z,
-        walking: sim.discoveries.active[id] !== undefined,
+        walking: seated
+          ? sim.discoveries.active[id] !== undefined
+          : sim.discoveries.active[id] === undefined,
+        seated: !!seated && sim.discoveries.active[id] === undefined,
+        fall: actor.g.rotation.x,
       })),
     };
   }
   return {
     update,
+    target: (id) => {
+      const w = people.find((w) => w.id === id);
+      return w
+        ? w.actor.g.position.clone().add(new THREE.Vector3(0, 0.6, 0))
+        : null;
+    },
     resize: (w, h) => viewport.value.set(w, h),
     diagnostics: () => diagnostics,
   };

@@ -1,4 +1,6 @@
-import { SecretHeist } from "./secretHeist.js";
+import { CITY_WALKERS } from "./pedestrianMotion.js";
+import { FISHERMAN, FISHING_DURATION } from "./fishingMotion.js";
+import { SecretHeist, HEIST_PLACES } from "./secretHeist.js";
 import { FLIGHT_DURATION } from "./helicopterFlight.js";
 import { WATERFRONT_WALKS } from "./waterfront.js";
 export const DISCOVERIES = [
@@ -11,15 +13,10 @@ export const DISCOVERIES = [
   {
     id: "fisherman",
     label: "Help the riverwalk fisherman catch something",
-    point: [-7.12, 1.1, -3.6],
-    duration: 7,
+    point: [FISHERMAN[0], 1.1, FISHERMAN[1]],
+    duration: FISHING_DURATION,
   },
-  {
-    id: "pedestrians",
-    label: "Take a walk along the riverwalk",
-    point: [-1.95, 1, 3.05],
-    duration: 17,
-  },
+  ...CITY_WALKERS,
   {
     id: "pigeons",
     label: "Send the rooftop pigeons flying",
@@ -72,13 +69,13 @@ export const DISCOVERIES = [
   {
     id: "payphone",
     label: "Pick up the payphone",
-    point: [-1.87, 1.1, -4.5],
+    point: [HEIST_PLACES.phone[0], 1.1, HEIST_PLACES.phone[1]],
     duration: 1.2,
   },
   {
     id: "manhole",
     label: "Tap the manhole cover",
-    point: [-1.61, 0.45, -2.45],
+    point: [HEIST_PLACES.manhole[0], 0.45, HEIST_PLACES.manhole[1]],
     duration: 1,
   },
 ];
@@ -89,6 +86,7 @@ export class Discoveries {
   }
   reset() {
     this.active = {};
+    this.walkClocks = {};
     this.counts = {};
     this.windows = false;
     this.heist = new SecretHeist();
@@ -107,6 +105,8 @@ export class Discoveries {
   tick(dt) {
     this.heist.tick(dt);
     for (const item of DISCOVERIES) {
+      if (item.loopDuration && !(item.id in this.active))
+        this.walkClocks[item.id] = (this.walkClocks[item.id] || 0) + dt;
       if (!(item.id in this.active)) continue;
       this.active[item.id] += dt;
       if (this.active[item.id] >= item.duration) delete this.active[item.id];

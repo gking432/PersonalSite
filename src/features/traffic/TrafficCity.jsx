@@ -76,6 +76,7 @@ export default function TrafficCity() {
           role="button"
           tabIndex={0}
           aria-label="Explore Little Milwaukee"
+          title="Zoom in, then drag to move · Shift-drag to rotate"
           {...gestures}
           onKeyDown={(e) => engine.current?.key(e)}
           onClick={() => engine.current?.start()}
@@ -155,7 +156,7 @@ export default function TrafficCity() {
             type="button"
             aria-label="Zoom in"
             title="Zoom in · pinch or use + / −"
-            disabled={!game.ready || game.zoom >= 1.65}
+            disabled={!game.ready || game.zoom >= 3.2}
             onClick={() => engine.current?.zoomBy(1.15)}
           >
             +

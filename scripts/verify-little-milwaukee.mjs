@@ -34,7 +34,7 @@ try {
   };
   assert.equal((await snap()).started, false);
   assert.deepEqual((await snap()).audio, { plays: 0, voices: 0 });
-  assert.equal(await page.locator("[data-discovery]").count(), 17);
+  assert.equal(await page.locator("[data-discovery]").count(), 20);
   assert.equal(await page.locator('[data-control="light"]').count(), 4);
   await page.screenshot({ path: `${output}/idle.png` });
   for (const target of await targets()) {
@@ -168,7 +168,7 @@ try {
     JSON.stringify(
       {
         status: "PASS",
-        discoveries: 17,
+        discoveries: 20,
         checks: [
           "rendered hit targets",
           "one-shot animations",

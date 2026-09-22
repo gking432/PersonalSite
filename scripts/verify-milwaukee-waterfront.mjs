@@ -20,6 +20,7 @@ try {
   await page.waitForTimeout(1000);
   const snap = () => page.evaluate(() => window.__trafficCity.snapshot());
   const click = async (id) => {
+    await page.evaluate(() => window.__trafficCity.api.setEnabled(true));
     const p = await page.evaluate(
       (id) => window.__trafficCity.discoveryTargets().find((t) => t.id === id),
       id,
@@ -36,7 +37,8 @@ try {
   const freeze = async (values) =>
     page.evaluate((values) => {
       const { sim, api } = window.__trafficCity;
-      // Stop the wall clock while inspecting exact animation milestones.
+      api.setEnabled(false);
+      // Stop ambient and traffic clocks while inspecting exact animation milestones.
       sim.started = false;
       sim.nextArrival = sim.bridge.nextBoat = Infinity;
       sim.cars = [];
@@ -62,10 +64,10 @@ try {
   const stage = await page.locator(".traffic-city__stage").boundingBox();
   await page.mouse.move(stage.x + stage.width / 2, stage.y + stage.height / 2);
   await page.keyboard.down("Control");
-  await page.mouse.wheel(0, -400);
+  await page.mouse.wheel(0, -900);
   await page.keyboard.up("Control");
   await page.waitForFunction(
-    () => window.__trafficCity.snapshot().zoom === 1.65,
+    () => window.__trafficCity.snapshot().zoom === 3.2,
   );
   assert.equal(
     await page
@@ -73,7 +75,10 @@ try {
       .isDisabled(),
     true,
   );
-  await page.evaluate(() => window.__trafficCity.api.reset());
+  await page.evaluate(() => {
+    window.__trafficCity.api.setEnabled(true);
+    window.__trafficCity.api.reset();
+  });
   const cdp = await page.context().newCDPSession(page);
   const center = {
     x: stage.x + stage.width / 2,
@@ -121,9 +126,9 @@ try {
   assert.equal((await snap()).scene.heist.phase, "investigation");
   assert.deepEqual((await snap()).signals, idle.signals);
   await page.screenshot({ path: `${output}/police-news.png` });
-  await freeze({ heist: 32.9 });
+  await freeze({ heist: 33.9 });
   assert.equal((await snap()).scene.heist.phase, "investigation");
-  await freeze({ heist: 33.1 });
+  await freeze({ heist: 34.1 });
   assert.equal((await snap()).scene.heist.phase, "departure");
   await page.evaluate(() => {
     const { sim, api } = window.__trafficCity;
@@ -136,7 +141,15 @@ try {
   await click("lakeWalk");
   await click("apartmentWalk");
   await freeze({
-    active: { lakeWalk: 8, apartmentWalk: 8, musician: 1, helicopter: 9 },
+    active: { musician: 1, helicopter: 9 },
+  });
+  await page.evaluate(() => {
+    const { sim, api } = window.__trafficCity;
+    delete sim.discoveries.active.lakeWalk;
+    delete sim.discoveries.active.apartmentWalk;
+    sim.discoveries.walkClocks.lakeWalk = 8;
+    sim.discoveries.walkClocks.apartmentWalk = 8;
+    api.refresh();
   });
   const active = await snap();
   assert.equal(active.scene.discoveries.notes, 3);
@@ -148,7 +161,10 @@ try {
     assert.ok(Math.hypot(a.x - b.x, a.z - b.z) > 1);
   }
   await page.screenshot({ path: `${output}/waterfront-active.png` });
-  await page.evaluate(() => window.__trafficCity.api.zoomBy(1.65));
+  await page.evaluate(() => {
+    window.__trafficCity.api.setEnabled(true);
+    window.__trafficCity.api.zoomBy(2.6);
+  });
   await page.screenshot({ path: `${output}/zoomed.png` });
   await page.evaluate(() => window.__trafficCity.api.reset());
   assert.equal((await snap()).zoom, 1);

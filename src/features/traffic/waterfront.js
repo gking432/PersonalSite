@@ -1,3 +1,4 @@
+import { STUMBLE_DURATION } from "./pedestrianMotion.js";
 // The river's distance coordinate passes through zero at the original bridge.
 export const RIVER_RADIUS = 2.8;
 export const RIVER_BEND = 5.4;
@@ -35,11 +36,17 @@ export const boatEntry = (direction) =>
   direction === 1 ? -RIVER_NORTH_END + 0.7 : -RIVER_SOUTH_END + 0.7;
 export const boatExit = (direction) =>
   direction === 1 ? RIVER_SOUTH_END : RIVER_NORTH_END;
+export const RIVER_BRIDGE_START = -12.7;
+export const RIVER_BRIDGE_END = -4.8;
 export function riverBridgeHeight(x, z) {
-  if (Math.min(Math.abs(x), Math.abs(x - 14.4)) > 1.5 || z > -6.6 || z < -10)
-    return 0;
-  const t = Math.min(1, (z + 10) / 1.1, (-6.6 - z) / 1.1);
-  return 1.05 * Math.max(0, t) ** 2 * (3 - 2 * Math.max(0, t));
+  if (Math.min(Math.abs(x), Math.abs(x - 14.4)) > 1.5) return 0;
+  // Long easing ramps, a level span above both boat lanes, and zero slope at
+  // all joins. Cars and the continuous bridge deck use the identical profile.
+  return (
+    1.05 *
+    smooth(RIVER_BRIDGE_START, -8.8, z) *
+    (1 - smooth(-7.6, RIVER_BRIDGE_END, z))
+  );
 }
 const smooth = (a, b, value) => {
   const t = Math.max(0, Math.min(1, (value - a) / (b - a)));
@@ -65,9 +72,10 @@ export function lakeOpacity(x, z) {
 export const WATERFRONT_WALKS = [
   {
     id: "lakeWalk",
-    label: "Walk along Lake Michigan",
+    label: "Surprise the lakewalk pedestrian",
     point: [6, 1, 10.35],
-    duration: 30,
+    duration: STUMBLE_DURATION,
+    loopDuration: 30,
     path: [
       [6, 10.35],
       [11.6, 10.35],
@@ -77,9 +85,10 @@ export const WATERFRONT_WALKS = [
   },
   {
     id: "museumWalk",
-    label: "Walk past the art museum",
+    label: "Surprise the museum pedestrian",
     point: [20.8, 1, 7.1],
-    duration: 26,
+    duration: STUMBLE_DURATION,
+    loopDuration: 26,
     path: [
       [20.8, 7.1],
       [20.8, 9.85],
@@ -90,9 +99,10 @@ export const WATERFRONT_WALKS = [
   },
   {
     id: "apartmentWalk",
-    label: "Walk along the apartment riverwalk",
+    label: "Surprise the apartment riverwalk pedestrian",
     point: [7.5, 1, -9.5],
-    duration: 26,
+    duration: STUMBLE_DURATION,
+    loopDuration: 26,
     path: [
       [7.5, -9.5],
       [12.45, -9.5],
@@ -102,9 +112,10 @@ export const WATERFRONT_WALKS = [
   },
   {
     id: "cityWalk",
-    label: "Walk around the city block",
+    label: "Surprise the city pedestrian",
     point: [5.1, 1, 3.5],
-    duration: 22,
+    duration: STUMBLE_DURATION,
+    loopDuration: 22,
     path: [
       [5.1, 3.5],
       [5.1, 5.35],
@@ -112,6 +123,34 @@ export const WATERFRONT_WALKS = [
       [1.95, 1.95],
       [5.1, 1.95],
       [5.1, 3.5],
+    ],
+  },
+  {
+    id: "lakeBench",
+    label: "Invite the lakefront sitter for a walk",
+    point: [7.85, 1, 9.78],
+    duration: 20,
+    seated: true,
+    path: [
+      [7.85, 9.78],
+      [7.85, 10.35],
+      [10.8, 10.35],
+      [7.85, 10.35],
+      [7.85, 9.78],
+    ],
+  },
+  {
+    id: "parkBench",
+    label: "Invite the park sitter for a walk",
+    point: [18.4, 1, 5.8],
+    duration: 18,
+    seated: true,
+    path: [
+      [18.4, 5.8],
+      [20, 5.8],
+      [20, 4.5],
+      [18.4, 4.5],
+      [18.4, 5.8],
     ],
   },
 ];

@@ -221,6 +221,8 @@ test("the original discoveries remain in the original city footprint", () => {
         "museumWalk",
         "apartmentWalk",
         "cityWalk",
+        "lakeBench",
+        "parkBench",
       ].includes(item.id),
   )) {
     assert.ok(Math.abs(item.point[0]) < 7.2, item.id);
@@ -431,12 +433,11 @@ test("lake occupies the long edge opposite apartments and fades completely at it
   );
 });
 test("fixed river bridges clear boat masts and their road ramps meet street level", async () => {
-  const { riverBridgeHeight } = await import(
-    "../src/features/traffic/waterfront.js"
-  );
+  const { riverBridgeHeight, RIVER_BRIDGE_START, RIVER_BRIDGE_END } =
+    await import("../src/features/traffic/waterfront.js");
   for (const x of [0, 14.4]) {
-    assert.equal(riverBridgeHeight(x, -10), 0);
-    assert.equal(riverBridgeHeight(x, -6.6), 0);
+    assert.equal(riverBridgeHeight(x, RIVER_BRIDGE_START), 0);
+    assert.equal(riverBridgeHeight(x, RIVER_BRIDGE_END), 0);
     for (const z of [-8.55, -7.85])
       assert.ok(0.175 + riverBridgeHeight(x, z) > 1.16);
   }
@@ -486,7 +487,7 @@ test("secret heist requires the ordered clues, expires partial attempts and igno
   HEIST_SEQUENCE.forEach((id) => h.click(id));
   assert.equal(h.time, 5);
   assert.equal(h.plays, 1);
-  h.tick(13);
+  h.tick(14);
   assert.equal(h.snapshot().phase, "investigation");
   h.tick(14.9);
   assert.equal(h.snapshot().phase, "investigation");
@@ -504,7 +505,8 @@ test("heist and separate walkers leave manual lights unchanged and reset with th
     s.discoveries.trigger(id);
   run(s, 12);
   assert.equal(s.discoveries.heist.snapshot().phase, "escape");
-  assert.ok("lakeWalk" in s.discoveries.active);
+  assert.ok(s.discoveries.walkClocks.lakeWalk > 8);
+  assert.equal(s.discoveries.active.lakeWalk, undefined);
   assert.equal(s.discoveries.active.apartmentWalk, undefined);
   assert.deepEqual(s.signals, before);
   s.reset();
@@ -574,4 +576,70 @@ test("lakefront traffic queues around the bend behind a red light and drains whe
   assert.equal(s.cars.length, 0);
   assert.equal(s.passed, 16);
   assert.equal(s.crashes, 0);
+});
+
+test("walkers stroll before traffic starts, pause during a stumble, and recover without starting cars", () => {
+  const s = new TrafficSimulation(() => 0.5);
+  run(s, 2);
+  assert.equal(s.started, false);
+  assert.equal(s.cars.length, 0);
+  assert.equal(s.time, 0);
+  const before = s.discoveries.walkClocks.lakeWalk;
+  s.discoveries.trigger("lakeWalk");
+  run(s, 1.5);
+  assert.equal(s.discoveries.walkClocks.lakeWalk, before);
+  assert.ok(s.discoveries.walkClocks.apartmentWalk > before);
+  run(s, 3);
+  assert.ok(s.discoveries.walkClocks.lakeWalk > before);
+  assert.equal(s.discoveries.active.lakeWalk, undefined);
+});
+test("seated people stand, take a walk, and return to the same bench", async () => {
+  const { pedestrianPose } = await import(
+    "../src/features/traffic/pedestrianMotion.js"
+  );
+  for (const definition of DISCOVERIES.filter((d) => d.seated)) {
+    assert.equal(pedestrianPose(definition, 0).seated, true);
+    const standing = pedestrianPose(definition, 0, 0.35);
+    assert.ok(standing.sit > 0 && standing.sit < 1);
+    const walking = pedestrianPose(definition, 0, 5);
+    assert.ok(walking.moving);
+    assert.ok(
+      Math.hypot(
+        walking.x - definition.point[0],
+        walking.z - definition.point[2],
+      ) > 0.5,
+    );
+    const home = pedestrianPose(definition, 0, definition.duration);
+    assert.equal(home.x, definition.point[0]);
+    assert.equal(home.z, definition.point[2]);
+  }
+});
+test("fisherman casts into the river before reeling and visibly lifting a fish", async () => {
+  const { fishingPose } = await import(
+    "../src/features/traffic/fishingMotion.js"
+  );
+  assert.equal(fishingPose(0.5).phase, "casting");
+  assert.equal(fishingPose(2).fish, false);
+  assert.equal(fishingPose(2).phase, "waiting");
+  assert.equal(fishingPose(4.5).phase, "reeling");
+  assert.ok(fishingPose(6.5).fish);
+  assert.ok(fishingPose(6.5).bobY > fishingPose(2).bobY + 1);
+  assert.equal(fishingPose().phase, "ready");
+});
+test("river bridge ramps have gentle slopes and the heist escape finishes before police arrive", async () => {
+  const { riverBridgeHeight, RIVER_BRIDGE_START, RIVER_BRIDGE_END } =
+    await import("../src/features/traffic/waterfront.js");
+  for (let z = RIVER_BRIDGE_START; z < RIVER_BRIDGE_END; z += 0.01)
+    assert.ok(
+      Math.abs(riverBridgeHeight(0, z + 0.01) - riverBridgeHeight(0, z)) /
+        0.01 <
+        0.57,
+    );
+  const { HEIST_TIMING: t, HEIST_PLACES: p } = await import(
+    "../src/features/traffic/secretHeist.js"
+  );
+  assert.ok(t.getawayGone < t.police);
+  assert.equal(t.departure - t.investigation, 15);
+  assert.ok(p.phone[0] > 0);
+  assert.ok(Math.hypot(p.manhole[0] + 3.38, p.manhole[1] + 2.35) > 4);
 });

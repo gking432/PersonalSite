@@ -1,3 +1,4 @@
+import { featherMapMaterial } from "./mapFade";
 import { LAKE_ROAD_START } from "./lakeRoad";
 import * as THREE from "three";
 import { APPROACHES, carPose } from "./trafficSimulation";
@@ -49,12 +50,14 @@ export function createCityScene(host, controls, onEscape) {
   const materials = new Set(),
     geometries = new Set(),
     textures = new Set();
+  const mapYaw = { value: -0.12 };
   const material = (color, more = {}) => {
     const m = new THREE.MeshStandardMaterial({
       color,
       roughness: 0.77,
       ...more,
     });
+    featherMapMaterial(m, mapYaw);
     materials.add(m);
     return m;
   };
@@ -946,11 +949,14 @@ export function createCityScene(host, controls, onEscape) {
   let yaw = -0.12,
     pitch = 0.77,
     zoom = 1,
+    panX = 0,
+    panY = 0,
     width = 1,
     height = 1,
     disposed = false;
   function view() {
     city.rotation.y = yaw;
+    mapYaw.value = yaw;
     const distance = 110;
     camera.position.set(
       Math.sin(0.7) * Math.cos(pitch) * distance,
@@ -960,6 +966,16 @@ export function createCityScene(host, controls, onEscape) {
     const focus = new THREE.Vector3(8, 0.95, -1.7).applyAxisAngle(
       new THREE.Vector3(0, 1, 0),
       yaw,
+    );
+    focus.add(
+      new THREE.Vector3(Math.cos(0.7), 0, -Math.sin(0.7)).multiplyScalar(panX),
+    );
+    focus.add(
+      new THREE.Vector3(
+        -Math.sin(0.7) * Math.sin(pitch),
+        Math.cos(pitch),
+        -Math.cos(0.7) * Math.sin(pitch),
+      ).multiplyScalar(panY),
     );
     camera.position.add(focus);
     camera.lookAt(focus);
@@ -979,6 +995,10 @@ export function createCityScene(host, controls, onEscape) {
   function signalPoint(s) {
     return new THREE.Vector3(s.x, 1.51, s.z);
   }
+  const discoveryPoint = (item) =>
+    discoveries.target(item.id) ||
+    waterfront.target(item.id) ||
+    new THREE.Vector3(...item.point);
   function positionButtons() {
     const targets = [
       ...signals.map((signal, index) => ({
@@ -991,7 +1011,7 @@ export function createCityScene(host, controls, onEscape) {
       },
       ...DISCOVERIES.map((item, index) => ({
         button: controls.discoveries[index],
-        ...project(new THREE.Vector3(...item.point)),
+        ...project(discoveryPoint(item)),
       })),
     ].filter((target) => target.button);
     for (const target of targets) {
@@ -999,10 +1019,13 @@ export function createCityScene(host, controls, onEscape) {
       const left = x - button.offsetWidth / 2,
         top = y - button.offsetHeight / 2;
       let polygon = [
-        [left, top],
-        [left + button.offsetWidth, top],
-        [left + button.offsetWidth, top + button.offsetHeight],
-        [left, top + button.offsetHeight],
+        [Math.max(0, left), Math.max(0, top)],
+        [Math.min(width, left + button.offsetWidth), Math.max(0, top)],
+        [
+          Math.min(width, left + button.offsetWidth),
+          Math.min(height, top + button.offsetHeight),
+        ],
+        [Math.max(0, left), Math.min(height, top + button.offsetHeight)],
       ];
       // Large invisible hit areas must not cover a neighboring signal head.
       // Clip each area at the midpoint to the other projected controls.
@@ -1030,7 +1053,11 @@ export function createCityScene(host, controls, onEscape) {
         polygon = clipped;
       }
       button.style.transform = `translate(${left}px, ${top}px)`;
-      const offscreen = x < 0 || x > width || y < 0 || y > height;
+      const offscreen =
+        x < width * 0.025 ||
+        x > width * 0.975 ||
+        y < height * 0.025 ||
+        y > height * 0.975;
       button.style.visibility = offscreen ? "hidden" : "visible";
       button.style.clipPath = `polygon(${polygon.map(([px, py]) => `${(px - left).toFixed(2)}px ${(py - top).toFixed(2)}px`).join(",")})`;
     }
@@ -1204,12 +1231,25 @@ export function createCityScene(host, controls, onEscape) {
       pitch = Math.max(0.48, Math.min(1.16, pitch + dy * 0.004));
       render();
     },
+    pan(dx, dy) {
+      const scale = (camera.top - camera.bottom) / Math.max(1, height);
+      panX = THREE.MathUtils.clamp(panX - dx * scale, -24, 24);
+      panY = THREE.MathUtils.clamp(panY + dy * scale, -18, 18);
+      render();
+    },
+    resetView() {
+      zoom = 1;
+      panX = panY = 0;
+      yaw = -0.12;
+      pitch = 0.77;
+      render();
+    },
     setZoom(value) {
-      zoom = Math.max(1, Math.min(1.65, value));
+      zoom = Math.max(1, Math.min(3.2, value));
       render();
     },
     get pose() {
-      return { yaw, pitch, zoom };
+      return { yaw, pitch, zoom, panX, panY };
     },
     diagnostics: () => ({
       discoveries: discoveries.diagnostics(),
@@ -1239,7 +1279,7 @@ export function createCityScene(host, controls, onEscape) {
     discoveryTargets: () =>
       DISCOVERIES.map((item) => ({
         id: item.id,
-        ...project(new THREE.Vector3(...item.point)),
+        ...project(discoveryPoint(item)),
       })),
     dispose() {
       disposed = true;
