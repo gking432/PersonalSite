@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { createBoatModel } from "./boatModel";
 export function createCityAdditions({
   city,
   palette,
@@ -7,7 +8,7 @@ export function createCityAdditions({
   cylinder,
   rod,
 }) {
-  // The west riverwalk is already inhabited before its intersection unlocks.
+  // Buildings complete the riverwalk on the opposite bank.
   for (const side of [-1, 1]) {
     box(3.3, 0.34, 5.2, -8.5, -0.05, side * 4.1, palette.base);
     box(3.35, 0.07, 5.25, -8.5, -0.24, side * 4.1, palette.edge);
@@ -79,21 +80,10 @@ export function createCityAdditions({
     gates.push(gate);
   }
   const boatMeshes = new Map();
-  function boatModel() {
-    const group = new THREE.Group();
-    city.add(group);
-    box(0.54, 0.17, 1.15, 0, 0, 0, palette.ivory, group);
-    box(0.47, 0.09, 1.04, 0, 0.12, 0, palette.white, group);
-    box(0.38, 0.22, 0.48, 0, 0.25, -0.08, palette.glass, group);
-    box(0.45, 0.045, 0.54, 0, 0.38, -0.08, palette.green, group);
-    rod([0, 0.35, -0.3], [0, 0.79, -0.3], 0.015, palette.dark, group);
-    box(0.23, 0.14, 0.025, 0.11, 0.7, -0.3, palette.brick, group);
-    return group;
-  }
-  const boatTemplate = boatModel();
-  city.remove(boatTemplate);
+  const boatTemplate = createBoatModel({ palette, box, mesh, rod });
 
   return {
+    createBoat: () => boatTemplate.clone(true),
     takeBoat(boat) {
       const model = boatMeshes.get(boat.id) || boatTemplate.clone(true);
       boatMeshes.delete(boat.id);

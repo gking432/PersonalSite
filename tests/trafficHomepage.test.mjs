@@ -23,7 +23,7 @@ test("homepage stays idle until activation and remains one constant-pace interse
   s.start();
   s.passed = 10000;
   run(s, 180);
-  assert.equal(s.interval, 1.2);
+  assert.equal(s.interval, 3.5);
   assert.ok(s.passed > 10000);
   assert.ok(s.cars.every((c) => c.junction === 0));
   assert.equal(s.level, undefined);
@@ -31,6 +31,33 @@ test("homepage stays idle until activation and remains one constant-pace interse
   assert.equal(s.district, undefined);
   assert.ok(s.cars.length < 40);
   assert.ok(s.bridge.boats.length <= 6);
+});
+test("the homepage spaces car arrivals without slowing cars along their paths", () => {
+  const s = new TrafficSimulation(() => 0.5);
+  s.start();
+  run(s, 0.1);
+  assert.equal(s.nextId, 2);
+  assert.equal(s.cars[0].speed, 2.4);
+  run(s, 3.3);
+  assert.equal(s.nextId, 2);
+  run(s, 0.2);
+  assert.equal(s.nextId, 3);
+});
+test("boats wait eighteen seconds to arrive, then leave thirty-five to fifty seconds between arrivals", () => {
+  for (const random of [0, 0.5, 1]) {
+    const s = new TrafficSimulation(() => random);
+    s.start();
+    s.nextArrival = Infinity;
+    run(s, 17.9);
+    assert.equal(s.bridge.nextId, 1);
+    run(s, 0.2);
+    assert.equal(s.bridge.nextId, 2);
+    const delay = 35 + random * 15;
+    run(s, delay - 0.2);
+    assert.equal(s.bridge.nextId, 2);
+    run(s, 0.3);
+    assert.equal(s.bridge.nextId, 3);
+  }
 });
 test("one light control switches the two directions and keeps the amber transition", () => {
   const s = setup();
@@ -85,7 +112,7 @@ test("crashes eject both cars immediately and leave no persistent wreck or clean
 test("boat queues overflow from either river edge while the bridge is closed", () => {
   const s = setup();
   s.bridge.nextBoat = 0;
-  run(s, 100);
+  run(s, 450);
   assert.ok(s.bridge.overflowed > 0);
   assert.ok(s.bridge.boats.length <= 6);
   const falls = s.events.filter((e) => e.kind === "boat-fall");

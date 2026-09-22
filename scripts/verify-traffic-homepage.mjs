@@ -1,6 +1,6 @@
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
-import { mkdir } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 const output = "/tmp/traffic-homepage";
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ channel: "chrome", headless: true });
@@ -15,23 +15,61 @@ try {
   await page.waitForFunction(() => window.__trafficCity?.snapshot().ready);
   const snap = () => page.evaluate(() => window.__trafficCity.snapshot());
   const button = (name) => page.getByRole("button", { name, exact: true });
-  assert.equal(await page.locator('[data-control="light"]:visible').count(), 1);
+  assert.equal(await page.locator('[data-control="light"]:visible').count(), 4);
   assert.equal(
     await page.locator('[data-control="bridge"]:visible').count(),
     1,
   );
   assert.equal(await page.getByRole("progressbar").count(), 0);
   assert.equal((await snap()).started, false);
+  assert.equal(
+    await page.getByRole("button", { name: /pause|fullscreen/i }).count(),
+    0,
+  );
   await button("Explore the Milwaukee intersection").press("Enter");
   await page.waitForFunction(() => window.__trafficCity.snapshot().cars > 0);
   await page.waitForFunction(() => window.__trafficCity.snapshot().page?.ready);
-  await page.locator('[data-control="light"]').click();
+  await page.locator('[data-control="light"]').first().click();
   assert.equal((await snap()).signals.wisconsin, "green");
-  await button("Pause traffic").click();
-  const time = (await snap()).time;
-  await page.waitForTimeout(200);
-  assert.equal((await snap()).time, time);
-  await button("Resume traffic").click();
+  // Click where the rendered lamp heads actually sit, not a locator's center.
+  // Every head controls the same intersection, even after rotation and resize.
+  for (const width of [1440, 900]) {
+    await page.setViewportSize({ width, height: 1000 });
+    for (let step = 0; step < 4; step++)
+      await button("Explore the Milwaukee intersection").press("ArrowRight");
+    for (let index = 0; index < 4; index++) {
+      const target = await page.evaluate(
+        (i) => window.__trafficCity.targets()[i],
+        index,
+      );
+      const control = await page.evaluate(
+        ({ x, y }) =>
+          document.elementFromPoint(x, y)?.closest("[data-control]")?.dataset
+            .control,
+        target,
+      );
+      assert.equal(control, "light", `head ${index} at ${width}px`);
+      const before = (await snap()).activeAxis;
+      await page.mouse.click(target.x, target.y);
+      assert.notEqual(
+        (await snap()).activeAxis,
+        before,
+        `head ${index} at ${width}px`,
+      );
+    }
+  }
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.evaluate(() => {
+    const draw = CanvasRenderingContext2D.prototype.drawImage;
+    CanvasRenderingContext2D.prototype.drawImage = function (image, ...args) {
+      if (
+        this.canvas.classList.contains("traffic-city__overflow") &&
+        image instanceof HTMLCanvasElement
+      )
+        window.__lastPageSprite = image;
+      return draw.call(this, image, ...args);
+    };
+  });
   await page.evaluate(() => {
     const s = window.__trafficCity.sim;
     s.cars = [];
@@ -76,6 +114,13 @@ try {
   await page.waitForFunction(
     () => window.__trafficCity.snapshot().page.escaped >= 3,
   );
+  const boatSprite = await page.evaluate(() =>
+    window.__lastPageSprite.toDataURL(),
+  );
+  await writeFile(
+    `${output}/falling-boat.png`,
+    Buffer.from(boatSprite.split(",")[1], "base64"),
+  );
   await page.evaluate(() => {
     const s = window.__trafficCity.sim;
     s.passed = 500;
@@ -113,10 +158,10 @@ try {
   await page.waitForFunction(
     () => window.__trafficCity.snapshot().bridge.passed > 0,
   );
-  await button("Enter fullscreen").click();
-  await page.waitForFunction(() => !!document.fullscreenElement);
-  await button("Exit fullscreen").click();
-  await page.waitForFunction(() => !document.fullscreenElement);
+  assert.equal(
+    await page.getByRole("button", { name: /pause|fullscreen/i }).count(),
+    0,
+  );
   await page.setViewportSize({ width: 390, height: 844 });
   await page.waitForFunction(() => !window.__trafficCity.snapshot().enabled);
   assert.equal(await page.locator(".traffic-city").isVisible(), false);
@@ -136,7 +181,7 @@ try {
   assert.deepEqual(errors, []);
   await mobile.close();
   await page.close();
-  console.log(JSON.stringify({ status: "PASS", checks: 14, output }, null, 2));
+  console.log(JSON.stringify({ status: "PASS", checks: 15, output }, null, 2));
 } finally {
   await browser.close();
 }

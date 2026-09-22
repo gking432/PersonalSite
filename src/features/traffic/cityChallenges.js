@@ -9,7 +9,7 @@ export class BridgeTraffic {
     this.lift = 0;
     this.phase = "closed";
     this.boats = [];
-    this.nextBoat = 3;
+    this.nextBoat = 18;
     this.nextId = 1;
     this.passed = 0;
     this.overflowed = 0;
@@ -55,7 +55,7 @@ export class BridgeTraffic {
     this.nextBoat -= dt;
     if (this.nextBoat <= 0) {
       this.spawn(events);
-      this.nextBoat = 5.5 + this.random() * 1.5;
+      this.nextBoat = 35 + this.random() * 15;
     }
     const roadOccupied = cars.some(
       (c) =>

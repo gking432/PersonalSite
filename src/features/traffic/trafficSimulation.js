@@ -97,7 +97,7 @@ export class TrafficSimulation {
     this.bridge = new BridgeTraffic(this.random);
   }
   get interval() {
-    return 1.2;
+    return 3.5;
   }
   start() {
     this.started = true;

@@ -512,12 +512,6 @@ export function createCityScene(host, controls, onEscape) {
     box(0.57, 0.2, 0.52, x, 0.5, z, palette.green);
     box(0.49, 0.16, 0.43, x, 0.67, z, palette.leaves);
   }
-  const boat = new THREE.Group();
-  city.add(boat);
-  boat.position.set(-5.94, 0.38, 3.7);
-  box(0.55, 0.18, 1.1, 0, 0, 0, palette.white, boat);
-  box(0.42, 0.2, 0.48, 0, 0.18, -0.07, palette.glass, boat);
-  box(0.47, 0.06, 0.55, 0, 0.31, -0.07, palette.white, boat);
   for (const [x, z, color] of [
     [1.97, 2.9, palette.brick],
     [-1.93, -3.15, palette.green],
@@ -549,6 +543,9 @@ export function createCityScene(host, controls, onEscape) {
     unitBox,
     lampMaterials,
   });
+  const boat = additions.createBoat();
+  city.add(boat);
+  boat.position.set(-5.94, 0.38, 3.7);
   const signals = SIGNALS.map((config) => {
     const s = config;
     const parent = new THREE.Group();
@@ -820,10 +817,12 @@ export function createCityScene(host, controls, onEscape) {
   stampLight.position.copy(sun.position);
   stampScene.add(stampLight);
   const stampCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 30);
-  function stamp(group, span) {
+  function stamp(group, span, boat = false) {
     const clone = group.clone(true);
+    // Keep the cabin and deck readable once the boat becomes a spinning page sprite.
+    if (boat) clone.rotation.set(-0.08, group.rotation.y, 0.16);
     clone.position.copy(
-      new THREE.Vector3(0, 0.5, 0)
+      new THREE.Vector3(0, boat ? 0.24 : 0.5, 0)
         .applyQuaternion(clone.quaternion)
         .multiplyScalar(-1),
     );
@@ -834,6 +833,7 @@ export function createCityScene(host, controls, onEscape) {
     stampCamera.left = stampCamera.bottom = -span / 2;
     stampCamera.right = stampCamera.top = span / 2;
     stampCamera.position.copy(camera.position).normalize().multiplyScalar(10);
+    if (boat) stampCamera.position.y = Math.max(6, stampCamera.position.y);
     stampCamera.lookAt(0, 0, 0);
     stampCamera.updateProjectionMatrix();
     renderer.setRenderTarget(stampTarget);
@@ -921,7 +921,9 @@ export function createCityScene(host, controls, onEscape) {
     button.style.transform = `translate(${p.x - button.offsetWidth / 2}px, ${p.y - button.offsetHeight / 2}px)`;
   }
   function positionButtons() {
-    place(buttons[0], signalPoint(signals[0]));
+    signals.forEach((signal, index) =>
+      place(buttons[index], signalPoint(signal)),
+    );
     place(controls.bridge.current, new THREE.Vector3(-5.95, 0.6, 0));
   }
 
@@ -1007,8 +1009,10 @@ export function createCityScene(host, controls, onEscape) {
           5 * drop * drop,
         f.z + f.sz * side,
       );
-      f.group.rotation.z = -Math.min(2.3, t * 4.5);
-      f.group.rotation.x = t * 0.9;
+      f.group.rotation.z = f.boat
+        ? -Math.min(0.48, t * 1.4)
+        : -Math.min(2.3, t * 4.5);
+      f.group.rotation.x = t * (f.boat ? 0.22 : 0.9);
       if (t > 0.59) {
         const center = new THREE.Vector3(0, 0.5, 0)
           .applyQuaternion(f.group.quaternion)
@@ -1027,7 +1031,7 @@ export function createCityScene(host, controls, onEscape) {
           vy: (velocity.y - point.y) * 10,
           size: span * pixelsPerUnit,
           radius: f.car.length * pixelsPerUnit * 0.48,
-          sprite: stamp(f.group, span),
+          sprite: stamp(f.group, span, f.boat),
           spin: (f.car.id % 2 ? 1 : -1) * 3.5,
         });
         city.remove(f.group);

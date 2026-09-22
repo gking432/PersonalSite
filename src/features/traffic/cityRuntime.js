@@ -5,8 +5,7 @@ export function createCityRuntime(host, controls, onState) {
   let pageCars = null,
     pageLoading = null,
     pendingFalls = [];
-  let paused = false,
-    enabled = true,
+  let enabled = true,
     visible = true,
     disposed = false,
     raf = 0,
@@ -21,10 +20,9 @@ export function createCityRuntime(host, controls, onState) {
       if (pendingFalls.length > 16) pendingFalls.shift();
     }
   });
-  const state = () => ({ ...sim.snapshot(), paused, ready: true });
+  const state = () => ({ ...sim.snapshot(), ready: true });
   const running = () =>
     sim.started &&
-    !paused &&
     enabled &&
     (visible || scene.diagnostics().falling > 0) &&
     !document.hidden &&
@@ -36,7 +34,6 @@ export function createCityRuntime(host, controls, onState) {
         next.signals,
         next.bridge.phase,
         next.bridge.requestedOpen,
-        paused,
       ]);
     if (key !== signature) {
       signature = key;
@@ -74,7 +71,7 @@ export function createCityRuntime(host, controls, onState) {
       .then(({ createPageCars }) => {
         if (disposed) return;
         pageCars = createPageCars(host);
-        pageCars.setEnabled(enabled && !paused && sim.started);
+        pageCars.setEnabled(enabled && sim.started);
         for (const point of pendingFalls) pageCars.add(point);
         pendingFalls = [];
       })
@@ -89,12 +86,12 @@ export function createCityRuntime(host, controls, onState) {
     if (!enabled || disposed) return;
     sim.start();
     preparePage();
-    pageCars?.setEnabled(enabled && !paused);
+    pageCars?.setEnabled(enabled);
     notify();
     schedule();
   }
   function toggleSignal() {
-    if (!enabled || disposed || paused) return;
+    if (!enabled || disposed) return;
     start();
     sim.toggle();
     scene.update(sim);
@@ -103,7 +100,7 @@ export function createCityRuntime(host, controls, onState) {
     schedule();
   }
   function toggleBridge() {
-    if (!enabled || disposed || paused) return;
+    if (!enabled || disposed) return;
     start();
     sim.toggleBridge();
     scene.update(sim);
@@ -116,19 +113,11 @@ export function createCityRuntime(host, controls, onState) {
     sim.reset();
     pendingFalls = [];
     pageCars?.clear();
-    paused = false;
     accumulator = 0;
     scene.clear();
     scene.update(sim);
     scene.render();
     notify();
-  }
-  function togglePause() {
-    paused = !paused;
-    pageCars?.setEnabled(enabled && !paused && sim.started);
-    notify();
-    if (paused) stop();
-    else schedule();
   }
   function pointerDown(e) {
     if (!e.isPrimary || e.button !== 0) return;
@@ -181,7 +170,6 @@ export function createCityRuntime(host, controls, onState) {
     toggleSignal,
     toggleBridge,
     reset,
-    togglePause,
     pointerDown,
     pointerMove,
     pointerUp,
@@ -194,7 +182,7 @@ export function createCityRuntime(host, controls, onState) {
     },
     setEnabled(value) {
       enabled = value;
-      pageCars?.setEnabled(value && !paused && sim.started);
+      pageCars?.setEnabled(value && sim.started);
       if (value) {
         scene.resize();
         schedule();
