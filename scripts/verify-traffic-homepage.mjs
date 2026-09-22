@@ -30,9 +30,13 @@ try {
   await page.waitForFunction(() => window.__trafficCity.snapshot().cars > 0);
   await page.waitForFunction(() => window.__trafficCity.snapshot().page?.ready);
   await page.locator('[data-control="light"]').first().click();
-  assert.equal((await snap()).signals.wisconsin, "green");
+  assert.equal((await snap()).signals.water, "amber");
+  assert.equal((await snap()).signals.wisconsin, "red");
+  await page.waitForFunction(
+    () => window.__trafficCity.snapshot().signals.water === "red",
+  );
   // Click where the rendered lamp heads actually sit, not a locator's center.
-  // Every head controls the same intersection, even after rotation and resize.
+  // Each head controls its own road, even after rotation and resize.
   for (const width of [1440, 900]) {
     await page.setViewportSize({ width, height: 1000 });
     for (let step = 0; step < 4; step++)
@@ -45,16 +49,28 @@ try {
       const control = await page.evaluate(
         ({ x, y }) =>
           document.elementFromPoint(x, y)?.closest("[data-control]")?.dataset
-            .control,
+            .axis,
         target,
       );
-      assert.equal(control, "light", `head ${index} at ${width}px`);
-      const before = (await snap()).activeAxis;
+      assert.equal(control, target.axis, `head ${index} at ${width}px`);
+      const before = (await snap()).signals;
+      const other = target.axis === "water" ? "wisconsin" : "water";
       await page.mouse.click(target.x, target.y);
+      const after = (await snap()).signals;
       assert.notEqual(
-        (await snap()).activeAxis,
-        before,
+        after[target.axis],
+        before[target.axis],
         `head ${index} at ${width}px`,
+      );
+      assert.equal(
+        after[other],
+        before[other],
+        `cross traffic changed for head ${index} at ${width}px`,
+      );
+      await page.waitForFunction(() =>
+        Object.values(window.__trafficCity.snapshot().signals).every(
+          (color) => color !== "amber",
+        ),
       );
     }
   }

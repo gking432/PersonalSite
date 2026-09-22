@@ -90,10 +90,10 @@ export function createCityRuntime(host, controls, onState) {
     notify();
     schedule();
   }
-  function toggleSignal() {
+  function toggleSignal(axis) {
     if (!enabled || disposed) return;
     start();
-    sim.toggle();
+    sim.toggle(axis);
     scene.update(sim);
     scene.render();
     notify();

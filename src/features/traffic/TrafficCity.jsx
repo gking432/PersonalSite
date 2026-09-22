@@ -86,9 +86,10 @@ export default function TrafficCity() {
             className="traffic-city__signal"
             data-control="light"
             data-signal={index}
-            aria-label={`Switch traffic at ${signal.label}; ${game.signals.water === "green" ? "Water Street" : "Wisconsin Avenue"} is green`}
+            data-axis={signal.axis}
+            aria-label={`${signal.label} light: ${game.signals[signal.axis]}`}
             disabled={!game.ready}
-            onClick={() => engine.current?.toggleSignal()}
+            onClick={() => engine.current?.toggleSignal(signal.axis)}
           />
         ))}
         <button

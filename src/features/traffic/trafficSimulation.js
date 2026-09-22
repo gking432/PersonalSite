@@ -89,7 +89,6 @@ export class TrafficSimulation {
     this.nextId = 1;
     this.nextArrival = 0;
     this.arrivalIndex = 0;
-    this.activeAxis = "water";
     this.signals = {
       water: { color: "green", left: 0 },
       wisconsin: { color: "red", left: 0 },
@@ -105,12 +104,16 @@ export class TrafficSimulation {
   signalsAt() {
     return this.signals;
   }
-  toggle() {
+  toggle(axis) {
+    const signal = this.signals[axis];
+    if (!signal) return;
     this.start();
-    const previous = this.activeAxis;
-    this.activeAxis = previous === "water" ? "wisconsin" : "water";
-    this.signals[previous] = { color: "amber", left: 0.65 };
-    this.signals[this.activeAxis] = { color: "green", left: 0 };
+    if (signal.color === "green") {
+      signal.color = "amber";
+      signal.left = 0.65;
+    } else if (signal.color === "red") {
+      signal.color = "green";
+    }
   }
   toggleBridge() {
     this.start();
@@ -299,7 +302,6 @@ export class TrafficSimulation {
       crashes: this.crashes,
       overflowed: this.overflowed,
       honks: this.honks,
-      activeAxis: this.activeAxis,
       interval: this.interval,
       signals: Object.fromEntries(
         Object.entries(this.signals).map(([k, v]) => [k, v.color]),

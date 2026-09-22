@@ -59,15 +59,29 @@ test("boats wait eighteen seconds to arrive, then leave thirty-five to fifty sec
     assert.equal(s.bridge.nextId, 3);
   }
 });
-test("one light control switches the two directions and keeps the amber transition", () => {
+test("each road changes only on its own click, including amber, repeated clicks and long waits", () => {
   const s = setup();
-  s.toggle();
+  s.toggle("water");
   assert.equal(s.signals.water.color, "amber");
-  assert.equal(s.signals.wisconsin.color, "green");
+  assert.equal(s.signals.wisconsin.color, "red");
+  s.toggle("water");
   run(s, 0.7);
   assert.equal(s.signals.water.color, "red");
-  s.toggle();
+  assert.equal(s.signals.wisconsin.color, "red");
+  run(s, 60);
+  assert.equal(s.signals.water.color, "red");
+  assert.equal(s.signals.wisconsin.color, "red");
+  s.toggle("wisconsin");
+  assert.equal(s.signals.water.color, "red");
+  assert.equal(s.signals.wisconsin.color, "green");
+  s.toggle("water");
+  run(s, 60);
   assert.equal(s.signals.water.color, "green");
+  assert.equal(s.signals.wisconsin.color, "green");
+  s.toggle("wisconsin");
+  run(s, 0.7);
+  assert.equal(s.signals.water.color, "green");
+  assert.equal(s.signals.wisconsin.color, "red");
 });
 test("red-light queues overflow off the edge and resume when the light changes", () => {
   const s = setup();
@@ -80,7 +94,7 @@ test("red-light queues overflow off the edge and resume when the light changes",
     s.events.some((e) => e.kind === "overflow" && e.reason === "overflow"),
   );
   assert.ok(s.cars.every((c) => c.p <= STOP_LINE + 0.01));
-  s.toggle();
+  s.toggle("wisconsin");
   run(s, 15);
   assert.ok(s.passed > 0);
 });

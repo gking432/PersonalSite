@@ -915,16 +915,55 @@ export function createCityScene(host, controls, onEscape) {
   function signalPoint(s) {
     return new THREE.Vector3(s.x, 1.51, s.z);
   }
-  function place(button, point) {
-    if (!button) return;
-    const p = project(point);
-    button.style.transform = `translate(${p.x - button.offsetWidth / 2}px, ${p.y - button.offsetHeight / 2}px)`;
-  }
   function positionButtons() {
-    signals.forEach((signal, index) =>
-      place(buttons[index], signalPoint(signal)),
-    );
-    place(controls.bridge.current, new THREE.Vector3(-5.95, 0.6, 0));
+    const targets = [
+      ...signals.map((signal, index) => ({
+        button: buttons[index],
+        ...project(signalPoint(signal)),
+      })),
+      {
+        button: controls.bridge.current,
+        ...project(new THREE.Vector3(-5.95, 0.6, 0)),
+      },
+    ].filter((target) => target.button);
+    for (const target of targets) {
+      const { button, x, y } = target;
+      const left = x - button.offsetWidth / 2,
+        top = y - button.offsetHeight / 2;
+      let polygon = [
+        [left, top],
+        [left + button.offsetWidth, top],
+        [left + button.offsetWidth, top + button.offsetHeight],
+        [left, top + button.offsetHeight],
+      ];
+      // Large invisible hit areas must not cover a neighboring signal head.
+      // Clip each area at the midpoint to the other projected controls.
+      for (const other of targets) {
+        if (other === target || !polygon.length) continue;
+        const dx = other.x - x,
+          dy = other.y - y;
+        const distance = (point) =>
+          dx * (point[0] - x) + dy * (point[1] - y) - (dx * dx + dy * dy) / 2;
+        const clipped = [];
+        for (let i = 0; i < polygon.length; i++) {
+          const start = polygon[i],
+            end = polygon[(i + 1) % polygon.length];
+          const a = distance(start),
+            b = distance(end);
+          if (a <= 0) clipped.push(start);
+          if (a <= 0 !== b <= 0) {
+            const fraction = a / (a - b);
+            clipped.push([
+              start[0] + (end[0] - start[0]) * fraction,
+              start[1] + (end[1] - start[1]) * fraction,
+            ]);
+          }
+        }
+        polygon = clipped;
+      }
+      button.style.transform = `translate(${left}px, ${top}px)`;
+      button.style.clipPath = `polygon(${polygon.map(([px, py]) => `${(px - left).toFixed(2)}px ${(py - top).toFixed(2)}px`).join(",")})`;
+    }
   }
 
   function render() {
