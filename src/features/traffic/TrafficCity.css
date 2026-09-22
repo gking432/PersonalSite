@@ -133,3 +133,18 @@
 .traffic-city__discovery:hover {
   background: radial-gradient(circle, #f4e5b42e, transparent 65%);
 }
+
+.traffic-city__weather {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 6px auto 0;
+  color: #777c77;
+  font-size: 0.65rem;
+  line-height: 1.4;
+  text-decoration: none;
+  pointer-events: auto;
+}
+.traffic-city__weather:hover {
+  text-decoration: underline;
+}

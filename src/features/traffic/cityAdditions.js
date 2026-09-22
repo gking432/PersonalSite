@@ -37,7 +37,7 @@ export function createCityAdditions({
           -7.91,
           0.75 + floor * 0.48,
           side * 3.9 - 0.87 + col * 0.58,
-          palette.glass,
+          palette.windows,
         );
     rod([-7.1, 0.4, side * 1.9], [-7.1, 0.4, side * 6.5], 0.025, palette.dark);
     for (let z = 2; z < 6.5; z += 0.5)

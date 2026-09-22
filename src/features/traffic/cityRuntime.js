@@ -1,3 +1,4 @@
+import { createLiveWeather } from "./liveWeather";
 import { createPhoneRing } from "./phoneRing";
 import { TrafficSimulation } from "./trafficSimulation";
 import { createCityScene } from "./cityScene";
@@ -6,6 +7,7 @@ export function createCityRuntime(host, controls, onState) {
   const sim = new TrafficSimulation();
   const trumpet = createTrumpetPlayer();
   const phone = createPhoneRing();
+  const weather = createLiveWeather();
   const pointers = new Map();
   let pinch = null;
   let pageCars = null,
@@ -31,6 +33,7 @@ export function createCityRuntime(host, controls, onState) {
     ...sim.snapshot(),
     zoom: scene.pose.zoom,
     ready: true,
+    world: weather.read(),
   });
   const running = () =>
     enabled &&
@@ -46,6 +49,8 @@ export function createCityRuntime(host, controls, onState) {
         next.bridge.requestedOpen,
         next.discoveries,
         next.zoom,
+        next.world.label,
+        next.world.status,
       ]);
     if (key !== signature) {
       signature = key;
@@ -72,7 +77,7 @@ export function createCityRuntime(host, controls, onState) {
       if (visible) sim.tick(1 / 120);
       accumulator -= 1 / 120;
     }
-    scene.update(sim, dt);
+    scene.update(sim, dt, weather.read());
     scene.render();
     notify();
     if (running()) raf = requestAnimationFrame(tick);
@@ -107,7 +112,7 @@ export function createCityRuntime(host, controls, onState) {
     if (!enabled || disposed || suppressClick) return;
     start();
     sim.toggle(axis);
-    scene.update(sim);
+    scene.update(sim, 0, weather.read());
     scene.render();
     notify();
     schedule();
@@ -116,7 +121,7 @@ export function createCityRuntime(host, controls, onState) {
     if (!enabled || disposed || suppressClick) return;
     start();
     sim.toggleBridge();
-    scene.update(sim);
+    scene.update(sim, 0, weather.read());
     scene.render();
     notify();
     schedule();
@@ -131,7 +136,7 @@ export function createCityRuntime(host, controls, onState) {
     accumulator = 0;
     scene.clear();
     scene.resetView();
-    scene.update(sim);
+    scene.update(sim, 0, weather.read());
     scene.render();
     notify();
     schedule();
@@ -143,7 +148,7 @@ export function createCityRuntime(host, controls, onState) {
     if (id === "musician") trumpet.play();
     if (id === "payphone") phone.play();
     if (id === "hop" && !sim.hop.car()) sim.hop.next = 0;
-    scene.update(sim);
+    scene.update(sim, 0, weather.read());
     scene.render();
     notify();
   }
@@ -251,7 +256,10 @@ export function createCityRuntime(host, controls, onState) {
       );
     }
   }
+  const syncWeather = () =>
+    weather.setActive(enabled && visible && !document.hidden);
   function visibility() {
+    syncWeather();
     if (document.hidden) {
       stop();
       trumpet.stop();
@@ -260,6 +268,7 @@ export function createCityRuntime(host, controls, onState) {
   }
   const intersection = new IntersectionObserver(([entry]) => {
     visible = entry.isIntersecting;
+    syncWeather();
     if (!visible) {
       trumpet.stop();
       phone.stop();
@@ -271,7 +280,7 @@ export function createCityRuntime(host, controls, onState) {
   const size = new ResizeObserver(() => scene.resize());
   size.observe(host);
   document.addEventListener("visibilitychange", visibility);
-  scene.update(sim);
+  scene.update(sim, 0, weather.read());
   scene.render();
   notify();
   schedule();
@@ -288,13 +297,14 @@ export function createCityRuntime(host, controls, onState) {
     key,
     refresh() {
       if (!disposed) {
-        scene.update(sim);
+        scene.update(sim, 0, weather.read());
         scene.render();
         notify();
       }
     },
     setEnabled(value) {
       enabled = value;
+      syncWeather();
       pageCars?.setEnabled(value && sim.started);
       if (value) {
         scene.resize();
@@ -310,6 +320,7 @@ export function createCityRuntime(host, controls, onState) {
       stop();
       trumpet.dispose();
       phone.dispose();
+      weather.dispose();
       intersection.disconnect();
       size.disconnect();
       document.removeEventListener("visibilitychange", visibility);

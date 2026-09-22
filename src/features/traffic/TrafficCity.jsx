@@ -147,6 +147,17 @@ export default function TrafficCity() {
       </div>
       <div className="traffic-city__caption">
         <span>little milwaukee. interact with the map</span>
+        {game.world && (
+          <a
+            className="traffic-city__weather"
+            href="https://forecast.weather.gov/data/obhistory/KMKE.html"
+            target="_blank"
+            rel="noreferrer"
+            title={game.world.detail}
+          >
+            {game.world.label}
+          </a>
+        )}
         <div className="traffic-city__controls">
           <button
             type="button"

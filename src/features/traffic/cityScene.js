@@ -1,3 +1,4 @@
+import { createWorldAtmosphere } from "./worldAtmosphere";
 import { createPedestrianScene } from "./pedestrianScene";
 import { createHopTracks, createHopVehicle } from "./hopScene";
 import {
@@ -91,6 +92,8 @@ export function createCityScene(host, controls, onEscape) {
     roof: material("#5d6557"),
     green: material("#295b48"),
     glass: material("#42676a", { metalness: 0.22, roughness: 0.3 }),
+    windows: material("#42676a", { metalness: 0.22, roughness: 0.3 }),
+    headlamp: material("#f4ebd6", { emissive: "#fff0c4" }),
     dark: material("#253e38"),
     black: material("#303c39"),
     white: material("#f4ebd6"),
@@ -99,6 +102,8 @@ export function createCityScene(host, controls, onEscape) {
     leaves: material("#6a8660", { flatShading: true }),
     leaves2: material("#8b9d6b", { flatShading: true }),
   };
+  palette.windows.userData.worldWindow = true;
+  palette.headlamp.userData.worldLamp = true;
   // Only terrain edges feather. Architecture and props use opaque materials,
   // preserving correct depth ordering even in the instanced building batches.
   const terrainMaterials = new Map();
@@ -360,7 +365,7 @@ export function createCityScene(host, controls, onEscape) {
     h,
     floors = 4,
     body = palette.cream,
-    glass = palette.glass,
+    glass = palette.windows,
     ornate = false,
     landmark = false,
   }) {
@@ -570,6 +575,7 @@ export function createCityScene(host, controls, onEscape) {
       emissive: "#e7bf6e",
       emissiveIntensity: 0.5,
     });
+    glow.userData.worldLamp = true;
     mesh(new THREE.SphereGeometry(0.085, 10, 8), glow, x, 1.78, z);
     cylinder(0.15, 0.055, x, 1.9, z, palette.dark, city, 0.035);
   }
@@ -778,6 +784,17 @@ export function createCityScene(host, controls, onEscape) {
     city.add(instances);
   }
 
+  const atmosphere = createWorldAtmosphere({
+    city,
+    sun,
+    sky,
+    fill,
+    palette,
+    materials,
+    terrainMaterials,
+    mapYaw,
+  });
+
   const colors = [
     "#c9994b",
     "#698b8e",
@@ -857,7 +874,7 @@ export function createCityScene(host, controls, onEscape) {
         side * 0.125,
         0.52,
         l / 2 + 0.011,
-        palette.white,
+        palette.headlamp,
         group,
       );
     }
@@ -1275,7 +1292,8 @@ export function createCityScene(host, controls, onEscape) {
     render();
   }
   let currentSim = null;
-  function update(sim, dt = 0) {
+  function update(sim, dt = 0, world) {
+    if (world) atmosphere.update(world, dt);
     currentSim = sim;
     if (!sim.discoveries.pedestrians.obstacles.length)
       sim.discoveries.pedestrians.obstacles = buildingBounds.map((b) => [
@@ -1313,7 +1331,7 @@ export function createCityScene(host, controls, onEscape) {
     balcony.update(sim);
     additions.update(sim, dt);
     discoveries.update(sim);
-    waterfront.update(sim);
+    waterfront.update(sim, world);
     thirdWard.update(sim);
     clockTowers.forEach((tower) => tower.update(sim));
     heist.update(sim);
@@ -1486,6 +1504,7 @@ export function createCityScene(host, controls, onEscape) {
       return { yaw, pitch, zoom, panX, panY };
     },
     diagnostics: () => ({
+      atmosphere: atmosphere.diagnostics(),
       balcony: balcony.diagnostics(),
       pedestrians: pedestrianScene.diagnostics(),
       layout: pageLayout.diagnostics(),
@@ -1547,6 +1566,7 @@ export function createCityScene(host, controls, onEscape) {
     dispose() {
       disposed = true;
       pageLayout.dispose();
+      atmosphere.dispose();
       clear();
       for (const t of textures) t.dispose();
       for (const g of geometries) g.dispose();

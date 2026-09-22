@@ -35,6 +35,18 @@ Use the small + / − controls, keyboard + / −, a two-finger pinch, or a track
 
 The secret sequence is **bank clock → payphone → manhole cover**, with the payphone across Water Street and the manhole farther away across Wisconsin Avenue. Each next clue must be clicked within 20 seconds. The ordinary object labels do not reveal the sequence. Completing it starts a short cartoon scene: a car pulls up beside the bank, three masked figures run inside, then split up. One jumps back into the car and accelerates away before police arrive; two run to the distant manhole and disappear underground. Three police cars rush in from the north, the east through the roundabout, and the lakefront connection. A news van joins them. They remain at the scene for 15 seconds, then depart. Their curbside animation is independent of the traffic lights. Repeat attempts during a running scene are ignored; the scene can be replayed after everyone leaves. Reset clears partial and active sequences.
 
+## Live time and weather (September 22, 2026)
+
+The homepage uses Milwaukee time (`America/Chicago`), including daylight-saving changes, and a season-aware sun position calculated from NOAA’s [solar equations](https://gml.noaa.gov/grad/solcalc/solareqns.PDF). Morning and evening light warms the miniature; night brings cool illumination, lit windows, streetlamps and headlights. The manual Iron Block window interaction remains independent.
+
+Current conditions come directly from the National Weather Service’s [KMKE observation endpoint](https://api.weather.gov/stations/KMKE/observations/latest). The fixed Milwaukee location requires no visitor location permission or API key. Visible desktop scenes check every ten minutes, with an eight-second request timeout and a local cache. Weather reports older than two hours are discarded. A recent cached report can cover a connection failure; otherwise the caption says weather is unavailable and the local daylight cycle continues. The caption links to the station’s observations and its tooltip shows the observation time. These are station reports, which can lag the weather on the ground, rather than second-by-second downtown measurements.
+
+Cloud cover softens the lighting; rain darkens the streets and animates wind-driven drops; snow adds falling flakes and a light dusting to roofs and roads. Wind also changes the sailboats’ motion. Effects are drawn within the existing canvas and text masks. Weather runs before traffic activation, pauses when hidden/offscreen, and is disposed with the miniature. Fresh visits below 701px load neither the weather client nor Three.js.
+
+The Public Market rooftop sign reads **PUBLIC MARKET** in larger red lettering, with outward-facing front/back surfaces so the letters do not overlap.
+
+Local validation on September 22, 2026: 66 model tests, simulated noon/night/rain/snow browser checks, cache/failure/cancellation tests, and a live KMKE observation fetch. The preview received a current Cloudy report with temperature and wind. These checks validate the local preview and implementation, not a production deployment.
+
 ## Implementation
 
 - `src/features/traffic/trafficSimulation.js`: fixed map, manual road signals, autonomous roundabout admission, queues, transfers and immediate crash ejection.

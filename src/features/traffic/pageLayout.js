@@ -53,6 +53,7 @@ export function createPageLayout(host, onChange) {
       hero.querySelector(".studio-sub"),
       proof,
       caption?.querySelector("span"),
+      caption?.querySelector(".traffic-city__weather"),
     ]) {
       if (!root) continue;
       const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
@@ -112,7 +113,12 @@ export function createPageLayout(host, onChange) {
   for (const node of [anchor, hero, proof, caption, nextPanel])
     if (node) resize.observe(node);
   const content = new MutationObserver(schedule);
-  if (caption) content.observe(caption, { childList: true, subtree: true });
+  if (caption)
+    content.observe(caption, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
   window.addEventListener("resize", schedule);
   document.fonts?.ready.then(() => {
     if (!disposed) schedule();

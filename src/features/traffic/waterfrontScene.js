@@ -447,7 +447,7 @@ export function createWaterfrontScene({
     ),
   }));
   let diagnostics = {};
-  function update(sim) {
+  function update(sim, world) {
     sailboats.forEach(({ g, sails, wake }, i) => {
       const pose = sailboatPose(
         i,
@@ -462,7 +462,9 @@ export function createWaterfrontScene({
       g.rotation.set(
         Math.sin(sim.ambientTime * 0.8 + i) * 0.025,
         pose.yaw,
-        pose.heel,
+        pose.heel +
+          Math.sin(sim.ambientTime * 1.3 + i) *
+            Math.min(0.1, (world?.weather?.windKph || 0) / 400),
       );
       sails.rotation.y = pose.sail;
       wake.visible = pose.wake > 0.05;

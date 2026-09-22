@@ -19,6 +19,7 @@ export function createPublicMarket({
     steel = material("#a9aaa1"),
     roof = material("#929b99"),
     glass = material("#738b91", { roughness: 0.38, metalness: 0.25 });
+  glass.userData.worldWindow = true;
   box(w, h, d, x, 0.41 + h / 2, z, brick);
   // Warm brick piers, ground-floor glazing, and the real hall's silver louvers.
   for (const sign of [-1, 1]) {
@@ -68,26 +69,35 @@ export function createPublicMarket({
   box(0.48, 0.09, 0.7, x + 0.6, 2.235, z + 0.65, p.roof);
   for (const q of [-1, 1])
     rod(
-      [x + q * 0.9, 2.19, z - 1.34],
-      [x + q * 0.9, 2.66, z - 1.34],
+      [x + q * 0.9, 2.19, z + 1.34],
+      [x + q * 0.9, 2.92, z + 1.34],
       0.018,
       p.dark,
     );
-  for (const sign of [-1, 1])
-    label(
-      "MILWAUKEE PUBLIC MARKET",
-      3.1,
-      0.3,
+  for (const sign of [-1, 1]) {
+    const signFace = label(
+      "PUBLIC MARKET",
+      3.3,
+      0.8,
       x,
-      2.59,
-      z - 1.34 + sign * 0.016,
+      2.78,
+      z + 1.34 + sign * 0.016,
       {
         background: null,
-        color: "#c84637",
-        size: 53,
+        color: "#d22e26",
+        size: 88,
         ry: sign > 0 ? 0 : Math.PI,
       },
     );
+    // Cutout letters write depth so the transparent river cannot paint over
+    // the part of the sign that projects beyond the roof.
+    Object.assign(signFace.material, {
+      side: THREE.FrontSide,
+      transparent: false,
+      alphaTest: 0.25,
+      depthWrite: true,
+    });
+  }
   box(0.44, 0.65, 0.05, x, 0.75, z - d / 2 - 0.045, glass);
   for (const xx of [x - 0.22, x, x + 0.22])
     box(0.025, 0.66, 0.065, xx, 0.75, z - d / 2 - 0.06, steel);

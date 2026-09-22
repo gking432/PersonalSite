@@ -12,7 +12,7 @@ export function createMilwaukeeTower({
   palette: p,
 }) {
   const base = 0.41;
-  box(w, h, d, x, base + h / 2, z, p.glass);
+  box(w, h, d, x, base + h / 2, z, p.windows);
   box(w + 0.22, 0.16, d + 0.22, x, base + 0.02, z, p.trim);
   for (let floor = 0; floor <= 20; floor++) {
     const y = base + 0.42 + (floor * (h - 0.8)) / 20;
