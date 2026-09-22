@@ -9,7 +9,7 @@ export const DISCOVERIES = [
   {
     id: "helicopter",
     label: "Fly the rooftop helicopter",
-    point: [3.5, 3.9, -3.7],
+    point: [3.5, 3.75, -3.7],
     duration: FLIGHT_DURATION,
   },
   {
@@ -94,24 +94,53 @@ export class Discoveries {
     this.counts = {};
     this.windows = false;
     this.heist = new SecretHeist();
+    this.heistFlight = null;
   }
   trigger(id) {
     const discovery = DISCOVERIES.find((item) => item.id === id);
     if (!discovery) return false;
+    if (id === "helicopter" && this.heistFlight) return false;
     if (discovery.loopDuration) {
       if (!this.pedestrians.click(discovery, this.walkClocks[id] || 0))
         return false;
     } else if (id in this.active) return false;
+    const beforeHeist = this.heist.plays;
     this.heist.click(id);
+    if (this.heist.plays > beforeHeist) {
+      const manual = this.active.helicopter || 0;
+      this.heistFlight = {
+        time: manual > 17.2 ? 0 : manual,
+        returning: manual > 17.2 ? manual : null,
+        returnAt: null,
+      };
+      delete this.active.helicopter;
+    }
     this.counts[id] = (this.counts[id] || 0) + 1;
-    if (id === "windows") this.windows = !this.windows;
-    else this.active[id] = 0;
+    if (id === "windows") {
+      this.windows = !this.windows;
+      this.pedestrians.lightsOn = this.windows;
+      if (this.pedestrians.environment)
+        this.pedestrians.environment.lightsOn = this.windows;
+    } else this.active[id] = 0;
     if (id === "helicopter" && !("pigeons" in this.active))
       this.trigger("pigeons");
     return true;
   }
   tick(dt) {
     this.heist.tick(dt);
+    if (this.heistFlight) {
+      const flight = this.heistFlight;
+      if (flight.returning !== null) {
+        flight.returning += dt;
+        if (flight.returning >= FLIGHT_DURATION) flight.returning = null;
+      } else flight.time += dt;
+      if (this.heist.time === null && flight.returnAt === null)
+        flight.returnAt =
+          4.8 + Math.max(1, Math.ceil((flight.time - 4.8) / 12.4)) * 12.4;
+      if (flight.returnAt !== null && flight.time >= flight.returnAt + 5.3)
+        this.heistFlight = null;
+    }
+    this.pedestrians.lightsOn = this.windows;
     this.pedestrians.tick(dt);
     for (const item of DISCOVERIES) {
       if (item.loopDuration) {
@@ -134,5 +163,13 @@ export class Discoveries {
       counts: { ...this.counts },
       heist: this.heist.snapshot(),
     };
+  }
+  helicopterTime() {
+    const flight = this.heistFlight;
+    if (!flight) return this.active.helicopter;
+    if (flight.returning !== null) return flight.returning;
+    if (flight.returnAt !== null && flight.time >= flight.returnAt)
+      return 17.2 + flight.time - flight.returnAt;
+    return flight.time < 4.8 ? flight.time : 4.8 + ((flight.time - 4.8) % 12.4);
   }
 }

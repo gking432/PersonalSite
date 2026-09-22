@@ -1,4 +1,6 @@
 import { createPedestrianScene } from "./pedestrianScene";
+import { createMilwaukeeTower } from "./milwaukeeTower";
+import { WATER_BARRIERS } from "./pedestrianEscape";
 import { createBalconyResident } from "./balconyResident";
 import { featherMapMaterial } from "./mapFade";
 import { createPageLayout } from "./pageLayout";
@@ -10,7 +12,7 @@ import { createCityAdditions } from "./cityAdditions";
 import { createDiscoveryScene } from "./discoveryScene";
 import { createHeistScene } from "./heistScene";
 import { createWaterfrontScene } from "./waterfrontScene";
-import { riverBridgeHeight } from "./waterfront";
+import { riverBridgeHeight, riverBoatPose } from "./waterfront";
 import { DISCOVERIES } from "./littleMilwaukee";
 
 import { SIGNALS } from "./signals";
@@ -180,6 +182,7 @@ export function createCityScene(host, controls, onEscape) {
       size = 48,
       parent = city,
       square = false,
+      billboard = false,
     } = {},
   ) {
     const c = document.createElement("canvas");
@@ -199,13 +202,28 @@ export function createCityScene(host, controls, onEscape) {
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = 4;
     textures.add(texture);
-    const mat = new THREE.MeshBasicMaterial({
-      map: texture,
-      transparent: true,
-      side: THREE.DoubleSide,
-      depthWrite: false,
-    });
+    const mat = billboard
+      ? new THREE.SpriteMaterial({
+          map: texture,
+          depthTest: false,
+          depthWrite: false,
+          toneMapped: false,
+        })
+      : new THREE.MeshBasicMaterial({
+          map: texture,
+          transparent: true,
+          side: THREE.DoubleSide,
+          depthWrite: false,
+        });
     materials.add(mat);
+    if (billboard) {
+      const sprite = new THREE.Sprite(mat);
+      sprite.position.set(x, y, z);
+      sprite.scale.set(w, h, 1);
+      sprite.renderOrder = 20;
+      parent.add(sprite);
+      return sprite;
+    }
     const m = mesh(new THREE.PlaneGeometry(w, h), mat, x, y, z, parent);
     m.rotation.y = ry;
     if (floor) m.rotation.x = -Math.PI / 2;
@@ -337,6 +355,7 @@ export function createCityScene(host, controls, onEscape) {
     body = palette.cream,
     glass = palette.glass,
     ornate = false,
+    landmark = false,
   }) {
     const bottom = 0.41;
     buildingBounds.push(
@@ -345,6 +364,10 @@ export function createCityScene(host, controls, onEscape) {
         new THREE.Vector3(x + w / 2, 0.41 + h, z + d / 2),
       ),
     );
+    if (landmark) {
+      createMilwaukeeTower({ x, z, w, d, h, box, rod, label, palette });
+      return;
+    }
     box(w, h, d, x, bottom + h / 2, z, body);
     box(w + 0.13, 0.14, d + 0.13, x, bottom + 0.07, z, palette.trim);
     box(w + 0.2, 0.12, d + 0.2, x, bottom + h + 0.025, z, palette.trim);
@@ -653,6 +676,7 @@ export function createCityScene(host, controls, onEscape) {
     rod,
     label,
     material,
+    texture,
   });
   const balcony = createBalconyResident({
     city,
@@ -1124,6 +1148,7 @@ export function createCityScene(host, controls, onEscape) {
       },
       ...DISCOVERIES.map((item, index) => ({
         button: controls.discoveries[index],
+        label: pedestrianScene.label(item.id) || item.label,
         hidden:
           pedestrianScene.hidden(item.id) ||
           ((item.loopDuration ||
@@ -1135,6 +1160,10 @@ export function createCityScene(host, controls, onEscape) {
     ].filter((target) => target.button);
     for (const target of targets) {
       const { button, x, y } = target;
+      if (target.label) {
+        button.setAttribute("aria-label", target.label);
+        button.title = target.label;
+      }
       const left = x - button.offsetWidth / 2,
         top = y - button.offsetHeight / 2;
       let polygon = [
@@ -1187,6 +1216,10 @@ export function createCityScene(host, controls, onEscape) {
   function render() {
     if (disposed) return;
     view();
+    if (currentSim?.discoveries.pedestrians.environment)
+      currentSim.discoveries.pedestrians.environment.camera = city
+        .worldToLocal(camera.position.clone())
+        .toArray();
     discoveries.faceCamera(
       camera.quaternion.clone().premultiply(city.quaternion.clone().invert()),
     );
@@ -1210,7 +1243,9 @@ export function createCityScene(host, controls, onEscape) {
 
     render();
   }
+  let currentSim = null;
   function update(sim, dt = 0) {
+    currentSim = sim;
     if (!sim.discoveries.pedestrians.obstacles.length)
       sim.discoveries.pedestrians.obstacles = buildingBounds.map((b) => [
         b.min.x,
@@ -1218,6 +1253,29 @@ export function createCityScene(host, controls, onEscape) {
         b.max.x,
         b.max.z,
       ]);
+    const pedestrians = sim.discoveries.pedestrians;
+    pedestrians.environment = {
+      camera: city.worldToLocal(camera.position.clone()).toArray(),
+      buildings: buildingBounds.map((b) => [
+        ...b.min.toArray(),
+        ...b.max.toArray(),
+      ]),
+      obstacles: pedestrians.obstacles,
+      water: WATER_BARRIERS,
+      lightsOn: sim.discoveries.windows,
+      bridgeOpen: sim.bridge.gated,
+      cars: sim.cars
+        .filter((c) => !c.remove)
+        .map((c) => ({
+          id: c.id,
+          ...carPose(c),
+          speed: c.speed,
+          service: !!c.service,
+        })),
+      boats: sim.bridge.boats
+        .filter((b) => !b.remove)
+        .map((b) => ({ id: b.id, ...riverBoatPose(b) })),
+    };
     pedestrianScene.update(sim);
     balcony.update(sim);
     additions.update(sim, dt);

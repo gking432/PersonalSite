@@ -1,4 +1,5 @@
 import { pathPose } from "./pedestrianMotion.js";
+import { updateEscape, WINDOW_NPC } from "./pedestrianEscape.js";
 
 const distance = (a, b) => Math.hypot(b[0] - a[0], b[1] - a[1]);
 export const pathLength = (path) =>
@@ -93,6 +94,8 @@ export class PedestrianReactions {
     this.rescue = null;
     this.pickups = 0;
     this.obstacles = [];
+    this.environment = null;
+    this.lightsOn = false;
   }
   click(definition, clock) {
     const s = (this.states[definition.id] ||= {
@@ -102,11 +105,43 @@ export class PedestrianReactions {
       hits: 0,
       clock,
     });
-    if (["down", "carried", "away"].includes(s.phase)) return false;
-    if (s.phase === "running" || s.phase === "stumbled") {
+    if (s.phase === "inside" && definition.id === WINDOW_NPC && this.lightsOn) {
+      s.phase = "window-hit";
+      s.windowBroken = true;
+      s.time = 0;
+      return true;
+    }
+    if (
+      [
+        "down",
+        "carried",
+        "away",
+        "inside",
+        "entering",
+        "window-hit",
+        "retired",
+      ].includes(s.phase)
+    )
+      return false;
+    if (
+      [
+        "running",
+        "stumbled",
+        "hiding",
+        "boarding",
+        "swimming",
+        "riding",
+        "underbridge",
+      ].includes(s.phase)
+    ) {
+      if (s.phase !== "stumbled")
+        s.resumePhase = ["swimming", "riding", "underbridge"].includes(s.phase)
+          ? s.phase
+          : "running";
       s.hits++;
       s.time = 0;
       s.phase = s.hits >= 4 ? "down" : "stumbled";
+      s.needsPlan = true;
     } else if (s.level < 4) {
       s.level++;
       s.phase = "reacting";
@@ -121,12 +156,13 @@ export class PedestrianReactions {
         s.path = escapePath(definition, clock);
         s.length = pathLength(s.path);
         s.distance = 0;
+        s.needsPlan = true;
       }
     } else return false;
     return true;
   }
   tick(dt) {
-    for (const s of Object.values(this.states)) {
+    for (const [id, s] of Object.entries(this.states)) {
       s.time += dt;
       if (
         s.phase === "reacting" &&
@@ -136,10 +172,11 @@ export class PedestrianReactions {
         s.time = 0;
       }
       if (s.phase === "stumbled" && s.time >= 1.15) {
-        s.phase = "running";
+        s.phase = s.resumePhase || "running";
         s.time = 0;
       }
-      if (s.phase === "running") {
+      if (this.environment) updateEscape(s, id, dt, this.environment);
+      else if (s.phase === "running") {
         s.distance = Math.min(s.length, s.distance + RUN_SPEED * dt);
         Object.assign(s, pathPose(s.path, s.distance / s.length));
         if (s.distance >= s.length) {

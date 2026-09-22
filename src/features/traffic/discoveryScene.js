@@ -141,7 +141,8 @@ export function createDiscoveryScene({
       z: -3.7,
       w: 2.4,
       d: 2.7,
-      h: 2.55,
+      h: 6.2,
+      landmark: true,
       floors: 5,
       body: p.cream,
       ornate: true,
@@ -213,11 +214,13 @@ export function createDiscoveryScene({
     size: 110,
   });
   const heli = group(3.5, 3.38, -3.7);
-  const body = sphere(0.31, 0, 0.45, 0, p.green, heli);
-  body.scale.set(0.83, 0.8, 1.55);
+  heli.scale.setScalar(0.72);
+  const helicopterRed = material("#cb4f43", { roughness: 0.55 });
+  const body = sphere(0.31, 0, 0.45, 0, helicopterRed, heli);
+  body.scale.set(0.93, 0.9, 1.4);
   const canopy = sphere(0.235, 0, 0.46, 0.28, p.glass, heli);
   canopy.scale.set(0.95, 0.85, 1.2);
-  rod([0, 0.42, -0.24], [0, 0.56, -1.08], 0.07, p.green, heli);
+  rod([0, 0.42, -0.24], [0, 0.56, -1.08], 0.07, helicopterRed, heli);
   box(0.06, 0.34, 0.24, 0, 0.66, -1.05, p.ivory, heli);
   for (const q of [-1, 1]) {
     rod([q * 0.22, 0.28, -0.2], [q * 0.29, 0.09, -0.2], 0.025, p.dark, heli);
@@ -391,7 +394,7 @@ export function createDiscoveryScene({
   function update(sim) {
     const active = sim.discoveries.active,
       time = sim.time;
-    const flight = active.helicopter;
+    const flight = sim.discoveries.helicopterTime();
     const flying = helicopterFlight(flight);
     heli.position.set(flying.x, flying.y, flying.z);
     heli.rotation.set(flying.pitch, flying.yaw, flying.bank, "YXZ");
@@ -581,6 +584,9 @@ export function createDiscoveryScene({
       helicopter: flight !== undefined,
       helicopterHeight: heli.position.y,
       helicopterPhase: flying.phase,
+      helicopterScale: 0.72,
+      helicopterColor: "red",
+      heistPatrol: !!sim.discoveries.heistFlight,
       notes: notes.filter((note) => note.visible).length,
       fountainBoost: boost,
       windowsLit: sim.discoveries.windows,

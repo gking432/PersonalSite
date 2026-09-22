@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import { movePedestrian, pathPose } from "./pedestrianMotion.js";
 import { riverBridgeHeight } from "./waterfront.js";
+import { createWindowRefuge } from "./windowRefuge.js";
+import { WINDOW_NPC } from "./pedestrianEscape.js";
 const ease = (v) => {
   v = Math.max(0, Math.min(1, v));
   return v * v * (3 - 2 * v);
@@ -15,6 +17,7 @@ export function createPedestrianScene({
   rod,
   label,
   material,
+  texture,
 }) {
   const group = () => {
     const g = new THREE.Group();
@@ -39,6 +42,7 @@ export function createPedestrianScene({
       color: "#47584c",
       size: 190,
       square: true,
+      billboard: true,
     });
     const angry = label("!", 0.43, 0.55, 0, 0, 0, {
       parent: badge,
@@ -46,6 +50,7 @@ export function createPedestrianScene({
       color: "#cf5144",
       size: 190,
       square: true,
+      billboard: true,
     });
     const health = group();
     mesh(
@@ -77,6 +82,35 @@ export function createPedestrianScene({
     badge.visible = health.visible = false;
     return { ...def, badge, question, angry, health, fill };
   });
+  const refuge = createWindowRefuge({
+    city,
+    box,
+    mesh,
+    material,
+    texture,
+    palette: p,
+  });
+  const ripples = new Map(
+    people
+      .filter((def) => !def.seated)
+      .map((def) => {
+        const ring = mesh(
+          new THREE.RingGeometry(0.13, 0.17, 20),
+          material("#e7eee3", {
+            transparent: true,
+            opacity: 0.6,
+            depthWrite: false,
+          }),
+          0,
+          0.32,
+          0,
+        );
+        ring.rotation.x = -Math.PI / 2;
+        ring.visible = false;
+        ring.castShadow = false;
+        return [def.id, ring];
+      }),
+  );
   const medic = group();
   const skin = material("#d8aa81");
   cylinder(0.11, 0.3, 0, 0.4, 0, p.green, medic, 0.095);
@@ -103,12 +137,14 @@ export function createPedestrianScene({
     diagnostics = [];
   function update(sim) {
     lastState = sim.discoveries.pedestrians;
+    refuge.update(sim);
     diagnostics = [];
     for (const def of people) {
       const { actor, id } = def,
         clock = sim.discoveries.walkClocks[id] || 0,
         state = lastState.states[id];
       actor.g.visible = true;
+      actor.g.scale.setScalar(1);
       actor.head.rotation.set(0, 0, 0);
       actor.arms.forEach((a) => {
         a.rotation.set(0, 0, 0);
@@ -122,20 +158,45 @@ export function createPedestrianScene({
           def.seated ? sim.discoveries.active[id] : undefined,
         );
       } else {
-        actor.g.visible = !["away", "carried"].includes(state.phase);
+        actor.g.visible =
+          !["away", "carried", "inside", "window-hit", "retired"].includes(
+            state.phase,
+          ) && !(state.phase === "riding" && state.carrier?.kind === "car");
         const running = state.phase === "running",
           fallen = state.phase === "stumbled" || state.phase === "down";
-        actor.g.position.set(state.x, 0.42, state.z);
+        actor.g.position.set(state.x, state.y ?? 0.42, state.z);
         actor.g.rotation.set(0, state.yaw, 0, "YXZ");
         actor.animate(state.time * (running ? 1.9 : 1), running);
         if (running) actor.g.rotation.x = 0.13;
+        if (state.phase === "hiding" || state.phase === "underbridge") {
+          actor.g.scale.y = 0.62;
+          actor.legs.forEach((leg) => (leg.rotation.x = -0.65));
+          actor.head.rotation.y = Math.sin(state.time * 1.8) * 0.35;
+        }
+        if (state.phase === "boarding") {
+          actor.arms.forEach((arm) => (arm.rotation.x = -2));
+          actor.legs.forEach((leg) => (leg.rotation.x = -0.55));
+          if (state.jumpKind === "car")
+            actor.g.scale.setScalar(1 - Math.min(1, state.time / 0.65) * 0.5);
+        }
+        if (state.phase === "swimming") {
+          actor.arms.forEach((arm, i) => {
+            arm.rotation.x =
+              -1.5 + Math.sin(state.time * 7 + i * Math.PI) * 0.6;
+            arm.rotation.z = (i ? 1 : -1) * 0.65;
+          });
+        }
+        if (state.phase === "riding") {
+          actor.legs.forEach((leg) => (leg.rotation.x = -1.3));
+          actor.g.position.y += 0.1;
+        }
         if (fallen) {
           const fall =
             1.5 *
             ease(state.time / 0.19) *
             (state.phase === "down" ? 1 : 1 - ease((state.time - 0.48) / 0.67));
           actor.g.rotation.x = fall;
-          actor.g.position.y = 0.42 - Math.sin(fall) * 0.12;
+          actor.g.position.y = (state.y ?? 0.42) - Math.sin(fall) * 0.12;
           actor.arms.forEach((a) => (a.rotation.x = -0.8));
         }
         if (state.phase === "reacting") {
@@ -160,6 +221,15 @@ export function createPedestrianScene({
           }
         }
       }
+      const ripple = ripples.get(id);
+      if (ripple) {
+        ripple.visible =
+          state?.phase === "swimming" ||
+          (state?.phase === "boarding" &&
+            ["water", "bridge", "boat"].includes(state.jumpKind));
+        ripple.position.set(actor.g.position.x, 0.31, actor.g.position.z);
+        ripple.scale.setScalar(1 + ((state?.time || 0) % 0.8) * 0.65);
+      }
       if (def.badge) {
         const reacting = state?.phase === "reacting";
         def.badge.visible = reacting;
@@ -171,7 +241,15 @@ export function createPedestrianScene({
         def.badge.scale.setScalar(state?.level === 2 ? 1.3 : 1);
         def.health.visible =
           !!state?.hits &&
-          ["running", "stumbled", "down"].includes(state.phase);
+          [
+            "running",
+            "stumbled",
+            "down",
+            "hiding",
+            "swimming",
+            "riding",
+            "boarding",
+          ].includes(state.phase);
         def.health.position
           .copy(actor.g.position)
           .add(new THREE.Vector3(0, state?.phase === "down" ? 0.65 : 1, 0));
@@ -191,6 +269,9 @@ export function createPedestrianScene({
         visible: actor.g.visible,
         position: actor.g.position.toArray(),
         fall: actor.g.rotation.x,
+        replans: state?.replans || 0,
+        escape: state?.destination?.kind || null,
+        carrier: state?.carrier || null,
       });
     }
     const job = lastState.rescue;
@@ -216,10 +297,15 @@ export function createPedestrianScene({
   return {
     update,
     hidden(id) {
+      if (id === WINDOW_NPC && lastState?.states[id]?.phase === "inside")
+        return !refuge.visible();
+      if (lastState?.states[id]?.phase === "underbridge") return true;
       const def = people.find((p) => p.id === id);
       return def ? !def.actor.g.visible : false;
     },
     target(id) {
+      if (id === WINDOW_NPC && lastState?.states[id]?.phase === "inside")
+        return refuge.target();
       const def = people.find((p) => p.id === id);
       return def
         ? def.actor.g.position
@@ -233,6 +319,11 @@ export function createPedestrianScene({
                 0,
               ),
             )
+        : null;
+    },
+    label(id) {
+      return id === WINDOW_NPC && refuge.occupied()
+        ? "Tap the occupied window"
         : null;
     },
     faceCamera(q, yaw, occluded) {
@@ -250,7 +341,15 @@ export function createPedestrianScene({
           def.health.visible =
             visible &&
             !!s?.hits &&
-            ["running", "stumbled", "down"].includes(s.phase);
+            [
+              "running",
+              "stumbled",
+              "down",
+              "hiding",
+              "swimming",
+              "riding",
+              "boarding",
+            ].includes(s.phase);
         }
         if (s?.phase === "reacting") {
           const turn = ease(s.time / 0.22);
@@ -282,6 +381,7 @@ export function createPedestrianScene({
           }
         : null,
       pickups: lastState?.pickups || 0,
+      refuge: refuge.diagnostics(),
     }),
   };
 }

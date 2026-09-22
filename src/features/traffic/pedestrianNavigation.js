@@ -1,6 +1,6 @@
 // Visibility graph around the actual building footprints. Medics use the
 // shortest clear route instead of walking straight through an apartment.
-export function walkRoute(start, end, buildings = []) {
+export function walkRoute(start, end, buildings = [], { strict = false } = {}) {
   const obstacles = buildings.map(([x1, z1, x2, z2]) => [
     x1 - 0.14,
     z1 - 0.14,
@@ -69,5 +69,5 @@ export function walkRoute(start, end, buildings = []) {
         }
       }
   }
-  return [start, end];
+  return strict ? [] : [start, end];
 }

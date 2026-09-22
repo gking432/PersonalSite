@@ -54,6 +54,7 @@ try {
   for (let hit = 1; hit <= 4; hit++) {
     await click("cityWalk");
     await advance(0.23);
+    await revealDiscovery(page, "cityWalk");
     const state = await person("cityWalk");
     assert.equal(state.hits, hit);
     assert.equal(state.health, (4 - hit) / 4);
